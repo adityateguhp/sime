@@ -1,0 +1,24 @@
+{
+  "name": "sime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node index",
+    "start": "nodemon index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@playlyfe/gql": "^2.6.2",
+    "apollo-server": "^2.14.5",
+    "bcryptjs": "^2.4.3",
+    "graphql": "^15.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.19"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
