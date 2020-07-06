@@ -10,7 +10,8 @@ const FABbutton = props => {
             style={{
                 position: 'absolute',
                 bottom: safeArea.bottom + 15,
-                right: 15
+                right: 15,
+                backgroundColor: Colors.secondaryColor
             }}
             icon={props.Icon}
             onPress={props.onPress}

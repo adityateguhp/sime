@@ -7,7 +7,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import FABbutton from '../../components/common/FABbutton';
 import { COMITEES, STAFFS, POSITIONS, DIVISIONS } from '../../data/dummy-data';
 import ComiteeList from '../../components/project/ComiteeList';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 

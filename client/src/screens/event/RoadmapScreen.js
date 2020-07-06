@@ -8,7 +8,7 @@ import FABbutton from '../../components/common/FABbutton';
 import { ROADMAPS } from '../../data/dummy-data';
 import RoadmapCard from '../../components/event/RoadmapCard';
 import FormRoadmap from '../../components/event/FormRoadmap';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import {theme} from '../../constants/Theme';
 
@@ -69,7 +69,7 @@ const RoadmapScreen = ({ route, navigation }) => {
     if (Roadmap.length === 0) {
         return (
             <View style={styles.content}>
-                <Text>No events found, let's add events!</Text>
+                <Text>No roadmap found, let's add roadmap!</Text>
             </View>
         );
     }

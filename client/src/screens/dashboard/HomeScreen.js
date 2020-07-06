@@ -1,26 +1,23 @@
 import React, { memo } from 'react';
 import Background from '../../components/common/Background';
-import Logo from '../../components/common/Logo';
-import Header from '../../components/common/Header';
-import Button from '../../components/common/Button';
 import Paragraph from '../../components/common/Paragraph';
+import Logo from '../../components/common/Logo';
+import Button from '../../components/common/Button';
 
 const HomeScreen = ({ navigation }) => (
   <Background>
     <Logo />
-    <Header>Login Template</Header>
-
     <Paragraph>
-      The easiest way to start with your amazing application.
+      Sistem Informasi Manajemen Event
     </Paragraph>
-    <Button mode="contained" onPress={() => navigation.navigate('LoginScreen')}>
-      Login
+    <Button mode="contained" onPress={() => navigation.navigate('Login Organization')}>
+      Login as Organization
     </Button>
     <Button
       mode="outlined"
-      onPress={() => navigation.navigate('RegisterScreen')}
+      onPress={() => navigation.navigate('Login Staff')}
     >
-      Sign Up
+       Login as Staff
     </Button>
   </Background>
 );

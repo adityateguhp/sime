@@ -8,7 +8,7 @@ import FABbutton from '../../components/common/FABbutton';
 import FormDivision from '../../components/project/FormDivision';
 import { DIVISIONS } from '../../data/dummy-data';
 import DivisionCard from '../../components/project/DivisionCard';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import {theme} from '../../constants/Theme';
 

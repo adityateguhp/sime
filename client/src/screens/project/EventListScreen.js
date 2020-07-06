@@ -8,7 +8,7 @@ import FABbutton from '../../components/common/FABbutton';
 import FormEvent from '../../components/event/FormEvent';
 import { EVENTS } from '../../data/dummy-data';
 import EventCard from '../../components/event/EventCard';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import {theme} from '../../constants/Theme';
 

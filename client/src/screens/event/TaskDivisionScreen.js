@@ -6,7 +6,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 
 import { DIVISIONS } from '../../data/dummy-data';
 import DivisionCard from '../../components/project/DivisionCard';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 
 const TaskDivisionScreen = ({ navigation }) => {

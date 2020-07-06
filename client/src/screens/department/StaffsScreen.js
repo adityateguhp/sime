@@ -8,7 +8,7 @@ import FABbutton from '../../components/common/FABbutton';
 import FormStaff from '../../components/department/FormStaff';
 import { STAFFS } from '../../data/dummy-data';
 import StaffList from '../../components/department/StaffList';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 

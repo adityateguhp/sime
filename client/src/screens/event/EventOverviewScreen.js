@@ -9,7 +9,7 @@ import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
 
 import { EVENTS, EXTERNALS } from '../../data/dummy-data';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import ExternalList from '../../components/event/ExternalList';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';

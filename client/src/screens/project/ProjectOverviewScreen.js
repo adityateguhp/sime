@@ -8,7 +8,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
 import { COMITEES, STAFFS, PROJECTS, POSITIONS } from '../../data/dummy-data';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 

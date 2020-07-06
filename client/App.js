@@ -13,7 +13,7 @@ import { setContext } from 'apollo-link-context';
 import MainNavigator from './src/navigation/MainNavigator';
 import AppStatusBar from './src/components/common/AppStatusBar'
 import {theme} from './src/constants/Theme';
-import { SimeProvider } from './src/provider/SimePovider';
+import { SimeProvider } from './src/context/SimePovider';
 
 
 enableScreens();

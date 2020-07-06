@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, View, FlatList, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import ExternalCard from '../../components/event/ExternalCard';
 import { EXTERNALTYPES } from '../../data/dummy-data';
 

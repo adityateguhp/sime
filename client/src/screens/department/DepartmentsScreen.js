@@ -8,7 +8,7 @@ import FABbutton from '../../components/common/FABbutton';
 import FormDepartment from '../../components/department/FormDepartment';
 import { DEPARTMENTS } from '../../data/dummy-data';
 import DepartmentCard from '../../components/department/DepartmentCard';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import {theme} from '../../constants/Theme';
 

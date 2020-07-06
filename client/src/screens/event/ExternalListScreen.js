@@ -9,7 +9,7 @@ import FormExternal from '../../components/event/FormExternal';
 import { EXTERNALS } from '../../data/dummy-data';
 import ExternalList from '../../components/event/ExternalList';
 import ModalProfile from '../../components/common/ModalProfile';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 

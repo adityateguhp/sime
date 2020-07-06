@@ -10,7 +10,7 @@ import FormProject from '../../components/project/FormProject';
 import {theme} from '../../constants/Theme';
 import Colors from '../../constants/Colors';
 import { PROJECTS } from '../../data/dummy-data';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 
 
 const ProjectListScreen = props => {

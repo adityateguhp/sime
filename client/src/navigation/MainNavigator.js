@@ -8,10 +8,13 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { Avatar, Text } from 'react-native-paper';
-import { SimeContext } from '../provider/SimePovider';
+
+import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
 
 import HomeScreen from '../screens/dashboard/HomeScreen';
+import LoginOrganizationScreen from'../screens/dashboard/LoginOrganizationScreen';
+import LoginStaffScreen from'../screens/dashboard/LoginStaffScreen';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import ProjectListScreen from '../screens/project/ProjectListScreen';
 import ProjectOverviewScreen from '../screens/project/ProjectOverviewScreen';
@@ -34,6 +37,7 @@ import ExternalProfileScreen from '../screens/event/ExternalProfileScreen';
 import StaffProfileScreen from '../screens/department/StaffProfileScreen';
 import ComiteeProfileScreen from '../screens/project/ComiteeProfileScreen';
 import Colors from '../constants/Colors';
+import RegisterScreen from '../screens/dashboard/RegisterScreen';
 
 function TabVisible(route) {
   const routeName = route.state
@@ -321,10 +325,35 @@ export default function MainNavigator() {
   return (
     userToken == null ? (
       <>
-        <Main.Navigator>
+        <Main.Navigator
+        >
           <Main.Screen
             name="Home"
             component={HomeScreen}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Main.Screen
+            name="Login Organization"
+            component={LoginOrganizationScreen}
+            options={{
+              title: ""
+            }}
+          />
+            <Main.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{
+              title: ""
+            }}
+          />
+          <Main.Screen
+            name="Login Staff"
+            component={LoginStaffScreen}
+            options={{
+              title: ""
+            }}
           />
         </Main.Navigator>
       </>

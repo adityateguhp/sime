@@ -8,7 +8,7 @@ import RundownContainer from '../../components/event/RundownContainer';
 import RundownTime from '../../components/event/RundownTime';
 import FormRundown from '../../components/event/FormRundown';
 import { RUNDOWNS } from '../../data/dummy-data';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 

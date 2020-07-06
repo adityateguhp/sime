@@ -3,7 +3,7 @@ import { Text, StyleSheet, View, FlatList } from 'react-native';
 import { Divider, Provider } from 'react-native-paper';
 
 import FABbutton from '../../components/common/FABbutton';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import { TASKS } from '../../data/dummy-data';
 import Task from '../../components/event/Task';
 import Colors from '../../constants/Colors';
