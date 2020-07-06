@@ -8,7 +8,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '../../constants/Colors';
-import { SimeContext } from '../../provider/SimePovider';
+import { SimeContext } from '../../context/SimePovider';
 import { DEPARTMENTS } from '../../data/dummy-data';
 
 const FormStaff = props => {
