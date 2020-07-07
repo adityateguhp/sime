@@ -19,10 +19,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     backgroundColor: 'white'
-  },
-  container: {
-  
-  },
+  }
 });
 
 export default memo(Background);
