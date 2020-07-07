@@ -10,6 +10,7 @@ import {
     emailValidator,
     passwordValidator,
     nameValidator,
+    confirmPasswordValidator
 } from '../../util/Validator';
 
 const RegisterScreen = ({ navigation }) => {
@@ -22,7 +23,7 @@ const RegisterScreen = ({ navigation }) => {
         const nameError = nameValidator(name.value);
         const emailError = emailValidator(email.value);
         const passwordError = passwordValidator(password.value);
-        const confirmPasswordError = confirmPasswordValidator(confirmPassword.value);
+        const confirmPasswordError = confirmPasswordValidator(password.value, confirmPassword.value);
 
         if (emailError || passwordError || nameError || confirmPasswordError) {
             setName({ ...name, error: nameError });
@@ -36,66 +37,68 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     return (
-        <ScrollView>
-            <Background>
-                <Logo />
+        <Background>
+            <ScrollView>
+                <View style={styles.container}>
+                    <Logo />
+                    <Header>Create Account</Header>
 
-                <Header>Create Account</Header>
+                    <TextInput
+                        label="Organization Name"
+                        returnKeyType="next"
+                        value={name.value}
+                        onChangeText={text => setName({ value: text, error: '' })}
+                        error={!!name.error}
+                        errorText={name.error}
+                    />
 
-                <TextInput
-                    label="Organization Name"
-                    returnKeyType="next"
-                    value={name.value}
-                    onChangeText={text => setName({ value: text, error: '' })}
-                    error={!!name.error}
-                    errorText={name.error}
-                />
+                    <TextInput
+                        label="Organization E-mail"
+                        returnKeyType="next"
+                        value={email.value}
+                        onChangeText={text => setEmail({ value: text, error: '' })}
+                        error={!!email.error}
+                        errorText={email.error}
+                        autoCapitalize="none"
+                        autoCompleteType="email"
+                        textContentType="emailAddress"
+                        keyboardType="email-address"
+                    />
 
-                <TextInput
-                    label="Organization E-mail"
-                    returnKeyType="next"
-                    value={email.value}
-                    onChangeText={text => setEmail({ value: text, error: '' })}
-                    error={!!email.error}
-                    errorText={email.error}
-                    autoCapitalize="none"
-                    autoCompleteType="email"
-                    textContentType="emailAddress"
-                    keyboardType="email-address"
-                />
+                    <TextInput
+                        label="Password"
+                        returnKeyType="next"
+                        value={password.value}
+                        onChangeText={text => setPassword({ value: text, error: '' })}
+                        error={!!password.error}
+                        errorText={password.error}
+                        secureTextEntry
+                    />
 
-                <TextInput
-                    label="Password"
-                    returnKeyType="done"
-                    value={password.value}
-                    onChangeText={text => setPassword({ value: text, error: '' })}
-                    error={!!password.error}
-                    errorText={password.error}
-                    secureTextEntry
-                />
+                    <TextInput
+                        label="Confirm Password"
+                        returnKeyType="done"
+                        value={confirmPassword.value}
+                        onChangeText={text => setConfirmPassword({ value: text, error: '' })}
+                        error={!!confirmPassword.error}
+                        errorText={confirmPassword.error}
+                        secureTextEntry
+                    />
 
-                <TextInput
-                    label="Confirm Password"
-                    returnKeyType="done"
-                    value={confirmPassword.value}
-                    onChangeText={text => setConfirmPassword({ value: text, error: '' })}
-                    error={!!confirmPassword.error}
-                    errorText={confirmPassword.error}
-                    secureTextEntry
-                />
-
-                <Button mode="contained" onPress={_onSignUpPressed} style={styles.button}>
-                    Sign Up
+                    <Button mode="contained" onPress={_onSignUpPressed} style={styles.button}>
+                        Sign Up
                 </Button>
 
-                <View style={styles.row}>
-                    <Text style={styles.label}>Already have an account? </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Login Organization')}>
-                        <Text style={styles.link}>Login</Text>
-                    </TouchableOpacity>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Already have an account? </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Login Organization')}>
+                            <Text style={styles.link}>Login</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </Background>
-        </ScrollView>
+            </ScrollView>
+        </Background>
+
     );
 };
 
@@ -114,6 +117,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: theme.colors.primary,
     },
+    container: {
+        flex: 1,
+        padding: 20,
+        width: '100%',
+        maxWidth: 340,
+        alignSelf: 'center',
+        alignItems: 'center'
+    }
 });
 
 export default memo(RegisterScreen);

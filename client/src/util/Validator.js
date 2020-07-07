@@ -12,6 +12,15 @@ export const emailValidator = (email) => {
   
     return '';
   };
+
+  export const confirmPasswordValidator = (password, confirmPassword) => {
+    if (password != confirmPassword ) {
+      return 'Password not match.'
+    }else if (!confirmPassword || confirmPassword.length <= 0){ 
+      return 'Confirm password cannot be empty.'
+    };
+    return '';
+  };
   
   export const nameValidator = (name) => {
     if (!name || name.length <= 0) return 'Name cannot be empty.';

@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, ScrollView } from 'react-native';
 import Header from '../../components/common/Header';
 import Background from '../../components/common/Background';
 import Logo from '../../components/common/Logo';
@@ -27,43 +27,47 @@ const LoginOrganizationScreen = ({ navigation }) => {
 
   return (
     <Background>
-      <Logo />
+      <ScrollView>
+        <View style={styles.container}>
+          <Logo />
 
-      <Header>Login as Organization</Header>
+          <Header>Login as Organization</Header>
 
-      <TextInput
-        label="Email"
-        returnKeyType="next"
-        value={email.value}
-        onChangeText={text => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
-        autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
-      />
+          <TextInput
+            label="Email"
+            returnKeyType="next"
+            value={email.value}
+            onChangeText={text => setEmail({ value: text, error: '' })}
+            error={!!email.error}
+            errorText={email.error}
+            autoCapitalize="none"
+            autoCompleteType="email"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+          />
 
-      <TextInput
-        label="Password"
-        returnKeyType="done"
-        value={password.value}
-        onChangeText={text => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
-        secureTextEntry
-      />
+          <TextInput
+            label="Password"
+            returnKeyType="done"
+            value={password.value}
+            onChangeText={text => setPassword({ value: text, error: '' })}
+            error={!!password.error}
+            errorText={password.error}
+            secureTextEntry
+          />
 
-      <Button mode="contained" onPress={_onLoginPressed}>
-        Login
+          <Button mode="contained" onPress={_onLoginPressed}>
+            Login
       </Button>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.link}>Sign up</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Don’t have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.link}>Sign up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </Background>
   );
 };
@@ -85,6 +89,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.primary,
   },
+  container: {
+    flex: 1,
+    padding: 20,
+    width: '100%',
+    maxWidth: 340,
+    alignSelf: 'center',
+    alignItems: 'center'
+}
 });
 
 export default memo(LoginOrganizationScreen);

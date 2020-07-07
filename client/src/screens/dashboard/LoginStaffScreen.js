@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, ScrollView } from 'react-native';
 import Background from '../../components/common/Background';
 import Header from '../../components/common/Header';
 import Logo from '../../components/common/Logo';
@@ -27,6 +27,8 @@ const LoginStaffScreen = ({ navigation }) => {
 
   return (
     <Background>
+      <ScrollView>
+        <View style={styles.container}>
       <Logo />
 
       <Header>Login as Staff</Header>
@@ -57,6 +59,8 @@ const LoginStaffScreen = ({ navigation }) => {
       <Button mode="contained" onPress={_onLoginPressed}>
         Login
       </Button>
+      </View>
+      </ScrollView>
     </Background>
   );
 };
@@ -78,6 +82,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.primary,
   },
+  container: {
+    flex: 1,
+    padding: 20,
+    width: '100%',
+    maxWidth: 340,
+    alignSelf: 'center',
+    alignItems: 'center'
+}
 });
 
 export default memo(LoginStaffScreen);
