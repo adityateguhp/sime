@@ -6,7 +6,7 @@ import Logo from '../../components/common/Logo';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/common//TextInput';
 import { theme } from '../../constants/Theme';
-import { emailValidator, passwordValidator } from '../../util/Validator';
+import { emailValidator, passwordValidator } from '../../util/validator';
 
 const LoginOrganizationScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' });
@@ -39,7 +39,6 @@ const LoginOrganizationScreen = ({ navigation }) => {
             value={email.value}
             onChangeText={text => setEmail({ value: text, error: '' })}
             error={!!email.error}
-            errorText={email.error}
             autoCapitalize="none"
             autoCompleteType="email"
             textContentType="emailAddress"
@@ -52,11 +51,10 @@ const LoginOrganizationScreen = ({ navigation }) => {
             value={password.value}
             onChangeText={text => setPassword({ value: text, error: '' })}
             error={!!password.error}
-            errorText={password.error}
             secureTextEntry
           />
 
-          <Button mode="contained" onPress={_onLoginPressed}>
+          <Button mode="contained" style={styles.button} onPress={_onLoginPressed}>
             Login
       </Button>
 
@@ -73,10 +71,8 @@ const LoginOrganizationScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  forgotPassword: {
-    width: '100%',
-    alignItems: 'flex-end',
-    marginBottom: 24,
+  button: {
+    marginTop: 12,
   },
   row: {
     flexDirection: 'row',
@@ -91,12 +87,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     width: '100%',
     maxWidth: 340,
     alignSelf: 'center',
     alignItems: 'center'
-}
+  }
 });
 
 export default memo(LoginOrganizationScreen);

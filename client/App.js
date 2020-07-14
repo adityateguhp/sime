@@ -19,20 +19,11 @@ import { SimeProvider } from './src/context/SimePovider';
 enableScreens();
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:5000'
-});
-
-const authLink = setContext(() => {
-  const token = localStorage.getItem('jwtToken');
-  return {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : ''
-    }
-  };
+  uri: 'http://192.168.100.66:5000/graphql'
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: httpLink,
   cache: new InMemoryCache()
 });
 

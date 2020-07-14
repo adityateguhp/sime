@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { TextInput as Input } from 'react-native-paper';
 import { theme } from '../../constants/Theme';
 
+
 const TextInput = ({ errorText, ...props }) => (
   <View style={styles.container}>
     <Input
@@ -18,7 +19,7 @@ const TextInput = ({ errorText, ...props }) => (
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginVertical: 12,
+    marginVertical: 6,
   },
   input: {
     backgroundColor: theme.colors.surface,
@@ -32,3 +33,4 @@ const styles = StyleSheet.create({
 });
 
 export default memo(TextInput);
+

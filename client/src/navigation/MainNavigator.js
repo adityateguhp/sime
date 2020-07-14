@@ -12,9 +12,11 @@ import { Avatar, Text } from 'react-native-paper';
 import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
 
-import HomeScreen from '../screens/dashboard/HomeScreen';
-import LoginOrganizationScreen from'../screens/dashboard/LoginOrganizationScreen';
-import LoginStaffScreen from'../screens/dashboard/LoginStaffScreen';
+import HomeScreen from '../screens/home/HomeScreen';
+import LoginOrganizationScreen from '../screens/home/LoginOrganizationScreen';
+import LoginStaffScreen from '../screens/home/LoginStaffScreen';
+import RegisterScreen from '../screens/home/RegisterScreen';
+import RegisterCompletedScreen from '../screens/home/RegisterCompletedScreen';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import ProjectListScreen from '../screens/project/ProjectListScreen';
 import ProjectOverviewScreen from '../screens/project/ProjectOverviewScreen';
@@ -37,7 +39,7 @@ import ExternalProfileScreen from '../screens/event/ExternalProfileScreen';
 import StaffProfileScreen from '../screens/department/StaffProfileScreen';
 import ComiteeProfileScreen from '../screens/project/ComiteeProfileScreen';
 import Colors from '../constants/Colors';
-import RegisterScreen from '../screens/dashboard/RegisterScreen';
+
 
 function TabVisible(route) {
   const routeName = route.state
@@ -326,6 +328,9 @@ export default function MainNavigator() {
     userToken == null ? (
       <>
         <Main.Navigator
+        screenOptions={{
+          gestureEnabled: false
+        }}
         >
           <Main.Screen
             name="Home"
@@ -341,11 +346,18 @@ export default function MainNavigator() {
               title: ""
             }}
           />
-            <Main.Screen
+          <Main.Screen
             name="Register"
             component={RegisterScreen}
             options={{
               title: ""
+            }}
+          />
+          <Main.Screen
+            name="Register Completed"
+            component={RegisterCompletedScreen}
+            options={{
+              headerShown: false,
             }}
           />
           <Main.Screen

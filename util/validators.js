@@ -20,7 +20,10 @@ module.exports.validateRegisterOrganizationInput = (
 
     if (password === '') {
         errors.password = 'Password must not be empty';
-    } else if (password !== confirmPassword) {
+    }else if (password.length < 8) {
+        errors.confirmPassword = 'Use 8 characters or more for your password';
+    } 
+    else if (password !== confirmPassword) {
         errors.confirmPassword = 'Passwords must match';
     }
 

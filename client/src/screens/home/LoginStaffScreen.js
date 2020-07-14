@@ -6,7 +6,7 @@ import Logo from '../../components/common/Logo';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
-import { emailValidator, passwordValidator } from '../../util/Validator';
+import { emailValidator, passwordValidator } from '../../util/validator';
 
 const LoginStaffScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' });
@@ -29,47 +29,43 @@ const LoginStaffScreen = ({ navigation }) => {
     <Background>
       <ScrollView>
         <View style={styles.container}>
-      <Logo />
+          <Logo />
 
-      <Header>Login as Staff</Header>
+          <Header>Login as Staff</Header>
 
-      <TextInput
-        label="Email"
-        returnKeyType="next"
-        value={email.value}
-        onChangeText={text => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
-        autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
-      />
+          <TextInput
+            label="Email"
+            returnKeyType="next"
+            value={email.value}
+            onChangeText={text => setEmail({ value: text, error: '' })}
+            error={!!email.error}
+            autoCapitalize="none"
+            autoCompleteType="email"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+          />
 
-      <TextInput
-        label="Password"
-        returnKeyType="done"
-        value={password.value}
-        onChangeText={text => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
-        secureTextEntry
-      />
+          <TextInput
+            label="Password"
+            returnKeyType="done"
+            value={password.value}
+            onChangeText={text => setPassword({ value: text, error: '' })}
+            error={!!password.error}
+            secureTextEntry
+          />
 
-      <Button mode="contained" onPress={_onLoginPressed}>
-        Login
+          <Button mode="contained" style={styles.button} onPress={_onLoginPressed}>
+            Login
       </Button>
-      </View>
+        </View>
       </ScrollView>
     </Background>
   );
 };
 
 const styles = StyleSheet.create({
-  forgotPassword: {
-    width: '100%',
-    alignItems: 'flex-end',
-    marginBottom: 24,
+  button: {
+    marginTop: 12,
   },
   row: {
     flexDirection: 'row',
@@ -84,12 +80,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     width: '100%',
     maxWidth: 340,
     alignSelf: 'center',
     alignItems: 'center'
-}
+  }
 });
 
 export default memo(LoginStaffScreen);
