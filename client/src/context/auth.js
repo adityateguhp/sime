@@ -6,7 +6,7 @@ const initialState = {
   user: null
 };
 
-async function tokenCheck(){
+async function tokenCheck() {
   if (await AsyncStorage.getItem('jwtToken')) {
     const decodedToken = jwtDecode(await AsyncStorage.getItem('jwtToken'));
     if (decodedToken.exp * 1000 < Date.now()) {
@@ -18,7 +18,7 @@ async function tokenCheck(){
   }
 }
 
-tokenCheck();
+tokenCheck()
 
 const AuthContext = createContext({
   user: null,
@@ -46,17 +46,17 @@ function authReducer(state, action) {
 function AuthProvider(props) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  async function login(userData){
-      await AsyncStorage.setItem('jwtToken', userData.token);
-      dispatch({
-        type: 'LOGIN',
-        payload: userData
-      });
+  async function login(userData) {
+    await AsyncStorage.setItem('jwtToken', userData.token);
+    dispatch({
+      type: 'LOGIN',
+      payload: userData
+    });
   }
 
-  async function logout(){
-      await AsyncStorage.removeItem('jwtToken');
-      dispatch({ type: 'LOGOUT' });
+  async function logout() {
+    await AsyncStorage.removeItem('jwtToken');
+    dispatch({ type: 'LOGOUT' });
   }
 
   return (

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,6 +8,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { Avatar, Text } from 'react-native-paper';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
@@ -324,10 +325,19 @@ const Main = createStackNavigator();
 
 export default function MainNavigator() {
   const { user } = useContext(AuthContext);
-  
+  const [isLogin, setLogin] = useState(null);
+  async function loginCheck() {
+    if (await AsyncStorage.getItem('jwtToken') != null) {
+      setLogin(await AsyncStorage.getItem('jwtToken'))
+    } else {
+      setLogin(null)
+    }
+  }
+
+  loginCheck()
 
   return (
-    user ? (
+    user || isLogin ? (
       <>
         <Drawer.Navigator
           drawerContent={props => <DrawerContent {...props} />}
