@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
     Avatar,
@@ -13,9 +13,12 @@ import {
     DrawerContentScrollView,
     DrawerItem,
 } from '@react-navigation/drawer';
+import { AuthContext } from '../../context/auth';
+
 import {ORGANIZATIONS} from '../../data/dummy-data'
 
 const DrawerContent = props => {
+    const { logout } = useContext(AuthContext);
     const paperTheme = useTheme();
 
     const translateX = Animated.interpolate(props.progress, {
@@ -71,6 +74,13 @@ const DrawerContent = props => {
                         )}
                         label="Preferences"
                         onPress={() => { }}
+                    />
+                     <DrawerItem
+                        icon={({ color, size }) => (
+                            <Icon name="tune" color={color} size={size} />
+                        )}
+                        label="Log Out"
+                        onPress={logout}
                     />
              
             </Animated.View>

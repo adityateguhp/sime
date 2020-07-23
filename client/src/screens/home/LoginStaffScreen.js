@@ -7,6 +7,7 @@ import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
 import { emailValidator, passwordValidator } from '../../util/validator';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const LoginStaffScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' });

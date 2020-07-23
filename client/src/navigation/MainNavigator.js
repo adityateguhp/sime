@@ -11,6 +11,7 @@ import { Avatar, Text } from 'react-native-paper';
 
 import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
+import { AuthContext } from '../context/auth';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import LoginOrganizationScreen from '../screens/home/LoginOrganizationScreen';
@@ -322,70 +323,71 @@ const Drawer = createDrawerNavigator();
 const Main = createStackNavigator();
 
 export default function MainNavigator() {
-  const [userToken, setUserToken] = useState();
+  const { user } = useContext(AuthContext);
+  
 
   return (
-    userToken == null ? (
+    user ? (
       <>
-        <Main.Navigator
-        screenOptions={{
-          gestureEnabled: false
-        }}
+        <Drawer.Navigator
+          drawerContent={props => <DrawerContent {...props} />}
         >
-          <Main.Screen
-            name="Home"
-            component={HomeScreen}
+          <Drawer.Screen
+            name="Dashboard"
+            component={BottomTabs}
+          />
+          <Drawer.Screen
+            name="Departments"
+            component={DepartmentsStackScreen}
             options={{
-              headerShown: false
+              gestureEnabled: false,
             }}
           />
-          <Main.Screen
-            name="Login Organization"
-            component={LoginOrganizationScreen}
-            options={{
-              title: ""
-            }}
-          />
-          <Main.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{
-              title: ""
-            }}
-          />
-          <Main.Screen
-            name="Register Completed"
-            component={RegisterCompletedScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Main.Screen
-            name="Login Staff"
-            component={LoginStaffScreen}
-            options={{
-              title: ""
-            }}
-          />
-        </Main.Navigator>
+        </Drawer.Navigator>
       </>
     ) : (
         <>
-          <Drawer.Navigator
-            drawerContent={props => <DrawerContent {...props} />}
+          <Main.Navigator
+            screenOptions={{
+              gestureEnabled: false
+            }}
           >
-            <Drawer.Screen
-              name="Dashboard"
-              component={BottomTabs}
-            />
-            <Drawer.Screen
-              name="Departments"
-              component={DepartmentsStackScreen}
+            <Main.Screen
+              name="Home"
+              component={HomeScreen}
               options={{
-                gestureEnabled: false,
+                headerShown: false
               }}
             />
-          </Drawer.Navigator>
+            <Main.Screen
+              name="Login Organization"
+              component={LoginOrganizationScreen}
+              options={{
+                title: ""
+              }}
+            />
+            <Main.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{
+                title: ""
+              }}
+            />
+            <Main.Screen
+              name="Register Completed"
+              component={RegisterCompletedScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Main.Screen
+              name="Login Staff"
+              component={LoginStaffScreen}
+              options={{
+                title: ""
+              }}
+            />
+          </Main.Navigator>
         </>
       )
   );

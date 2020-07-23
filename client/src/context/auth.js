@@ -1,24 +1,29 @@
 import React, { useReducer, createContext } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import jwtDecode from 'jwt-decode';
 
 const initialState = {
   user: null
 };
 
-if (localStorage.getItem('jwtToken')) {
-  const decodedToken = jwtDecode(localStorage.getItem('jwtToken'));
-
-  if (decodedToken.exp * 1000 < Date.now()) {
-    localStorage.removeItem('jwtToken');
-  } else {
-    initialState.user = decodedToken;
+async function tokenCheck(){
+  if (await AsyncStorage.getItem('jwtToken')) {
+    const decodedToken = jwtDecode(await AsyncStorage.getItem('jwtToken'));
+    if (decodedToken.exp * 1000 < Date.now()) {
+      await AsyncStorage.removeItem('jwtToken');
+    } else {
+      initialState.user = decodedToken;
+    }
+    console.log(decodedToken);
   }
 }
 
+tokenCheck();
+
 const AuthContext = createContext({
   user: null,
-  login: (userData) => {},
-  logout: () => {}
+  login: (userData) => { },
+  logout: () => { }
 });
 
 function authReducer(state, action) {
@@ -41,17 +46,17 @@ function authReducer(state, action) {
 function AuthProvider(props) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  function login(userData) {
-    localStorage.setItem('jwtToken', userData.token);
-    dispatch({
-      type: 'LOGIN',
-      payload: userData
-    });
+  async function login(userData){
+      await AsyncStorage.setItem('jwtToken', userData.token);
+      dispatch({
+        type: 'LOGIN',
+        payload: userData
+      });
   }
 
-  function logout() {
-    localStorage.removeItem('jwtToken');
-    dispatch({ type: 'LOGOUT' });
+  async function logout(){
+      await AsyncStorage.removeItem('jwtToken');
+      dispatch({ type: 'LOGOUT' });
   }
 
   return (

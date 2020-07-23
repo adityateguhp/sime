@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useContext } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, ScrollView } from 'react-native';
 import Header from '../../components/common/Header';
 import Background from '../../components/common/Background';
@@ -6,24 +6,47 @@ import Logo from '../../components/common/Logo';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/common//TextInput';
 import { theme } from '../../constants/Theme';
-import { emailValidator, passwordValidator } from '../../util/validator';
+import { AuthContext } from '../../context/auth';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+import { ActivityIndicator, List } from 'react-native-paper';
+import { CommonActions } from "@react-navigation/native";
 
 const LoginOrganizationScreen = ({ navigation }) => {
-  const [email, setEmail] = useState({ value: '', error: '' });
-  const [password, setPassword] = useState({ value: '', error: '' });
+  const {login, user} = useContext(AuthContext);
+  const [errors, setErrors] = useState({});
 
-  const _onLoginPressed = () => {
-    const emailError = emailValidator(email.value);
-    const passwordError = passwordValidator(password.value);
+  const [values, setValues] = useState({
+    email: '',
+    password: '',
+  });
 
-    if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError });
-      setPassword({ ...password, error: passwordError });
-      return;
-    }
-
-    navigation.navigate('Dashboard');
+  const onChange = (key, val) => {
+    setValues({ ...values, [key]: val });
   };
+
+  const [loginUserOrganization, { loading }] = useMutation(LOGIN_ORGANIZATION, {
+    update(_,
+      {
+        data: { loginOrganization: userData }
+      }
+    ) {
+      login(userData);
+      console.log("success");
+      console.log(user);
+    },
+    onError(err) {
+      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+    },
+    variables: values
+  });
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    loginUserOrganization();
+  };
+
 
   return (
     <Background>
@@ -36,9 +59,9 @@ const LoginOrganizationScreen = ({ navigation }) => {
           <TextInput
             label="Email"
             returnKeyType="next"
-            value={email.value}
-            onChangeText={text => setEmail({ value: text, error: '' })}
-            error={!!email.error}
+            value={values.email}
+            error={errors.email ? true : false}
+            onChangeText={(val) => onChange('email', val)}
             autoCapitalize="none"
             autoCompleteType="email"
             textContentType="emailAddress"
@@ -48,13 +71,30 @@ const LoginOrganizationScreen = ({ navigation }) => {
           <TextInput
             label="Password"
             returnKeyType="done"
-            value={password.value}
-            onChangeText={text => setPassword({ value: text, error: '' })}
-            error={!!password.error}
+            value={values.password}
+            error={errors.password ? true : false}
+            onChangeText={(val) => onChange('password', val)}
             secureTextEntry
           />
 
-          <Button mode="contained" style={styles.button} onPress={_onLoginPressed}>
+          {Object.keys(errors).length > 0 && (
+            <View style={styles.errorContainer}>
+              <List.Section style={styles.errorSection}>
+                <Text style={styles.errorHeader}>Error</Text>
+                {Object.values(errors).map((value) => (
+                  <List.Item
+                    key={value}
+                    title={value}
+                    titleStyle={styles.errorItem}
+                    titleNumberOfLines={2}
+                    left={() => <List.Icon color={theme.colors.error} style={{ margin: 0 }} icon="alert-circle" />}
+                  />
+                ))}
+              </List.Section>
+            </View>
+          )}
+
+          <Button mode="contained" style={styles.button} onPress={onSubmit}>
             Login
       </Button>
 
@@ -92,7 +132,40 @@ const styles = StyleSheet.create({
     maxWidth: 340,
     alignSelf: 'center',
     alignItems: 'center'
+  },
+  errorSection: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    width: wp(100),
+    maxWidth: 320,
+    borderRadius: 5,
+    borderColor: theme.colors.error,
+    marginTop: 12
+  },
+  errorHeader: {
+    fontSize: 16,
+    color: theme.colors.error,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginLeft: 15,
+    marginBottom: 5
+  },
+  errorItem: {
+    fontSize: 14,
+    color: theme.colors.error
   }
 });
+
+const LOGIN_ORGANIZATION = gql`
+  mutation loginOrganization($email: String!, $password: String!) {
+    loginOrganization(email: $email, password: $password) {
+      id
+      email
+      organization_name
+      createdAt
+      token
+    }
+  }
+`;
 
 export default memo(LoginOrganizationScreen);
