@@ -55,7 +55,7 @@ function AuthProvider(props) {
   }
 
   async function logout() {
-    await AsyncStorage.removeItem('jwtToken');
+    await AsyncStorage.clear();
     dispatch({ type: 'LOGOUT' });
   }
 

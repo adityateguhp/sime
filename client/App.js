@@ -10,8 +10,8 @@ import { createHttpLink } from 'apollo-link-http';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { setContext } from 'apollo-link-context';
 import AsyncStorage from '@react-native-community/async-storage';
-import { AuthProvider } from './src/context/auth';
 
+import { AuthProvider } from './src/context/auth';
 import MainNavigator from './src/navigation/MainNavigator';
 import AppStatusBar from './src/components/common/AppStatusBar'
 import { theme } from './src/constants/Theme';
@@ -24,12 +24,8 @@ const httpLink = createHttpLink({
   uri: 'http://192.168.100.6:5000/graphql'
 });
 
-getToken = async () => {
-    await AsyncStorage.getItem('jwtToken');
-}
-
-const authLink = setContext(() => {
-  const token = getToken;
+const authLink = setContext(async() => {
+  const token = await AsyncStorage.getItem('jwtToken');
   return {
     headers: {
       Authorization: token ? `Bearer ${token}` : ''
@@ -37,9 +33,11 @@ const authLink = setContext(() => {
   };
 });
 
+const cache = new InMemoryCache();
+
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
+  cache
 });
 
 export default function App() {

@@ -26,6 +26,7 @@ const RegisterScreen = ({ navigation }) => {
 
     const onChange = (key, val) => {
         setValues({ ...values, [key]: val });
+        setErrors('')
     };
 
     const [addUser, { loading }] = useMutation(REGISTER_ORGANIZATION, {

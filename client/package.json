@@ -10,7 +10,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@apollo/react-hooks": "^3.1.5",
+    "@apollo/client": "^3.1.0",
+    "@apollo/react-hooks": "^4.0.0",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/bottom-tabs": "^5.4.7",
@@ -31,6 +32,7 @@
     "moment": "^2.26.0",
     "moment-range": "^4.0.2",
     "react": "16.11.0",
+    "react-apollo": "^3.1.5",
     "react-hook-form": "^5.7.2",
     "react-native": "0.62.2",
     "react-native-cache": "^2.0.0-rc.5",

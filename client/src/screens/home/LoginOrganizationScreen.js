@@ -1,5 +1,11 @@
 import React, { memo, useState, useContext } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, ScrollView } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+import { ActivityIndicator, List } from 'react-native-paper';
+import { CommonActions } from "@react-navigation/native";
+
 import Header from '../../components/common/Header';
 import Background from '../../components/common/Background';
 import Logo from '../../components/common/Logo';
@@ -7,11 +13,6 @@ import Button from '../../components/common/Button';
 import TextInput from '../../components/common//TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
-import { ActivityIndicator, List } from 'react-native-paper';
-import { CommonActions } from "@react-navigation/native";
 
 const LoginOrganizationScreen = ({ navigation }) => {
   const {login, user} = useContext(AuthContext);
@@ -94,7 +95,7 @@ const LoginOrganizationScreen = ({ navigation }) => {
             </View>
           )}
 
-          <Button mode="contained" style={styles.button} onPress={onSubmit}>
+          <Button mode="contained" style={styles.button} onPress={onSubmit} loading={loading ? true : false}>
             Login
       </Button>
 

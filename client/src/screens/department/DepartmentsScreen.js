@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -6,13 +7,20 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 import FABbutton from '../../components/common/FABbutton';
 import FormDepartment from '../../components/department/FormDepartment';
-import { DEPARTMENTS } from '../../data/dummy-data';
 import DepartmentCard from '../../components/department/DepartmentCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
-import {theme} from '../../constants/Theme';
+import { theme } from '../../constants/Theme';
+import { FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
 
 const DepartmentsScreen = ({ navigation }) => {
+    const {
+        loading,
+        data: { getDepartments: departments }
+    } = useQuery(FETCH_DEPARTMENT_QUERY);
+
+    console.log(departments);
+    
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -21,16 +29,14 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const sime = useContext(SimeContext);
 
-    const selectItemHandler = (department_name, _id) => {
+    const selectItemHandler = (department_name, id) => {
         navigation.navigate('Staff List', {
             departmentName: department_name,
-            departmentId: _id
+            departmentId: id
         })
-        sime.setDepartment_id(_id);
+        sime.setDepartment_id(id);
         sime.setDepartment_name(department_name);
     };
-
-    const organizationDepartment = DEPARTMENTS.filter(department => department.organization_id.indexOf('o1') >= 0)
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
@@ -62,7 +68,7 @@ const DepartmentsScreen = ({ navigation }) => {
         ]);
     };
 
-    if (organizationDepartment.length === 0) {
+    if (departments.length === 0) {
         return (
             <View style={styles.content}>
                 <Text>No departments found, let's add departments!</Text>
@@ -74,12 +80,12 @@ const DepartmentsScreen = ({ navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={organizationDepartment}
-                keyExtractor={item => item._id}
+                data={departments}
+                keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DepartmentCard
                         department_name={itemData.item.department_name}
-                        onSelect={() => { selectItemHandler(itemData.item.department_name, itemData.item._id) }}
+                        onSelect={() => { selectItemHandler(itemData.item.department_name, itemData.item.id) }}
                         onDelete={() => { deleteHandler() }}
                         onLongPress={() => { longPressHandler(itemData.item.department_name) }}
                     >

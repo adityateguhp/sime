@@ -8,7 +8,7 @@ module.exports = {
         async getDepartments(_, args, context) {
           const organization = checkAuth(context);
             try {
-              const department = await Department.find({organization_id: organization.id}).sort({department_name: +1});
+              const department = await Department.find({organization_id: organization.id}).sort({createdAt: -1});
               if (department) {
                 return department;
               } else {
