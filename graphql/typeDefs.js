@@ -25,11 +25,13 @@ module.exports = gql`
     }
     type Query{
         getDepartments: [Department]
+        getDepartment(departmentId: ID!): Department
     }
     type Mutation{
         registerOrganization(registerOrganizationInput: RegisterOrganizationInput): Organization!
         loginOrganization(email: String!, password: String!): Organization!
         addDepartment(department_name: String!): Department!
+        updateDepartment(departmentId: ID!, department_name: String!): Department!
         deleteDepartment(departmentId: ID!): String!
     }
 `;

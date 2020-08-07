@@ -2,7 +2,6 @@ import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import { ActivityIndicator, List } from 'react-native-paper';
-import gql from 'graphql-tag';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { CommonActions } from "@react-navigation/native";
 
@@ -13,6 +12,7 @@ import Header from '../../components/common/Header';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
+import { REGISTER_ORGANIZATION } from '../../util/graphql';
 
 const RegisterScreen = ({ navigation }) => {
     const [errors, setErrors] = useState({});
@@ -174,29 +174,5 @@ const styles = StyleSheet.create({
         color: theme.colors.error
     }
 });
-
-const REGISTER_ORGANIZATION = gql`
-  mutation registerOrganization(
-    $organization_name: String!
-    $email: String!
-    $password: String!
-    $confirmPassword: String!
-  ) {
-    registerOrganization(
-        registerOrganizationInput: {
-        organization_name: $organization_name
-        email: $email
-        password: $password
-        confirmPassword: $confirmPassword
-      }
-    ) {
-      id
-      email
-      organization_name
-      createdAt
-      token
-    }
-  }
-`;
 
 export default memo(RegisterScreen);

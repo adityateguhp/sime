@@ -1,26 +1,22 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import FABbutton from '../../components/common/FABbutton';
+import CenterSpinner from '../../components/common/CenterSpinner';
 import FormDepartment from '../../components/department/FormDepartment';
+import FormEditDepartment from '../../components/department/FormEditDepartment';
 import DepartmentCard from '../../components/department/DepartmentCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
+import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT } from '../../util/graphql';
 
 const DepartmentsScreen = ({ navigation }) => {
-    const {
-        loading,
-        data: { getDepartments: departments }
-    } = useQuery(FETCH_DEPARTMENT_QUERY);
 
-    console.log(departments);
-    
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -40,6 +36,7 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
+    const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     const closeModal = () => {
         setVisible(false);
@@ -49,30 +46,78 @@ const DepartmentsScreen = ({ navigation }) => {
         setVisibleForm(false);
     }
 
-    const longPressHandler = (department_name) => {
+    const closeModalFormEdit = () => {
+        setVisibleFormEdit(false);
+    }
+
+    const longPressHandler = (department_name, id) => {
         setVisible(true);
         sime.setDepartment_name(department_name);
+        sime.setDepartment_id(id)
     }
 
     const openForm = () => {
         setVisibleForm(true);
     }
 
+    const openFormEdit = () => {
+        closeModal();
+        setVisibleFormEdit(true);
+    }
+
+    const departmentId = sime.department_id;
+
+    const [deleteDepartment] = useMutation(DELETE_DEPARTMENT, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_DEPARTMENTS_QUERY
+            });
+            data.getDepartments = data.getDepartments.filter((d) => d.id !== departmentId);
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
+        },
+        variables: {
+            departmentId
+        }
+    });
+
     const deleteHandler = () => {
-        Alert.alert('Are you sure?', 'Do you really want to delete this client?', [
+        closeModal();
+        closeModalFormEdit();
+        Alert.alert('Are you sure?', 'Do you really want to delete this department?', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
-                style: 'destructive'
+                style: 'destructive',
+                onPress: deleteDepartment
             }
         ]);
     };
 
-    if (departments.length === 0) {
+    const { data, error, loading } = useQuery(
+        FETCH_DEPARTMENTS_QUERY
+    );
+    if (error) {
+        console.error(error);
+        return <Text>Error</Text>;
+    }
+
+    if (loading) {
+        return <CenterSpinner />;
+    }
+
+    if (data.getDepartments.length === 0) {
         return (
-            <View style={styles.content}>
-                <Text>No departments found, let's add departments!</Text>
-            </View>
+            <Provider theme={theme}>
+                <View style={styles.content}>
+                    <Text>No departments found, let's add departments!</Text>
+                </View>
+                <FABbutton Icon="plus" label="department" onPress={openForm} />
+                <FormDepartment
+                    closeModalForm={closeModalForm}
+                    visibleForm={visibleForm}
+                    closeButton={closeModalForm}
+                />
+            </Provider>
         );
     }
 
@@ -80,14 +125,14 @@ const DepartmentsScreen = ({ navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={departments}
+                data={data.getDepartments}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DepartmentCard
                         department_name={itemData.item.department_name}
                         onSelect={() => { selectItemHandler(itemData.item.department_name, itemData.item.id) }}
                         onDelete={() => { deleteHandler() }}
-                        onLongPress={() => { longPressHandler(itemData.item.department_name) }}
+                        onLongPress={() => { longPressHandler(itemData.item.department_name, itemData.item.id) }}
                     >
                     </DepartmentCard>
                 )}
@@ -103,7 +148,7 @@ const DepartmentsScreen = ({ navigation }) => {
                     statusBarTranslucent>
                     <View style={styles.modalView}>
                         <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.department_name}</Title>
-                        <TouchableCmp>
+                        <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>
                             </View>
@@ -120,8 +165,13 @@ const DepartmentsScreen = ({ navigation }) => {
             <FormDepartment
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
-                deleteButton={deleteHandler}
                 closeButton={closeModalForm}
+            />
+            <FormEditDepartment
+                closeModalForm={closeModalFormEdit}
+                visibleForm={visibleFormEdit}
+                deleteButton={deleteHandler}
+                closeButton={closeModalFormEdit}
             />
         </Provider>
     );

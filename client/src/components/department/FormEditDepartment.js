@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -6,20 +6,24 @@ import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { departmentNameValidator } from '../../util/validator';
-import { FETCH_DEPARTMENTS_QUERY, ADD_DEPARTMENT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
-import Colors from '../../constants/Colors';
+import CenterSpinner from '../common/CenterSpinner';
+import { SimeContext } from '../../context/SimePovider'
+import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
 
-const FormDepartment = props => {
+const FormEditDepartment = props => {
+    const sime = useContext(SimeContext);
+
     const [errors, setErrors] = useState({
         department_name_error: '',
     });
 
     const [values, setValues] = useState({
+        departmentId: '',
         department_name: '',
     });
 
@@ -28,14 +32,20 @@ const FormDepartment = props => {
         setErrors({ ...errors, department_name_error: '' })
     };
 
-    const [addDepartment, { loading }] = useMutation(ADD_DEPARTMENT_MUTATION, {
+    const onVisible = () => {
+        values.departmentId = sime.department_id;
+        values.department_name = sime.department_name;
+    };
+
+    onVisible();
+
+    const [updateDepartment] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY
             });
-            data.getDepartments = [result.data.addDepartment, ...data.getDepartments];
+            data.getDepartments = [result.data.updateDepartment, ...data.getDepartments];
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
-            values.department_name = '';
             props.closeModalForm();
         },
         onError() {
@@ -49,7 +59,7 @@ const FormDepartment = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addDepartment();
+        updateDepartment();
     };
 
     const [keyboardSpace, setKeyboarSpace] = useState(0);
@@ -83,8 +93,9 @@ const FormDepartment = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="New Department" />
-                            <Appbar.Action icon="check" onPress={onSubmit}/>
+                            <Appbar.Content title={"Edit Department"} />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
+                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <ScrollView>
                             <View style={styles.formViewStyle}>
@@ -94,7 +105,7 @@ const FormDepartment = props => {
                                         label='Department Name'
                                         value={values.department_name}
                                         onChangeText={(val) => onChange('department_name', val)}
-                                        error={errors.department_name_error? true : false}
+                                        error={errors.department_name_error ? true : false}
                                         errorText={errors.department_name_error}
                                     />
                                 </View>
@@ -135,4 +146,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default FormDepartment;
+export default FormEditDepartment;

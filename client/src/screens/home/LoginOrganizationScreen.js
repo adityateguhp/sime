@@ -13,6 +13,7 @@ import Button from '../../components/common/Button';
 import TextInput from '../../components/common//TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
+import { LOGIN_ORGANIZATION } from '../../util/graphql';
 
 const LoginOrganizationScreen = ({ navigation }) => {
   const {login, user} = useContext(AuthContext);
@@ -156,17 +157,5 @@ const styles = StyleSheet.create({
     color: theme.colors.error
   }
 });
-
-const LOGIN_ORGANIZATION = gql`
-  mutation loginOrganization($email: String!, $password: String!) {
-    loginOrganization(email: $email, password: $password) {
-      id
-      email
-      organization_name
-      createdAt
-      token
-    }
-  }
-`;
 
 export default memo(LoginOrganizationScreen);
