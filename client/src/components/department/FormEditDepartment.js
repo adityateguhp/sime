@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { departmentNameValidator } from '../../util/validator';
@@ -16,7 +16,6 @@ import { SimeContext } from '../../context/SimePovider'
 import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
 
 const FormEditDepartment = props => {
-    const sime = useContext(SimeContext);
 
     const [errors, setErrors] = useState({
         department_name_error: '',
@@ -24,7 +23,7 @@ const FormEditDepartment = props => {
 
     const [values, setValues] = useState({
         departmentId: '',
-        department_name: '',
+        department_name: ''
     });
 
     const onChange = (key, val) => {
@@ -32,19 +31,22 @@ const FormEditDepartment = props => {
         setErrors({ ...errors, department_name_error: '' })
     };
 
-    const onVisible = () => {
-        values.departmentId = sime.department_id;
-        values.department_name = sime.department_name;
-    };
+    useEffect(() => {
+        if(props.department){
+            setValues({
+                departmentId: props.department.id, 
+                department_name: props.department.department_name
+            })
+        }
+    }, [props.department])    
 
-    onVisible();
+    console.log(values)
 
     const [updateDepartment] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY
             });
-            data.getDepartments = [result.data.updateDepartment, ...data.getDepartments];
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
             props.closeModalForm();
         },
@@ -72,7 +74,6 @@ const FormEditDepartment = props => {
     Keyboard.addListener('keyboardDidHide', (frames) => {
         setKeyboarSpace(0);
     });
-    const safeArea = useSafeArea();
 
     return (
         <Portal>

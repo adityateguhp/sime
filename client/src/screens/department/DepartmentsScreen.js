@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -13,17 +13,28 @@ import DepartmentCard from '../../components/department/DepartmentCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT } from '../../util/graphql';
+import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
 
 const DepartmentsScreen = ({ navigation }) => {
+    const sime = useContext(SimeContext);
+
+    const { data: departments, error: error1 , loading: loading1 } = useQuery(
+        FETCH_DEPARTMENTS_QUERY
+    );
+
+    const [loadExistData, { called, data: department , error: error2 , loading: loading2 }] = useLazyQuery(
+        FETCH_DEPARTMENT_QUERY,
+        {
+            variables: { departmentId: sime.department_id },
+        });
+
+    const [departmentVal, setDepartmentVal] = useState(null);
 
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-
-    const sime = useContext(SimeContext);
 
     const selectItemHandler = (department_name, id) => {
         navigation.navigate('Staff List', {
@@ -54,6 +65,7 @@ const DepartmentsScreen = ({ navigation }) => {
         setVisible(true);
         sime.setDepartment_name(department_name);
         sime.setDepartment_id(id)
+        loadExistData();
     }
 
     const openForm = () => {
@@ -63,6 +75,7 @@ const DepartmentsScreen = ({ navigation }) => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
+        setDepartmentVal(department.getDepartment);
     }
 
     const departmentId = sime.department_id;
@@ -72,7 +85,7 @@ const DepartmentsScreen = ({ navigation }) => {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY
             });
-            data.getDepartments = data.getDepartments.filter((d) => d.id !== departmentId);
+            departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
         },
         variables: {
@@ -93,19 +106,21 @@ const DepartmentsScreen = ({ navigation }) => {
         ]);
     };
 
-    const { data, error, loading } = useQuery(
-        FETCH_DEPARTMENTS_QUERY
-    );
-    if (error) {
-        console.error(error);
+    if (error1) {
+        console.error(error1);
         return <Text>Error</Text>;
     }
 
-    if (loading) {
+    if (loading1) {
         return <CenterSpinner />;
     }
 
-    if (data.getDepartments.length === 0) {
+    if (called & error2) {
+        console.error(error2);
+        return <Text>Error</Text>;
+    }
+
+    if (departments.getDepartments.length === 0) {
         return (
             <Provider theme={theme}>
                 <View style={styles.content}>
@@ -125,7 +140,7 @@ const DepartmentsScreen = ({ navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={data.getDepartments}
+                data={departments.getDepartments}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DepartmentCard
@@ -170,6 +185,7 @@ const DepartmentsScreen = ({ navigation }) => {
             <FormEditDepartment
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
+                department={departmentVal}
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
             />

@@ -22,7 +22,7 @@ const StaffsScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
 
     const departId = route.params?.departmentId;
-    
+
     const Staff = STAFFS.filter(
         staff => staff.department_id.indexOf(departId) >= 0
     );
@@ -31,7 +31,7 @@ const StaffsScreen = ({ route, navigation }) => {
         navigation.navigate('Staff Profile', {
             staffId: _id
         });
-      };
+    };
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
@@ -67,6 +67,13 @@ const StaffsScreen = ({ route, navigation }) => {
         return (
             <View style={styles.content}>
                 <Text>No staffs found, let's add staffs!</Text>
+                <FABbutton Icon="plus" label="staff" onPress={openForm} />
+                <FormStaff
+                    closeModalForm={closeModalForm}
+                    visibleForm={visibleForm}
+                    deleteButton={deleteHandler}
+                    closeButton={closeModalForm}
+                />
             </View>
         );
     }
@@ -83,7 +90,7 @@ const StaffsScreen = ({ route, navigation }) => {
                         position_name={itemData.item.position_name}
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
-                        onSelect={()=>{selectItemHandler(itemData.item._id)}}
+                        onSelect={() => { selectItemHandler(itemData.item._id) }}
                         onLongPress={() => { longPressHandler(itemData.item.staff_name) }}
 
                     >
