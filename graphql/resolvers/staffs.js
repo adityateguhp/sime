@@ -1,8 +1,8 @@
-const { AuthenticationError, UserInputError } = require('apollo-server');
+const {UserInputError } = require('apollo-server');
 
-
+const { validateAddStaffInput, validateUpdateStaffInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
-const checkAuth = require('../../util/check-auth');
+
 
 module.exports = {
   Query: {
@@ -32,11 +32,29 @@ module.exports = {
     }
   },
   Mutation: {
-    async addStaff(_, { staff_name, position_name, department_id, email,	phone_number,	password,	picture }, context) {
-      if (department_name.trim() === '') {
-        throw new Error('Department name must not be empty')
+    async addStaff(_, {
+      staff_name,
+      position_name,
+      department_id,
+      email,
+      phone_number,
+      password,
+      picture
+    }, context) {
+      const { valid, errors } =
+        validateAddStaffInput(
+          staff_name,
+          position_name,
+          email,
+          phone_number
+        );
+      if (!valid) {
+        throw new UserInputError('Error', { errors });
       }
-      const newDepartment = new Department({
+
+      password = await bcrypt.hash(password, 12);
+
+      const newDepartment = new Staff({
         staff_name,
         position_name,
         department_id,
@@ -51,28 +69,52 @@ module.exports = {
 
       return department;
     },
-    async updateDepartment(_, {departmentId, department_name}, context) {
+    async updateStaff(_, {
+      staffId,
+      staff_name,
+      position_name,
+      email,
+      phone_number,
+      password,
+      confirmPassword,
+      picture
+    }, context) {
       try {
-        if (department_name.trim() === '') {
-          throw new Error('Department name must not be empty')
-        } 
-        const updateDepartment = await Department.findByIdAndUpdate({_id: departmentId}, {department_name: department_name}, {new: true});
+        const { valid, errors } =
+          validateUpdateStaffInput(
+            staff_name,
+            position_name,
+            email,
+            phone_number,
+            password,
+            confirmPassword
+          );
+        if (!valid) {
+          throw new UserInputError('Error', { errors });
+        }
 
-        return updateDepartment;
+        password = await bcrypt.hash(password, 12);
+
+        const updatedStaff = await Staff.findByIdAndUpdate(
+          { _id: staffId },
+          { staff_name: staff_name },
+          { position_name: position_name },
+          { email: email },
+          { phone_number: phone_number },
+          { password: password },
+          { picture: picture },
+          { new: true });
+
+        return updatedStaff;
       } catch (err) {
         throw new Error(err);
       }
     },
-    async deleteDepartment(_, { departmentId }, context) {
-      const organization = checkAuth(context);
+    async deleteStaff(_, { staffId }, context) {
       try {
-        const department = await Department.findById(departmentId);
-        if (organization.id.toString() === department.organization_id.toString()) {
-          await department.delete();
-          return 'Department deleted successfully';
-        } else {
-          throw new AuthenticationError('Action not allowed');
-        }
+        const staff = await Staff.findById(staffId);
+        await staff.delete();
+        return 'Staff deleted successfully';
       } catch (err) {
         throw new Error(err);
       }

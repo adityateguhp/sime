@@ -1,12 +1,6 @@
 const { gql } = require('apollo-server');
 
 module.exports = gql`
-    type Department{
-        id: ID!,
-        department_name: String!,
-        organization_id: String!,
-        createdAt: String!
-    }
     type Organization {
         id: ID!
         organization_name: String!	
@@ -17,21 +11,60 @@ module.exports = gql`
         picture: String!
         createdAt: String!
     }
+    type Department {
+        id: ID!
+        department_name: String!
+        organization_id: String!
+        createdAt: String!
+    }
+    type Staff {
+        id: ID!
+        staff_name: String!
+        position_name: String!
+        department_id: String! 	
+        email: String!
+        phone_number: String!
+        password: String!
+        picture: String!
+        createdAt: String!
+    }
     input RegisterOrganizationInput {
         organization_name: String!
         email: String!
         password: String!
         confirmPassword: String!
     }
-    type Query{
+    type Query {
         getDepartments: [Department]
         getDepartment(departmentId: ID!): Department
+        getStaffs: [Staff]
+        getStaff(staffId: ID!): Staff
     }
-    type Mutation{
+    type Mutation {
         registerOrganization(registerOrganizationInput: RegisterOrganizationInput): Organization!
         loginOrganization(email: String!, password: String!): Organization!
         addDepartment(department_name: String!): Department!
         updateDepartment(departmentId: ID!, department_name: String!): Department!
         deleteDepartment(departmentId: ID!): String!
+        addStaff(
+            staff_name: String!,
+            position_name: String!,
+            department_id: ID!, 	
+            email: String!,
+            phone_number: String!,
+            password: String!,
+            picture: String!
+        ): Staff!
+        updateStaff( 
+            staffId: ID!,
+            staff_name: String!,
+            position_name: String!,	
+            email: String!,
+            phone_number: String!,
+            password: String!,
+            picture: String!
+        ): Staff!
+        deleteStaff(staffId: ID!): String!
+    }
     }
 `;

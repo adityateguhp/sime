@@ -1,6 +1,6 @@
 const { AuthenticationError, UserInputError } = require('apollo-server');
 
-const { validateAddDepartmentInput } = require('../../util/validators');
+const { validateDepartmentInput } = require('../../util/validators');
 const Department = require('../../model/Department');
 const checkAuth = require('../../util/check-auth');
 
@@ -35,7 +35,7 @@ module.exports = {
   Mutation: {
     async addDepartment(_, { department_name }, context) {
       const organization = checkAuth(context);
-      const { valid, errors } = validateAddDepartmentInput(department_name);
+      const { valid, errors } = validateDepartmentInput(department_name);
       if (!valid) {
         throw new UserInputError('Error', { errors });
       }
@@ -51,12 +51,13 @@ module.exports = {
     },
     async updateDepartment(_, { departmentId, department_name }, context) {
       try {
-        if (department_name.trim() === '') {
-          throw new Error('Department name must not be empty')
+        const { valid, errors } = validateDepartmentInput(department_name);
+        if (!valid) {
+          throw new UserInputError('Error', { errors });
         }
-        const updateDepartment = await Department.findByIdAndUpdate({ _id: departmentId }, { department_name: department_name }, { new: true });
+        const updatedDepartment = await Department.findByIdAndUpdate({ _id: departmentId }, { department_name: department_name }, { new: true });
 
-        return updateDepartment;
+        return updatedDepartment;
       } catch (err) {
         throw new Error(err);
       }
