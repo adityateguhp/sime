@@ -66,5 +66,4 @@ module.exports = gql`
         ): Staff!
         deleteStaff(staffId: ID!): String!
     }
-    }
 `;
