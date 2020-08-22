@@ -1,30 +1,29 @@
 const { AuthenticationError, UserInputError } = require('apollo-server');
 
-const Department = require('../../model/Department');
+const Staff = require('../../model/Staff');
 const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getDepartments(_, args, context) {
-      const organization = checkAuth(context);
+    async getStaffs(_, { departmentId }, context) {
       try {
-        const departments = await Department.find({ organization_id: organization.id }).sort({ createdAt: -1 });
-        if (departments) {
-          return departments;
+        const staffs = await Staff.find({ department_id: departmentId }).sort({ createdAt: -1 });
+        if (staffs) {
+          return staffs;
         } else {
-          throw new Error('Departments not found');
+          throw new Error('Staffs not found');
         }
       } catch (err) {
         throw new Error(err);
       }
     },
-    async getDepartment(_, { departmentId }) {
+    async getStaff(_, { staffId }) {
       try {
-        const department = await Department.findById(departmentId);
-        if (department) {
-          return department;
+        const staff = await Staff.findById(staffId);
+        if (staff) {
+          return staff;
         } else {
-          throw new Error('Department not found');
+          throw new Error('Staff not found');
         }
       } catch (err) {
         throw new Error(err);
@@ -32,15 +31,18 @@ module.exports = {
     }
   },
   Mutation: {
-    async addDepartment(_, { department_name }, context) {
-      const organization = checkAuth(context);
-      const { valid, errors } = validateAddDepartmentInput(department_name);
-      if (!valid) {
-        throw new UserInputError('Error', { errors });
+    async addStaff(_, { staff_name, position_name, department_id, email,	phone_number,	password,	picture }, context) {
+      if (department_name.trim() === '') {
+        throw new Error('Department name must not be empty')
       }
       const newDepartment = new Department({
-        department_name,
-        organization_id: organization.id,
+        staff_name,
+        position_name,
+        department_id,
+        email,
+        phone_number,
+        password,
+        picture,
         createdAt: new Date().toISOString()
       });
 
@@ -48,12 +50,12 @@ module.exports = {
 
       return department;
     },
-    async updateDepartment(_, { departmentId, department_name }, context) {
+    async updateDepartment(_, {departmentId, department_name}, context) {
       try {
         if (department_name.trim() === '') {
           throw new Error('Department name must not be empty')
-        }
-        const updateDepartment = await Department.findByIdAndUpdate({ _id: departmentId }, { department_name: department_name }, { new: true });
+        } 
+        const updateDepartment = await Department.findByIdAndUpdate({_id: departmentId}, {department_name: department_name}, {new: true});
 
         return updateDepartment;
       } catch (err) {

@@ -52,3 +52,14 @@ module.exports.validateLoginOrganizationInput = (email, password) => {
         valid: Object.keys(errors).length < 1
     };
 };
+
+module.exports.validateAddDepartmentInput = (department_name) => {
+    const errors = {};
+    if (department_name.trim() === '') {
+        errors.department_name = 'Department name must not be empty';
+    } 
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
