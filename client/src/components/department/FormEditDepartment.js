@@ -26,9 +26,9 @@ const FormEditDepartment = props => {
         department_name: ''
     });
 
-    const onChange = (key, val) => {
+    const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
-        setErrors({ ...errors, department_name_error: '' })
+        setErrors({ ...errors, [err]: '' })
     };
 
     useEffect(() => {
@@ -39,8 +39,6 @@ const FormEditDepartment = props => {
             })
         }
     }, [props.department])    
-
-    console.log(values)
 
     const [updateDepartment] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
         update(proxy, result) {
@@ -105,7 +103,7 @@ const FormEditDepartment = props => {
                                         style={styles.input}
                                         label='Department Name'
                                         value={values.department_name}
-                                        onChangeText={(val) => onChange('department_name', val)}
+                                        onChangeText={(val) => onChange('department_name', val, 'department_name_error')}
                                         error={errors.department_name_error ? true : false}
                                         errorText={errors.department_name_error}
                                     />

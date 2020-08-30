@@ -4,11 +4,11 @@ module.exports = gql`
     type Organization {
         id: ID!
         organization_name: String!	
-        description: String!
+        description: String
         email: String!
         token: String!
         password: String!
-        picture: String!
+        picture: String
         createdAt: String!
     }
     type Department {
@@ -25,7 +25,7 @@ module.exports = gql`
         email: String!
         phone_number: String!
         password: String!
-        picture: String!
+        picture: String
         createdAt: String!
     }
     input RegisterOrganizationInput {
@@ -37,7 +37,7 @@ module.exports = gql`
     type Query {
         getDepartments: [Department]
         getDepartment(departmentId: ID!): Department
-        getStaffs: [Staff]
+        getStaffs(departmentId: ID!): [Staff]
         getStaff(staffId: ID!): Staff
     }
     type Mutation {
@@ -53,7 +53,7 @@ module.exports = gql`
             email: String!,
             phone_number: String!,
             password: String!,
-            picture: String!
+            picture: String
         ): Staff!
         updateStaff( 
             staffId: ID!,
@@ -62,7 +62,8 @@ module.exports = gql`
             email: String!,
             phone_number: String!,
             password: String!,
-            picture: String!
+            confirmPassword: String!,
+            picture: String
         ): Staff!
         deleteStaff(staffId: ID!): String!
     }

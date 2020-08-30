@@ -1,4 +1,5 @@
 const {UserInputError } = require('apollo-server');
+const bcrypt = require('bcryptjs');
 
 const { validateAddStaffInput, validateUpdateStaffInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
@@ -97,12 +98,14 @@ module.exports = {
 
         const updatedStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
-          { staff_name: staff_name },
-          { position_name: position_name },
-          { email: email },
-          { phone_number: phone_number },
-          { password: password },
-          { picture: picture },
+          { 
+            staff_name: staff_name, 
+            position_name: position_name,
+            email: email,
+            phone_number: phone_number,
+            password: password,
+            picture: picture
+          },
           { new: true });
 
         return updatedStaff;

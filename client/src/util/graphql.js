@@ -85,3 +85,106 @@ export const DELETE_DEPARTMENT = gql`
     deleteDepartment(departmentId: $departmentId)
   }
 `;
+
+export const FETCH_STAFFS_QUERY = gql`
+  query($departmentId: ID!) {
+    getStaffs(departmentId: $departmentId){
+    id
+    staff_name
+    position_name
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_STAFF_QUERY = gql`
+   query($staffId: ID!) {
+    getStaff(staffId: $staffId){
+    id
+    staff_name
+    position_name
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  }
+`;
+
+export const ADD_STAFF_MUTATION = gql`
+  mutation 
+  addStaff(
+    $staff_name: String!,
+    $position_name: String!,
+    $department_id: ID!, 	
+    $email: String!,
+    $phone_number: String!,
+    $password: String!,
+    $picture: String
+  ) {
+  addStaff(
+    staff_name: $staff_name,
+    position_name: $position_name,
+    department_id: $department_id, 	
+    email: $email,
+    phone_number: $phone_number,
+    password: $password,
+    picture: $picture
+  ) {
+    id
+    staff_name
+    position_name
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_STAFF_MUTATION = gql`
+  mutation 
+  updateStaff(
+    $staffId: ID!,
+    $staff_name: String!,
+    $position_name: String!,	
+    $email: String!,
+    $phone_number: String!,
+    $password: String!,
+    $confirmPassword: String!,
+    $picture: String
+  ) {
+  updateStaff(
+    staffId: $staffId,
+    staff_name: $staff_name,
+    position_name: $position_name,
+    department_id: $department_id, 	
+    email: $email,
+    phone_number: $phone_number,
+    password: $password,
+    confirmPassword: $confirmPassword,
+    picture: $picture
+  ) {
+    id
+    staff_name
+    position_name
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_STAFF = gql`
+  mutation deleteStaff($staffId: ID!) {
+    deleteStaff(staffId: $staffId)
+  }
+`;

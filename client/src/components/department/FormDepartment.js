@@ -23,9 +23,9 @@ const FormDepartment = props => {
         department_name: '',
     });
 
-    const onChange = (key, val) => {
+    const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
-        setErrors({ ...errors, department_name_error: '' })
+        setErrors({ ...errors, [err]: '' })
     };
 
     const [addDepartment, { loading }] = useMutation(ADD_DEPARTMENT_MUTATION, {
@@ -93,7 +93,7 @@ const FormDepartment = props => {
                                         style={styles.input}
                                         label='Department Name'
                                         value={values.department_name}
-                                        onChangeText={(val) => onChange('department_name', val)}
+                                        onChangeText={(val) => onChange('department_name', val, 'department_name_error')}
                                         error={errors.department_name_error? true : false}
                                         errorText={errors.department_name_error}
                                     />

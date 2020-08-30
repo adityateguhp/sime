@@ -1,16 +1,19 @@
 import React, { useContext, useState } from 'react';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import FABbutton from '../../components/common/FABbutton';
+import CenterSpinner from '../../components/common/CenterSpinner';
 import FormStaff from '../../components/department/FormStaff';
 import { STAFFS } from '../../data/dummy-data';
 import StaffList from '../../components/department/StaffList';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
+import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY } from '../../util/graphql';
 
 const StaffsScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -21,15 +24,16 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const sime = useContext(SimeContext);
 
-    const departId = route.params?.departmentId;
+    const { data: staffs, error: error1, loading: loading1 } = useQuery(
+        FETCH_STAFFS_QUERY, {
+        variables: {
+            departmentId: route.params?.departmentId
+        },
+    });
 
-    const Staff = STAFFS.filter(
-        staff => staff.department_id.indexOf(departId) >= 0
-    );
-
-    const selectItemHandler = (_id) => {
+    const selectItemHandler = (id) => {
         navigation.navigate('Staff Profile', {
-            staffId: _id
+            staffId: id
         });
     };
 
@@ -63,7 +67,16 @@ const StaffsScreen = ({ route, navigation }) => {
         ]);
     };
 
-    if (Staff.length === 0) {
+    if (error1) {
+        console.error(error1);
+        return <Text>Error</Text>;
+    }
+
+    if (loading1) {
+        return <CenterSpinner />;
+    }
+
+    if (staffs.getStaffs.length === 0) {
         return (
             <View style={styles.content}>
                 <Text>No staffs found, let's add staffs!</Text>
@@ -82,15 +95,15 @@ const StaffsScreen = ({ route, navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={Staff}
-                keyExtractor={item => item._id}
+                data={staffs.getStaffs}
+                keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <StaffList
                         staff_name={itemData.item.staff_name}
                         position_name={itemData.item.position_name}
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
-                        onSelect={() => { selectItemHandler(itemData.item._id) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id) }}
                         onLongPress={() => { longPressHandler(itemData.item.staff_name) }}
 
                     >
