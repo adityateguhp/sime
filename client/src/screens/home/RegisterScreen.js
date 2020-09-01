@@ -66,7 +66,7 @@ const RegisterScreen = ({ navigation }) => {
                     />
 
                     <TextInput
-                        label="E-mail"
+                        label="Email Address"
                         returnKeyType="next"
                         value={values.email}
                         error={errors.email ? true : false}

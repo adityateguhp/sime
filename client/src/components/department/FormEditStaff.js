@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
 import { Button, Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -11,7 +11,7 @@ import { useMutation } from '@apollo/react-hooks';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, ADD_STAFF_MUTATION } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 
@@ -35,12 +35,12 @@ const FormStaff = props => {
     });
 
     const [values, setValues] = useState({
+        staffId: '',
         staff_name: '',
         position_name: '',
-        department_id: sime.department_id,
+        department_id: '',
         email: '',
         phone_number: '',
-        password: '12345678',
         picture: null,
     });
 
@@ -66,7 +66,7 @@ const FormStaff = props => {
             }).then(async r => {
                 let data = await r.json()
                 console.log(data)
-                setValues({...values, picture: data.secure_url })
+                setValues({ ...values, picture: data.secure_url })
             }).catch(err => console.log(err))
         })
     }
@@ -76,14 +76,28 @@ const FormStaff = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
+    useEffect(() => {
+        if (props.staff) {
+            setValues({
+                staffId: props.staff.id,
+                staff_name: props.staff.staff_name,
+                position_name: props.staff.position_name,
+                department_id: props.staff.department_id,
+                email: props.staff.email,
+                phone_number: props.staff.phone_number,
+                picture: props.staff.picture,
+            })
+        }
+    }, [props.department])
+
     const [addStaff, { loading }] = useMutation(ADD_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: {departmentId: values.department_id}
+                variables: { departmentId: values.department_id }
             });
             data.getStaffs = [result.data.addStaff, ...data.getStaffs];
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {departmentId: values.department_id} });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { departmentId: values.department_id } });
             values.staff_name = '';
             values.position_name = '';
             values.email = '';
@@ -97,7 +111,8 @@ const FormStaff = props => {
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
             if (staffNameError || positionNameError || emailError || phoneNumberError) {
-                setErrors({ ...errors, 
+                setErrors({
+                    ...errors,
                     staff_name_error: staffNameError,
                     position_name_error: positionNameError,
                     email_error: emailError,
@@ -113,7 +128,7 @@ const FormStaff = props => {
         event.preventDefault();
         addStaff();
     };
-    
+
     //for get keyboard height
     // Keyboard.addListener('keyboardDidShow', (frames) => {
     //     if (!frames.endCoordinates) return;
@@ -144,6 +159,7 @@ const FormStaff = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
                             <Appbar.Content title="New Staff" />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -195,6 +211,15 @@ const FormStaff = props => {
                                             onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
                                             error={errors.phone_number_error ? true : false}
                                             errorText={errors.phone_number_error}
+                                        />
+                                    </View>
+                                    <View style={styles.inputStyle}>
+                                        <TextInput
+                                            style={styles.input}
+                                            label='Password'
+                                            value={values.password}
+                                            disabled={true}
+                                            secureTextEntry
                                         />
                                     </View>
                                 </View>

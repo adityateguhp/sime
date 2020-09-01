@@ -61,8 +61,8 @@ module.exports = gql`
             position_name: String!,	
             email: String!,
             phone_number: String!,
-            password: String!,
-            confirmPassword: String!,
+            password: String,
+            confirmPassword: String,
             picture: String
         ): Staff!
         deleteStaff(staffId: ID!): String!

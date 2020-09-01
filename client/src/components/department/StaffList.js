@@ -19,7 +19,7 @@ const StaffList = props => {
                     style={styles.staff}
                     title={props.staff_name}
                     description={props.position_name}
-                    left={() => <Avatar.Image size={50} source={{ uri: props.picture }} />}
+                    left={() => <Avatar.Image size={50} source={props.picture === null ? require('../../assets/avatar.png') : { uri: props.picture }} />}
                 />
             </View>
         </TouchableCmp>

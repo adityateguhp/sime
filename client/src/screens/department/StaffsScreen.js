@@ -48,21 +48,40 @@ const StaffsScreen = ({ route, navigation }) => {
         setVisibleForm(false);
     }
 
-    const longPressHandler = (staff_name) => {
+    const longPressHandler = (staff_name, id) => {
         setVisible(true);
         sime.setStaff_name(staff_name);
+        sime.setStaff_id(id);
     }
 
     const openForm = () => {
         setVisibleForm(true);
     }
 
+    const staffId = sime.staff_id;
+
+    const [deleteStaff] = useMutation(DELETE_STAFF, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_STAFFS_QUERY,
+                variables: {departmentId: sime.department_id}
+            });
+            staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {departmentId: sime.department_id} });
+        },
+        variables: {
+            staffId
+        }
+    });
+
     const deleteHandler = () => {
-        Alert.alert('Are you sure?', 'Do you really want to delete this client?', [
+        closeModal();
+        Alert.alert('Are you sure?', 'Do you really want to delete this staff?', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
-                style: 'destructive'
+                style: 'destructive',
+                onPress: deleteStaff
             }
         ]);
     };
@@ -104,8 +123,7 @@ const StaffsScreen = ({ route, navigation }) => {
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
                         onSelect={() => { selectItemHandler(itemData.item.id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.staff_name) }}
-
+                        onLongPress={() => { longPressHandler(itemData.item.staff_name, itemData.item.id) }}
                     >
                     </StaffList>
                 )}

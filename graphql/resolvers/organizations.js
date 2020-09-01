@@ -54,9 +54,9 @@ module.exports = {
             // Make sure email doesnt already exist
             const organization = await Organization.findOne({ email });
             if (organization) {
-                throw new UserInputError('E-mail address is already exist', {
+                throw new UserInputError('Email address is already exist', {
                     errors: {
-                        email: 'This e-mail address already exist'
+                        email: 'This email address already exist'
                     }
                 })
             }

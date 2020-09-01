@@ -82,7 +82,7 @@ const FormExternal = props => {
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
-                                            label='E-mail Address'
+                                            label='Email Address'
                                             value={externalEmail}
                                             onChangeText={externalEmail => setExternalEmail(externalEmail)}
                                         />

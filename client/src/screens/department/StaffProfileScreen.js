@@ -35,7 +35,7 @@ const StaffProfileScreen = ({route}) => {
                 </Paragraph>
                 <Divider />
                 <Title style={styles.titleInfo}>
-                    E-mail Address
+                    Email Address
                 </Title>
                 <Paragraph>
                     {selectedStaff.email}

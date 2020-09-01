@@ -10,11 +10,11 @@ module.exports.validateRegisterOrganizationInput = (
     }
 
     if (email.trim() === '') {
-        errors.email = 'E-mail address must not be empty';
+        errors.email = 'Email address must not be empty';
     } else {
         const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
         if (!email.match(regEx)) {
-            errors.email = 'E-mail must be a valid e-mail address';
+            errors.email = 'Ooops! We need a valid email address';
         }
     }
 
@@ -36,11 +36,11 @@ module.exports.validateRegisterOrganizationInput = (
 module.exports.validateLoginOrganizationInput = (email, password) => {
     const errors = {};
     if (email.trim() === '') {
-        errors.email = 'E-mail address must not be empty';
+        errors.email = 'Email address must not be empty';
     } else {
         const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
         if (!email.match(regEx)) {
-            errors.email = 'E-mail must be a valid e-mail address';
+            errors.email = 'Ooops! We need a valid email address';
         }
     }
 
@@ -80,11 +80,11 @@ module.exports.validateAddStaffInput = (
     }
 
     if (email.trim() === '') {
-        errors.email = 'E-mail address must not be empty';
+        errors.email = 'Email address must not be empty';
     } else {
         const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
         if (!email.match(regEx)) {
-            errors.email = 'E-mail must be a valid e-mail address';
+            errors.email = 'Ooops! We need a valid email address';
         }
     }
 
@@ -116,11 +116,11 @@ module.exports.validateUpdateStaffInput = (
     }
 
     if (email.trim() === '') {
-        errors.email = 'E-mail address must not be empty';
+        errors.email = 'Email address must not be empty';
     } else {
         const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
         if (!email.match(regEx)) {
-            errors.email = 'E-mail must be a valid e-mail address';
+            errors.email = 'Ooops! We need a valid email address';
         }
     }
 

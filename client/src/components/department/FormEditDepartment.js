@@ -13,7 +13,7 @@ import { departmentNameValidator } from '../../util/validator';
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
 import { SimeContext } from '../../context/SimePovider'
-import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
+import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
 
 const FormEditDepartment = props => {
 

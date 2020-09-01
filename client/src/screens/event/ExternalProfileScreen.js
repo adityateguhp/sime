@@ -18,7 +18,7 @@ const ExternalProfileScreen = ({route}) => {
             <Divider/>
             <View style={styles.profileDetails}>
                 <Title style={styles.titleInfo}>
-                    E-mail Address
+                    Email Address
                 </Title>
                 <Paragraph>
                     {selectedExternal.email}
