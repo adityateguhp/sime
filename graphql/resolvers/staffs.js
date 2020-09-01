@@ -1,7 +1,7 @@
 const {UserInputError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 
-const { validateAddStaffInput, validateUpdateStaffInput } = require('../../util/validators');
+const { validateAddStaffInput, validateUpdateStaffInput, validateUpdatePasswordStaffInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
 
 
@@ -90,8 +90,6 @@ module.exports = {
           throw new UserInputError('Error', { errors });
         }
 
-        //password = await bcrypt.hash(password, 12);
-
         const updatedStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
           { 
@@ -104,6 +102,35 @@ module.exports = {
           { new: true });
 
         return updatedStaff;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async updatePasswordStaff(_, {
+      staffId,
+      password,
+      confirmPassword
+    }, context) {
+      try {
+        const { valid, errors } =
+          validateUpdatePasswordStaffInput(
+            password,
+            confirmPassword
+          );
+        if (!valid) {
+          throw new UserInputError('Error', { errors });
+        }
+
+        password = await bcrypt.hash(password, 12);
+
+        const updatedPasswordStaff = await Staff.findByIdAndUpdate(
+          { _id: staffId },
+          { 
+            password: password
+          },
+          { new: true });
+
+        return updatedPasswordStaff;
       } catch (err) {
         throw new Error(err);
       }

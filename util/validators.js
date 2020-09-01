@@ -102,9 +102,7 @@ module.exports.validateUpdateStaffInput = (
     staff_name,
     position_name,
     email,
-    phone_number,
-    password,
-    confirmPassword
+    phone_number
 ) => {
     const errors = {};
     if (staff_name.trim() === '') {
@@ -126,6 +124,27 @@ module.exports.validateUpdateStaffInput = (
 
     if (phone_number.trim() === '') {
         errors.phone_number = 'Phone number must not be empty';
+    }
+
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
+module.exports.validateUpdatePasswordStaffInput = (
+    password,
+    confirmPassword
+) => {
+    const errors = {};
+
+    if (password === '') {
+        errors.password = 'Password must not be empty';
+    } else if (password.length < 8) {
+        errors.confirmPassword = 'Use 8 characters or more for your password';
+    }
+    else if (password !== confirmPassword) {
+        errors.confirmPassword = 'Passwords must match';
     }
 
     return {
