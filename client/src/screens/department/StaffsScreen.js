@@ -8,6 +8,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
 import FormStaff from '../../components/department/FormStaff';
+import FormEditStaff from '../../components/department/FormEditStaff';
 import { STAFFS } from '../../data/dummy-data';
 import StaffList from '../../components/department/StaffList';
 import { SimeContext } from '../../context/SimePovider';
@@ -31,6 +32,14 @@ const StaffsScreen = ({ route, navigation }) => {
         },
     });
 
+    const [loadExistData, { called, data: staff , error: error2 , loading: loading2 }] = useLazyQuery(
+        FETCH_STAFF_QUERY,
+        {
+            variables: { staffId: sime.staff_id },
+        });
+
+    const [staffVal, setStaffVal] = useState(null);
+
     const selectItemHandler = (id) => {
         navigation.navigate('Staff Profile', {
             staffId: id
@@ -39,6 +48,7 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
+    const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     const closeModal = () => {
         setVisible(false);
@@ -48,14 +58,25 @@ const StaffsScreen = ({ route, navigation }) => {
         setVisibleForm(false);
     }
 
+    const closeModalFormEdit = () => {
+        setVisibleFormEdit(false);
+    }
+
     const longPressHandler = (staff_name, id) => {
         setVisible(true);
         sime.setStaff_name(staff_name);
         sime.setStaff_id(id);
+        loadExistData();
     }
 
     const openForm = () => {
         setVisibleForm(true);
+    }
+
+    const openFormEdit = () => {
+        closeModal();
+        setVisibleFormEdit(true);
+        setStaffVal(staff.getStaff);
     }
 
     const staffId = sime.staff_id;
@@ -76,6 +97,7 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const deleteHandler = () => {
         closeModal();
+        closeModalFormEdit();
         Alert.alert('Are you sure?', 'Do you really want to delete this staff?', [
             { text: 'No', style: 'default' },
             {
@@ -93,6 +115,15 @@ const StaffsScreen = ({ route, navigation }) => {
 
     if (loading1) {
         return <CenterSpinner />;
+    }
+
+    if (called & error2) {
+        console.error(error2);
+        return <Text>Error</Text>;
+    }
+
+    if (loading2) {
+        
     }
 
     if (staffs.getStaffs.length === 0) {
@@ -139,7 +170,7 @@ const StaffsScreen = ({ route, navigation }) => {
                     statusBarTranslucent>
                     <View style={styles.modalView}>
                         <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.staff_name}</Title>
-                        <TouchableCmp>
+                        <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>
                             </View>
@@ -156,8 +187,14 @@ const StaffsScreen = ({ route, navigation }) => {
             <FormStaff
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
-                deleteButton={deleteHandler}
                 closeButton={closeModalForm}
+            />
+             <FormEditStaff
+                closeModalForm={closeModalFormEdit}
+                visibleForm={visibleFormEdit}
+                staff={staffVal}
+                deleteButton={deleteHandler}
+                closeButton={closeModalFormEdit}
             />
         </Provider>
     );

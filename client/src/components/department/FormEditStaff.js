@@ -16,7 +16,7 @@ import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 
 
-const FormStaff = props => {
+const FormEditStaff = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -38,7 +38,6 @@ const FormStaff = props => {
         staffId: '',
         staff_name: '',
         position_name: '',
-        department_id: '',
         email: '',
         phone_number: '',
         picture: null,
@@ -82,27 +81,20 @@ const FormStaff = props => {
                 staffId: props.staff.id,
                 staff_name: props.staff.staff_name,
                 position_name: props.staff.position_name,
-                department_id: props.staff.department_id,
                 email: props.staff.email,
                 phone_number: props.staff.phone_number,
                 picture: props.staff.picture,
             })
         }
-    }, [props.department])
+    }, [props.staff])
 
-    const [addStaff, { loading }] = useMutation(ADD_STAFF_MUTATION, {
+    const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: { departmentId: values.department_id }
+                variables: { departmentId: sime.department_id }
             });
-            data.getStaffs = [result.data.addStaff, ...data.getStaffs];
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { departmentId: values.department_id } });
-            values.staff_name = '';
-            values.position_name = '';
-            values.email = '';
-            values.phone_number = '';
-            values.picture = '';
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { departmentId: sime.department_id } });
             props.closeModalForm();
         },
         onError() {
@@ -126,7 +118,7 @@ const FormStaff = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addStaff();
+        updateStaff();
     };
 
     //for get keyboard height
@@ -158,7 +150,7 @@ const FormStaff = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
-                            <Appbar.Content title="New Staff" />
+                            <Appbar.Content title="Edit Staff" />
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
@@ -213,15 +205,6 @@ const FormStaff = props => {
                                             errorText={errors.phone_number_error}
                                         />
                                     </View>
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
-                                            label='Password'
-                                            value={values.password}
-                                            disabled={true}
-                                            secureTextEntry
-                                        />
-                                    </View>
                                 </View>
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -272,4 +255,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormStaff;
+export default FormEditStaff;

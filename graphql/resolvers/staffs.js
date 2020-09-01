@@ -55,7 +55,7 @@ module.exports = {
 
       password = await bcrypt.hash(password, 12);
 
-      const newDepartment = new Staff({
+      const newStaff = new Staff({
         staff_name,
         position_name,
         department_id,
@@ -66,9 +66,9 @@ module.exports = {
         createdAt: new Date().toISOString()
       });
 
-      const department = await newDepartment.save();
+      const staff = await newStaff.save();
 
-      return department;
+      return staff;
     },
     async updateStaff(_, {
       staffId,

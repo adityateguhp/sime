@@ -156,8 +156,6 @@ export const UPDATE_STAFF_MUTATION = gql`
     $position_name: String!,	
     $email: String!,
     $phone_number: String!,
-    $password: String!,
-    $confirmPassword: String!,
     $picture: String
   ) {
   updateStaff(
@@ -166,9 +164,31 @@ export const UPDATE_STAFF_MUTATION = gql`
     position_name: $position_name,
     email: $email,
     phone_number: $phone_number,
-    password: $password,
-    confirmPassword: $confirmPassword,
     picture: $picture
+  ) {
+    id
+    staff_name
+    position_name
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
+  mutation 
+  updateStaff(
+    $staffId: ID!,
+    $password: String!,
+    $confirmPassword: String!
+  ) {
+  updateStaff(
+    staffId: $staffId,
+    password: $password,
+    confirmPassword: $confirmPassword
   ) {
     id
     staff_name

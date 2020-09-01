@@ -120,6 +120,10 @@ const DepartmentsScreen = ({ navigation }) => {
         return <Text>Error</Text>;
     }
 
+    if (loading2) {
+       
+    }
+
     if (departments.getDepartments.length === 0) {
         return (
             <Provider theme={theme}>
