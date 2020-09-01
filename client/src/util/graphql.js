@@ -164,7 +164,6 @@ export const UPDATE_STAFF_MUTATION = gql`
     staffId: $staffId,
     staff_name: $staff_name,
     position_name: $position_name,
-    department_id: $department_id, 	
     email: $email,
     phone_number: $phone_number,
     password: $password,

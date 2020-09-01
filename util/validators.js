@@ -128,15 +128,6 @@ module.exports.validateUpdateStaffInput = (
         errors.phone_number = 'Phone number must not be empty';
     }
 
-    if (password === '') {
-        errors.password = 'Password must not be empty';
-    } else if (password.length < 8) {
-        errors.confirmPassword = 'Use 8 characters or more for your password';
-    }
-    else if (password !== confirmPassword) {
-        errors.confirmPassword = 'Passwords must match';
-    }
-
     return {
         errors,
         valid: Object.keys(errors).length < 1

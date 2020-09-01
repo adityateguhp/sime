@@ -76,8 +76,6 @@ module.exports = {
       position_name,
       email,
       phone_number,
-      password,
-      confirmPassword,
       picture
     }, context) {
       try {
@@ -87,14 +85,12 @@ module.exports = {
             position_name,
             email,
             phone_number,
-            password,
-            confirmPassword
           );
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }
 
-        password = await bcrypt.hash(password, 12);
+        //password = await bcrypt.hash(password, 12);
 
         const updatedStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
@@ -103,7 +99,6 @@ module.exports = {
             position_name: position_name,
             email: email,
             phone_number: phone_number,
-            password: password,
             picture: picture
           },
           { new: true });
