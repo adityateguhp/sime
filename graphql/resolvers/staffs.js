@@ -53,6 +53,16 @@ module.exports = {
         throw new UserInputError('Error', { errors });
       }
 
+      // Make sure email doesnt already exist
+      const staff = await Staff.findOne({ email });
+      if (staff) {
+          throw new UserInputError('Email address is already exist', {
+              errors: {
+                  email: 'This email address already exist'
+              }
+          })
+      }
+
       password = await bcrypt.hash(password, 12);
 
       const newStaff = new Staff({
