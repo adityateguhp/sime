@@ -76,9 +76,9 @@ module.exports = {
         createdAt: new Date().toISOString()
       });
 
-      const staff = await newStaff.save();
+      const res = await newStaff.save();
 
-      return staff;
+      return res;
     },
     async updateStaff(_, {
       staffId,

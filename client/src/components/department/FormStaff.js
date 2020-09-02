@@ -91,7 +91,7 @@ const FormStaff = props => {
             values.picture = '';
             props.closeModalForm();
         },
-        onError() {
+        onError(err) {
             const staffNameError = staffNameValidator(values.staff_name);
             const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
@@ -104,6 +104,11 @@ const FormStaff = props => {
                     phone_number_error: phoneNumberError
                 })
                 return;
+            }
+            if(err.graphQLErrors[0].extensions.exception.errors){
+                Alert.alert('Hmmm...', 'Email address is already exist', [
+                    { text: 'Close', style: 'default' },
+                ]);
             }
         },
         variables: values
@@ -154,7 +159,7 @@ const FormStaff = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null ? require('../../assets/avatar.png') : { uri: values.picture }} />
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
                                     </View>
                                     <View style={styles.inputStyle}>
