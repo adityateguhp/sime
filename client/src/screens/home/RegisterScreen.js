@@ -21,7 +21,9 @@ const RegisterScreen = ({ navigation }) => {
         organization_name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        description: '',
+        picture: ''
     });
 
     const onChange = (key, val) => {

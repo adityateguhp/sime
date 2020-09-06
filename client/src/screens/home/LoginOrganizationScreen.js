@@ -13,10 +13,11 @@ import Button from '../../components/common/Button';
 import TextInput from '../../components/common//TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
+import { SimeContext } from '../../context/SimePovider';
 import { LOGIN_ORGANIZATION } from '../../util/graphql';
 
 const LoginOrganizationScreen = ({ navigation }) => {
-  const {login, user} = useContext(AuthContext);
+  const {login} = useContext(AuthContext);
   const [errors, setErrors] = useState({});
 
   const [values, setValues] = useState({
@@ -36,7 +37,6 @@ const LoginOrganizationScreen = ({ navigation }) => {
     ) {
       login(userData);
       console.log("success");
-      console.log(user);
     },
     onError(err) {
       setErrors(err.graphQLErrors[0].extensions.exception.errors);

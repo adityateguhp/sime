@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const SimeContext = React.createContext();
 
 const SimeProvider = (props) => {
+  const [user, setUser] = useState(null);
   const [department_id, setDepartment_id] = useState('');
   const [department_name, setDepartment_name] = useState('');
   const [project_id, setProject_id] = useState('');
@@ -24,6 +25,7 @@ const SimeProvider = (props) => {
   return (
     <SimeContext.Provider
       value={{
+        user,
         department_id,
         department_name,
         project_id,
@@ -41,6 +43,7 @@ const SimeProvider = (props) => {
         external_name,
         external_type,
         external_type_name,
+        setUser,
         setDepartment_id,
         setDepartment_name,
         setProject_id,

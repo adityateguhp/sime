@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
     Avatar,
@@ -13,9 +13,10 @@ import {
     DrawerContentScrollView,
     DrawerItem,
 } from '@react-navigation/drawer';
-import { AuthContext } from '../../context/auth';
 
-import {ORGANIZATIONS} from '../../data/dummy-data'
+import { AuthContext } from '../../context/auth';
+import { SimeContext } from '../../context/SimePovider';
+
 
 const DrawerContent = props => {
     const { logout } = useContext(AuthContext);
@@ -26,7 +27,31 @@ const DrawerContent = props => {
         outputRange: [-100, -85, -70, -45, 0],
     });
 
-    const organizationLog = ORGANIZATIONS.find(org => org._id === 'o1') 
+    const sime = useContext(SimeContext);
+    const [userData, setUserData] = useState({
+        id: '',
+        name: '',
+        email: '',
+        picture: '',
+        typename: ''
+    })
+
+    useEffect(() => {
+        if (sime.user) {
+            setUserData({
+                id: sime.user.id,
+                name: sime.user.name,
+                email: sime.user.email,
+                picture: sime.user.picture,
+                typename: sime.user.typename
+            })
+
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [sime.user])
+
 
     return (
         <DrawerContentScrollView {...props}>
@@ -48,41 +73,39 @@ const DrawerContent = props => {
                             }}
                         >
                             <Avatar.Image
-                                source={{
-                                    uri:
-                                        organizationLog.picture,
-                                }}
+                                source={userData.picture === null || userData.picture === '' ? require('../../assets/avatar.png') : { uri: userData.picture }}
                                 size={60}
                             />
                         </TouchableOpacity>
-                        <Title style={styles.title}>{organizationLog.organization_name}</Title>
-                        <Caption>{organizationLog.email}</Caption>
+                        <Title style={styles.title}>{userData.name}</Title>
+                        <Caption>{userData.email}</Caption>
                     </View>
                 </Drawer.Section>
-              
-                    <DrawerItem
-                        icon={({ color, size }) => (
-                            <Icon name="account-group-outline" color={color} size={size}/>
-                        )}
-                        label="Departments"
-                        onPress={() => {  
-                            props.navigation.navigate('Departments')}}
-                    />
-                    <DrawerItem
-                        icon={({ color, size }) => (
-                            <Icon name="tune" color={color} size={size} />
-                        )}
-                        label="Preferences"
-                        onPress={() => { }}
-                    />
-                     <DrawerItem
-                        icon={({ color, size }) => (
-                            <Icon name="tune" color={color} size={size} />
-                        )}
-                        label="Log Out"
-                        onPress={logout}
-                    />
-             
+
+                <DrawerItem
+                    icon={({ color, size }) => (
+                        <Icon name="account-group-outline" color={color} size={size} />
+                    )}
+                    label="Departments"
+                    onPress={() => {
+                        props.navigation.navigate('Departments')
+                    }}
+                />
+                <DrawerItem
+                    icon={({ color, size }) => (
+                        <Icon name="tune" color={color} size={size} />
+                    )}
+                    label="Preferences"
+                    onPress={() => { }}
+                />
+                <DrawerItem
+                    icon={({ color, size }) => (
+                        <Icon name="tune" color={color} size={size} />
+                    )}
+                    label="Log Out"
+                    onPress={logout}
+                />
+
             </Animated.View>
         </DrawerContentScrollView>
     );

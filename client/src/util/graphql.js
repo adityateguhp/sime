@@ -1,13 +1,30 @@
 import gql from 'graphql-tag';
 
+export const FETCH_ORGANIZATION_QUERY = gql`
+   query($organizationId: ID!) {
+    getOrganization(organizationId: $organizationId){
+        id
+        organization_name
+        description
+        email
+        token
+        password
+        picture
+        createdAt
+  }
+  }
+`;
+
 export const LOGIN_ORGANIZATION = gql`
   mutation loginOrganization($email: String!, $password: String!) {
     loginOrganization(email: $email, password: $password) {
       id
-      email
       organization_name
-      createdAt
+      description
+      email
       token
+      picture
+      createdAt
     }
   }
 `;
@@ -18,20 +35,24 @@ mutation registerOrganization(
   $email: String!
   $password: String!
   $confirmPassword: String!
+  $description: String
+  $picture: String
 ) {
   registerOrganization(
-      registerOrganizationInput: {
       organization_name: $organization_name
       email: $email
       password: $password
       confirmPassword: $confirmPassword
-    }
+      description: $description
+      picture: $picture
   ) {
-    id
-    email
-    organization_name
-    createdAt
-    token
+      id
+      organization_name
+      description
+      email
+      token
+      picture
+      createdAt
   }
 }
 `;

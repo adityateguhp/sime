@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { Text, Title, Paragraph, Avatar, Headline, Divider } from 'react-native-paper';
+import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Portal } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
+import FormEditStaff from '../../components/department/FormEditStaff';
 import { SimeContext } from '../../context/SimePovider';
+import { theme } from '../../constants/Theme';
+import HeaderButton from '../../components/common/HeaderButton';
 
-const StaffProfileScreen = ({ route }) => {
+const StaffProfileScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
 
     const sId = route.params?.staffId;
 
-    const { data: staff, error: error1, loading: loading1 } = useQuery(
+    const { data: staff, error: error1, loading: loading1, called } = useQuery(
         FETCH_STAFF_QUERY, {
         variables: {
             staffId: sId
@@ -25,7 +29,38 @@ const StaffProfileScreen = ({ route }) => {
             departmentId: sime.department_id
         },
     });
-    
+
+    const [visibleFormEdit, setVisibleFormEdit] = useState(false);
+
+    const [staffVal, setStaffVal] = useState(null);
+
+    useEffect(() => {
+        if (staff) {
+            setStaffVal(staff.getStaff);
+        }
+    }, [staff])
+
+    const closeModalFormEdit = () => {
+        setVisibleFormEdit(false);
+    }
+
+    const openFormEdit = () => {
+        setVisibleFormEdit(true);
+    }
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                    <Item
+                        iconName="pencil"
+                        onPress={openFormEdit}
+                    />
+                </HeaderButtons>
+            ),
+        });
+    }, [navigation]);
+
     if (error1) {
         console.error(error1);
         return <Text>Error 1</Text>;
@@ -45,43 +80,52 @@ const StaffProfileScreen = ({ route }) => {
     }
 
     return (
-        <ScrollView style={styles.screen}>
-            <View style={styles.profilePicture}>
-                <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') :{ uri: staff.getStaff.picture }} />
-                <Headline>{staff.getStaff.staff_name}</Headline>
-            </View>
-            <Divider />
-            <View style={styles.profileDetails}>
-                <Title style={styles.titleInfo}>
-                    Department
-                </Title>
-                <Paragraph>
-                    {department.getDepartment.department_name}
-                </Paragraph>
+        <Provider theme={theme}>
+            <ScrollView style={styles.screen}>
+                <View style={styles.profilePicture}>
+                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />
+                    <Headline>{staff.getStaff.staff_name}</Headline>
+                </View>
                 <Divider />
-                <Title style={styles.titleInfo}>
-                    Position
+                <View style={styles.profileDetails}>
+                    <Title style={styles.titleInfo}>
+                        Department
                 </Title>
-                <Paragraph>
-                    {staff.getStaff.position_name}
-                </Paragraph>
-                <Divider />
-                <Title style={styles.titleInfo}>
-                    Email Address
+                    <Paragraph>
+                        {department.getDepartment.department_name}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Position
                 </Title>
-                <Paragraph>
-                    {staff.getStaff.email}
-                </Paragraph>
-                <Divider />
-                <Title style={styles.titleInfo}>
-                    Phone Number
+                    <Paragraph>
+                        {staff.getStaff.position_name}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Email Address
                 </Title>
-                <Paragraph>
-                    {staff.getStaff.phone_number}
-                </Paragraph>
-            </View>
-            <Divider style={{ marginBottom: 20 }} />
-        </ScrollView>
+                    <Paragraph>
+                        {staff.getStaff.email}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Phone Number
+                </Title>
+                    <Paragraph>
+                        {staff.getStaff.phone_number}
+                    </Paragraph>
+                </View>
+                <Divider style={{ marginBottom: 20 }} />
+            </ScrollView>
+            <FormEditStaff
+                closeModalForm={closeModalFormEdit}
+                visibleForm={visibleFormEdit}
+                staff={staffVal}
+                deleteButtonVisible={false}
+                closeButton={closeModalFormEdit}
+            />
+        </Provider>
     );
 }
 

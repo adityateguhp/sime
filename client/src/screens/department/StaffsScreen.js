@@ -194,6 +194,7 @@ const StaffsScreen = ({ route, navigation }) => {
                 visibleForm={visibleFormEdit}
                 staff={staffVal}
                 deleteButton={deleteHandler}
+                deleteButtonVisible={true}
                 closeButton={closeModalFormEdit}
             />
         </Provider>

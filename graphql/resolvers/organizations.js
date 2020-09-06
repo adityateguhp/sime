@@ -8,13 +8,30 @@ const Organization = require('../../model/Organization');
 
 function generateToken(organization){
      return jwt.sign({
+        typename: 'organization',
         id: organization.id,
-        organization_name: organization.organization_name,
-        email: organization.email
+        name: organization.organization_name,
+        email: organization.email,
+        description: organization.description,
+        picture: organization.picture
     }, SECRET_KEY, { expiresIn: '1h' })
 }
 
 module.exports = {
+    Query: {
+        async getOrganization(_, { organizationId }) {
+          try {
+            const organization = await Organization.findById(organizationId);
+            if (organization) {
+              return organization;
+            } else {
+              throw new Error('Organization not found');
+            }
+          } catch (err) {
+            throw new Error(err);
+          }
+        }
+      },
     Mutation: {
         async loginOrganization(_, {email, password}){
             const {valid, errors} = validateLoginOrganizationInput(email, password);
@@ -44,7 +61,7 @@ module.exports = {
                 token
             }
         },
-        async registerOrganization(_, { registerOrganizationInput: { organization_name, email, password, confirmPassword } }, context, info) {
+        async registerOrganization(_, { organization_name, email, password, confirmPassword, description, picture }, context, info) {
             // validate user data
             const { valid, errors } = validateRegisterOrganizationInput(organization_name, email, password, confirmPassword);
             if (!valid) {
@@ -67,6 +84,8 @@ module.exports = {
                 organization_name,
                 email,
                 password,
+                description,
+                picture,
                 createdAt: new Date().toISOString()
             });
 

@@ -156,7 +156,7 @@ const FormEditStaff = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
                             <Appbar.Content title="Edit Staff" />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
+                            {props.deleteButtonVisible? <Appbar.Action icon="delete" onPress={props.deleteButton} />: null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView

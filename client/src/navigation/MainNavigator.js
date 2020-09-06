@@ -9,6 +9,7 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { Avatar, Text } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
+import jwtDecode from 'jwt-decode';
 
 import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
@@ -324,17 +325,27 @@ const Drawer = createDrawerNavigator();
 const Main = createStackNavigator();
 
 export default function MainNavigator() {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [isLogin, setLogin] = useState(null);
+  const sime = useContext(SimeContext);
   async function loginCheck() {
-    if (await AsyncStorage.getItem('jwtToken') != null) {
+    if (await AsyncStorage.getItem('jwtToken')) {
       setLogin(await AsyncStorage.getItem('jwtToken'))
+      sime.setUser(jwtDecode(await AsyncStorage.getItem('jwtToken')))
     } else {
       setLogin(null)
     }
   }
 
-  loginCheck()
+  useEffect(() => {
+    loginCheck()
+    return () => {
+      console.log("This will be logged on unmount");
+    }
+  },[isLogin, user, logout])
+
+  console.log(isLogin)
+  console.log(user)
 
   return (
     user || isLogin ? (
