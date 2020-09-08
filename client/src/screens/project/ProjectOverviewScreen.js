@@ -4,10 +4,12 @@ import { Text, List, Avatar, Subheading, Divider, Provider} from 'react-native-p
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
 import { COMITEES, STAFFS, PROJECTS, POSITIONS } from '../../data/dummy-data';
+import { FETCH_PROJECT_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
@@ -51,7 +53,7 @@ const ProjectOverviewScreen = props => {
         <View style={styles.overview}>
           <Subheading style={{ fontWeight: 'bold' }}>Head of Project</Subheading>
           <List.Item
-            title={staff.staff_name}
+            title={staff.name}
             left={() => <Avatar.Image size={35} source={{ uri: staff.picture }} />}
             onPress={openModal}
           />
@@ -84,7 +86,7 @@ const ProjectOverviewScreen = props => {
         visible={visible}
         onBackButtonPress={closeModal}
         onBackdropPress={closeModal}
-        name={staff.staff_name}
+        name={staff.name}
         position_name={position.position_name}
         email={staff.email}
         phone_number={staff.phone_number}

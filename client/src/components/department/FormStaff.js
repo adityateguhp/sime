@@ -35,7 +35,7 @@ const FormStaff = props => {
     });
 
     const [values, setValues] = useState({
-        staff_name: '',
+        name: '',
         position_name: '',
         department_id: sime.department_id,
         email: '',
@@ -84,7 +84,7 @@ const FormStaff = props => {
             });
             data.getStaffs = [result.data.addStaff, ...data.getStaffs];
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {departmentId: values.department_id} });
-            values.staff_name = '';
+            values.name = '';
             values.position_name = '';
             values.email = '';
             values.phone_number = '';
@@ -92,7 +92,7 @@ const FormStaff = props => {
             props.closeModalForm();
         },
         onError(err) {
-            const staffNameError = staffNameValidator(values.staff_name);
+            const staffNameError = staffNameValidator(values.name);
             const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
@@ -166,8 +166,8 @@ const FormStaff = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
-                                            value={values.staff_name}
-                                            onChangeText={(val) => onChange('staff_name', val, 'staff_name_error')}
+                                            value={values.name}
+                                            onChangeText={(val) => onChange('name', val, 'staff_name_error')}
                                             error={errors.staff_name_error ? true : false}
                                             errorText={errors.staff_name_error}
                                         />

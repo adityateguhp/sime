@@ -16,23 +16,17 @@ const ProjectCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const startDate = moment(props.project_start_date).format('ll');
-    const endDate = moment(props.project_end_date).format('ll');
+    const startDate = moment(props.start_date).format('ll');
+    const endDate = moment(props.end_date).format('ll');
 
     let progress = 0;
-
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setTimeout(() => { setIsLoading(false); }, 2000)
-    })
 
     return (
         <View>
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
                 <Card style={styles.project}>
                     <SkeletonContent
-                        isLoading={isLoading}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardCover}
                     >
@@ -42,12 +36,12 @@ const ProjectCard = props => {
                     </SkeletonContent>
 
                     <SkeletonContent
-                        isLoading={isLoading}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardTitle}
                     >
                         <Card.Title
-                            title={props.project_name}
+                            title={props.name}
                             titleStyle={styles.titleStyle}
                             subtitle={
                                 <Caption style={styles.caption}>
@@ -58,7 +52,7 @@ const ProjectCard = props => {
                     </SkeletonContent>
 
                     <SkeletonContent
-                        isLoading={isLoading}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardContent}
                     >
@@ -71,13 +65,13 @@ const ProjectCard = props => {
                     </SkeletonContent>
 
                     <SkeletonContent
-                        isLoading={isLoading}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardAction}
                     >
                         <View>
                             <Card.Actions style={styles.cardAction}>
-                                <Status start_date={props.project_start_date} end_date={props.project_end_date} cancel={props.cancel} fontSize={wp(2.18)} />
+                                <Status start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} fontSize={wp(2.18)} />
                             </Card.Actions>
                         </View>
                     </SkeletonContent>

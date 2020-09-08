@@ -17,7 +17,7 @@ const StaffList = props => {
             <View style={styles.wrap}>
                 <List.Item
                     style={styles.staff}
-                    title={props.staff_name}
+                    title={props.name}
                     description={props.position_name}
                     left={() => <Avatar.Image size={50} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png') : { uri: props.picture }} />}
                 />

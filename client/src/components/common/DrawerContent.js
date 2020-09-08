@@ -32,8 +32,7 @@ const DrawerContent = props => {
         id: '',
         name: '',
         email: '',
-        picture: '',
-        typename: ''
+        picture: ''
     })
 
     useEffect(() => {
@@ -42,13 +41,12 @@ const DrawerContent = props => {
                 id: sime.user.id,
                 name: sime.user.name,
                 email: sime.user.email,
-                picture: sime.user.picture,
-                typename: sime.user.typename
+                picture: sime.user.picture
             })
 
         }
         return () => {
-            console.log("This will be logged on unmount");
+            console.log("This will be logged on unmount drawer");
         }
     }, [sime.user])
 

@@ -1,20 +1,36 @@
-export const departmentNameValidator = (department_name) => {
-  if (!department_name || department_name.length <= 0) return 'Department name must not be empty';
+export const departmentNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Department name must not be empty';
   return '';
 };
 
-export const staffNameValidator = (staff_name) => {
-  if (staff_name.trim() === '') return 'Staff name must not be empty';
+export const staffNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Staff name must not be empty';
+  return '';
+}
+
+export const projectNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Project name must not be empty';
+  return '';
+}
+
+export const dateValidator = (start_date, end_date) => {
+  if (!start_date || start_date.length <= 0 && !end_date || end_date.length <= 0){
+    return 'Date must not be empty';
+  } else if (!start_date || start_date.length <= 0 ) {
+    return 'Start date must not be empty';
+  } else if (!end_date || end_date.length <= 0 ) {
+    return 'end date must not be empty';
+  }
   return '';
 }
 
 export const positionNameValidator = (position_name) => {
-  if (position_name.trim() === '') return 'Position name must not be empty';
+  if (!position_name || position_name.length <= 0) return 'Position name must not be empty';
   return '';
 }
 
 export const emailValidator = (email) => {
-  if (email.trim() === ''){
+  if (!email || email.length <= 0){
     return 'Email address must not be empty';
   }else {
     const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
@@ -26,12 +42,12 @@ export const emailValidator = (email) => {
 }
 
 export const phoneNumberValidator = (phone_number) => {
-  if (phone_number.trim() === '') return 'Phone number must not be empty';
+  if (!phone_number || phone_number.length <= 0) return 'Phone number must not be empty';
   return '';
 }
 
 export const passwordValidator = (password, confirmPassword) => {
-  if (password === '') {
+  if (!password || password.length <= 0) {
     return 'Password must not be empty';
   } else if (password.length < 8) {
     return 'Use 8 characters or more for your password';

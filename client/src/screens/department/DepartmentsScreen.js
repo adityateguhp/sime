@@ -36,13 +36,13 @@ const DepartmentsScreen = ({ navigation }) => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const selectItemHandler = (department_name, id) => {
+    const selectItemHandler = (name, id) => {
         navigation.navigate('Staff List', {
-            departmentName: department_name,
+            departmentName: name,
             departmentId: id
         })
         sime.setDepartment_id(id);
-        sime.setDepartment_name(department_name);
+        sime.setDepartment_name(name);
     };
 
     const [visible, setVisible] = useState(false);
@@ -61,9 +61,9 @@ const DepartmentsScreen = ({ navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (department_name, id) => {
+    const longPressHandler = (name, id) => {
         setVisible(true);
-        sime.setDepartment_name(department_name);
+        sime.setDepartment_name(name);
         sime.setDepartment_id(id)
         loadExistData();
     }
@@ -148,10 +148,10 @@ const DepartmentsScreen = ({ navigation }) => {
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DepartmentCard
-                        department_name={itemData.item.department_name}
-                        onSelect={() => { selectItemHandler(itemData.item.department_name, itemData.item.id) }}
+                        name={itemData.item.name}
+                        onSelect={() => { selectItemHandler(itemData.item.name, itemData.item.id) }}
                         onDelete={() => { deleteHandler() }}
-                        onLongPress={() => { longPressHandler(itemData.item.department_name, itemData.item.id) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     >
                     </DepartmentCard>
                 )}

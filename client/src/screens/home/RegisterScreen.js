@@ -18,7 +18,7 @@ const RegisterScreen = ({ navigation }) => {
     const [errors, setErrors] = useState({});
 
     const [values, setValues] = useState({
-        organization_name: '',
+        name: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -62,9 +62,9 @@ const RegisterScreen = ({ navigation }) => {
                     <TextInput
                         label="Organization Name"
                         returnKeyType="next"
-                        value={values.organization_name}
-                        error={errors.organization_name ? true : false}
-                        onChangeText={(val) => onChange('organization_name', val)}
+                        value={values.name}
+                        error={errors.name ? true : false}
+                        onChangeText={(val) => onChange('name', val)}
                     />
 
                     <TextInput

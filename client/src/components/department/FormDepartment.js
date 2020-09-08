@@ -20,7 +20,7 @@ const FormDepartment = props => {
     });
 
     const [values, setValues] = useState({
-        department_name: '',
+        name: '',
     });
 
     const onChange = (key, val, err) => {
@@ -35,11 +35,11 @@ const FormDepartment = props => {
             });
             data.getDepartments = [result.data.addDepartment, ...data.getDepartments];
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
-            values.department_name = '';
+            values.name = '';
             props.closeModalForm();
         },
         onError() {
-            const departementNameError = departmentNameValidator(values.department_name);
+            const departementNameError = departmentNameValidator(values.name);
             if (departementNameError) {
                 setErrors({ ...errors, department_name_error: departementNameError })
             }
@@ -92,8 +92,8 @@ const FormDepartment = props => {
                                     <TextInput
                                         style={styles.input}
                                         label='Department Name'
-                                        value={values.department_name}
-                                        onChangeText={(val) => onChange('department_name', val, 'department_name_error')}
+                                        value={values.name}
+                                        onChangeText={(val) => onChange('name', val, 'department_name_error')}
                                         error={errors.department_name_error? true : false}
                                         errorText={errors.department_name_error}
                                     />

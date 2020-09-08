@@ -1,7 +1,7 @@
 const { model, Schema } = require('mongoose');
 
 const organizationSchema = new Schema({
-    organization_name: String,	
+    name: String,
     description: String,
     email: String,
     password: String,

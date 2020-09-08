@@ -1,7 +1,7 @@
 const { model, Schema } = require('mongoose');
 
 const staffSchema = new Schema({	
-    staff_name: String,
+    name: String,
     position_name: String,
     department_id:{
         type: Schema.Types.ObjectId,

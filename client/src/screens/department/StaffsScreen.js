@@ -62,9 +62,9 @@ const StaffsScreen = ({ route, navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (staff_name, id) => {
+    const longPressHandler = (name, id) => {
         setVisible(true);
-        sime.setStaff_name(staff_name);
+        sime.setStaff_name(name);
         sime.setStaff_id(id);
         loadExistData();
     }
@@ -149,12 +149,12 @@ const StaffsScreen = ({ route, navigation }) => {
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <StaffList
-                        staff_name={itemData.item.staff_name}
+                        name={itemData.item.name}
                         position_name={itemData.item.position_name}
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
                         onSelect={() => { selectItemHandler(itemData.item.id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.staff_name, itemData.item.id) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     >
                     </StaffList>
                 )}

@@ -3,7 +3,7 @@ const { gql } = require('apollo-server');
 module.exports = gql`
     type Organization {
         id: ID!
-        organization_name: String!	
+        name: String!	
         description: String
         email: String!
         token: String!
@@ -13,42 +13,60 @@ module.exports = gql`
     }
     type Department {
         id: ID!
-        department_name: String!
-        organization_id: String!
+        name: String!
+        organization_id: ID!
         createdAt: String!
     }
     type Staff {
         id: ID!
-        staff_name: String!
+        name: String!
         position_name: String!
-        department_id: String! 	
+        department_id: ID! 	
         email: String!
         phone_number: String!
         password: String!
         picture: String
         createdAt: String!
     }
+    type Project {
+        id: ID!
+        name: String!
+        description: String
+        cancel: Boolean!
+        start_date: String!
+        end_date: String!
+        organization_id: ID!
+        picture: String
+        createdAt: String!
+    }
     type Query {
-        getOrganization(organizationId: ID!): Organization
+        getUserOrganization: Organization
         getDepartments: [Department]
         getDepartment(departmentId: ID!): Department
         getStaffs(departmentId: ID!): [Staff]
         getStaff(staffId: ID!): Staff
+        getProjects: [Project]
+        getProject(projectId: ID!): Project 
     }
     type Mutation {
         registerOrganization(
-        organization_name: String!
-        email: String!
-        password: String!
-        confirmPassword: String!
-        description: String
-        picture: String): Organization!
+            name: String!
+            email: String!
+            password: String!
+            confirmPassword: String!
+            description: String
+            picture: String): Organization!
+        
         loginOrganization(email: String!, password: String!): Organization!
-        addDepartment(department_name: String!): Department!
-        updateDepartment(departmentId: ID!, department_name: String!): Department!
+        
+        addDepartment(name: String!): Department!
+        
+        updateDepartment(departmentId: ID!, name: String!): Department!
+        
         deleteDepartment(departmentId: ID!): String!
+        
         addStaff(
-            staff_name: String!,
+            name: String!,
             position_name: String!,
             department_id: ID!, 	
             email: String!,
@@ -56,19 +74,48 @@ module.exports = gql`
             password: String!,
             picture: String
         ): Staff!
+        
         updateStaff( 
             staffId: ID!,
-            staff_name: String!,
+            name: String!,
             position_name: String!,	
             email: String!,
             phone_number: String!,
             picture: String
         ): Staff!
+        
         updatePasswordStaff( 
             staffId: ID!,
             password: String!,
             confirmPassword: String!
         ): Staff!
+        
         deleteStaff(staffId: ID!): String!
+
+        addProject(
+            name: String!,
+            description: String,
+            cancel: Boolean!,
+            start_date: String!,
+            end_date: String!,
+            picture: String,
+        ): Project!
+
+        updateProject(
+            projectId: ID!,
+            name: String!,
+            description: String,
+            cancel: Boolean!,
+            start_date: String!,
+            end_date: String!,
+            picture: String
+        ): Project!
+
+        deleteProject(projectId: ID!): String!
+
+        cancelProject(
+            projectId: ID!,
+            cancel: Boolean!
+        ): Project!
     }
 `;

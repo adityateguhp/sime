@@ -20,7 +20,7 @@ const ComiteeList = props => {
             <View style={styles.wrap}>
                 <List.Item
                     style={styles.staff}
-                    title={staffOnDivision.staff_name}
+                    title={staffOnDivision.name}
                     description={<Caption>{positionOnDivision.position_name}</Caption>}
                     left={() => <Avatar.Image size={50} source={{ uri: staffOnDivision.picture }} />}
                 />

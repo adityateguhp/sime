@@ -22,7 +22,7 @@ const ComiteeProfileScreen = ({ route }) => {
         <ScrollView style={styles.screen}>
             <View style={styles.profilePicture}>
                 <Avatar.Image style={{ marginBottom: 10 }} size={150} source={{ uri: selectedStaff.picture }} />
-                <Headline>{selectedStaff.staff_name}</Headline>
+                <Headline>{selectedStaff.name}</Headline>
             </View>
             <Divider />
             <View style={styles.profileDetails}>
@@ -37,11 +37,11 @@ const ComiteeProfileScreen = ({ route }) => {
                     Department
                 </Title>
                 <Paragraph>
-                    {staffDepatment.department_name}
+                    {staffDepatment.name}
                 </Paragraph>
                 <Divider />
                 <Title style={styles.titleInfo}>
-                    Position in {staffDepatment.department_name}
+                    Position in {staffDepatment.name}
                 </Title>
                 <Paragraph>
                     {selectedStaff.position_name}

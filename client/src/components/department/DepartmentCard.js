@@ -10,14 +10,14 @@ const DepartmentCard = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-    const label = props.department_name.substring(0,2).toUpperCase();
+    const label = props.name.substring(0,2).toUpperCase();
 
     return (
         <View>
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
                 <Card style={styles.event}>
                     <Card.Title
-                        title={props.department_name}
+                        title={props.name}
                         left={() => <Avatar.Text size={45} label={label} style={{backgroundColor: Colors.primaryColor}}/>}
                     />
                 </Card >

@@ -36,7 +36,7 @@ const FormEditStaff = props => {
 
     const [values, setValues] = useState({
         staffId: '',
-        staff_name: '',
+        name: '',
         position_name: '',
         email: '',
         phone_number: '',
@@ -79,7 +79,7 @@ const FormEditStaff = props => {
         if (props.staff) {
             setValues({
                 staffId: props.staff.id,
-                staff_name: props.staff.staff_name,
+                name: props.staff.name,
                 position_name: props.staff.position_name,
                 email: props.staff.email,
                 phone_number: props.staff.phone_number,
@@ -98,7 +98,7 @@ const FormEditStaff = props => {
             props.closeModalForm();
         },
         onError(err) {
-            const staffNameError = staffNameValidator(values.staff_name);
+            const staffNameError = staffNameValidator(values.name);
             const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
@@ -174,8 +174,8 @@ const FormEditStaff = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
-                                            value={values.staff_name}
-                                            onChangeText={(val) => onChange('staff_name', val, 'staff_name_error')}
+                                            value={values.name}
+                                            onChangeText={(val) => onChange('name', val, 'staff_name_error')}
                                             error={errors.staff_name_error ? true : false}
                                             errorText={errors.staff_name_error}
                                         />

@@ -23,7 +23,7 @@ const FormEditDepartment = props => {
 
     const [values, setValues] = useState({
         departmentId: '',
-        department_name: ''
+        name: ''
     });
 
     const onChange = (key, val, err) => {
@@ -35,7 +35,7 @@ const FormEditDepartment = props => {
         if(props.department){
             setValues({
                 departmentId: props.department.id, 
-                department_name: props.department.department_name
+                name: props.department.name
             })
         }
     }, [props.department])    
@@ -49,7 +49,7 @@ const FormEditDepartment = props => {
             props.closeModalForm();
         },
         onError() {
-            const departementNameError = departmentNameValidator(values.department_name);
+            const departementNameError = departmentNameValidator(values.name);
             if (departementNameError) {
                 setErrors({ ...errors, department_name_error: departementNameError })
             }
@@ -102,8 +102,8 @@ const FormEditDepartment = props => {
                                     <TextInput
                                         style={styles.input}
                                         label='Department Name'
-                                        value={values.department_name}
-                                        onChangeText={(val) => onChange('department_name', val, 'department_name_error')}
+                                        value={values.name}
+                                        onChangeText={(val) => onChange('name', val, 'department_name_error')}
                                         error={errors.department_name_error ? true : false}
                                         errorText={errors.department_name_error}
                                     />

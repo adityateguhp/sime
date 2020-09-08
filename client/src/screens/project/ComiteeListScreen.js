@@ -97,7 +97,7 @@ const ComiteeListScreen = ({ route, navigation }) => {
                     <Modal useNativeDriver={true} isVisible={visibleMenu} animationIn="zoomIn" animationInTiming={100} animationOut="zoomOut" animationOutTiming={100} onBackButtonPress={closeModalMenu} onBackdropPress={closeModalMenu} statusBarTranslucent>
                         <View style={styles.centeredView}>
                             <View style={styles.modalMenuView}>
-                                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{staff.staff_name}</Title>
+                                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{staff.name}</Title>
                                 <TouchableCmp>
                                     <View style={styles.textView}>
                                         <Text style={styles.text}>Edit</Text>

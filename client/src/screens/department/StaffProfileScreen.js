@@ -84,7 +84,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
             <ScrollView style={styles.screen}>
                 <View style={styles.profilePicture}>
                     <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />
-                    <Headline>{staff.getStaff.staff_name}</Headline>
+                    <Headline>{staff.getStaff.name}</Headline>
                 </View>
                 <Divider />
                 <View style={styles.profileDetails}>
@@ -92,7 +92,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
                         Department
                 </Title>
                     <Paragraph>
-                        {department.getDepartment.department_name}
+                        {department.getDepartment.name}
                     </Paragraph>
                     <Divider />
                     <Title style={styles.titleInfo}>

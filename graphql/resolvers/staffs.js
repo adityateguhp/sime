@@ -1,7 +1,7 @@
 const {UserInputError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 
-const { validateAddStaffInput, validateUpdateStaffInput, validateUpdatePasswordStaffInput } = require('../../util/validators');
+const { validateStaffInput, validateUpdatePasswordStaffInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
 
 
@@ -34,7 +34,7 @@ module.exports = {
   },
   Mutation: {
     async addStaff(_, {
-      staff_name,
+      name,
       position_name,
       department_id,
       email,
@@ -43,8 +43,8 @@ module.exports = {
       picture
     }, context) {
       const { valid, errors } =
-        validateAddStaffInput(
-          staff_name,
+        validateStaffInput(
+          name,
           position_name,
           email,
           phone_number
@@ -66,7 +66,7 @@ module.exports = {
       password = await bcrypt.hash(password, 12);
 
       const newStaff = new Staff({
-        staff_name,
+        name,
         position_name,
         department_id,
         email,
@@ -82,7 +82,7 @@ module.exports = {
     },
     async updateStaff(_, {
       staffId,
-      staff_name,
+      name,
       position_name,
       email,
       phone_number,
@@ -90,8 +90,8 @@ module.exports = {
     }, context) {
       try {
         const { valid, errors } =
-          validateUpdateStaffInput(
-            staff_name,
+          validateStaffInput(
+            name,
             position_name,
             email,
             phone_number,
@@ -103,7 +103,7 @@ module.exports = {
         const updatedStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
           { 
-            staff_name: staff_name, 
+            name: name, 
             position_name: position_name,
             email: email,
             phone_number: phone_number,

@@ -14,7 +14,7 @@ import TextInput from '../../components/common//TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
 import { SimeContext } from '../../context/SimePovider';
-import { LOGIN_ORGANIZATION } from '../../util/graphql';
+import { LOGIN_ORGANIZATION, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 
 const LoginOrganizationScreen = ({ navigation }) => {
   const {login} = useContext(AuthContext);

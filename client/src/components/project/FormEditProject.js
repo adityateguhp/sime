@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -11,10 +11,11 @@ import moment from 'moment';
 
 import Colors from '../../constants/Colors';
 import { projectNameValidator, dateValidator } from '../../util/validator';
-import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION } from '../../util/graphql';
+import { FETCH_PROJECTS_QUERY, UPDATE_PROJECT_MUTATION } from '../../util/graphql';
+import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 
-const FormProject = props => {
+const FormEditProject = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -23,12 +24,15 @@ const FormProject = props => {
 
     //const [keyboardSpace, setKeyboarSpace] = useState(0);
 
+    const sime = useContext(SimeContext);
+
     const [errors, setErrors] = useState({
         project_name_error: '',
         date_error: ''
     });
 
     const [values, setValues] = useState({
+        projectId: '',
         name: '',
         description: '',
         cancel: false,
@@ -100,19 +104,26 @@ const FormProject = props => {
         closeEndDatepicker();
     };
 
-    const [addProject, { loading }] = useMutation(ADD_PROJECT_MUTATION, {
+    useEffect(() => {
+        if (props.project) {
+            setValues({
+                projectId: props.project.id,
+                name: props.project.name,
+                description: props.project.description,
+                cancel: props.project.cancel,
+                start_date: props.project.start_date,
+                end_date: props.project.end_date,
+                picture: props.project.picture,
+            })
+        }
+    }, [props.project])
+
+    const [updateProject, { loading }] = useMutation(UPDATE_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY
             });
-            data.getProjects = [result.data.addProject, ...data.getProjects];
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
-            values.name = '';
-            values.description = '';
-            values.start_date = '';
-            values.end_date = '';
-            values.picture = '';
-            values.cancel = false;
             props.closeModalForm();
         },
         onError(err) {
@@ -135,7 +146,7 @@ const FormProject = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addProject();
+        updateProject();
     };
     //for get keyboard height
     // Keyboard.addListener('keyboardDidShow', (frames) => {
@@ -165,7 +176,7 @@ const FormProject = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="New Project" />
+                            <Appbar.Content title="Edit Project" />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -334,4 +345,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormProject;
+export default FormEditProject;

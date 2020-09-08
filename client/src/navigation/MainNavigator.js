@@ -6,7 +6,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { Avatar, Text } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import jwtDecode from 'jwt-decode';
@@ -64,7 +63,16 @@ function TabVisible(route) {
 const DashboardStack = createStackNavigator();
 
 function DashboardStackScreen({ route, navigation }) {
-  const safeArea = useSafeArea();
+  const sime = useContext(SimeContext);
+  const [userPict, setUserPict] = useState('')
+  useEffect(() => {
+    if (sime.user) {
+      setUserPict(sime.user.picture)
+    }
+    return () => {
+      console.log("This will be logged on unmount dashboard header pict");
+    }
+  }, [sime.user])
   return (
     <DashboardStack.Navigator
       screenOptions={{
@@ -90,10 +98,7 @@ function DashboardStackScreen({ route, navigation }) {
             >
               <Avatar.Image
                 size={40}
-                source={{
-                  uri:
-                    'https://media-exp1.licdn.com/dms/image/C4E0BAQG-FO7nOawetA/company-logo_200_200/0?e=2159024400&v=beta&t=fuuDA0lUgEqIfSw7FIIiayJPFhO7SsTVl9Obyvk8Zx4',
-                }}
+                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
               />
             </TouchableOpacity>
           ),
@@ -106,8 +111,17 @@ function DashboardStackScreen({ route, navigation }) {
 const ProjectsStack = createStackNavigator();
 
 function ProjectStackSceen({ route, navigation }) {
-  const safeArea = useSafeArea();
   const sime = useContext(SimeContext);
+  const [userPict, setUserPict] = useState('')
+  useEffect(() => {
+    if (sime.user) {
+      setUserPict(sime.user.picture)
+    }
+    return () => {
+      console.log("This will be logged on unmount project header pict");
+    }
+  }, [sime.user])
+
   return (
     <ProjectsStack.Navigator
       screenOptions={{
@@ -133,10 +147,7 @@ function ProjectStackSceen({ route, navigation }) {
             >
               <Avatar.Image
                 size={40}
-                source={{
-                  uri:
-                    'https://media-exp1.licdn.com/dms/image/C4E0BAQG-FO7nOawetA/company-logo_200_200/0?e=2159024400&v=beta&t=fuuDA0lUgEqIfSw7FIIiayJPFhO7SsTVl9Obyvk8Zx4',
-                }}
+                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
               />
             </TouchableOpacity>
           ),
@@ -244,7 +255,6 @@ function TopTabEvents() {
 const DepartmentsStack = createStackNavigator();
 
 function DepartmentsStackScreen({ route, navigation }) {
-  const safeArea = useSafeArea();
   return (
     <DepartmentsStack.Navigator
       screenOptions={{
@@ -327,11 +337,9 @@ const Main = createStackNavigator();
 export default function MainNavigator() {
   const { user, logout } = useContext(AuthContext);
   const [isLogin, setLogin] = useState(null);
-  const sime = useContext(SimeContext);
   async function loginCheck() {
     if (await AsyncStorage.getItem('jwtToken')) {
       setLogin(await AsyncStorage.getItem('jwtToken'))
-      sime.setUser(jwtDecode(await AsyncStorage.getItem('jwtToken')))
     } else {
       setLogin(null)
     }
@@ -340,12 +348,9 @@ export default function MainNavigator() {
   useEffect(() => {
     loginCheck()
     return () => {
-      console.log("This will be logged on unmount");
+      console.log("This will be logged on unmount loginCheck");
     }
-  },[isLogin, user, logout])
-
-  console.log(isLogin)
-  console.log(user)
+  }, [isLogin, user, logout])
 
   return (
     user || isLogin ? (

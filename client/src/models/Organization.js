@@ -1,7 +1,7 @@
 class Organization {
-    constructor(_id, organization_name, description, email, password, picture) {
+    constructor(_id, name, description, email, password, picture) {
         this._id = _id;
-        this.organization_name = organization_name;
+        this.name = name;
         this.description = description;
         this.email = email;
         this.password = password;
