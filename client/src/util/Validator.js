@@ -14,12 +14,12 @@ export const projectNameValidator = (name) => {
 }
 
 export const dateValidator = (start_date, end_date) => {
-  if (!start_date || start_date.length <= 0 && !end_date || end_date.length <= 0){
+  if ((!start_date || start_date.length <= 0) && (!end_date || end_date.length <= 0)){
     return 'Date must not be empty';
   } else if (!start_date || start_date.length <= 0 ) {
     return 'Start date must not be empty';
   } else if (!end_date || end_date.length <= 0 ) {
-    return 'end date must not be empty';
+    return 'End date must not be empty';
   }
   return '';
 }

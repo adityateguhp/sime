@@ -1,0 +1,75 @@
+const { AuthenticationError, UserInputError } = require('apollo-server');
+
+const { validatePositionInput } = require('../../util/validators');
+const Position = require('../../model/Position');
+const checkAuth = require('../../util/check-auth');
+
+module.exports = {
+  Query: {
+    async getPositions(_, args, context) {
+      try {
+        const positions = await Position.find();
+        if (positions) {
+          return positions;
+        } else {
+          throw new Error('Positions not found');
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async getPosition(_, { positionId }) {
+      try {
+        const position = await Position.findById(positionId);
+        if (position) {
+          return position;
+        } else {
+          throw new Error('Position not found');
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    }
+  },
+  Mutation: {
+    async addPosition(_, { name, core }, context) {
+      const user = checkAuth(context);
+      const { valid, errors } = validatePositionInput(name, core);
+      if (!valid) {
+        throw new UserInputError('Error', { errors });
+      }
+      const newPosition = new Position({
+        name,
+        core,
+        createdAt: new Date().toISOString()
+      });
+
+      const position = await newPosition.save();
+
+      return position;
+    },
+    async updatePosition(_, { positionId, name, core }, context) {
+      try {
+        const { valid, errors } = validatePositionInput(name, core);
+        if (!valid) {
+          throw new UserInputError('Error', { errors });
+        }
+        const updatedPosition = await Position.findByIdAndUpdate({ _id: positionId }, { name: name, core: core }, { new: true });
+
+        return updatedPosition;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async deletePosition(_, { positionId }, context) {
+      const user = checkAuth(context);
+      try {
+        const position = await Position.findById(positionId);
+        await position.delete();
+        return 'Department deleted successfully';
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+  }
+};

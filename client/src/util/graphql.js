@@ -351,3 +351,174 @@ export const CANCEL_PROJECT_MUTATION = gql`
   }
   } 
 `;
+
+export const FETCH_POSITIONS_QUERY = gql`
+  {
+    getPositions{
+    id
+    name
+    core
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_POSITION_QUERY = gql`
+   query($positionId: ID!) {
+    getPosition(positionId: $positionId){
+    id
+    name
+    core
+    createdAt
+  }
+  }
+`;
+
+export const ADD_POSITION_MUTATION = gql`
+  mutation addPosition($name: String!, $core: Boolean!) {
+    addPosition(name: $name, core: $core) {
+    id
+    name
+    core
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_POSITION_MUTATION = gql`
+  mutation updatePosition($positionId: ID!, $name: String!, $core: Boolean!) {
+    updatePosition(positionId: $positionId, name: $name, core: $core) {
+    id
+    name
+    core
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_POSITION = gql`
+  mutation deletePosition($positionId: ID!) {
+    deletePosition(positionId: $positionId)
+  }
+`;
+
+export const FETCH_DIVISIONS_QUERY = gql`
+  query($projectId: ID!){
+    getDivisions(projectId: $projectId){
+      id
+      name
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_DIVISION_QUERY = gql`
+   query($divisionId: ID!) {
+    getDivision(divisionId: $divisionId){
+      id
+      name
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const ADD_DIVISION_MUTATION = gql`
+  mutation addDivision($name: String!, $projectId: String!) {
+    addDivision(name: $name, projectId: $projectId) {
+      id
+      name
+      project_id
+      createdAt
+  }
+  } 
+`;
+
+export const UPDATE_DIVISION_MUTATION = gql`
+  mutation updateDivision($divisionId: ID!, $name: String!) {
+    updateDivision(divisionId: $divisionId, name: $name) {
+      id
+      name
+      project_id
+      createdAt
+  }
+  } 
+`;
+
+export const DELETE_DIVISION = gql`
+  mutation deleteDivision($divisionId: ID!) {
+    deleteDivision(divisionId: $divisionId)
+  }
+`;
+
+export const FETCH_COMITEES_QUERY = gql`
+  query($projectId: ID!){
+    getComitees(projectId: $projectId){
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_COMITEE_QUERY = gql`
+   query($projectId: ID!) {
+    getComitee(projectId: $projectId){
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_HEADPROJECT_QUERY = gql`
+   query($projectId: ID!, $positionId: ID!) {
+    getHeadProject(projectId: $projectId, positionId: $positionId){
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const ADD_COMITEE_MUTATION = gql`
+  mutation addComitee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!) {
+    addComitee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId) {
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      createdAt
+  }
+  } 
+`;
+
+export const UPDATE_COMITEE_MUTATION = gql`
+  mutation updateComitee($comiteeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!) {
+    updateComitee(comiteeId: $comiteeId, taffId: $staffId, positionId: $positionId, divisionId: $divisionId) {
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      createdAt
+  }
+  } 
+`;
+
+export const DELETE_COMITEE = gql`
+  mutation deleteComitee($comiteeId: ID!) {
+    deleteComitee(comiteeId: $comiteeId)
+  }
+`;

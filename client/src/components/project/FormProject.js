@@ -13,6 +13,7 @@ import Colors from '../../constants/Colors';
 import { projectNameValidator, dateValidator } from '../../util/validator';
 import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
+import { theme } from '../../constants/Theme';
 
 const FormProject = props => {
     let TouchableCmp = TouchableOpacity;
@@ -194,7 +195,7 @@ const FormProject = props => {
                                             <Icon name="calendar" size={25} color={Colors.primaryColor} />
                                             <Text style={styles.textDate}>
                                                 Date :
-                                </Text>
+                                            </Text>
                                         </View>
                                         <View style={styles.dateButtonContainer}>
                                             <Button
@@ -215,6 +216,7 @@ const FormProject = props => {
                                             </Button>
                                         </View>
                                     </View>
+                                    {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
@@ -237,22 +239,24 @@ const FormProject = props => {
                                     </View>
                                 </View>
                                 <Portal>
-                                <DateTimePicker
-                                    isVisible={showStartDate}
-                                    mode="date"
-                                    onConfirm={(val) => onChangeStartDate('start_date', val, 'start_date_error')}
-                                    onCancel={closeStartDatepicker}
-                                    mode="date"
-                                    display="default"
-                                />
-                                <DateTimePicker
-                                    isVisible={showEndDate}
-                                    mode="date"
-                                    onConfirm={(val) => onChangeEndDate('end_date', val, 'end_date_error')}
-                                    onCancel={closeEndDatepicker}
-                                    mode="date"
-                                    display="default"
-                                />
+                                    <DateTimePicker
+                                        isVisible={showStartDate}
+                                        mode="date"
+                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
+                                        onCancel={closeStartDatepicker}
+                                        mode="date"
+                                        display="default"
+                                        maximumDate={values.end_date? new Date(values.end_date): null}
+                                    />
+                                    <DateTimePicker
+                                        isVisible={showEndDate}
+                                        mode="date"
+                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
+                                        onCancel={closeEndDatepicker}
+                                        mode="date"
+                                        display="default"
+                                        minimumDate={values.start_date? new Date(values.start_date): null}
+                                    />
                                 </Portal>
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -330,6 +334,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
 
+    },
+    error: {
+        fontSize: 14,
+        color: theme.colors.error,
+        paddingHorizontal: 4,
+        paddingTop: 4,
     }
 });
 

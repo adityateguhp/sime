@@ -142,3 +142,55 @@ module.exports.validateProjectInput = (
         valid: Object.keys(errors).length < 1
     };
 };
+
+module.exports.validatePositionInput = (
+    name,
+    core
+) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'Position name must not be empty';
+    }
+
+    if (core === null) {
+        errors.start_date = 'Core status must not be empty';
+    }
+
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
+module.exports.validateDivisionInput = (
+    name
+) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'Division name must not be empty';
+    }
+
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
+module.exports.validateComiteeInput = (
+    staffId, divisionId, positionId
+) => {
+    const errors = {};
+    if (staffId.trim() === '') {
+        errors.staffId = 'Staff must not be empty';
+    }
+    if (divisionId.trim() === '') {
+        errors.divisionId = 'Division must not be empty';
+    } 
+    if (positionId.trim() === '') {
+        errors.positionId = 'Position must not be empty';
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};

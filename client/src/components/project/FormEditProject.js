@@ -255,6 +255,7 @@ const FormEditProject = props => {
                                     onCancel={closeStartDatepicker}
                                     mode="date"
                                     display="default"
+                                    maximumDate={values.end_date? new Date(values.end_date): null}
                                 />
                                 <DateTimePicker
                                     isVisible={showEndDate}
@@ -263,6 +264,7 @@ const FormEditProject = props => {
                                     onCancel={closeEndDatepicker}
                                     mode="date"
                                     display="default"
+                                    minimumDate={values.start_date? new Date(values.start_date): null}
                                 />
                                 </Portal>
                             </ScrollView>

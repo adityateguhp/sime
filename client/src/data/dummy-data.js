@@ -210,7 +210,7 @@ export const DIVISIONS = [
     new Division(
         'div1',
         'Core Comitee',
-        'p1'
+        '5f563332c08d245a4874f21e'
     ),
     new Division(
         'div2',

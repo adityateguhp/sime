@@ -39,14 +39,44 @@ module.exports = gql`
         picture: String
         createdAt: String!
     }
+    type Position {
+        id: ID!
+        name: String!
+        core: Boolean!
+        createdAt: String!
+    }
+
+    type Division {
+        id: ID!
+        name: String!
+        project_id: ID!
+        createdAt: String!
+    }
+    
+    type Comitee {
+        id: ID!
+        staff_id: ID!
+        position_id: ID!
+        division_id: ID!
+        project_id: ID!
+        createdAt: String!
+    }
+
     type Query {
         getUserOrganization: Organization
         getDepartments: [Department]
         getDepartment(departmentId: ID!): Department
         getStaffs(departmentId: ID!): [Staff]
-        getStaff(staffId: ID!): Staff
+        getStaff(staffId: ID): Staff
         getProjects: [Project]
-        getProject(projectId: ID!): Project 
+        getProject(projectId: ID!): Project
+        getPositions: [Position]
+        getPosition(positionId: ID): Position
+        getDivisions(projectId: ID!): [Division]
+        getDivision(divisionId: ID!): Division
+        getComitees(projectId: ID!): [Comitee]
+        getComitee(comiteeId: ID!): Comitee 
+        getHeadProject(projectId: ID!, positionId: ID!): Comitee  
     }
     type Mutation {
         registerOrganization(
@@ -117,5 +147,23 @@ module.exports = gql`
             projectId: ID!,
             cancel: Boolean!
         ): Project!
+
+        addPosition(name: String!, core: Boolean!): Position!
+        
+        updatePosition(positionId: ID!, name: String!, core: Boolean!): Position!
+        
+        deletePosition(positionId: ID!): String!
+
+        addDivision(name: String!, projectId: String!): Division!
+        
+        updateDivision(divisionId: ID!, name: String!): Division!
+        
+        deleteDivision(divisionId: ID!): String!
+
+        addComitee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!): Comitee!
+        
+        updateComitee(comiteeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!): Comitee!
+        
+        deleteComitee(comiteeId: ID!): String!
     }
 `;

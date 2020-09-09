@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, List, Avatar, Subheading, Divider, Provider} from 'react-native-paper';
+import { Text, List, Avatar, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -9,19 +9,42 @@ import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
 import { COMITEES, STAFFS, PROJECTS, POSITIONS } from '../../data/dummy-data';
-import { FETCH_PROJECT_QUERY } from '../../util/graphql';
+import { FETCH_COMITEE_QUERY, FETCH_STAFF_QUERY, FETCH_PROJECT_QUERY, FETCH_POSITION_QUERY, FETCH_HEADPROJECT_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
+import CenterSpinner from '../../components/common/CenterSpinner';
 
 const ProjectOverviewScreen = props => {
   const sime = useContext(SimeContext);
 
-  const selectedProject = PROJECTS.find(proj => proj._id === sime.project_id);
+  const [project, setProject] = useState({
+    description: '',
+    start_date: '',
+    end_date: '',
+    cancel: ''
+  });
 
-  const selectItemHandler = (_id) => {
+  const [headProject, setHeadProject] = useState({
+    id: '',
+    staff_id: '',
+    position_id: '',
+  });
+
+  const [staff, setStaff] = useState({
+    name: '',
+    email: '',
+    phone_number: '',
+    picture: 'kkk'
+  });
+
+  const [position, setPosition] = useState({
+    name: ''
+  });
+
+  const selectItemHandler = (id) => {
     props.navigation.navigate('Comitee Profile', {
-        comiteeId: _id
+      comiteeId: id
     });
     setVisible(false);
   };
@@ -36,16 +59,130 @@ const ProjectOverviewScreen = props => {
     setVisible(false);
   }
 
-  const headOfProject = COMITEES.find(
-    comitee => comitee.project_id.indexOf(sime.project_id) >= 0 &&
-      comitee.position_id.indexOf('pos1') >= 0
-  );
+  const { data: projectData, error: error1, loading: loading1 } = useQuery(
+    FETCH_PROJECT_QUERY, {
+    variables: {
+      projectId: sime.project_id
+    },
+  });
 
-  const staff = STAFFS.find(stf => stf._id.indexOf(headOfProject.staff_id) >= 0)
-  const position = POSITIONS.find(pos => pos._id.indexOf(headOfProject.position_id) >= 0);
+  const { data: headProjectData, error: error2, loading: loading2 } = useQuery(
+    FETCH_HEADPROJECT_QUERY, {
+    variables: {
+      projectId: sime.project_id,
+      positionId: '5f58d8288ba59232dcda020d'
+    },
+  });
 
-  const startDate = moment(selectedProject.project_start_date).format('ddd, MMM D YYYY');
-  const endDate = moment(selectedProject.project_end_date).format('ddd, MMM D YYYY');
+  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3 }] = useLazyQuery(
+    FETCH_STAFF_QUERY, {
+    variables: {
+      staffId: headProject.staff_id
+    },
+  });
+
+  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
+    FETCH_POSITION_QUERY, {
+    variables: {
+      positionId: headProject.position_id
+    },
+  });
+
+  const headProjectFetch = () => {
+    if (projectData) {
+      setProject({
+        description: projectData.getProject.description,
+        start_date: projectData.getProject.start_date,
+        end_date: projectData.getProject.end_date,
+        cancel: projectData.getProject.cancel
+      })
+    }
+
+    if (headProjectData) {
+      setHeadProject({
+        id: headProjectData.getHeadProject.id,
+        position_id: headProjectData.getHeadProject.position_id,
+        staff_id: headProjectData.getHeadProject.staff_id,
+      })
+      loadStaffData()
+      loadPositionData()
+      console.log(headProjectData.getHeadProject)
+    }
+  }
+
+  const staffDataFetch = () => {
+    if (staffData) {
+      setStaff({
+        name: staffData.getStaff.name,
+        email: staffData.getStaff.email,
+        phone_number: staffData.getStaff.phone_number,
+        picture: staffData.getStaff.picture
+      })
+      console.log(staffData.getStaff)
+    }
+
+    if (positionData) {
+      setPosition({
+        name: positionData.getPosition.name
+      })
+      console.log(positionData.getPosition)
+    }
+  }
+
+  useEffect(() => {
+    console.log("mounted1")
+    headProjectFetch()
+    return () => {
+      console.log("This will be logged on unmount headProjectFetch");
+    }
+  }, [projectData, headProjectData])
+
+  useEffect(() => {
+    console.log("mounted2")
+    staffDataFetch()
+    return () => {
+      console.log("This will be logged on unmount staffDataFetch");
+    }
+  }, [staffData, positionData])
+
+  if (error1) {
+    console.error(error1);
+    return <Text>Error 1</Text>;
+  }
+
+  if (error2) {
+    console.error(error2);
+    return <Text>Error 2</Text>;
+  }
+
+  if (called1 && error3) {
+    console.error(error3);
+    return <Text>Error 3</Text>;
+  }
+
+  if (called2 && error4) {
+    console.error(error4);
+    return <Text>Error 4</Text>;
+  }
+
+  if (loading1) {
+    return <CenterSpinner />;
+  }
+
+  if (loading2) {
+    return <CenterSpinner />;
+  }
+
+  if (loading3) {
+    return <CenterSpinner />;
+  }
+
+  if (loading4) {
+    return <CenterSpinner />;
+  }
+
+  const startDate = moment(project.start_date).format('ddd, MMM D YYYY');
+  const endDate = moment(project.end_date).format('ddd, MMM D YYYY');
 
   return (
     <Provider theme={theme}>
@@ -61,12 +198,12 @@ const ProjectOverviewScreen = props => {
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
             left={() =>
-              <Status start_date={selectedProject.project_start_date} end_date={selectedProject.project_end_date} cancel={selectedProject.cancel} fontSize={wp(3)} />}
+              <Status start_date={project.start_date} end_date={project.end_date} cancel={project.cancel} fontSize={wp(3)} />}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Project Description</Subheading>
           <List.Item
-            title={selectedProject.project_description}
+            title={project.description}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />
@@ -87,12 +224,12 @@ const ProjectOverviewScreen = props => {
         onBackButtonPress={closeModal}
         onBackdropPress={closeModal}
         name={staff.name}
-        position_name={position.position_name}
+        position_name={position.name}
         email={staff.email}
         phone_number={staff.phone_number}
         picture={staff.picture}
         positionName={true}
-        onPressInfo={()=>{selectItemHandler(headOfProject._id)}}
+        onPressInfo={() => { selectItemHandler(headProject.id) }}
       />
     </Provider>
   );
