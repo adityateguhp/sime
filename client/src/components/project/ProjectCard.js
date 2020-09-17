@@ -31,7 +31,7 @@ const ProjectCard = props => {
                         layout={cardCover}
                     >
                         <Card.Cover style={styles.cover}
-                            source={{ uri: props.picture }}
+                           source={props.picture === null || props.picture === '' ? require('../../assets/folder.png')  : { uri: props.picture }}
                         />
                     </SkeletonContent>
 

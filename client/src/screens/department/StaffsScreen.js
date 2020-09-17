@@ -80,15 +80,16 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     const staffId = sime.staff_id;
+    const departmentId = sime.department_id;
 
     const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: {departmentId: sime.department_id}
+                variables: {departmentId: departmentId}
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {departmentId: sime.department_id} });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {departmentId: departmentId} });
         },
         variables: {
             staffId
@@ -134,7 +135,6 @@ const StaffsScreen = ({ route, navigation }) => {
                 <FormStaff
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
-                    deleteButton={deleteHandler}
                     closeButton={closeModalForm}
                 />
             </View>

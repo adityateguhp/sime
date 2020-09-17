@@ -33,11 +33,7 @@ module.exports = {
         async getHeadProject(_, { projectId, positionId }) {
             try {
                 const comitee = await Comitee.findOne({project_id: projectId, position_id: positionId});
-                if (comitee) {
-                    return comitee;
-                } else {
-                    throw new Error('Head of project not found');
-                }
+                return comitee;
             } catch (err) {
                 throw new Error(err);
             }

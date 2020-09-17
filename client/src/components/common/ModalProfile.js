@@ -25,7 +25,7 @@ const ModalProfile = props => {
                     onBackdropPress={props.onBackdropPress}
                     statusBarTranslucent>
                     <View style={styles.modalViewTall}>
-                        <Image style={styles.picture} source={{ uri: props.picture }} />
+                        <Image style={styles.picture} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png')  : { uri: props.picture }} />
                         <View style={styles.info}>
                             <Title style={{ marginTop: 5, marginLeft: 13 }}>{props.name}</Title>
                             <TouchableCmp onPress={props.onPressInfo} useForeground>
@@ -55,7 +55,7 @@ const ModalProfile = props => {
                     onBackdropPress={props.onBackdropPress}
                     statusBarTranslucent>
                     <View style={styles.modalViewShort}>
-                        <Image style={styles.picture} source={{ uri: props.picture }} />
+                        <Image style={styles.picture} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png')  : { uri: props.picture }} />
                         <View style={styles.info}>
                             <Title style={{ marginTop: 5, marginLeft: 13 }}>{props.name}</Title>
                             <TouchableCmp onPress={props.onPressInfo} useForeground>

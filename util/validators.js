@@ -143,6 +143,31 @@ module.exports.validateProjectInput = (
     };
 };
 
+
+module.exports.validateEventInput = (
+    name,
+    start_date,
+    end_date
+) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'Event name must not be empty';
+    }
+
+    if (start_date.trim() === '') {
+        errors.start_date = 'Event start date must not be empty';
+    }
+
+    if (end_date.trim() === '') {
+        errors.end_date = 'Event end date must not be empty';
+    }
+
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
 module.exports.validatePositionInput = (
     name,
     core

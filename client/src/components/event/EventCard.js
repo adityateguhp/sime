@@ -13,8 +13,8 @@ const EventCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const startDate = moment(props.event_start_date).format('ll');
-    const endDate = moment(props.event_end_date).format('ll');
+    const startDate = moment(props.start_date).format('ll');
+    const endDate = moment(props.end_date).format('ll');
 
     let progress = 0;
 
@@ -23,12 +23,13 @@ const EventCard = props => {
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
                 <Card style={styles.event}>
                     <Card.Title
-                        title={props.event_name}
+                        title={props.name}
                         subtitle={
                             <Caption>
                                 <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}
                             </Caption>}
-                        left={() => <Avatar.Image size={50} source={{ uri: props.picture }} />}
+                        left={() => <Avatar.Image size={50} source={props.picture === null || props.picture === '' ? require('../../assets/calendar.png') : { uri: props.picture }}
+                        />}
                     />
                     <Card.Content>
                         <View style={styles.task}>
@@ -39,7 +40,7 @@ const EventCard = props => {
 
                     <View>
                         <Card.Actions style={styles.cardAction}>
-                            <Status start_date={props.event_start_date} end_date={props.event_end_date} cancel={props.cancel} fontSize={11} />
+                            <Status start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} fontSize={11} />
                         </Card.Actions>
                     </View>
                 </Card >

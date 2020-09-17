@@ -8,8 +8,7 @@ import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
-import { COMITEES, STAFFS, PROJECTS, POSITIONS } from '../../data/dummy-data';
-import { FETCH_COMITEE_QUERY, FETCH_STAFF_QUERY, FETCH_PROJECT_QUERY, FETCH_POSITION_QUERY, FETCH_HEADPROJECT_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY, FETCH_PROJECT_QUERY, FETCH_POSITION_QUERY, FETCH_HEADPROJECT_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
@@ -22,7 +21,7 @@ const ProjectOverviewScreen = props => {
     description: '',
     start_date: '',
     end_date: '',
-    cancel: ''
+    cancel: false
   });
 
   const [headProject, setHeadProject] = useState({
@@ -35,7 +34,7 @@ const ProjectOverviewScreen = props => {
     name: '',
     email: '',
     phone_number: '',
-    picture: 'kkk'
+    picture: ''
   });
 
   const [position, setPosition] = useState({
@@ -99,14 +98,18 @@ const ProjectOverviewScreen = props => {
     }
 
     if (headProjectData) {
-      setHeadProject({
-        id: headProjectData.getHeadProject.id,
-        position_id: headProjectData.getHeadProject.position_id,
-        staff_id: headProjectData.getHeadProject.staff_id,
-      })
-      loadStaffData()
-      loadPositionData()
-      console.log(headProjectData.getHeadProject)
+      if (headProjectData.getHeadProject === null) {
+        return;
+      } else {
+        setHeadProject({
+          id: headProjectData.getHeadProject.id,
+          position_id: headProjectData.getHeadProject.position_id,
+          staff_id: headProjectData.getHeadProject.staff_id,
+        })
+        loadStaffData()
+        loadPositionData()
+        console.log(headProjectData.getHeadProject)
+      }
     }
   }
 
@@ -130,7 +133,7 @@ const ProjectOverviewScreen = props => {
   }
 
   useEffect(() => {
-    console.log("mounted1")
+    console.log("mounted headProjectFetch")
     headProjectFetch()
     return () => {
       console.log("This will be logged on unmount headProjectFetch");
@@ -138,7 +141,7 @@ const ProjectOverviewScreen = props => {
   }, [projectData, headProjectData])
 
   useEffect(() => {
-    console.log("mounted2")
+    console.log("mounted staffDataFetch")
     staffDataFetch()
     return () => {
       console.log("This will be logged on unmount staffDataFetch");
@@ -190,8 +193,8 @@ const ProjectOverviewScreen = props => {
         <View style={styles.overview}>
           <Subheading style={{ fontWeight: 'bold' }}>Head of Project</Subheading>
           <List.Item
-            title={staff.name}
-            left={() => <Avatar.Image size={35} source={{ uri: staff.picture }} />}
+            title={staff.name === null || staff.name === '' ? "-" : staff.name}
+            left={() => <Avatar.Image size={35} source={staff.picture === null || staff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.picture }} />}
             onPress={openModal}
           />
           <Divider style={styles.overviewDivider} />
@@ -203,7 +206,7 @@ const ProjectOverviewScreen = props => {
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Project Description</Subheading>
           <List.Item
-            title={project.description}
+            title={project.description === null || project.description === '' ? "-" : project.description}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />
@@ -219,18 +222,22 @@ const ProjectOverviewScreen = props => {
           />
         </View>
       </ScrollView>
-      <ModalProfile
-        visible={visible}
-        onBackButtonPress={closeModal}
-        onBackdropPress={closeModal}
-        name={staff.name}
-        position_name={position.name}
-        email={staff.email}
-        phone_number={staff.phone_number}
-        picture={staff.picture}
-        positionName={true}
-        onPressInfo={() => { selectItemHandler(headProject.id) }}
-      />
+      {
+        headProjectData.getHeadProject === null ? null :
+          <ModalProfile
+            visible={visible}
+            onBackButtonPress={closeModal}
+            onBackdropPress={closeModal}
+            name={staff.name}
+            position_name={position.name}
+            email={staff.email}
+            phone_number={staff.phone_number}
+            picture={staff.picture}
+            positionName={true}
+            onPressInfo={() => { selectItemHandler(headProject.id) }}
+          />
+      }
+
     </Provider>
   );
 }

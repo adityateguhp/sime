@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -7,18 +7,23 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { useMutation } from '@apollo/react-hooks';
 
 
-import { departmentNameValidator } from '../../util/validator';
-import { FETCH_DEPARTMENTS_QUERY, ADD_DEPARTMENT_MUTATION } from '../../util/graphql';
+import { divisionNameValidator } from '../../util/validator';
+import { FETCH_DIVISIONS_QUERY, UPDATE_DIVISION_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider';
 
-const FormDepartment = props => {
+const FormEditDivision = props => {
+
+    const sime = useContext(SimeContext);
+
     const [errors, setErrors] = useState({
-        department_name_error: '',
+        division_name_error: '',
     });
 
     const [values, setValues] = useState({
-        name: '',
+        divisionId: '',
+        name: ''
     });
 
     const onChange = (key, val, err) => {
@@ -26,20 +31,28 @@ const FormDepartment = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
-    const [addDepartment, { loading }] = useMutation(ADD_DEPARTMENT_MUTATION, {
+    useEffect(() => {
+        if(props.division){
+            setValues({
+                divisionId: props.division.id, 
+                name: props.division.name
+            })
+        }
+    }, [props.division])    
+
+    const [updateDivision, { loading }] = useMutation(UPDATE_DIVISION_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY
+                query: FETCH_DIVISIONS_QUERY,
+                variables: {projectId: sime.project_id}
             });
-            data.getDepartments = [result.data.addDepartment, ...data.getDepartments];
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
-            values.name = '';
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: sime.project_id}});
             props.closeModalForm();
         },
         onError() {
-            const departementNameError = departmentNameValidator(values.name);
-            if (departementNameError) {
-                setErrors({ ...errors, department_name_error: departementNameError })
+            const divisionNameError = divisionNameValidator(values.name);
+            if (divisionNameError) {
+                setErrors({ ...errors, division_name_error: divisionNameError })
             }
         },
         variables: values
@@ -47,19 +60,19 @@ const FormDepartment = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addDepartment();
+        updateDivision();
     };
 
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     //for get keyboard height
     Keyboard.addListener('keyboardDidShow', (frames) => {
-        if (!frames.endCoordinates) return;
-        setKeyboarSpace(frames.endCoordinates.height);
-    });
-    Keyboard.addListener('keyboardDidHide', (frames) => {
-        setKeyboarSpace(0);
-    });
+       if (!frames.endCoordinates) return;
+         setKeyboarSpace(frames.endCoordinates.height);
+     });
+     Keyboard.addListener('keyboardDidHide', (frames) => {
+         setKeyboarSpace(0);
+     });
     const safeArea = useSafeArea();
 
     return (
@@ -74,30 +87,31 @@ const FormDepartment = props => {
                 style={{
                     justifyContent: 'flex-end',
                     margin: 0,
-                    top: keyboardSpace ? -10 - keyboardSpace : 0,
+                    top: keyboardSpace ? -10 -keyboardSpace : 0,
                 }}
                 statusBarTranslucent>
                 <View style={styles.buttomView}>
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="New Department" />
-                            <Appbar.Action icon="check" onPress={onSubmit}/>
+                            <Appbar.Content title="Edit Division" />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
+                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
-                        <ScrollView>
-                            <View style={styles.formViewStyle}>
-                                <View style={styles.inputStyle}>
-                                    <TextInput
-                                        style={styles.input}
-                                        label='Department Name'
-                                        value={values.name}
-                                        onChangeText={(val) => onChange('name', val, 'department_name_error')}
-                                        error={errors.department_name_error? true : false}
-                                        errorText={errors.department_name_error}
-                                    />
+                            <ScrollView>
+                                <View style={styles.formViewStyle}>
+                                    <View style={styles.inputStyle}>
+                                        <TextInput
+                                            style={styles.input}
+                                            label='Division Name'
+                                            value={values.name}
+                                            onChangeText={(val) => onChange('name', val, 'division_name_error')}
+                                            error={errors.division_name_error? true : false}
+                                            errorText={errors.division_name_error}
+                                        />
+                                    </View>
                                 </View>
-                            </View>
-                        </ScrollView>
+                            </ScrollView>
                     </View>
                 </View>
             </Modal>
@@ -110,7 +124,7 @@ const modalFormHeight = hp(34);
 
 const styles = StyleSheet.create({
     appbar: {
-
+       
     },
     formView: {
         backgroundColor: 'white',
@@ -133,4 +147,5 @@ const styles = StyleSheet.create({
     }
 });
 
-export default FormDepartment;
+
+export default FormEditDivision;

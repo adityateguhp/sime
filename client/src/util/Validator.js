@@ -13,6 +13,16 @@ export const projectNameValidator = (name) => {
   return '';
 }
 
+export const eventNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Event name must not be empty';
+  return '';
+}
+
+export const divisionNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Division name must not be empty';
+  return '';
+}
+
 export const dateValidator = (start_date, end_date) => {
   if ((!start_date || start_date.length <= 0) && (!end_date || end_date.length <= 0)){
     return 'Date must not be empty';

@@ -5,6 +5,7 @@ const projectsResolvers = require('./projects');
 const positionResolvers = require('./positions');
 const divisionResolvers = require('./divisions');
 const comiteeResolvers = require('./comitees');
+const eventResolvers = require('./events');
 
 module.exports = {
     Query: {
@@ -14,7 +15,8 @@ module.exports = {
         ...projectsResolvers.Query,
         ...positionResolvers.Query,
         ...divisionResolvers.Query,
-        ...comiteeResolvers.Query
+        ...comiteeResolvers.Query,
+        ...eventResolvers.Query
     },
     Mutation: {
         ...organizationResolvers.Mutation,
@@ -23,6 +25,7 @@ module.exports = {
         ...projectsResolvers.Mutation,
         ...positionResolvers.Mutation,
         ...divisionResolvers.Mutation,
-        ...comiteeResolvers.Mutation
+        ...comiteeResolvers.Mutation,
+        ...eventResolvers.Mutation
     }
 }

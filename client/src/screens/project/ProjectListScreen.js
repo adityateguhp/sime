@@ -15,8 +15,6 @@ import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_PROJECTS_QUERY, FETCH_PROJECT_QUERY, DELETE_PROJECT, CANCEL_PROJECT_MUTATION } from '../../util/graphql';
 
-
-
 const ProjectListScreen = props => {
     let TouchableCmp = TouchableOpacity;
 
@@ -70,7 +68,7 @@ const ProjectListScreen = props => {
         setVisible(true);
         sime.setProject_name(name);
         sime.setProject_id(id);
-        setCancelValues({cancel: cancel, projectId: id})
+        setCancelValues({ cancel: cancel, projectId: id })
         loadExistData();
     }
 
@@ -111,7 +109,7 @@ const ProjectListScreen = props => {
             console.log(err)
             return err;
         },
-        variables: {...cancelValue, cancel: !cancelValue.cancel}
+        variables: { ...cancelValue, cancel: !cancelValue.cancel }
     });
 
     const onCancel = (event) => {
@@ -151,6 +149,20 @@ const ProjectListScreen = props => {
 
     if (loading2) {
 
+    }
+
+    if (projects.getProjects.length === 0) {
+        return (
+            <View style={styles.content}>
+                <Text>No projects found, let's add projects!</Text>
+                <FABbutton Icon="plus" label="staff" onPress={openForm} />
+                <FormProject
+                    closeModalForm={closeModalForm}
+                    visibleForm={visibleForm}
+                    closeButton={closeModalForm}
+                />
+            </View>
+        );
     }
 
     return (
@@ -217,7 +229,6 @@ const ProjectListScreen = props => {
             <FormProject
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
-                deleteButton={deleteHandler}
                 closeButton={closeModalForm}
             />
             <FormEditProject

@@ -352,6 +352,143 @@ export const CANCEL_PROJECT_MUTATION = gql`
   } 
 `;
 
+
+export const FETCH_EVENTS_QUERY = gql`
+  query($projectId: ID!) {
+    getEvents(projectId: $projectId){
+    id
+    name
+    description
+    cancel
+    location
+    start_date
+    end_date
+    picture
+    project_id
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_EVENT_QUERY = gql`
+   query($eventId: ID!) {
+    getEvent(eventId: $eventId){
+    id
+    name
+    description
+    cancel
+    location
+    start_date
+    end_date
+    picture
+    project_id
+    createdAt
+  }
+  }
+`;
+
+export const ADD_EVENT_MUTATION = gql`
+  mutation 
+  addEvent(
+    $name: String!,
+    $description: String,
+    $cancel: Boolean!,
+    $location: String,
+    $start_date: String!,
+    $end_date: String!,
+    $project_id: ID!,
+    $picture: String,
+  ) {
+  addEvent(
+    name: $name,
+    description: $description,
+    cancel: $cancel, 	
+    location: $location,
+    start_date: $start_date,
+    end_date: $end_date,
+    project_id: $project_id
+    picture: $picture
+  ) {
+    id
+    name
+    description
+    cancel
+    location
+    start_date
+    end_date
+    picture
+    project_id
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_EVENT_MUTATION = gql`
+  mutation 
+  updateEvent(
+    $eventId: ID!,
+    $name: String!,
+    $description: String,
+    $cancel: Boolean!,
+    $location: String,
+    $start_date: String!,
+    $end_date: String!,
+    $picture: String,
+  ) {
+  updateEvent(
+    eventId: $eventId,
+    name: $name,
+    description: $description,
+    cancel: $cancel, 	
+    location: $location,
+    start_date: $start_date,
+    end_date: $end_date,
+    picture: $picture
+  ) {
+    id
+    name
+    description
+    cancel
+    location
+    start_date
+    end_date
+    picture
+    project_id
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_EVENT = gql`
+  mutation deleteEvent($eventId: ID!) {
+    deleteEvent(eventId: $eventId)
+  }
+`;
+
+export const CANCEL_EVENT_MUTATION = gql`
+  mutation 
+  cancelEvent(
+    $eventId: ID!,
+    $cancel: Boolean!
+  ) {
+  cancelEvent(
+    eventId: $eventId,
+    cancel: $cancel
+  ) {
+    id
+    name
+    description
+    cancel,
+    location
+    start_date
+    end_date
+    picture
+    project_id
+    createdAt
+  }
+  } 
+`;
+
 export const FETCH_POSITIONS_QUERY = gql`
   {
     getPositions{
@@ -466,8 +603,8 @@ export const FETCH_COMITEES_QUERY = gql`
 `;
 
 export const FETCH_COMITEE_QUERY = gql`
-   query($projectId: ID!) {
-    getComitee(projectId: $projectId){
+   query($comiteeId: ID!) {
+    getComitee(comiteeId: $comiteeId){
       id
       staff_id
       position_id

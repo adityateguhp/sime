@@ -38,7 +38,19 @@ module.exports = gql`
         organization_id: ID!
         picture: String
         createdAt: String!
-    }
+    },
+    type Event {
+        id: ID!
+        name: String!
+        description: String
+        cancel: Boolean!
+        location: String
+        start_date: String!
+        end_date: String!
+        project_id: ID!
+        picture: String
+        createdAt: String!
+    },
     type Position {
         id: ID!
         name: String!
@@ -76,7 +88,9 @@ module.exports = gql`
         getDivision(divisionId: ID!): Division
         getComitees(projectId: ID!): [Comitee]
         getComitee(comiteeId: ID!): Comitee 
-        getHeadProject(projectId: ID!, positionId: ID!): Comitee  
+        getHeadProject(projectId: ID!, positionId: ID!): Comitee
+        getEvents(projectId: ID!): [Event]
+        getEvent(eventId: ID!): Event  
     }
     type Mutation {
         registerOrganization(
@@ -147,6 +161,36 @@ module.exports = gql`
             projectId: ID!,
             cancel: Boolean!
         ): Project!
+
+        
+        addEvent(
+            name: String!,
+            description: String,
+            cancel: Boolean!,
+            location: String,
+            start_date: String!,
+            end_date: String!,
+            project_id: ID!
+            picture: String
+        ): Event!
+
+        updateEvent(
+            eventId: ID!,
+            name: String!,
+            description: String,
+            cancel: Boolean!,
+            location: String,
+            start_date: String!,
+            end_date: String!,
+            picture: String
+        ): Event!
+
+        deleteEvent(eventId: ID!): String!
+
+        cancelEvent(
+            eventId: ID!,
+            cancel: Boolean!
+        ): Event!
 
         addPosition(name: String!, core: Boolean!): Position!
         

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image} from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -12,11 +12,11 @@ import moment from 'moment';
 import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider'
 import { eventNameValidator, dateValidator } from '../../util/validator';
-import { FETCH_EVENTS_QUERY, ADD_EVENT_MUTATION } from '../../util/graphql';
+import { FETCH_EVENTS_QUERY, UPDATE_EVENT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
 
-const FormEvent = props => {
+const FormEditEvent = props => {
 
     const sime = useContext(SimeContext);
 
@@ -34,13 +34,13 @@ const FormEvent = props => {
     //const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [values, setValues] = useState({
+        eventId: '',
         name: '',
         description: '',
         location: '',
         cancel: false,
         start_date: '',
         end_date: '',
-        project_id: sime.project_id,
         picture: null,
     });
 
@@ -107,21 +107,28 @@ const FormEvent = props => {
         closeEndDatepicker();
     };
 
-    const [addEvent, { loading }] = useMutation(ADD_EVENT_MUTATION, {
+    useEffect(() => {
+        if (props.event) {
+            setValues({
+                eventId: props.event.id,
+                name: props.event.name,
+                description: props.event.description,
+                cancel: props.event.cancel,
+                location: props.event.location,
+                start_date: props.event.start_date,
+                end_date: props.event.end_date,
+                picture: props.event.picture,
+            })
+        }
+    }, [props.event])
+
+    const [updateEvent, { loading }] = useMutation(UPDATE_EVENT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_EVENTS_QUERY,
                 variables: { projectId: sime.project_id }
             });
-            data.getEvents = [result.data.addEvent, ...data.getEvents];
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
-            values.name = '';
-            values.description = '';
-            values.location = '';
-            values.start_date = '';
-            values.end_date = '';
-            values.picture = '';
-            values.cancel = false;
             props.closeModalForm();
         },
         onError(err) {
@@ -144,7 +151,7 @@ const FormEvent = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addEvent();
+        updateEvent();
     };
 
     //for get keyboard height
@@ -176,6 +183,7 @@ const FormEvent = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="New Event" />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -249,7 +257,7 @@ const FormEvent = props => {
                                             style={styles.input}
                                             label='Event Description'
                                             value={values.description}
-                                            onChangeText={(val) => onChange('description', val, '')}
+                                            onChangeText={(val) => onChange('name', val, '')}
                                             multiline={true}
                                         />
                                     </View>
@@ -359,4 +367,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormEvent;
+export default FormEditEvent;

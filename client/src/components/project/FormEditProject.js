@@ -14,6 +14,7 @@ import { projectNameValidator, dateValidator } from '../../util/validator';
 import { FETCH_PROJECTS_QUERY, UPDATE_PROJECT_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
+import { theme } from '../../constants/Theme';
 
 const FormEditProject = props => {
     let TouchableCmp = TouchableOpacity;
@@ -177,6 +178,7 @@ const FormEditProject = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="Edit Project" />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -226,6 +228,7 @@ const FormEditProject = props => {
                                             </Button>
                                         </View>
                                     </View>
+                                    {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
@@ -248,24 +251,24 @@ const FormEditProject = props => {
                                     </View>
                                 </View>
                                 <Portal>
-                                <DateTimePicker
-                                    isVisible={showStartDate}
-                                    mode="date"
-                                    onConfirm={(val) => onChangeStartDate('start_date', val, 'start_date_error')}
-                                    onCancel={closeStartDatepicker}
-                                    mode="date"
-                                    display="default"
-                                    maximumDate={values.end_date? new Date(values.end_date): null}
-                                />
-                                <DateTimePicker
-                                    isVisible={showEndDate}
-                                    mode="date"
-                                    onConfirm={(val) => onChangeEndDate('end_date', val, 'end_date_error')}
-                                    onCancel={closeEndDatepicker}
-                                    mode="date"
-                                    display="default"
-                                    minimumDate={values.start_date? new Date(values.start_date): null}
-                                />
+                                    <DateTimePicker
+                                        isVisible={showStartDate}
+                                        mode="date"
+                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'start_date_error')}
+                                        onCancel={closeStartDatepicker}
+                                        mode="date"
+                                        display="default"
+                                        maximumDate={values.end_date ? new Date(values.end_date) : null}
+                                    />
+                                    <DateTimePicker
+                                        isVisible={showEndDate}
+                                        mode="date"
+                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'end_date_error')}
+                                        onCancel={closeEndDatepicker}
+                                        mode="date"
+                                        display="default"
+                                        minimumDate={values.start_date ? new Date(values.start_date) : null}
+                                    />
                                 </Portal>
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -343,6 +346,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
 
+    },
+    error: {
+        fontSize: 14,
+        color: theme.colors.error,
+        paddingHorizontal: 4,
+        paddingTop: 4,
     }
 });
 

@@ -1,19 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, TextInput, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useMutation } from '@apollo/react-hooks';
 
+
+import { divisionNameValidator } from '../../util/validator';
+import { FETCH_DIVISIONS_QUERY, ADD_DIVISION_MUTATION } from '../../util/graphql';
+import TextInput from '../common/TextInput';
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider';
 
 const FormDivision = props => {
 
-    const [keyboardSpace, setKeyboarSpace] = useState(0);
+    const sime = useContext(SimeContext);
 
-    const [divisionName, setDivisionName] = useState('');
+    const [errors, setErrors] = useState({
+        division_name_error: '',
+    });
+
+    const [values, setValues] = useState({
+        name: '',
+        projectId: sime.project_id
+    });
+
+    const onChange = (key, val, err) => {
+        setValues({ ...values, [key]: val });
+        setErrors({ ...errors, [err]: '' })
+    };
+
+    const [addDivision, { loading }] = useMutation(ADD_DIVISION_MUTATION, {
+        update(proxy, result) {
+            const data = proxy.readQuery({
+                query: FETCH_DIVISIONS_QUERY,
+                variables: {projectId: values.projectId}
+            });
+            data.getDivisions = [result.data.addDivision, ...data.getDivisions];
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: values.projectId}});
+            values.name = '';
+            props.closeModalForm();
+        },
+        onError() {
+            const divisionNameError = divisionNameValidator(values.name);
+            if (divisionNameError) {
+                setErrors({ ...errors, division_name_error: divisionNameError })
+            }
+        },
+        variables: values
+    });
+
+    const onSubmit = (event) => {
+        event.preventDefault();
+        addDivision();
+    };
+
+    const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     //for get keyboard height
     Keyboard.addListener('keyboardDidShow', (frames) => {
@@ -45,8 +88,7 @@ const FormDivision = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="New Division" />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
-                            <Appbar.Action icon="check" onPress={() => console.log('Pressed mail')} />
+                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
@@ -54,8 +96,10 @@ const FormDivision = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Division Name'
-                                            value={divisionName}
-                                            onChangeText={divisionName => setDivisionName(divisionName)}
+                                            value={values.name}
+                                            onChangeText={(val) => onChange('name', val, 'division_name_error')}
+                                            error={errors.division_name_error? true : false}
+                                            errorText={errors.division_name_error}
                                         />
                                     </View>
                                 </View>
