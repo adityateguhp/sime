@@ -74,6 +74,43 @@ module.exports = gql`
         createdAt: String!
     }
 
+    type External {
+        id: ID!
+        name: String!
+        external_type: ID!
+        event_id: ID!
+        email: ID!
+        phone_number: String!
+        details: String
+        picture: String
+        createdAt: String!
+    }
+
+    type ExternalType {
+        id: ID!
+        name: String!
+    }
+
+    type Roadmap {
+        id: ID!
+        name: String!
+        event_id: ID!
+        start_date: String!
+        end_date: String!
+        createdAt: String!
+    }
+
+    type Rundown {
+        id: ID!
+        agenda: String!
+        event_id: ID!
+        date: String!
+        start_time: String!
+        end_time: String!
+        details: String
+        createdAt: String!
+    }
+
     type Query {
         getUserOrganization: Organization
         getDepartments: [Department]
@@ -91,6 +128,15 @@ module.exports = gql`
         getHeadProject(projectId: ID!, positionId: ID!): Comitee
         getEvents(projectId: ID!): [Event]
         getEvent(eventId: ID!): Event  
+        getExternals(eventId: ID!): [External]
+        getExternal(externalId: ID!): External 
+        getExternalByType(eventId: ID!, externalType: ID!): [External] 
+        getExternalTypes: [ExternalType]
+        getExternalType(exTypeId: ID!): ExternalType
+        getRoadmaps(eventId: ID!): [Roadmap]
+        getRoadmap(roadmapId: ID!): Roadmap  
+        getRundowns(eventId: ID!): [Rundown]
+        getRundown(rundownId: ID!): Rundown 
     }
     type Mutation {
         registerOrganization(
@@ -162,7 +208,6 @@ module.exports = gql`
             cancel: Boolean!
         ): Project!
 
-        
         addEvent(
             name: String!,
             description: String,
@@ -209,5 +254,64 @@ module.exports = gql`
         updateComitee(comiteeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!): Comitee!
         
         deleteComitee(comiteeId: ID!): String!
+
+        addExternal(
+            name: String!,
+            external_type: ID!,
+            event_id: ID!,
+            email: ID!,
+            phone_number: String!,
+            details: String,
+            picture: String
+        ): External!
+
+        updateExternal(
+            externalId: ID!,
+            name: String!,
+            external_type: ID!,
+            email: ID!,
+            phone_number: String!,
+            details: String,
+            picture: String
+        ): External!
+
+        deleteExternal(externalId: ID!): String!
+
+        addRoadmap(
+            name: String!,
+            event_id: ID!,
+            start_date: String!,
+            end_date: String!
+        ): Event!
+
+        updateRoadmap(
+            roadmapId: ID!,
+            name: String!,
+            start_date: String!,
+            end_date: String!
+        ): Event!
+
+        deleteRoadmap(roadmapId: ID!): String!
+
+        addRundown(
+            agenda: String!
+            event_id: ID!
+            date: String!
+            start_time: String!
+            end_time: String!
+            details: String
+        ): Event!
+
+        updateRundown(
+            rundownId: ID!,
+            agenda: String!
+            date: String!
+            start_time: String!
+            end_time: String!
+            details: String
+        ): Event!
+
+        deleteRundown(rundownId: ID!): String!
+
     }
 `;

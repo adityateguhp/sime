@@ -112,7 +112,7 @@ module.exports = {
       try {
         const event = await Event.findById(eventId);
         await event.delete();
-        return 'Project deleted successfully';
+        return 'External deleted successfully';
       } catch (err) {
         throw new Error(err);
       }
