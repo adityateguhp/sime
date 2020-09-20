@@ -82,7 +82,6 @@ module.exports = {
     async updateExternal(_, {
       externalId,
       name,
-      external_type,
       email,
       phone_number,
       details,
@@ -103,7 +102,6 @@ module.exports = {
           { _id: externalId },
           {
             name,
-            external_type,
             email,
             phone_number,
             details,

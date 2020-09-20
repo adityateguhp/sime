@@ -79,7 +79,7 @@ module.exports = gql`
         name: String!
         external_type: ID!
         event_id: ID!
-        email: ID!
+        email: String!
         phone_number: String!
         details: String
         picture: String
@@ -259,7 +259,7 @@ module.exports = gql`
             name: String!,
             external_type: ID!,
             event_id: ID!,
-            email: ID!,
+            email: String!,
             phone_number: String!,
             details: String,
             picture: String
@@ -268,8 +268,7 @@ module.exports = gql`
         updateExternal(
             externalId: ID!,
             name: String!,
-            external_type: ID!,
-            email: ID!,
+            email: String!,
             phone_number: String!,
             details: String,
             picture: String

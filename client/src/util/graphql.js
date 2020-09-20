@@ -352,7 +352,6 @@ export const CANCEL_PROJECT_MUTATION = gql`
   } 
 `;
 
-
 export const FETCH_EVENTS_QUERY = gql`
   query($projectId: ID!) {
     getEvents(projectId: $projectId){
@@ -657,5 +656,315 @@ export const UPDATE_COMITEE_MUTATION = gql`
 export const DELETE_COMITEE = gql`
   mutation deleteComitee($comiteeId: ID!) {
     deleteComitee(comiteeId: $comiteeId)
+  }
+`;
+
+export const FETCH_EXTERNALTYPES_QUERY = gql`
+  query{
+    getExternalTypes{
+      id
+      name
+  }
+  }
+`;
+
+export const FETCH_EXTERNALTYPE_QUERY = gql`
+  query($exTypeId: ID!){
+    getExternalType(exTypeId: $exTypeId{
+      id
+      name
+  }
+  }
+`;
+
+export const FETCH_EXTERNALS_QUERY = gql`
+  query($eventId: ID!){
+    getExternals(eventId: $eventId){
+      id
+      name
+      external_type
+      event_id
+      email
+      phone_number
+      details
+      picture
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_EXTERNAL_QUERY = gql`
+   query($externalId: ID!) {
+    getExternal(externalId: $externalId){
+      id
+      name
+      external_type
+      event_id
+      email
+      phone_number
+      details
+      picture
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_EXBYTYPE_QUERY = gql`
+   query($eventId: ID!, $externalId: ID!) {
+    getExternalByType(eventId: $eventId, externalId: $externalId){
+      id
+      name
+      external_type
+      event_id
+      email
+      phone_number
+      details
+      picture
+      createdAt
+  }
+  }
+`;
+
+export const ADD_EXTERNAL_MUTATION = gql`
+  mutation addExternal(
+    $name: String!,
+    $external_type: ID!,
+    $event_id: ID!,
+    $email: String!,
+    $phone_number: String!,
+    $details: String,
+    $picture: String
+    ) {
+    addExternal(
+      name: $name,
+      external_type: $external_type,
+      event_id: $event_id,
+      email: $email,
+      phone_number: $phone_number,
+      details: $details,
+      picture: $picture
+    ) {
+      id
+      name
+      external_type
+      event_id
+      email
+      phone_number
+      details
+      picture
+      createdAt
+  }
+  } 
+`;
+
+export const UPDATE_EXTERNAL_MUTATION = gql`
+  mutation updateExternal(
+    $externalId: ID!,
+    $name: String!,
+    $email: String!,
+    $phone_number: String!,
+    $details: String,
+    $picture: String
+  ) {
+    updateExternal(
+      externalId: $externalId,
+      name: $name,
+      email: $email,
+      phone_number: $phone_number,
+      details: $details,
+      picture: $picture
+    ) {
+      id
+      name
+      external_type
+      event_id
+      email
+      phone_number
+      details
+      picture
+      createdAt
+  }
+  } 
+`;
+
+export const DELETE_EXTERNAL = gql`
+  mutation deleteExternal($externalId: ID!) {
+    deleteExternal(externalId: $externalId)
+  }
+`;
+
+export const FETCH_ROADMAPS_QUERY = gql`
+  query($eventId: ID!) {
+    getRoadmaps(eventId: $eventId){
+    id
+    name
+    event_id
+    start_date
+    end_date
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_ROADMAP_QUERY = gql`
+   query($roadmapId: ID!) {
+    getRoadmap(roadmapId: $roadmapId){
+    id
+    name
+    event_id
+    start_date
+    end_date
+    createdAt
+  }
+  }
+`;
+
+export const ADD_ROADMAP_MUTATION = gql`
+  mutation 
+  addRoadmap(
+    $name: String!,
+    $event_id: String,
+    $start_date: String!,
+    $end_date: String!
+  ) {
+  addRoadmap(
+    name: $name,
+    event_id: $event_id,
+    start_date: $start_date,
+    end_date: $end_date
+  ) {
+    id
+    name
+    event_id
+    start_date
+    end_date
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_ROADMAP_MUTATION = gql`
+  mutation 
+  updateRoadmap(
+    $roadmapId: ID!,
+    $name: String!,
+    $start_date: String!,
+    $end_date: String!
+  ) {
+  updateRoadmap(
+    roadmapId: $roadmapId
+    name: $name,
+    start_date: $start_date,
+    end_date: $end_date
+  ) {
+    id
+    name
+    event_id
+    start_date
+    end_date
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_ROADMAP = gql`
+  mutation deleteRoadmap($roadmapId: ID!) {
+    deleteRoadmap(roadmapId: $roadmapId)
+  }
+`;
+
+export const FETCH_RUNDOWNS_QUERY = gql`
+  query($eventId: ID!) {
+    getRundowns(eventId: $eventId){
+    id
+    agenda
+    event_id
+    date
+    start_time
+    end_time
+    details
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_RUNDOWN_QUERY = gql`
+   query($rundownId: ID!) {
+    getRundown(rundownId: $rundownId){
+    id
+    agenda
+    event_id
+    date
+    start_time
+    end_time
+    details
+    createdAt
+  }
+  }
+`;
+
+export const ADD_RUNDOWN_MUTATION = gql`
+  mutation 
+  addRundown(
+    $agenda: String!,
+    $event_id: ID!,
+    $date: String!,
+    $start_time: String!,
+    $end_time: String!,
+    $details: String
+  ) {
+  addRundown(
+    agenda: $agenda,
+    event_id: $event_id,
+    date: $date,
+    start_time: $start_time,
+    end_time: $end_time,
+    details: $details
+  ) {
+    id
+    agenda
+    event_id
+    date
+    start_time
+    end_time
+    details
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_RUNDOWN_MUTATION = gql`
+  mutation 
+  updateRundown(
+    $rundownId: ID!,
+    $agenda: String!,
+    $date: String!,
+    $start_time: String!,
+    $end_time: String!,
+    $details: String
+  ) {
+  updateRundown(
+    rundownId: $rundownId,
+    agenda: $agenda,
+    date: $date,
+    start_time: $start_time,
+    end_time: $end_time,
+    details: $details
+  ) {
+    id
+    agenda
+    event_id
+    date
+    start_time
+    end_time
+    details
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_RUNDOWN = gql`
+  mutation deleteRundown($rundownId: ID!) {
+    deleteRundown(rundownId: $rundownId)
   }
 `;
