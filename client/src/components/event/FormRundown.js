@@ -1,21 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, TextInput, Text } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useMutation } from '@apollo/react-hooks';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import moment from 'moment';
 
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider';
+import { singleDateValidator, timeValidator, agendaValidator } from '../../util/validator';
+import { FETCH_RUNDOWNS_QUERY, ADD_RUNDOWN_MUTATION } from '../../util/graphql';
+import TextInput from '../common/TextInput';
+import { theme } from '../../constants/Theme';
 
 const FormRundown = props => {
 
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
-    const [agendaName, setAgendaName] = useState('');
-    const [agendaDetails, setAgendaDetails] = useState('');
+    const sime = useContext(SimeContext);
 
+    const [errors, setErrors] = useState({
+        agenda_error: '',
+        date_error: '',
+        time_error: ''
+    });
+
+    const [values, setValues] = useState({
+        agenda: '',
+        event_id: sime.event_id,
+        date: '',
+        start_time: '',
+        end_time: '',
+        details: ''
+    });
+
+    const [showStartTime, setShowStartTime] = useState(false);
+    const [showEndTime, setShowEndTime] = useState(false);
+    const [showDate, setShowDate] = useState(false)
+
+    const showStartTimepicker = () => {
+        setShowStartTime(true);
+    };
+
+    const showEndTimepicker = () => {
+        setShowEndTime(true);
+    };
+
+    const showDatepicker = () => {
+        setShowDate(true);
+    };
+
+    const closeStartTimepicker = () => {
+        setShowStartTime(false);
+    };
+
+    const closeEndTimepicker = () => {
+        setShowEndTime(false);
+    };
+
+    const closeDatepicker = () => {
+        setShowDate(false);
+    };
     //for get keyboard height
     // Keyboard.addListener('keyboardDidShow', (frames) => {
     //     if (!frames.endCoordinates) return;
@@ -25,6 +72,70 @@ const FormRundown = props => {
     //     setKeyboarSpace(0);
     // });
     // const safeArea = useSafeArea();
+
+    const onChange = (key, val, err) => {
+        setValues({ ...values, [key]: val });
+        setErrors({ ...errors, [err]: '' })
+    };
+
+    const onChangeStartTime = (key, val, err) => {
+        setValues({ ...values, [key]: val });
+        setErrors({ ...errors, [err]: '' });
+        closeStartTimepicker();
+    };
+
+    const onChangeEndTime = (key, val, err) => {
+        setValues({ ...values, [key]: val });
+        setErrors({ ...errors, [err]: '' });
+        closeEndTimepicker();
+    };
+
+    const onChangeDate = (key, val, err) => {
+        setValues({ ...values, [key]: val });
+        setErrors({ ...errors, [err]: '' });
+        closeDatepicker();
+    };
+
+    const [addRundown, { loading }] = useMutation(ADD_RUNDOWN_MUTATION, {
+        update(proxy, result) {
+            const data = proxy.readQuery({
+                query: FETCH_RUNDOWNS_QUERY,
+                variables: { eventId: sime.event_id }
+            });
+            data.getRundowns = [result.data.addRundown, ...data.getRundowns];
+            proxy.writeQuery({ query: FETCH_RUNDOWNS_QUERY, data, variables: { eventId: sime.event_id } });
+            values.agenda = '';
+            values.start_time = '';
+            values.end_time = '';
+            values.date = '';
+            values.details = '';
+            props.closeModalForm();
+        },
+        onError(err) {
+            const agendaError = agendaValidator(values.agenda);
+            const dateError = singleDateValidator(values.date);
+            const timeError = timeError(values.start_time, values.end_time)
+            if (agendaError || dateError || timeError) {
+                setErrors({
+                    ...errors,
+                    agenda_error: agendaError,
+                    date_error: dateError,
+                    time_error: timeError
+                })
+                return;
+            }
+        },
+        variables: values
+    });
+
+    const date = moment(values.date).format('dddd, MMM D YYYY');
+    const startTime = moment(values.start_time).format('LT');
+    const endTime = moment(values.end_time).format('LT');
+
+    const onSubmit = (event) => {
+        event.preventDefault();
+        addRundown();
+    };
 
     return (
         <Portal>
@@ -46,8 +157,7 @@ const FormRundown = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="New Agenda" />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
-                            <Appbar.Action icon="check" onPress={() => console.log('Pressed mail')} />
+                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
@@ -61,19 +171,20 @@ const FormRundown = props => {
                                             <Icon name="calendar" size={25} color={Colors.primaryColor} />
                                             <Text style={styles.textDate}>
                                                 Date :
-                                </Text>
+                                            </Text>
                                         </View>
                                         <View style={styles.dateButtonContainer}>
                                             <Button
                                                 style={styles.dateButton}
                                                 labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={() => console.log('Pressed')}
+                                                onPress={showDatepicker}
                                                 mode="outlined"
                                             >
-                                                select date
-                                    </Button>
+                                                {values.date === null || values.date === '' ? 'SELECT DATE' : date}
+                                            </Button>
                                         </View>
                                     </View>
+                                    {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
 
                                     <View style={styles.dateInputContainer}>
                                         <View style={styles.dateLabel}>
@@ -86,40 +197,65 @@ const FormRundown = props => {
                                             <Button
                                                 style={styles.dateButton}
                                                 labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={() => console.log('Pressed')}
+                                                onPress={showStartTimepicker}
                                                 mode="outlined"
                                             >
-                                                FROM
-                                    </Button>
+                                                {values.start_time === null || values.start_time === '' ? 'FROM' : startTime}
+                                            </Button>
                                             <Button
                                                 style={styles.dateButton}
                                                 labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={() => console.log('Pressed')}
+                                                onPress={showEndTimepicker}
                                                 mode="outlined"
                                             >
-                                                TO
-                                    </Button>
+                                                {values.end_time === null || values.end_time === '' ? 'TO' : endTime}
+                                            </Button>
                                         </View>
                                     </View>
+                                    {errors.time_error ? <Text style={styles.error}>{errors.time_error}</Text> : null}
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                            style={styles.input}
-                                            label='Agenda Name'
-                                            value={agendaName}
-                                            onChangeText={agendaName => setAgendaName(agendaName)}
+                                             style={styles.input}
+                                             label='Agenda'
+                                             value={values.agenda}
+                                             onChangeText={(val) => onChange('agenda', val, 'agenda_error')}
+                                             error={errors.agenda_error ? true : false}
+                                             errorText={errors.agenda_error}
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                            style={styles.input}
-                                            label='Details'
-                                            value={agendaDetails}
-                                            onChangeText={agendaDetails => setAgendaDetails(agendaDetails)}
-                                            multiline={true}
+                                             style={styles.input}
+                                             label='Details'
+                                             value={values.details}
+                                             onChangeText={(val) => onChange('details', val, '')}
                                         />
                                     </View>
                                 </View>
+                                <Portal>
+                                    <DateTimePicker
+                                        isVisible={showStartTime}
+                                        onConfirm={(val) => onChangeStartTime('start_time', val, 'time_error')}
+                                        onCancel={closeStartTimepicker}
+                                        mode="time"
+                                        display="default"
+                                    />
+                                    <DateTimePicker
+                                        isVisible={showEndTime}
+                                        onConfirm={(val) => onChangeEndTime('end_time', val, 'time_error')}
+                                        onCancel={closeEndTimepicker}
+                                        mode="time"
+                                        display="default"
+                                    />
+                                     <DateTimePicker
+                                        isVisible={showDate}
+                                        onConfirm={(val) => onChangeDate('date', val.toLocaleDateString(), 'date_error')}
+                                        onCancel={closeDatepicker}
+                                        mode="date"
+                                        display="default"
+                                    />
+                                </Portal>
                             </ScrollView>
                         </KeyboardAvoidingView>
                     </View>
@@ -134,7 +270,7 @@ const modalFormHeight = hp(80);
 
 const styles = StyleSheet.create({
     appbar: {
-        
+
     },
     formView: {
         backgroundColor: 'white',
@@ -176,6 +312,12 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         opacity: 0.6
     },
+    error: {
+        fontSize: 14,
+        color: theme.colors.error,
+        paddingHorizontal: 4,
+        paddingTop: 4,
+    }
 });
 
 

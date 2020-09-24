@@ -660,7 +660,7 @@ export const DELETE_COMITEE = gql`
 `;
 
 export const FETCH_EXTERNALTYPES_QUERY = gql`
-  query{
+  {
     getExternalTypes{
       id
       name
@@ -670,7 +670,7 @@ export const FETCH_EXTERNALTYPES_QUERY = gql`
 
 export const FETCH_EXTERNALTYPE_QUERY = gql`
   query($exTypeId: ID!){
-    getExternalType(exTypeId: $exTypeId{
+    getExternalType(exTypeId: $exTypeId){
       id
       name
   }
@@ -710,8 +710,8 @@ export const FETCH_EXTERNAL_QUERY = gql`
 `;
 
 export const FETCH_EXBYTYPE_QUERY = gql`
-   query($eventId: ID!, $externalId: ID!) {
-    getExternalByType(eventId: $eventId, externalId: $externalId){
+   query($eventId: ID!, $externalType: ID!) {
+    getExternalByType(eventId: $eventId, externalType: $externalType){
       id
       name
       external_type
@@ -852,7 +852,7 @@ export const UPDATE_ROADMAP_MUTATION = gql`
     $end_date: String!
   ) {
   updateRoadmap(
-    roadmapId: $roadmapId
+    roadmapId: $roadmapId,
     name: $name,
     start_date: $start_date,
     end_date: $end_date

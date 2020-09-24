@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Button, Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -10,11 +10,11 @@ import { useMutation } from '@apollo/react-hooks';
 import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider';
 import { emailValidator, phoneNumberValidator, externalNameValidator } from '../../util/validator';
-import { FETCH_EXBYTYPE_QUERY, ADD_EXTERNAL_MUTATION } from '../../util/graphql';
+import { FETCH_EXBYTYPE_QUERY, UPDATE_EXTERNAL_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
 
-const FormExternal = props => {
+const FormEditExternal = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -32,9 +32,8 @@ const FormExternal = props => {
     });
 
     const [values, setValues] = useState({
+        externalId: '',
         name: '',
-        external_type: sime.external_type,
-        event_id: sime.event_id,
         email: '',
         phone_number: '',
         details: '',
@@ -73,19 +72,26 @@ const FormExternal = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
-    const [addExternal, { loading }] = useMutation(ADD_EXTERNAL_MUTATION, {
+    useEffect(() => {
+        if (props.external) {
+            setValues({
+                externalId: props.external.id,
+                name: props.external.name,
+                phone_number: props.external.phone_number,
+                email: props.external.email,
+                details: props.external.details,
+                picture: props.external.picture
+            })
+        }
+    }, [props.external])
+
+    const [updateExternal, { loading }] = useMutation(UPDATE_EXTERNAL_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_EXBYTYPE_QUERY,
-                variables: {eventId: values.event_id, externalType: values.external_type}
+                variables: {eventId: sime.event_id, externalType: sime.external_type}
             });
-            data.getExternalByType = [result.data.addExternal, ...data.getExternalByType];
-            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: values.event_id, externalType: values.external_type} });
-            values.name = '';
-            values.email = '';
-            values.phone_number = '';
-            values.details = '';
-            values.picture = '';
+            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: sime.event_id, externalType: sime.external_type} });
             props.closeModalForm();
         },
         onError(err) {
@@ -106,7 +112,7 @@ const FormExternal = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addExternal();
+        updateExternal();
     };
 
     //for get keyboard height
@@ -138,7 +144,8 @@ const FormExternal = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
-                            <Appbar.Content title={<Text style={{ fontWeight: "bold", color: "white" }}>New {sime.external_type_name}</Text>} />
+                            <Appbar.Content title={<Text style={{ fontWeight: "bold", color: "white" }}>Edit {sime.external_type_name}</Text>} />
+                            {props.deleteButtonVisible? <Appbar.Action icon="delete" onPress={props.deleteButton} />: null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -235,4 +242,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormExternal;
+export default FormEditExternal;

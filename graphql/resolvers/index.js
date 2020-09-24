@@ -8,8 +8,8 @@ const comiteeResolvers = require('./comitees');
 const eventResolvers = require('./events');
 const externalResolvers = require('./externals');
 const externalTypeResolvers = require('./externalTypes');
-const roadmapResolvers = require('./roadmap');
-const rundownResolvers = require('./rundown');
+const roadmapResolvers = require('./roadmaps');
+const rundownResolvers = require('./rundowns');
 
 module.exports = {
     Query: {
@@ -36,6 +36,7 @@ module.exports = {
         ...comiteeResolvers.Mutation,
         ...eventResolvers.Mutation,
         ...externalResolvers.Mutation,
+        ...externalTypeResolvers.Mutation,
         ...roadmapResolvers.Mutation,
         ...rundownResolvers.Mutation
     }

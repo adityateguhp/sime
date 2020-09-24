@@ -255,6 +255,12 @@ module.exports = gql`
         
         deleteComitee(comiteeId: ID!): String!
 
+        addExternalType(name: String!): ExternalType!
+        
+        updateExternalType(externalTypeId: ID!, name: String!): ExternalType!
+        
+        deleteExternalType(externalTypeId: ID!): String!
+
         addExternal(
             name: String!,
             external_type: ID!,
@@ -281,14 +287,14 @@ module.exports = gql`
             event_id: ID!,
             start_date: String!,
             end_date: String!
-        ): Event!
+        ): Roadmap!
 
         updateRoadmap(
             roadmapId: ID!,
             name: String!,
             start_date: String!,
             end_date: String!
-        ): Event!
+        ): Roadmap!
 
         deleteRoadmap(roadmapId: ID!): String!
 
@@ -299,7 +305,7 @@ module.exports = gql`
             start_time: String!
             end_time: String!
             details: String
-        ): Event!
+        ): Rundown!
 
         updateRundown(
             rundownId: ID!,
@@ -308,7 +314,7 @@ module.exports = gql`
             start_time: String!
             end_time: String!
             details: String
-        ): Event!
+        ): Rundown!
 
         deleteRundown(rundownId: ID!): String!
 

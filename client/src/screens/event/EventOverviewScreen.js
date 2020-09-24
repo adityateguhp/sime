@@ -1,52 +1,184 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, List, Avatar, Subheading, Paragraph, Divider, Provider, Title, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
-
 import { EVENTS, EXTERNALS } from '../../data/dummy-data';
 import { SimeContext } from '../../context/SimePovider';
 import ExternalList from '../../components/event/ExternalList';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
+import CenterSpinner from '../../components/common/CenterSpinner';
+import { FETCH_EVENT_QUERY, FETCH_EXBYTYPE_QUERY, FETCH_EXTERNAL_QUERY } from '../../util/graphql';
 
 const EventOverviewScreen = props => {
   const sime = useContext(SimeContext);
 
-  const selectedEvent = EVENTS.find(evnt => evnt._id === sime.event_id);
-
-  const selectInfoHandler = (_id) => {
-    props.navigation.navigate('External Profile', {
-      externalId: _id
+  const [event, setEvent] = useState({
+    description: '',
+    start_date: '',
+    end_date: '',
+    cancel: false,
+    location: ''
   });
-    setVisible(false);
-  };
+
+  const [external, setExternal] = useState({
+    id: '',
+    name: '',
+    email: '',
+    phone_number: '',
+    picture: ''
+  });
 
   const [visible, setVisible] = useState(false);
 
-  const openModal= (external_id) => {
-    setVisible(true);
-    sime.setExternal_id(external_id);
+  const selectInfoHandler = (id) => {
+    props.navigation.navigate('External Profile', {
+      externalId: id
+    });
+    setVisible(false);
+  };
+
+  const openModal = (id) => {
+    sime.setExternal_id(id);
+    loadExternalData();
+    if (loadingExternalData === false || externalData) {
+      setVisible(true);
+    }
   }
 
-  const closeModal= () => {
+  const closeModal = () => {
     setVisible(false);
   }
 
-  const ExternalGuest = EXTERNALS.filter(external => external.event_id.indexOf(sime.event_id) >= 0 && external.external_type.indexOf('et1') >= 0);
+  const { data: eventData, error: errorEventData, loading: loadingEventData } = useQuery(
+    FETCH_EVENT_QUERY, {
+    variables: {
+      eventId: sime.event_id
+    },
+  });
 
-  const ExternalSponsor = EXTERNALS.filter(external => external.event_id.indexOf(sime.event_id) >= 0 && external.external_type.indexOf('et2') >= 0);
+  const { data: guestData, error: errorGuestData, loading: loadingGuestData } = useQuery(
+    FETCH_EXBYTYPE_QUERY, {
+    variables: {
+      eventId: sime.event_id,
+      externalType: '5f684a4b6101fe2a38fe4904'
+    },
+  });
 
-  const ExternalMedia = EXTERNALS.filter(external => external.event_id.indexOf(sime.event_id) >= 0 && external.external_type.indexOf('et3') >= 0);
+  const { data: sponsorData, error: errorSponsorData, loading: loadingSponsorData } = useQuery(
+    FETCH_EXBYTYPE_QUERY, {
+    variables: {
+      eventId: sime.event_id,
+      externalType: '5f684a726101fe2a38fe4905'
+    },
+  });
 
-  const ExternalModal = EXTERNALS.find(external => external._id.indexOf(sime.external_id) >= 0);
+  const { data: mediaPartnerData, error: errorMediaPartnerData, loading: loadingMediaPartnerData } = useQuery(
+    FETCH_EXBYTYPE_QUERY, {
+    variables: {
+      eventId: sime.event_id,
+      externalType: '5f684a856101fe2a38fe4906'
+    },
+  });
 
-  const startDate = moment(selectedEvent.event_start_date).format('ddd, MMM D YYYY');
-  const endDate = moment(selectedEvent.event_end_date).format('ddd, MMM D YYYY');
+  const [loadExternalData, { called: calledExternalData, data: externalData, error: errorExternalData, loading: loadingExternalData }] = useLazyQuery(
+    FETCH_EXTERNAL_QUERY, {
+    variables: {
+      externalId: sime.external_id
+    },
+  });
+
+  const eventDataFetch = () => {
+    if (eventData) {
+      setEvent({
+        description: eventData.getEvent.description,
+        start_date: eventData.getEvent.start_date,
+        end_date: eventData.getEvent.end_date,
+        cancel: eventData.getEvent.cancel,
+        location: eventData.getEvent.location
+      })
+    }
+  }
+
+  const externalDataFetch = () => {
+    if (externalData) {
+      setExternal({
+        id: externalData.getExternal.id,
+        name: externalData.getExternal.name,
+        picture: externalData.getExternal.picture,
+        phone_number: externalData.getExternal.phone_number,
+        email: externalData.getExternal.email
+      })
+    }
+  }
+
+  useEffect(() => {
+    console.log("mounted eventDataFetch")
+    eventDataFetch()
+    return () => {
+      console.log("This will be logged on unmount eventDataFetch");
+    }
+  }, [eventData])
+
+  useEffect(() => {
+    console.log("mounted externalDataFetch")
+    externalDataFetch()
+    return () => {
+      console.log("This will be logged on unmount externalDataFetch");
+    }
+  }, [externalData])
+
+
+  if (errorEventData) {
+    console.error(errorEventData);
+    return <Text>errorEventData</Text>;
+  }
+
+  if (errorGuestData) {
+    console.error(errorGuestData);
+    return <Text>errorGuestData</Text>;
+  }
+
+  if (errorSponsorData) {
+    console.error(errorSponsorData);
+    return <Text>errorSponsorData</Text>;
+  }
+
+  if (errorMediaPartnerData) {
+    console.error(errorMediaPartnerData);
+    return <Text>errorMediaPartnerData</Text>;
+  }
+
+  if (calledExternalData && errorExternalData) {
+    console.error(errorExternalData);
+    return <Text>errorExternalData</Text>;
+  }
+
+  if (loadingEventData) {
+    return <CenterSpinner />;
+  }
+
+  if (loadingGuestData) {
+    return <CenterSpinner />;
+  }
+
+  if (loadingMediaPartnerData) {
+    return <CenterSpinner />;
+  }
+
+  if (loadingSponsorData) {
+    return <CenterSpinner />;
+  }
+
+  const startDate = moment(event.start_date).format('ddd, MMM D YYYY');
+  const endDate = moment(event.end_date).format('ddd, MMM D YYYY');
 
   return (
     <Provider theme={theme}>
@@ -54,52 +186,55 @@ const EventOverviewScreen = props => {
         <View style={styles.overview}>
           <Subheading style={{ fontWeight: 'bold' }}>Guests</Subheading>
           {
-            ExternalGuest.map((Guest) => (
+            guestData.getExternalByType.length === 0? <Text>-</Text> :
+            guestData.getExternalByType.map((Guest) => (
               <ExternalList
-                key={Guest._id}
+                key={Guest.id}
                 name={Guest.name}
                 picture={Guest.picture}
                 size={35}
-                onSelect={() => { openModal(Guest._id) }}
+                onSelect={() => { openModal(Guest.id) }}
               />
             ))
           }
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Sponsors</Subheading>
           {
-            ExternalSponsor.map((Sponsor) => (
+            sponsorData.getExternalByType.length === 0? <Text>-</Text> :
+            sponsorData.getExternalByType.map((Sponsor) => (
               <ExternalList
-                key={Sponsor._id}
+                key={Sponsor.id}
                 name={Sponsor.name}
                 picture={Sponsor.picture}
                 size={35}
-                onSelect={() => { openModal(Sponsor._id) }}
+                onSelect={() => { openModal(Sponsor.id) }}
               />
             ))
           }
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Media Partners</Subheading>
           {
-            ExternalMedia.map((Media) => (
+            mediaPartnerData.getExternalByType.length === 0? <Text>-</Text> :
+            mediaPartnerData.getExternalByType.map((Media) => (
               <ExternalList
-                key={Media._id}
+                key={Media.id}
                 name={Media.name}
                 picture={Media.picture}
                 size={35}
-                onSelect={() => { openModal(Media._id) }}
+                onSelect={() => { openModal(Media.id) }}
               />
-            ))
+            )) 
           }
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
             left={() =>
-              <Status start_date={selectedEvent.event_start_date} end_date={selectedEvent.event_end_date} cancel={selectedEvent.cancel} fontSize={wp(3)} />}
+              <Status start_date={event.start_date} end_date={event.end_date} cancel={event.cancel} fontSize={wp(3)} />}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Event Description</Subheading>
           <List.Item
-            title={selectedEvent.event_description}
+            title={event.description === null || event.description === '' ? "-" : event.description}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />
@@ -117,8 +252,9 @@ const EventOverviewScreen = props => {
           <Subheading style={{ fontWeight: 'bold' }}>Location</Subheading>
           <List.Item
             title={
+              event.location === null || event.location === '' ? "-" :
               <Text>
-                <Icon name="map-marker" size={16} color='black' /> {selectedEvent.event_location}
+                <Icon name="map-marker" size={16} color='black' /> {event.location}
               </Text>}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
@@ -129,12 +265,12 @@ const EventOverviewScreen = props => {
         visible={visible}
         onBackButtonPress={closeModal}
         onBackdropPress={closeModal}
-        name={ExternalModal.name}
-        email={ExternalModal.email}
-        phone_number={ExternalModal.phone_number}
-        picture={ExternalModal.picture}
+        name={external.name}
+        email={external.email}
+        phone_number={external.phone_number}
+        picture={external.picture}
         positionName={false}
-        onPressInfo={()=>{selectInfoHandler(ExternalModal._id)}}
+        onPressInfo={() => { selectInfoHandler(external.id) }}
       />
     </Provider>
   );

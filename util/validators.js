@@ -250,6 +250,18 @@ module.exports.validateExternalInput = (
     };
 };
 
+module.exports.validateExternalTypeInput = (name) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'External type name must not be empty';
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
+
 module.exports.validatePositionInput = (
     name,
     core

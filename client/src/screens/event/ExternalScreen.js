@@ -1,9 +1,13 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, View, FlatList, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
 import ExternalCard from '../../components/event/ExternalCard';
-import { EXTERNALTYPES } from '../../data/dummy-data';
+import CenterSpinner from '../../components/common/CenterSpinner';
+import { theme } from '../../constants/Theme';
+import { FETCH_EXTERNALTYPES_QUERY} from '../../util/graphql';
+
 
 const ExternalScreen = props => {
 
@@ -15,22 +19,35 @@ const ExternalScreen = props => {
 
   const sime = useContext(SimeContext);
 
-  const selectItemHandler = (_id, external_name) => {
+  const { data: externalTypes, error: errorExternalTypes, loading: loadingExternalTypes } = useQuery(
+    FETCH_EXTERNALTYPES_QUERY
+);
+
+  const selectItemHandler = (id, name) => {
     props.navigation.navigate('External List');
-    sime.setExternal_type(_id);
-    sime.setExternal_type_name(external_name);
+    sime.setExternal_type(id);
+    sime.setExternal_type_name(name);
   };
+
+  if (errorExternalTypes) {
+    console.error(errorExternalTypes);
+    return <Text>errorExternalTypes</Text>;
+  }
+
+  if (loadingExternalTypes) {
+    return <CenterSpinner />;
+  }
 
   return (
       <View style={styles.screen}>
         <FlatList
           style={styles.screen}
-          data={EXTERNALTYPES}
-          keyExtractor={item => item._id}
+          data={externalTypes.getExternalTypes}
+          keyExtractor={item => item.id}
           renderItem={itemData => (
             <ExternalCard
-              name={itemData.item.external_name}
-              onSelect={() => { selectItemHandler(itemData.item._id, itemData.item.external_name) }}            >
+              name={itemData.item.name}
+              onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}            >
             </ExternalCard>
           )}
         />

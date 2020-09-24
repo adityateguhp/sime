@@ -23,6 +23,17 @@ export const divisionNameValidator = (name) => {
   return '';
 }
 
+export const externalNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Name must not be empty';
+  return '';
+}
+
+export const agendaValidator = (name) => {
+  if (!name || name.length <= 0) return 'Agenda must not be empty';
+  return '';
+}
+
+
 export const dateValidator = (start_date, end_date) => {
   if ((!start_date || start_date.length <= 0) && (!end_date || end_date.length <= 0)){
     return 'Date must not be empty';
@@ -30,6 +41,24 @@ export const dateValidator = (start_date, end_date) => {
     return 'Start date must not be empty';
   } else if (!end_date || end_date.length <= 0 ) {
     return 'End date must not be empty';
+  }
+  return '';
+}
+
+export const timeValidator = (start_time, end_time) => {
+  if ((!start_time || start_time.length <= 0) && (!end_time || end_time.length <= 0)){
+    return 'Time must not be empty';
+  } else if (!start_time || start_time.length <= 0 ) {
+    return 'Start time must not be empty';
+  } else if (!end_time || end_time.length <= 0 ) {
+    return 'End time must not be empty';
+  }
+  return '';
+}
+
+export const singleDateValidator = (date) => {
+  if ((!date || date.length <= 0)){
+    return 'Date must not be empty';
   }
   return '';
 }

@@ -12,7 +12,7 @@ const RundownTime = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
     return (
-        <TouchableCmp nPress={props.onSelect} useForeground>
+        <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
             <View>
                 <View style={styles.containerTime}>
                     <View style={styles.time}>

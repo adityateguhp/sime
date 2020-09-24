@@ -253,8 +253,7 @@ const FormEditProject = props => {
                                 <Portal>
                                     <DateTimePicker
                                         isVisible={showStartDate}
-                                        mode="date"
-                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'start_date_error')}
+                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
                                         onCancel={closeStartDatepicker}
                                         mode="date"
                                         display="default"
@@ -262,8 +261,7 @@ const FormEditProject = props => {
                                     />
                                     <DateTimePicker
                                         isVisible={showEndDate}
-                                        mode="date"
-                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'end_date_error')}
+                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
                                         onCancel={closeEndDatepicker}
                                         mode="date"
                                         display="default"

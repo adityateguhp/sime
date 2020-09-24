@@ -15,7 +15,7 @@ const ExternalList = props => {
                 <List.Item
                     style={props.style}
                     title={props.name}
-                    left={() => <Avatar.Image size={props.size} source={{ uri: props.picture }} />}
+                    left={() => <Avatar.Image size={props.size} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png') : { uri: props.picture }} />}
                 />
             </View>
         </TouchableCmp>

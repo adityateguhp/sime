@@ -270,6 +270,12 @@ const styles = StyleSheet.create({
         marginLeft: wp(5.6),
         fontSize: wp(3.65)
     },
+    content: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
 });
 
 export default ProjectListScreen;

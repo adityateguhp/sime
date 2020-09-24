@@ -664,28 +664,28 @@ export const ROADMAPS = [
         'Membuat proposal',
         '2020-01-10',
         '2020-01-12',
-        'e1'
+        '5f6248c6f3b86f109c5d9ca9'
     ),
     new Roadmap(
         'rm2',
         'Mencari sponsorhip',
         '2020-01-10',
         '2020-02-10',
-        'e1'
+        '5f6248c6f3b86f109c5d9ca9'
     ),
     new Roadmap(
         'rm3',
         'Membuat jersey',
         '2020-02-01',
         '2020-02-15',
-        'e1'
+        '5f6248c6f3b86f109c5d9ca9'
     ),
     new Roadmap(
         'rm4',
         'Membuat tiket',
         '2020-02-15',
         '2020-02-20',
-        'e1'
+        '5f6248c6f3b86f109c5d9ca9'
     ),
 ]
 
@@ -696,7 +696,7 @@ export const TASKS = [
         'mencari materi untuk proposal',
         false,
         '2020-01-15',
-        'div1',
+        '5f58e9747f583754686b9741',
         'rm1',
         ''
     ),
@@ -706,7 +706,7 @@ export const TASKS = [
         'membuat draft untuk proposal',
         false,
         '2020-01-20',
-        'div1',
+        '5f58e9747f583754686b9741',
         'rm1',
         ''
     ),
@@ -716,7 +716,7 @@ export const TASKS = [
         'membuat draft 2 untuk proposal',
         false,
         '2020-01-30',
-        'div1',
+        '5f58e9747f583754686b9741',
         'rm1',
         ''
     ),
@@ -726,7 +726,7 @@ export const TASKS = [
         'membuat draft 3 untuk proposal',
         false,
         '2020-02-05',
-        'div1',
+        '5f58e9747f583754686b9741',
         'rm1',
         ''
     ),

@@ -9,7 +9,7 @@ module.exports = {
     Query: {
         async getRundowns(_, { eventId }, context) {
             try {
-                const rundowns = await Rundown.find({ event_id: eventId }).sort({ createdAt: -1 });
+                const rundowns = await Rundown.find({ event_id: eventId }).sort({ date: 1 });
                 if (rundowns) {
                     return rundowns;
                 } else {

@@ -241,7 +241,6 @@ const FormProject = props => {
                                 <Portal>
                                     <DateTimePicker
                                         isVisible={showStartDate}
-                                        mode="date"
                                         onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
                                         onCancel={closeStartDatepicker}
                                         mode="date"
@@ -250,7 +249,6 @@ const FormProject = props => {
                                     />
                                     <DateTimePicker
                                         isVisible={showEndDate}
-                                        mode="date"
                                         onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
                                         onCancel={closeEndDatepicker}
                                         mode="date"

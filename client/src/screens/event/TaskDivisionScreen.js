@@ -1,13 +1,20 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-import { DIVISIONS } from '../../data/dummy-data';
+import FABbutton from '../../components/common/FABbutton';
+import CenterSpinner from '../../components/common/CenterSpinner';
+import FormDivision from '../../components/project/FormDivision';
+import FormEditDivision from '../../components/project/FormEditDivision';
 import DivisionCard from '../../components/project/DivisionCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
+import { theme } from '../../constants/Theme';
+import { FETCH_DIVISIONS_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY } from '../../util/graphql';
+
 
 const TaskDivisionScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -18,52 +25,59 @@ const TaskDivisionScreen = ({ navigation }) => {
 
     const sime = useContext(SimeContext);
 
-    const division = DIVISIONS.filter(
-        div => div.project_id.indexOf(sime.project_id) >= 0
+    const { data: divisions, error: error1, loading: loading1 } = useQuery(
+        FETCH_DIVISIONS_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+        }
     );
-    const selectItemHandler = (division_name, _id) => {
+
+    const selectItemHandler = (name, id) => {
         navigation.navigate('Task', {
-            divisionName: division_name,
-            divisionId: _id
+            divisionName: name,
+            divisionId: id
         });
 
-        sime.setDivision_name(division_name);
+        sime.setDivision_name(name);
     };
+   
+    if (error1) {
+        console.error(error1);
+        return <Text>Error</Text>;
+    }
 
-    const deleteHandler = () => {
-        setVisible(false);
-        Alert.alert('Are you sure?', 'Do you really want to delete this client?', [
-            { text: 'No', style: 'default' },
-            {
-                text: 'Yes',
-                style: 'destructive'
-            }
-        ]);
-    };
+    if (loading1) {
+        return <CenterSpinner />;
+    }
 
-    if (DIVISIONS.length === 0) {
+    if (divisions.getDivisions.length === 0) {
         return (
             <View style={styles.content}>
-                <Text>No comitee found, let's add comitee!</Text>
+                <Text>No divisions found</Text>
             </View>
         );
     }
 
     return (
+        <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={division}
-                keyExtractor={item => item._id}
+                data={divisions.getDivisions}
+                keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DivisionCard
-                        division_name={itemData.item.division_name}
-                        onSelect={() => { selectItemHandler(itemData.item.division_name, itemData.item._id) }}
+                        name={itemData.item.name}
+                        onSelect={() => { selectItemHandler(itemData.itemname, itemData.item.id) }}
                     >
                     </DivisionCard>
                 )}
             />
+        </Provider>
     );
 }
+
+const modalMenuWidth = wp(77);
+const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
@@ -75,6 +89,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    modalView: {
+        backgroundColor: 'white',
+        height: modalMenuHeight,
+        width: modalMenuWidth,
+        alignSelf: 'center',
+        justifyContent: 'flex-start'
+    },
+    textView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "flex-start",
+        marginBottom: 5
+    },
+    text: {
+        marginLeft: wp(5.6),
+        fontSize: wp(3.65)
+    }
 });
 
 

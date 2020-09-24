@@ -257,7 +257,7 @@ const FormEditEvent = props => {
                                             style={styles.input}
                                             label='Event Description'
                                             value={values.description}
-                                            onChangeText={(val) => onChange('name', val, '')}
+                                            onChangeText={(val) => onChange('description', val, '')}
                                             multiline={true}
                                         />
                                     </View>
@@ -265,8 +265,7 @@ const FormEditEvent = props => {
                                 <Portal>
                                     <DateTimePicker
                                         isVisible={showStartDate}
-                                        mode="date"
-                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'start_date_error')}
+                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
                                         onCancel={closeStartDatepicker}
                                         mode="date"
                                         display="default"
@@ -274,8 +273,7 @@ const FormEditEvent = props => {
                                     />
                                     <DateTimePicker
                                         isVisible={showEndDate}
-                                        mode="date"
-                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'end_date_error')}
+                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
                                         onCancel={closeEndDatepicker}
                                         mode="date"
                                         display="default"
