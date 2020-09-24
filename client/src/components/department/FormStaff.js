@@ -11,7 +11,7 @@ import { useMutation } from '@apollo/react-hooks';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, ADD_STAFF_MUTATION } from '../../util/graphql';
+import { FETCH_STAFFSBYDEPARTMENT_QUERY, ADD_STAFF_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 
@@ -79,11 +79,11 @@ const FormStaff = props => {
     const [addStaff, { loading }] = useMutation(ADD_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY,
+                query: FETCH_STAFFSBYDEPARTMENT_QUERY,
                 variables: {departmentId: values.department_id}
             });
-            data.getStaffs = [result.data.addStaff, ...data.getStaffs];
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {departmentId: values.department_id} });
+            data.getStaffsByDepartment = [result.data.addStaff, ...data.getStaffsByDepartment];
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: {departmentId: values.department_id} });
             values.name = '';
             values.position_name = '';
             values.email = '';

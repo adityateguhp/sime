@@ -106,8 +106,24 @@ export const DELETE_DEPARTMENT = gql`
 `;
 
 export const FETCH_STAFFS_QUERY = gql`
+ {
+    getStaffs{
+    id
+    name
+    position_name
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_STAFFSBYDEPARTMENT_QUERY = gql`
   query($departmentId: ID!) {
-    getStaffs(departmentId: $departmentId){
+    getStaffsByDepartment(departmentId: $departmentId){
     id
     name
     position_name

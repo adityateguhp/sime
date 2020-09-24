@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
@@ -7,42 +7,43 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormDepartment from '../../components/department/FormDepartment';
-import FormEditDepartment from '../../components/department/FormEditDepartment';
-import DepartmentCard from '../../components/department/DepartmentCard';
+import FormStaff from '../../components/department/FormStaff';
+import FormEditStaff from '../../components/department/FormEditStaff';
+import { STAFFS } from '../../data/dummy-data';
+import StaffList from '../../components/department/StaffList';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
+import { FETCH_STAFFSBYDEPARTMENT_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY } from '../../util/graphql';
 
-const DepartmentsScreen = ({ navigation }) => {
-    const sime = useContext(SimeContext);
-
-    const { data: departments, error: error1 , loading: loading1 } = useQuery(
-        FETCH_DEPARTMENTS_QUERY
-    );
-
-    const [loadExistData, { called, data: department , error: error2 , loading: loading2 }] = useLazyQuery(
-        FETCH_DEPARTMENT_QUERY,
-        {
-            variables: { departmentId: sime.department_id },
-        });
-
-    const [departmentVal, setDepartmentVal] = useState(null);
-
+const StaffsScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const selectItemHandler = (name, id) => {
-        navigation.navigate('Staff List in Department', {
-            departmentName: name,
-            departmentId: id
-        })
-        sime.setDepartment_id(id);
-        sime.setDepartment_name(name);
+    const sime = useContext(SimeContext);
+
+    const { data: staffs, error: error1, loading: loading1 } = useQuery(
+        FETCH_STAFFSBYDEPARTMENT_QUERY, {
+        variables: {
+            departmentId: route.params?.departmentId
+        },
+    });
+
+    const [loadExistData, { called, data: staff , error: error2 , loading: loading2 }] = useLazyQuery(
+        FETCH_STAFF_QUERY,
+        {
+            variables: { staffId: sime.staff_id },
+        });
+
+    const [staffVal, setStaffVal] = useState(null);
+
+    const selectItemHandler = (id) => {
+        navigation.navigate('Staff Profile', {
+            staffId: id
+        });
     };
 
     const [visible, setVisible] = useState(false);
@@ -63,8 +64,8 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const longPressHandler = (name, id) => {
         setVisible(true);
-        sime.setDepartment_name(name);
-        sime.setDepartment_id(id)
+        sime.setStaff_name(name);
+        sime.setStaff_id(id);
         loadExistData();
     }
 
@@ -75,33 +76,35 @@ const DepartmentsScreen = ({ navigation }) => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setDepartmentVal(department.getDepartment);
+        setStaffVal(staff.getStaff);
     }
 
+    const staffId = sime.staff_id;
     const departmentId = sime.department_id;
 
-    const [deleteDepartment] = useMutation(DELETE_DEPARTMENT, {
+    const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY
+                query: FETCH_STAFFSBYDEPARTMENT_QUERY,
+                variables: {departmentId: departmentId}
             });
-            departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
+            staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data,  variables: {departmentId: departmentId} });
         },
         variables: {
-            departmentId
+            staffId
         }
     });
 
     const deleteHandler = () => {
         closeModal();
         closeModalFormEdit();
-        Alert.alert('Are you sure?', 'Do you really want to delete this department?', [
+        Alert.alert('Are you sure?', 'Do you really want to delete this staff?', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
                 style: 'destructive',
-                onPress: deleteDepartment
+                onPress: deleteStaff
             }
         ]);
     };
@@ -121,22 +124,20 @@ const DepartmentsScreen = ({ navigation }) => {
     }
 
     if (loading2) {
-       
+        
     }
 
-    if (departments.getDepartments.length === 0) {
+    if (staffs.getStaffsByDepartment.length === 0) {
         return (
-            <Provider theme={theme}>
-                <View style={styles.content}>
-                    <Text>No departments found, let's add departments!</Text>
-                </View>
-                <FABbutton Icon="plus" label="department" onPress={openForm} />
-                <FormDepartment
+            <View style={styles.content}>
+                <Text>No staffs found, let's add staffs!</Text>
+                <FABbutton Icon="plus" label="staff" onPress={openForm} />
+                <FormStaff
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
                 />
-            </Provider>
+            </View>
         );
     }
 
@@ -144,16 +145,18 @@ const DepartmentsScreen = ({ navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={departments.getDepartments}
+                data={staffs.getStaffsByDepartment}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
-                    <DepartmentCard
+                    <StaffList
                         name={itemData.item.name}
-                        onSelect={() => { selectItemHandler(itemData.item.name, itemData.item.id) }}
+                        position_name={itemData.item.position_name}
+                        picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
+                        onSelect={() => { selectItemHandler(itemData.item.id) }}
                         onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     >
-                    </DepartmentCard>
+                    </StaffList>
                 )}
             />
             <Portal>
@@ -166,7 +169,7 @@ const DepartmentsScreen = ({ navigation }) => {
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
                     <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.department_name}</Title>
+                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.staff_name}</Title>
                         <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>
@@ -174,23 +177,24 @@ const DepartmentsScreen = ({ navigation }) => {
                         </TouchableCmp>
                         <TouchableCmp onPress={deleteHandler}>
                             <View style={styles.textView}>
-                                <Text style={styles.text}>Delete department</Text>
+                                <Text style={styles.text}>Delete</Text>
                             </View>
                         </TouchableCmp>
                     </View>
                 </Modal>
             </Portal>
-            <FABbutton Icon="plus" label="department" onPress={openForm} />
-            <FormDepartment
+            <FABbutton Icon="plus" label="staff" onPress={openForm} />
+            <FormStaff
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
             />
-            <FormEditDepartment
+             <FormEditStaff
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
-                department={departmentVal}
+                staff={staffVal}
                 deleteButton={deleteHandler}
+                deleteButtonVisible={true}
                 closeButton={closeModalFormEdit}
             />
         </Provider>
@@ -202,7 +206,7 @@ const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
-        marginTop: 5
+        backgroundColor: 'white',
     },
     content: {
         flex: 1,
@@ -231,4 +235,4 @@ const styles = StyleSheet.create({
 
 
 
-export default DepartmentsScreen;
+export default StaffsScreen;

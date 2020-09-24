@@ -26,13 +26,10 @@ const StaffsScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
 
     const { data: staffs, error: error1, loading: loading1 } = useQuery(
-        FETCH_STAFFS_QUERY, {
-        variables: {
-            departmentId: route.params?.departmentId
-        },
-    });
+        FETCH_STAFFS_QUERY
+    );
 
-    const [loadExistData, { called, data: staff , error: error2 , loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: staff, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_STAFF_QUERY,
         {
             variables: { staffId: sime.staff_id },
@@ -86,10 +83,10 @@ const StaffsScreen = ({ route, navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: {departmentId: departmentId}
+            
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {departmentId: departmentId} });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data });
         },
         variables: {
             staffId
@@ -124,7 +121,7 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     if (loading2) {
-        
+
     }
 
     if (staffs.getStaffs.length === 0) {
@@ -189,7 +186,7 @@ const StaffsScreen = ({ route, navigation }) => {
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
             />
-             <FormEditStaff
+            <FormEditStaff
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
                 staff={staffVal}

@@ -28,6 +28,7 @@ import EventOverviewScreen from '../screens/event/EventOverviewScreen';
 import EditEventScreen from '../screens/event/EditEventScreen';
 import DepartmentsScreen from '../screens/department/DepartmentsScreen';
 import StaffsScreen from '../screens/department/StaffsScreen';
+import StaffsInDepartmentScreen from '../screens/department/StaffsInDepartmentScreen';
 import TaskScreen from '../screens/event/TaskScreen';
 import DrawerContent from '../components/common/DrawerContent';
 import RoadmapScreen from '../screens/event/RoadmapScreen';
@@ -252,11 +253,11 @@ function TopTabEvents() {
   );
 }
 
-const DepartmentsStack = createStackNavigator();
+const UsersManagementStack = createStackNavigator();
 
-function DepartmentsStackScreen({ route, navigation }) {
+function UsersManagementStackScreen({ route, navigation }) {
   return (
-    <DepartmentsStack.Navigator
+    <UsersManagementStack.Navigator
       screenOptions={{
         headerStyle: {
           backgroundColor: Colors.primaryColor,
@@ -267,9 +268,9 @@ function DepartmentsStackScreen({ route, navigation }) {
         }
       }}
     >
-      <DepartmentsStack.Screen
-        name="Departments"
-        component={DepartmentsScreen}
+      <UsersManagementStack.Screen
+        name="Users Management"
+        component={TopTabUsersManagements}
         options={{
           headerLeft: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
@@ -281,18 +282,39 @@ function DepartmentsStackScreen({ route, navigation }) {
           ),
         }}
       />
-      <DepartmentsStack.Screen
-        name="Staff List"
-        component={StaffsScreen}
+      <UsersManagementStack.Screen
+        name="Staff List in Department"
+        component={StaffsInDepartmentScreen}
         options={({ route }) => ({ title: route.params?.departmentName })}
       />
-      <DepartmentsStack.Screen name="Staff Profile" component={StaffProfileScreen} options={{
+      <UsersManagementStack.Screen name="Staff Profile" component={StaffProfileScreen} options={{
         headerTitle: () => (
           <View>
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
           </View>),
       }} />
-    </DepartmentsStack.Navigator>
+    </UsersManagementStack.Navigator>
+  );
+}
+
+const TopTabUsersManagement = createMaterialTopTabNavigator();
+
+function TopTabUsersManagements() {
+  return (
+    <TopTabUsersManagement.Navigator
+      initialRouteName="Staff List"
+      backBehavior="none"
+      tabBarOptions={{
+        activeTintColor: Colors.secondaryColor,
+        inactiveTintColor: 'white',
+        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        indicatorStyle: { backgroundColor: Colors.secondaryColor },
+        style: { backgroundColor: Colors.primaryColor }
+      }}
+    >
+      <TopTabUsersManagement.Screen name="Users" component={StaffsScreen} />
+      <TopTabUsersManagement.Screen name="Departments" component={DepartmentsScreen} />
+    </TopTabUsersManagement.Navigator>
   );
 }
 
@@ -363,8 +385,8 @@ export default function MainNavigator() {
             component={BottomTabs}
           />
           <Drawer.Screen
-            name="Departments"
-            component={DepartmentsStackScreen}
+            name="Users Management"
+            component={UsersManagementStackScreen}
             options={{
               gestureEnabled: false,
             }}

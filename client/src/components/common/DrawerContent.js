@@ -84,9 +84,9 @@ const DrawerContent = props => {
                     icon={({ color, size }) => (
                         <Icon name="account-group-outline" color={color} size={size} />
                     )}
-                    label="Departments"
+                    label="Users Management"
                     onPress={() => {
-                        props.navigation.navigate('Departments')
+                        props.navigation.navigate('Users Management')
                     }}
                 />
                 <DrawerItem

@@ -21,6 +21,7 @@ module.exports = gql`
         id: ID!
         name: String!
         position_name: String!
+        organization_id: ID!
         department_id: ID! 	
         email: String!
         phone_number: String!
@@ -115,12 +116,13 @@ module.exports = gql`
         getUserOrganization: Organization
         getDepartments: [Department]
         getDepartment(departmentId: ID!): Department
-        getStaffs(departmentId: ID!): [Staff]
-        getStaff(staffId: ID): Staff
+        getStaffs: [Staff]
+        getStaffsByDepartment(departmentId: ID!): [Staff]
+        getStaff(staffId: ID!): Staff
         getProjects: [Project]
         getProject(projectId: ID!): Project
         getPositions: [Position]
-        getPosition(positionId: ID): Position
+        getPosition(positionId: ID!): Position
         getDivisions(projectId: ID!): [Division]
         getDivision(divisionId: ID!): Division
         getComitees(projectId: ID!): [Comitee]

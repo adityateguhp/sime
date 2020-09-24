@@ -3,11 +3,24 @@ const bcrypt = require('bcryptjs');
 
 const { validateStaffInput, validateUpdatePasswordStaffInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
-
+const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getStaffs(_, { departmentId }, context) {
+    async getStaffs(_, args, context) {
+      const user = checkAuth(context);
+      try {
+        const staffs = await Staff.find({ organization_id: user.id }).sort({ createdAt: -1 });
+        if (staffs) {
+          return staffs;
+        } else {
+          throw new Error('Staffs not found');
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async getStaffsByDepartment(_, { departmentId }, context) {
       try {
         const staffs = await Staff.find({ department_id: departmentId }).sort({ createdAt: -1 });
         if (staffs) {
@@ -42,6 +55,7 @@ module.exports = {
       password,
       picture
     }, context) {
+      const user = checkAuth(context);
       const { valid, errors } =
         validateStaffInput(
           name,
@@ -68,6 +82,7 @@ module.exports = {
       const newStaff = new Staff({
         name,
         position_name,
+        organization_id: user.id,
         department_id,
         email,
         phone_number,
