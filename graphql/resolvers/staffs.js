@@ -99,6 +99,7 @@ module.exports = {
       staffId,
       name,
       position_name,
+      department_id,
       email,
       phone_number,
       picture
@@ -120,6 +121,7 @@ module.exports = {
           { 
             name: name, 
             position_name: position_name,
+            department_id: department_id,
             email: email,
             phone_number: phone_number,
             picture: picture

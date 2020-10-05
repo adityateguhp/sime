@@ -189,20 +189,7 @@ function ProjectStackSceen({ route, navigation }) {
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
           </View>),
       }} />
-      <ProjectsStack.Screen name="Task Division" component={TaskDivisionScreen} options={{
-        headerTitle: () =>
-          <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.roadmap_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.event_name}</Text>
-          </View>
-      }} />
-      <ProjectsStack.Screen name="Task" component={TaskScreen} options={{
-        headerTitle: () =>
-          <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.division_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.roadmap_name}</Text>
-          </View>
-      }} />
+      <ProjectsStack.Screen name="Task" component={TaskScreen} options={{title: sime.roadmap_name}} />
       <ProjectsStack.Screen name="EditEvent" component={EditEventScreen} />
     </ProjectsStack.Navigator>
   );

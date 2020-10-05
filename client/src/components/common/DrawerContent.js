@@ -82,6 +82,16 @@ const DrawerContent = props => {
 
                 <DrawerItem
                     icon={({ color, size }) => (
+                        <Icon name="account-outline" color={color} size={size} />
+                    )}
+                    label="Profile"
+                    onPress={() => {
+            
+                    }}
+                />
+
+                <DrawerItem
+                    icon={({ color, size }) => (
                         <Icon name="account-group-outline" color={color} size={size} />
                     )}
                     label="Users Management"
@@ -98,7 +108,7 @@ const DrawerContent = props => {
                 />
                 <DrawerItem
                     icon={({ color, size }) => (
-                        <Icon name="tune" color={color} size={size} />
+                        <Icon name="exit-to-app" color={color} size={size} />
                     )}
                     label="Log Out"
                     onPress={logout}

@@ -26,7 +26,7 @@ const RoadmapScreen = ({ route, navigation }) => {
     );
 
     const selectItemHandler = (_id, roadmap_name) => {
-        navigation.navigate('Task Division');
+        navigation.navigate('Task');
         sime.setRoadmap_id(_id);
         sime.setRoadmap_name(roadmap_name);
     };

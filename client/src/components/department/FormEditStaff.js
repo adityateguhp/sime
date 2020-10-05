@@ -7,13 +7,15 @@ import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
+import CenterSpinner from '../../components/common/CenterSpinner';
 
 
 const FormEditStaff = props => {
@@ -27,6 +29,10 @@ const FormEditStaff = props => {
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
+    const { data: departments, error: error1, loading: loading1 } = useQuery(
+        FETCH_DEPARTMENTS_QUERY
+    );
+
     const [errors, setErrors] = useState({
         staff_name_error: '',
         position_name_error: '',
@@ -38,6 +44,7 @@ const FormEditStaff = props => {
         staffId: '',
         name: '',
         position_name: '',
+        department_id: '',
         email: '',
         phone_number: '',
         picture: null,
@@ -81,6 +88,7 @@ const FormEditStaff = props => {
                 staffId: props.staff.id,
                 name: props.staff.name,
                 position_name: props.staff.position_name,
+                department_id: props.staff.department_id,
                 email: props.staff.email,
                 phone_number: props.staff.phone_number,
                 picture: props.staff.picture,
@@ -91,10 +99,9 @@ const FormEditStaff = props => {
     const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY,
-                variables: { departmentId: sime.department_id }
+                query: FETCH_STAFFS_QUERY
             });
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { departmentId: sime.department_id } });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data});
             props.closeModalForm();
         },
         onError(err) {
@@ -136,6 +143,17 @@ const FormEditStaff = props => {
     // });
     // const safeArea = useSafeArea();
 
+    if (error1) {
+        console.error(error1);
+        return <Text>Error</Text>;
+    }
+
+    if (loading1) {
+        return <CenterSpinner />;
+    }
+
+    console.log(values.department_id)
+
     return (
         <Portal>
             <Modal
@@ -169,6 +187,17 @@ const FormEditStaff = props => {
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                    </View>
+                                    <View>
+                                        <Dropdown
+                                            label='Department'
+                                            value={values.department_id === '' || values.department_id !== sime.department_id? sime.department_id : values.department_id}
+                                            data={departments.getDepartments}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChange('department_id', val, '')}
+                                            useNativeDriver
+                                        />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput

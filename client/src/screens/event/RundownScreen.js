@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Alert, StyleSheet, ScrollView, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { Alert, StyleSheet, ScrollView, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
+import sortBy from 'array-sort-by';
 
 import FABbutton from '../../components/common/FABbutton';
 import RundownContainer from '../../components/event/RundownContainer';
@@ -18,6 +19,11 @@ import { FETCH_RUNDOWNS_QUERY, FETCH_RUNDOWN_QUERY, DELETE_RUNDOWN } from '../..
 import CenterSpinner from '../../components/common/CenterSpinner';
 import { set } from 'react-native-reanimated';
 
+const wait = (timeout) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+}
 
 const RundownScreen = props => {
 
@@ -29,7 +35,9 @@ const RundownScreen = props => {
     TouchableCmp = TouchableNativeFeedback;
   }
 
-  const { data: rundowns, error: errorRundowns, loading: loadingRundowns } = useQuery(
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { data: rundowns, error: errorRundowns, loading: loadingRundowns, refetch } = useQuery(
     FETCH_RUNDOWNS_QUERY, {
     variables: {
       eventId: sime.event_id
@@ -93,6 +101,15 @@ const RundownScreen = props => {
     }
   }
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true), refetch();
+    if (loadingRundowns) {
+      return <CenterSpinner />;
+    }else{
+      setRefreshing(false)
+    }
+  }, []);
+
   useEffect(() => {
     console.log("mounted rundownDataFetch")
     rundownDataFetch()
@@ -101,7 +118,7 @@ const RundownScreen = props => {
     }
   }, [rundowns])
 
-  const groubedByDate = groupBy(rundownsVal, 'date')
+  const groubedByDate = groupBy(rundownsVal, 'date');
 
   const [deleteRundown] = useMutation(DELETE_RUNDOWN, {
     update(proxy) {
@@ -162,9 +179,14 @@ const RundownScreen = props => {
     );
   }
 
+
   return (
     <Provider theme={theme}>
-      <ScrollView style={{ marginTop: 5 }}>
+      <ScrollView style={{ marginTop: 5 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {Object.keys(groubedByDate).map((category) => (
           <View style={styles.container}>
             <RundownContainer key={category} date={moment(category).format('dddd, MMM D YYYY')} />

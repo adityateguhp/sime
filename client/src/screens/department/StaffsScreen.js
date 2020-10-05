@@ -37,10 +37,13 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const [staffVal, setStaffVal] = useState(null);
 
-    const selectItemHandler = (id) => {
+    const selectItemHandler = (id, department_id) => {
         navigation.navigate('Staff Profile', {
-            staffId: id
+            staffId: id,
+            departmentId: department_id
         });
+        sime.setStaff_id(id);
+        sime.setDepartment_id(department_id)
     };
 
     const [visible, setVisible] = useState(false);
@@ -59,11 +62,12 @@ const StaffsScreen = ({ route, navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (name, id) => {
-        setVisible(true);
+    const longPressHandler = (name, id, department_id) => {
         sime.setStaff_name(name);
         sime.setStaff_id(id);
+        sime.setDepartment_id(department_id)
         loadExistData();
+        setVisible(true);
     }
 
     const openForm = () => {
@@ -77,7 +81,6 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     const staffId = sime.staff_id;
-    const departmentId = sime.department_id;
 
     const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
@@ -147,11 +150,11 @@ const StaffsScreen = ({ route, navigation }) => {
                 renderItem={itemData => (
                     <StaffList
                         name={itemData.item.name}
-                        position_name={itemData.item.position_name}
+                        email={itemData.item.email}
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
-                        onSelect={() => { selectItemHandler(itemData.item.id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_id) }}
                     >
                     </StaffList>
                 )}

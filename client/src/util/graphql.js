@@ -127,6 +127,7 @@ export const FETCH_STAFFSBYDEPARTMENT_QUERY = gql`
     id
     name
     position_name
+    organization_id
     department_id 	
     email
     phone_number
@@ -142,6 +143,7 @@ export const FETCH_STAFF_QUERY = gql`
     id
     name
     position_name
+    organization_id
     department_id 	
     email
     phone_number
@@ -174,6 +176,7 @@ export const ADD_STAFF_MUTATION = gql`
     id
     name
     position_name
+    organization_id
     department_id 	
     email
     phone_number
@@ -188,7 +191,8 @@ export const UPDATE_STAFF_MUTATION = gql`
   updateStaff(
     $staffId: ID!,
     $name: String!,
-    $position_name: String!,	
+    $position_name: String!,
+    $department_id: ID!, 	
     $email: String!,
     $phone_number: String!,
     $picture: String
@@ -197,6 +201,7 @@ export const UPDATE_STAFF_MUTATION = gql`
     staffId: $staffId,
     name: $name,
     position_name: $position_name,
+    department_id: $department_id, 
     email: $email,
     phone_number: $phone_number,
     picture: $picture
@@ -204,6 +209,7 @@ export const UPDATE_STAFF_MUTATION = gql`
     id
     name
     position_name
+    organization_id
     department_id 	
     email
     phone_number
@@ -228,6 +234,7 @@ export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
     id
     name
     position_name
+    organization_id
     department_id 	
     email
     phone_number

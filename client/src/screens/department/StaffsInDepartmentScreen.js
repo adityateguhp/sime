@@ -40,9 +40,10 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const [staffVal, setStaffVal] = useState(null);
 
-    const selectItemHandler = (id) => {
+    const selectItemHandler = (id, department_id) => {
         navigation.navigate('Staff Profile', {
-            staffId: id
+            staffId: id,
+            departmentId: department_id
         });
     };
 
@@ -150,10 +151,10 @@ const StaffsScreen = ({ route, navigation }) => {
                 renderItem={itemData => (
                     <StaffList
                         name={itemData.item.name}
-                        position_name={itemData.item.position_name}
+                        email={itemData.item.position_name}
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
-                        onSelect={() => { selectItemHandler(itemData.item.id) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id) }}
                         onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     >
                     </StaffList>

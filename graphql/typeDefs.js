@@ -171,6 +171,7 @@ module.exports = gql`
             staffId: ID!,
             name: String!,
             position_name: String!,	
+            department_id: ID!, 
             email: String!,
             phone_number: String!,
             picture: String

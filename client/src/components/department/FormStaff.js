@@ -7,13 +7,17 @@ import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import DropDownPicker from 'react-native-dropdown-picker'
+import { Picker } from '@react-native-community/picker';
+import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
-import { FETCH_STAFFSBYDEPARTMENT_QUERY, ADD_STAFF_MUTATION } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, ADD_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
+import CenterSpinner from '../../components/common/CenterSpinner';
 
 
 const FormStaff = props => {
@@ -27,6 +31,10 @@ const FormStaff = props => {
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
+    const { data: departments, error: error1, loading: loading1 } = useQuery(
+        FETCH_DEPARTMENTS_QUERY
+    );
+
     const [errors, setErrors] = useState({
         staff_name_error: '',
         position_name_error: '',
@@ -37,7 +45,7 @@ const FormStaff = props => {
     const [values, setValues] = useState({
         name: '',
         position_name: '',
-        department_id: sime.department_id,
+        department_id: '',
         email: '',
         phone_number: '',
         password: '12345678',
@@ -66,7 +74,7 @@ const FormStaff = props => {
             }).then(async r => {
                 let data = await r.json()
                 console.log(data)
-                setValues({...values, picture: data.secure_url })
+                setValues({ ...values, picture: data.secure_url })
             }).catch(err => console.log(err))
         })
     }
@@ -79,16 +87,16 @@ const FormStaff = props => {
     const [addStaff, { loading }] = useMutation(ADD_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFSBYDEPARTMENT_QUERY,
-                variables: {departmentId: values.department_id}
+                query: FETCH_STAFFS_QUERY
             });
-            data.getStaffsByDepartment = [result.data.addStaff, ...data.getStaffsByDepartment];
-            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: {departmentId: values.department_id} });
+            data.getStaffs = [result.data.addStaff, ...data.getStaffs];
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data });
             values.name = '';
             values.position_name = '';
             values.email = '';
             values.phone_number = '';
             values.picture = '';
+            values.department_id = '';
             props.closeModalForm();
         },
         onError(err) {
@@ -97,7 +105,8 @@ const FormStaff = props => {
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
             if (staffNameError || positionNameError || emailError || phoneNumberError) {
-                setErrors({ ...errors, 
+                setErrors({
+                    ...errors,
                     staff_name_error: staffNameError,
                     position_name_error: positionNameError,
                     email_error: emailError,
@@ -105,7 +114,7 @@ const FormStaff = props => {
                 })
                 return;
             }
-            if(err.graphQLErrors[0].extensions.exception.errors){
+            if (err.graphQLErrors[0].extensions.exception.errors) {
                 Alert.alert('Hmmm...', 'Email address is already exist', [
                     { text: 'Close', style: 'default' },
                 ]);
@@ -118,7 +127,7 @@ const FormStaff = props => {
         event.preventDefault();
         addStaff();
     };
-    
+
     //for get keyboard height
     // Keyboard.addListener('keyboardDidShow', (frames) => {
     //     if (!frames.endCoordinates) return;
@@ -128,6 +137,15 @@ const FormStaff = props => {
     //     setKeyboarSpace(0);
     // });
     // const safeArea = useSafeArea();
+
+    if (error1) {
+        console.error(error1);
+        return <Text>Error</Text>;
+    }
+
+    if (loading1) {
+        return <CenterSpinner />;
+    }
 
     return (
         <Portal>
@@ -161,6 +179,17 @@ const FormStaff = props => {
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                    </View>
+                                    <View>
+                                        <Dropdown
+                                            label='Department'
+                                            value={values.department_id}
+                                            data={departments.getDepartments}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChange('department_id', val, '')}
+                                            useNativeDriver
+                                        />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput

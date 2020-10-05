@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Portal } from 'react-native-paper';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY } from '../../util/graphql';
@@ -15,6 +15,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
 
     const sId = route.params?.staffId;
+    const dId = route.params?.departmentId;
 
     const { data: staff, error: error1, loading: loading1, called } = useQuery(
         FETCH_STAFF_QUERY, {
@@ -26,7 +27,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
     const { data: department, error: error2, loading: loading2 } = useQuery(
         FETCH_DEPARTMENT_QUERY, {
         variables: {
-            departmentId: sime.department_id
+            departmentId: dId
         },
     });
 
