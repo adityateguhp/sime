@@ -227,7 +227,6 @@ const EventListScreen = ({ route, navigation }) => {
             <FormEvent
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
-                deleteButton={deleteHandler}
                 closeButton={closeModalForm}
             />
             <FormEditEvent

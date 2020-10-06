@@ -12,8 +12,8 @@ const RoadmapCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const startDate = moment(props.roadmap_start_date).format('ll');
-    const endDate = moment(props.roadmap_end_date).format('ll');
+    const startDate = moment(props.start_date).format('ll');
+    const endDate = moment(props.end_date).format('ll');
 
     let progress = 0;
 
@@ -22,7 +22,7 @@ const RoadmapCard = props => {
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
                 <Card style={styles.event}>
                     <Card.Title
-                        title={props.roadmap_name}
+                        title={props.name}
                         subtitle={
                             <Caption>
                                 <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}

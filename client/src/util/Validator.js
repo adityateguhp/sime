@@ -28,6 +28,11 @@ export const externalNameValidator = (name) => {
   return '';
 }
 
+export const roadmapNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Roadmap name must not be empty';
+  return '';
+}
+
 export const agendaValidator = (name) => {
   if (!name || name.length <= 0) return 'Agenda must not be empty';
   return '';

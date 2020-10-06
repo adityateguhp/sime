@@ -846,7 +846,7 @@ export const ADD_ROADMAP_MUTATION = gql`
   mutation 
   addRoadmap(
     $name: String!,
-    $event_id: String,
+    $event_id: ID!,
     $start_date: String!,
     $end_date: String!
   ) {
