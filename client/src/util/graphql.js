@@ -562,11 +562,10 @@ export const DELETE_POSITION = gql`
 `;
 
 export const FETCH_DIVISIONS_QUERY = gql`
-  query($projectId: ID!){
-    getDivisions(projectId: $projectId){
+  {
+    getDivisions{
       id
       name
-      project_id
       createdAt
   }
   }
@@ -577,18 +576,16 @@ export const FETCH_DIVISION_QUERY = gql`
     getDivision(divisionId: $divisionId){
       id
       name
-      project_id
       createdAt
   }
   }
 `;
 
 export const ADD_DIVISION_MUTATION = gql`
-  mutation addDivision($name: String!, $projectId: String!) {
-    addDivision(name: $name, projectId: $projectId) {
+  mutation addDivision($name: String!) {
+    addDivision(name: $name) {
       id
       name
-      project_id
       createdAt
   }
   } 
@@ -599,7 +596,6 @@ export const UPDATE_DIVISION_MUTATION = gql`
     updateDivision(divisionId: $divisionId, name: $name) {
       id
       name
-      project_id
       createdAt
   }
   } 
@@ -611,9 +607,9 @@ export const DELETE_DIVISION = gql`
   }
 `;
 
-export const FETCH_COMITEES_QUERY = gql`
+export const FETCH_COMMITTEES_QUERY = gql`
   query($projectId: ID!){
-    getComitees(projectId: $projectId){
+    getCommittees(projectId: $projectId){
       id
       staff_id
       position_id
@@ -624,9 +620,9 @@ export const FETCH_COMITEES_QUERY = gql`
   }
 `;
 
-export const FETCH_COMITEE_QUERY = gql`
-   query($comiteeId: ID!) {
-    getComitee(comiteeId: $comiteeId){
+export const FETCH_COMMITTEE_QUERY = gql`
+   query($committeeId: ID!) {
+    getCommittee(committeeId: $committeeId){
       id
       staff_id
       position_id
@@ -650,9 +646,9 @@ export const FETCH_HEADPROJECT_QUERY = gql`
   }
 `;
 
-export const ADD_COMITEE_MUTATION = gql`
-  mutation addComitee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!) {
-    addComitee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId) {
+export const ADD_COMMITTEE_MUTATION = gql`
+  mutation addCommittee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!) {
+    addCommittee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId) {
       id
       staff_id
       position_id
@@ -663,9 +659,9 @@ export const ADD_COMITEE_MUTATION = gql`
   } 
 `;
 
-export const UPDATE_COMITEE_MUTATION = gql`
-  mutation updateComitee($comiteeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!) {
-    updateComitee(comiteeId: $comiteeId, taffId: $staffId, positionId: $positionId, divisionId: $divisionId) {
+export const UPDATE_COMMITTEE_MUTATION = gql`
+  mutation updateCommittee($committeeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!) {
+    updateCommittee(committeeId: $committeeId, taffId: $staffId, positionId: $positionId, divisionId: $divisionId) {
       id
       staff_id
       position_id
@@ -676,9 +672,9 @@ export const UPDATE_COMITEE_MUTATION = gql`
   } 
 `;
 
-export const DELETE_COMITEE = gql`
-  mutation deleteComitee($comiteeId: ID!) {
-    deleteComitee(comiteeId: $comiteeId)
+export const DELETE_COMMITTEE = gql`
+  mutation deleteCommittee($committeeId: ID!) {
+    deleteCommittee(committeeId: $committeeId)
   }
 `;
 

@@ -1,4 +1,4 @@
-class Comitee {
+class Committee {
     constructor(_id, staff_id, position_id, division_id, project_id) {
         this._id = _id;
         this.staff_id = staff_id;
@@ -8,4 +8,4 @@ class Comitee {
     }
 }
 
-export default Comitee;
+export default Committee;

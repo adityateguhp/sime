@@ -32,7 +32,7 @@ import StaffsInDepartmentScreen from '../screens/department/StaffsInDepartmentSc
 import TaskScreen from '../screens/event/TaskScreen';
 import DrawerContent from '../components/common/DrawerContent';
 import RoadmapScreen from '../screens/event/RoadmapScreen';
-import ComiteeListScreen from '../screens/project/ComiteeListScreen';
+import CommitteeListScreen from '../screens/project/CommitteeListScreen';
 import EditComiteeScreen from '../screens/project/EditComiteeScreen';
 import ExternalScreen from '../screens/event/ExternalScreen';
 import RundownScreen from '../screens/event/RundownScreen';
@@ -40,7 +40,7 @@ import ExternalListScreen from '../screens/event/ExternalListScreen';
 import TaskDivisionScreen from '../screens/event/TaskDivisionScreen';
 import ExternalProfileScreen from '../screens/event/ExternalProfileScreen';
 import StaffProfileScreen from '../screens/department/StaffProfileScreen';
-import ComiteeProfileScreen from '../screens/project/ComiteeProfileScreen';
+import CommitteeProfileScreen from '../screens/project/CommitteeProfileScreen';
 import Colors from '../constants/Colors';
 
 
@@ -155,20 +155,20 @@ function ProjectStackSceen({ route, navigation }) {
         }}
       />
       <ProjectsStack.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
-      <ProjectsStack.Screen name="Comitee List" component={ComiteeListScreen} options={{
+      <ProjectsStack.Screen name="Committee List" component={CommitteeListScreen} options={{
         headerTitle: () =>
           <View>
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.division_name}</Text>
             <Text style={{ fontSize: 14, color: 'white' }}>{sime.project_name}</Text>
           </View>
       }} />
-      <ProjectsStack.Screen name="Comitee Profile" component={ComiteeProfileScreen} options={{
+      <ProjectsStack.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
           </View>),
       }} />
-      <ProjectsStack.Screen name="Edit Comitee" component={EditComiteeScreen} />
+      <ProjectsStack.Screen name="Edit Committee" component={EditComiteeScreen} />
       <ProjectsStack.Screen name="Event Detail" component={TopTabEvents} options={{
         headerTitle: () =>
           <View>
@@ -211,7 +211,7 @@ function TopTabProjects() {
       }}
     >
       <TopTabProject.Screen name="Event List" component={EventListScreen} />
-      <TopTabProject.Screen name="Comitee" component={DivisionListScreen} />
+      <TopTabProject.Screen name="Committee" component={DivisionListScreen} />
       <TopTabProject.Screen name="Project Overview" component={ProjectOverviewScreen} />
     </TopTabProject.Navigator>
   );

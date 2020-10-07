@@ -62,11 +62,10 @@ module.exports = gql`
     type Division {
         id: ID!
         name: String!
-        project_id: ID!
         createdAt: String!
     }
     
-    type Comitee {
+    type Committee {
         id: ID!
         staff_id: ID!
         position_id: ID!
@@ -123,11 +122,11 @@ module.exports = gql`
         getProject(projectId: ID!): Project
         getPositions: [Position]
         getPosition(positionId: ID!): Position
-        getDivisions(projectId: ID!): [Division]
+        getDivisions: [Division]
         getDivision(divisionId: ID!): Division
-        getComitees(projectId: ID!): [Comitee]
-        getComitee(comiteeId: ID!): Comitee 
-        getHeadProject(projectId: ID!, positionId: ID!): Comitee
+        getCommittees(projectId: ID!): [Committee]
+        getCommittee(committeeId: ID!): Committee 
+        getHeadProject(projectId: ID!, positionId: ID!): Committee
         getEvents(projectId: ID!): [Event]
         getEvent(eventId: ID!): Event  
         getExternals(eventId: ID!): [External]
@@ -246,17 +245,17 @@ module.exports = gql`
         
         deletePosition(positionId: ID!): String!
 
-        addDivision(name: String!, projectId: String!): Division!
+        addDivision(name: String!): Division!
         
         updateDivision(divisionId: ID!, name: String!): Division!
         
         deleteDivision(divisionId: ID!): String!
 
-        addComitee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!): Comitee!
+        addCommittee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!): Committee!
         
-        updateComitee(comiteeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!): Comitee!
+        updateCommittee(committeeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!): Committee!
         
-        deleteComitee(comiteeId: ID!): String!
+        deleteCommittee(committeeId: ID!): String!
 
         addExternalType(name: String!): ExternalType!
         

@@ -6,23 +6,23 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 import FABbutton from '../../components/common/FABbutton';
 import { COMITEES, STAFFS, POSITIONS, DIVISIONS } from '../../data/dummy-data';
-import ComiteeList from '../../components/project/ComiteeList';
+import CommitteeList from '../../components/project/CommitteeList';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 
-const ComiteeListScreen = ({ route, navigation }) => {
+const CommitteeListScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
 
     const divId = route.params?.divisionId;
 
-    const Comitee = COMITEES.filter(
-        comitee => comitee.project_id.indexOf(sime.project_id) >= 0 &&
-            comitee.division_id.indexOf(divId) >= 0
+    const Committee = COMITEES.filter(
+        committee => committee.project_id.indexOf(sime.project_id) >= 0 &&
+            committee.division_id.indexOf(divId) >= 0
     );
 
     const selectItemHandler = (_id) => {
-        navigation.navigate('Comitee Profile', {
+        navigation.navigate('Committee Profile', {
             comiteeId: _id
         });
       };
@@ -66,7 +66,7 @@ const ComiteeListScreen = ({ route, navigation }) => {
         ]);
     };
 
-    if (Comitee.length === 0) {
+    if (Committee.length === 0) {
         return (
             <View style={styles.content}>
                 <Text>No staffs found, let's add staffs!</Text>
@@ -78,10 +78,10 @@ const ComiteeListScreen = ({ route, navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={Comitee}
+                data={Committee}
                 keyExtractor={item => item._id}
                 renderItem={itemData => (
-                    <ComiteeList
+                    <CommitteeList
                         staff_id={itemData.item.staff_id}
                         position_id={itemData.item.position_id}
                         division_id={itemData.item.division_id}
@@ -89,7 +89,7 @@ const ComiteeListScreen = ({ route, navigation }) => {
                         onSelect={() => { selectItemHandler(itemData.item._id)}}
                         onLongPress={() => { longPressHandler(itemData.item.staff_id) }}
                     >
-                    </ComiteeList>
+                    </CommitteeList>
                 )}
             />
             <Portal>
@@ -152,4 +152,4 @@ const styles = StyleSheet.create({
 
 
 
-export default ComiteeListScreen;
+export default CommitteeListScreen;

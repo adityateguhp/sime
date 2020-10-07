@@ -4,7 +4,7 @@ import { Text, StyleSheet, View } from 'react-native';
 const EditComiteeScreen = props => {
   return (
     <View style={styles.screen}>
-      <Text>Edit Comitee Screen</Text>
+      <Text>Edit Committee Screen</Text>
     </View>
   );
 }

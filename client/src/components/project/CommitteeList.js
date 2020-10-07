@@ -4,7 +4,7 @@ import { Avatar, List, Caption} from 'react-native-paper';
 import { STAFFS, POSITIONS, DIVISIONS } from '../../data/dummy-data';
 
 
-const ComiteeList = props => {
+const CommitteeList = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -40,4 +40,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default ComiteeList;
+export default CommitteeList;

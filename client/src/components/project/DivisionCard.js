@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, Card, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
+import { Avatar, List, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
 
 import Colors from '../../constants/Colors';
 
@@ -10,34 +10,45 @@ const DivisionCard = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-    const label = props.name.substring(0,2).toUpperCase();
+    const [expanded, setExpanded] = useState(true);
+
+    const handlePress = () => setExpanded(!expanded);
+
+    const label = props.name.substring(0, 2).toUpperCase();
 
     return (
-        <View>
-            <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
-                <Card style={styles.event}>
-                    <Card.Title
-                        title={props.name}
-                        left={() => <Avatar.Text size={45} label={label} style={{backgroundColor: Colors.primaryColor}}/>}
-                    />
-                </Card >
-            </TouchableCmp>
+        <View style={styles.container}>
+            <List.Accordion
+                style={styles.accordion}
+                titleStyle={{fontWeight:'bold'}}
+                title={props.name}
+                expanded={expanded}
+                onPress={handlePress}>
+                <List.Item title="First item"  onPress={()=>{}}/>
+                <List.Item title="Second item" onPress={()=>{}}/>
+            </List.Accordion>
         </View>
-
     );
 };
 
 const styles = StyleSheet.create({
-    event: {
-        marginVertical: 5,
-        marginHorizontal: 10,
-        elevation: 3
+    accordion: {
+       
     },
     task: {
         display: "flex"
     },
     status: {
         fontSize: 11
+    },
+    container:{
+        marginVertical: 5,
+        marginHorizontal: 10,
+        flex:1,
+        backgroundColor: 'white',
+        elevation: 3,
+        borderRadius: 4
+        
     }
 });
 

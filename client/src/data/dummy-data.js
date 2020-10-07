@@ -4,7 +4,7 @@ import Project from '../models/Project';
 import Department from '../models/Department';
 import Position from '../models/Position';
 import Staff from '../models/Staff';
-import Comitee from '../models/Comitee';
+import Committee from '../models/Committee';
 import Division from '../models/Division';
 import External from '../models/External';
 import ExternalType from '../models/ExternalType';
@@ -209,7 +209,7 @@ export const EVENTS = [
 export const DIVISIONS = [
     new Division(
         'div1',
-        'Core Comitee',
+        'Core Committee',
         '5f563332c08d245a4874f21e'
     ),
     new Division(
@@ -234,7 +234,7 @@ export const DIVISIONS = [
     ),
     new Division(
         'div6',
-        'Core Comitee',
+        'Core Committee',
         'p2'
     ),
     new Division(
@@ -249,17 +249,17 @@ export const DIVISIONS = [
     ),
     new Division(
         'div9',
-        'Core Comitee',
+        'Core Committee',
         'p3'
     ),
     new Division(
         'div10',
-        'Core Comitee',
+        'Core Committee',
         'p4'
     ),
     new Division(
         'div11',
-        'Core Comitee',
+        'Core Committee',
         'p5'
     )
 ];
@@ -303,91 +303,91 @@ export const POSITIONS = [
 ];
 
 export const COMITEES = [
-    new Comitee(
+    new Committee(
         'c1',
         's1',
         'pos1',
         'div1',
         'p1'
     ),
-    new Comitee(
+    new Committee(
         'c2',
         's2',
         'pos2',
         'div1',
         'p1'
     ),
-    new Comitee(
+    new Committee(
         'c3',
         's3',
         'pos3',
         'div1',
         'p1'
     ),
-    new Comitee(
+    new Committee(
         'c4',
         's4',
         'pos4',
         'div1',
         'p1'
     ),
-    new Comitee(
+    new Committee(
         'c5',
         's5',
         'pos5',
         'div2',
         'p1'
     ),
-    new Comitee(
+    new Committee(
         'c6',
         's2',
         'pos1',
         'div6',
         'p2'
     ),
-    new Comitee(
+    new Committee(
         'c7',
         's1',
         'pos2',
         'div6',
         'p2'
     ),
-    new Comitee(
+    new Committee(
         'c8',
         's3',
         'pos5',
         'div7',
         'p2'
     ),
-    new Comitee(
+    new Committee(
         'c9',
         's4',
         'pos6',
         'div7',
         'p2'
     ),
-    new Comitee(
+    new Committee(
         'c10',
         's5',
         'pos7',
         'div7',
         'p2'
     ),
-    new Comitee(
+    new Committee(
         'c11',
         's3',
         'pos1',
         'div9',
         'p3'
     ),
-    new Comitee(
+    new Committee(
         'c12',
         's4',
         'pos1',
         'div10',
         'p4'
     ),
-    new Comitee(
+    new Committee(
         'c13',
         's5',
         'pos1',

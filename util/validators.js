@@ -295,7 +295,7 @@ module.exports.validateDivisionInput = (
     };
 };
 
-module.exports.validateComiteeInput = (
+module.exports.validateCommitteeInput = (
     staffId, divisionId, positionId
 ) => {
     const errors = {};

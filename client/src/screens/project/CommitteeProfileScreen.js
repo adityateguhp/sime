@@ -4,11 +4,11 @@ import { Text, Title, Paragraph, Avatar, Headline, Divider } from 'react-native-
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import CenterSpinner from '../../components/common/CenterSpinner';
-import { FETCH_COMITEE_QUERY, FETCH_STAFF_QUERY, FETCH_DEPARTMENT_QUERY, FETCH_POSITION_QUERY, FETCH_DIVISION_QUERY } from '../../util/graphql';
+import { FETCH_COMMITTEE_QUERY, FETCH_STAFF_QUERY, FETCH_DEPARTMENT_QUERY, FETCH_POSITION_QUERY, FETCH_DIVISION_QUERY } from '../../util/graphql';
 
-const ComiteeProfileScreen = ({ route }) => {
+const CommitteeProfileScreen = ({ route }) => {
 
-    const [comitee, setComitee] = useState({
+    const [committee, setCommittee] = useState({
         staff_id: '',
         position_id: '',
         division_id: ''
@@ -35,12 +35,12 @@ const ComiteeProfileScreen = ({ route }) => {
         name: ''
     });
 
-    const cId = route.params?.comiteeId;
+    const cId = route.params?.committeeId;
 
-    const { data: comiteeData, error: error1, loading: loading1 } = useQuery(
-        FETCH_COMITEE_QUERY, {
+    const { data: committeeData, error: error1, loading: loading1 } = useQuery(
+        FETCH_COMMITTEE_QUERY, {
         variables: {
-            comiteeId: cId
+            committeeId: cId
         },
     });
 
@@ -48,7 +48,7 @@ const ComiteeProfileScreen = ({ route }) => {
     const [loadStaffData, { called: called1, data: staffData, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_STAFF_QUERY, {
         variables: {
-            staffId: comitee.staff_id
+            staffId: committee.staff_id
         },
     });
 
@@ -62,25 +62,25 @@ const ComiteeProfileScreen = ({ route }) => {
     const [loadPositionData, { called: called3, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
         FETCH_POSITION_QUERY, {
         variables: {
-            positionId: comitee.position_id
+            positionId: committee.position_id
         },
     });
 
     const [loaDivisionData, { called: called4, data: divisionData, error: error5, loading: loading5 }] = useLazyQuery(
         FETCH_DIVISION_QUERY, {
         variables: {
-            divisionId: comitee.division_id
+            divisionId: committee.division_id
         },
     });
 
-    const comiteeDataFetch = () => {
-        if (comiteeData) {
-            setComitee({
-                position_id: comiteeData.getComitee.position_id,
-                division_id: comiteeData.getComitee.division_id,
-                staff_id: comiteeData.getComitee.staff_id
+    const committeeDataFetch = () => {
+        if (committeeData) {
+            setCommittee({
+                position_id: committeeData.getCommittee.position_id,
+                division_id: committeeData.getCommittee.division_id,
+                staff_id: committeeData.getCommittee.staff_id
             })
-            console.log(comiteeData.getComitee)
+            console.log(committeeData.getCommittee)
             loadStaffData();
             loadPositionData();
             loaDivisionData();
@@ -126,12 +126,12 @@ const ComiteeProfileScreen = ({ route }) => {
     }
 
     useEffect(() => {
-        console.log("mounted comiteeDataFetch")
-        comiteeDataFetch()
+        console.log("mounted committeeDataFetch")
+        committeeDataFetch()
         return () => {
-          console.log("This will be logged on unmount comiteeDataFetch");
+          console.log("This will be logged on unmount committeeDataFetch");
         }
-      }, [comiteeData])
+      }, [committeeData])
     
       useEffect(() => {
         console.log("mounted staffDataFetch")
@@ -262,4 +262,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ComiteeProfileScreen;
+export default CommitteeProfileScreen;

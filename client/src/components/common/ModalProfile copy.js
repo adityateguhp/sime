@@ -6,7 +6,7 @@ import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const PositionName = props => {
-    if (props.division_name === "Core Comitee") {
+    if (props.division_name === "Core Committee") {
         return (
             <Paragraph style={{ color: 'grey', marginTop: 0, marginLeft: 13 }}>{props.position_name}</Paragraph>
         )

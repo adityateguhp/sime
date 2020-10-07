@@ -42,8 +42,8 @@ const ProjectOverviewScreen = props => {
   });
 
   const selectItemHandler = (id) => {
-    props.navigation.navigate('Comitee Profile', {
-      comiteeId: id
+    props.navigation.navigate('Committee Profile', {
+      committeeId: id
     });
     setVisible(false);
   };

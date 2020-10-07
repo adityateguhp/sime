@@ -25,10 +25,7 @@ const DivisionListScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
 
     const { data: divisions, error: error1, loading: loading1 } = useQuery(
-        FETCH_DIVISIONS_QUERY,
-        {
-            variables: { projectId: sime.project_id },
-        }
+        FETCH_DIVISIONS_QUERY
     );
 
     const [loadExistData, { called, data: division, error: error2, loading: loading2 }] = useLazyQuery(
@@ -40,7 +37,7 @@ const DivisionListScreen = ({ navigation }) => {
     const [divisionVal, setDivisionVal] = useState(null);
 
     const selectItemHandler = (name, id) => {
-        navigation.navigate('Comitee List', {
+        navigation.navigate('Committee List', {
             divisionName: name,
             divisionId: id
         });
@@ -82,16 +79,14 @@ const DivisionListScreen = ({ navigation }) => {
     }
 
     const divisionId = sime.division_id;
-    const projectId = sime.project_id
 
     const [deleteDivision] = useMutation(DELETE_DIVISION, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_DIVISIONS_QUERY,
-                variables: {projectId: projectId}
             });
             divisions.getDivisions = divisions.getDivisions.filter((d) => d.id !== divisionId);
-            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: projectId}});
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data});
         },
         variables: {
             divisionId
@@ -147,8 +142,6 @@ const DivisionListScreen = ({ navigation }) => {
                 renderItem={itemData => (
                     <DivisionCard
                         name={itemData.item.name}
-                        onSelect={() => { selectItemHandler(itemData.itemname, itemData.item.id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     >
                     </DivisionCard>
                 )}

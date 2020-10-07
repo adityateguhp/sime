@@ -1,6 +1,6 @@
 const { model, Schema } = require('mongoose');
 
-const comiteeSchema = new Schema({
+const committeeSchema = new Schema({
     staff_id: {
         type: Schema.Types.ObjectId,
         ref: 'staffs'
@@ -20,4 +20,4 @@ const comiteeSchema = new Schema({
     createdAt: String
 });
 
-module.exports = model('Comitee', comiteeSchema);
+module.exports = model('Committee', committeeSchema);
