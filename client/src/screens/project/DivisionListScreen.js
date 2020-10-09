@@ -1,15 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { Provider, Portal, Title, Text, List } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormDivision from '../../components/project/FormDivision';
+import FormCommittee from '../../components/project/FormCommittee';
 import FormEditDivision from '../../components/project/FormEditDivision';
 import DivisionCard from '../../components/project/DivisionCard';
+import CommitteeListContainer from '../../components/project/CommitteeListContainer';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
@@ -25,7 +26,10 @@ const DivisionListScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
 
     const { data: divisions, error: error1, loading: loading1 } = useQuery(
-        FETCH_DIVISIONS_QUERY
+        FETCH_DIVISIONS_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+        }
     );
 
     const [loadExistData, { called, data: division, error: error2, loading: loading2 }] = useLazyQuery(
@@ -48,6 +52,9 @@ const DivisionListScreen = ({ navigation }) => {
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
+    const [expanded, setExpanded] = useState(true);
+
+    const handlePress = () => setExpanded(!expanded);
 
     const closeModal = () => {
         setVisible(false);
@@ -84,9 +91,10 @@ const DivisionListScreen = ({ navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_DIVISIONS_QUERY,
+                variables: { projectId: sime.project_id },
             });
             divisions.getDivisions = divisions.getDivisions.filter((d) => d.id !== divisionId);
-            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data});
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
             divisionId
@@ -122,7 +130,7 @@ const DivisionListScreen = ({ navigation }) => {
     }
 
     if (loading2) {
-       
+
     }
 
     if (divisions.getDivisions.length === 0) {
@@ -140,10 +148,18 @@ const DivisionListScreen = ({ navigation }) => {
                 data={divisions.getDivisions}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
-                    <DivisionCard
-                        name={itemData.item.name}
-                    >
-                    </DivisionCard>
+                    <View style={styles.container}>
+                        <List.Accordion
+                            style={styles.accordion}
+                            titleStyle={{ fontWeight: 'bold' }}
+                            title={itemData.item.name}
+                            expanded={expanded}
+                            onPress={handlePress}>
+                            <CommitteeListContainer
+                                division_id={itemData.item.id}
+                            />
+                        </List.Accordion>
+                    </View>
                 )}
             />
             <Portal>
@@ -171,7 +187,7 @@ const DivisionListScreen = ({ navigation }) => {
                 </Modal>
             </Portal>
             <FABbutton Icon="plus" label="DIVISION" onPress={openForm} />
-            <FormDivision
+            <FormCommittee
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 deleteButton={deleteHandler}
@@ -217,6 +233,15 @@ const styles = StyleSheet.create({
     text: {
         marginLeft: wp(5.6),
         fontSize: wp(3.65)
+    },
+    container:{
+        marginVertical: 5,
+        marginHorizontal: 10,
+        flex:1,
+        backgroundColor: 'white',
+        elevation: 3,
+        borderRadius: 4
+        
     }
 });
 

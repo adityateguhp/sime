@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -11,9 +11,11 @@ import moment from 'moment';
 
 import Colors from '../../constants/Colors';
 import { projectNameValidator, dateValidator } from '../../util/validator';
-import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION } from '../../util/graphql';
+import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION, ADD_DIVISION_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
+import { forEach } from 'lodash';
+import { SimeContext } from '../../context/SimePovider';
 
 const FormProject = props => {
     let TouchableCmp = TouchableOpacity;
@@ -21,6 +23,8 @@ const FormProject = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+
+    const sime = useContext(SimeContext);
 
     //const [keyboardSpace, setKeyboarSpace] = useState(0);
 
@@ -37,6 +41,41 @@ const FormProject = props => {
         end_date: '',
         picture: null,
     });
+
+    const [divisionValues, setDivisionValues] = useState([
+        {
+            name: 'Core Committee',
+            projectId: ''
+        },
+        {
+            name: 'Funding Subcommittee',
+            projectId: ''
+        },
+        {
+            name: 'Secretariat Subcommittee',
+            projectId: ''
+        },
+        {
+            name: 'Program Subcommittee',
+            projectId: ''
+        },
+        {
+            name: 'Food Subcommittee',
+            projectId: ''
+        },
+        {
+            name: 'Security Subcommittee',
+            projectId: ''
+        },
+        {
+            name: 'Publication & Documentation Subcommittee',
+            projectId: ''
+        },
+        {
+            name: 'Equipment & Transportation Subcommittee',
+            projectId: ''
+        },
+    ]);
 
     const [showStartDate, setShowStartDate] = useState(false);
     const [showEndDate, setShowEndDate] = useState(false);
@@ -101,13 +140,24 @@ const FormProject = props => {
         closeEndDatepicker();
     };
 
-    const [addProject, { loading }] = useMutation(ADD_PROJECT_MUTATION, {
+    const updateFieldChanged = (name, value) => {
+        let newArr = divisionValues.map((item) => {
+            return { ...item, [name]: value };
+        });
+        setDivisionValues(newArr);
+        newArr.map((data) => {
+            addDivision(({ variables: data}))
+        })
+    };
+
+    const [addProject, { loading1 }] = useMutation(ADD_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY
             });
             data.getProjects = [result.data.addProject, ...data.getProjects];
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
+            updateFieldChanged('projectId', result.data.addProject.id)
             values.name = '';
             values.description = '';
             values.start_date = '';
@@ -130,6 +180,14 @@ const FormProject = props => {
         },
         variables: values
     });
+
+
+    const [addDivision, { loading2 }] = useMutation(ADD_DIVISION_MUTATION, {
+        update(_, result) {
+            
+        }
+    });
+
 
     const startDate = moment(values.start_date).format('ll');
     const endDate = moment(values.end_date).format('ll');
@@ -245,7 +303,7 @@ const FormProject = props => {
                                         onCancel={closeStartDatepicker}
                                         mode="date"
                                         display="default"
-                                        maximumDate={values.end_date? new Date(values.end_date): null}
+                                        maximumDate={values.end_date ? new Date(values.end_date) : null}
                                     />
                                     <DateTimePicker
                                         isVisible={showEndDate}
@@ -253,7 +311,7 @@ const FormProject = props => {
                                         onCancel={closeEndDatepicker}
                                         mode="date"
                                         display="default"
-                                        minimumDate={values.start_date? new Date(values.start_date): null}
+                                        minimumDate={values.start_date ? new Date(values.start_date) : null}
                                     />
                                 </Portal>
                             </ScrollView>

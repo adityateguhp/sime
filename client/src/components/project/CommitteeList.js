@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption} from 'react-native-paper';
-import { STAFFS, POSITIONS, DIVISIONS } from '../../data/dummy-data';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Text } from 'react-native';
+import { Avatar, List, Caption } from 'react-native-paper';
+import { useQuery } from '@apollo/react-hooks';
+
+import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, FETCH_COMMITTEES_IN_DIVISION_QUERY } from '../../util/graphql';
+import CenterSpinner from '../common/CenterSpinner';
 
 
 const CommitteeList = props => {
@@ -10,27 +13,53 @@ const CommitteeList = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-    const staffOnDivision = STAFFS.find(staff => staff._id === props.staff_id);
-    const positionOnDivision = POSITIONS.find(pos => pos._id === props.position_id);
-    const division = DIVISIONS.find(div => div._id === props.division_id);
+
+    const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
+        FETCH_STAFF_QUERY,
+        {
+            variables: { staffId: props.staff_id }
+        }
+    );
+
+    const { data: position, error: errorPosition, loading: loadingPosition } = useQuery(
+        FETCH_POSITION_QUERY,
+        {
+            variables: { positionId: props.position_id }
+        }
+    );
+
+
+    if (errorStaff) {
+        console.error(errorStaff);
+        return <Text>errorStaff</Text>;
+    }
+
+    if (errorPosition) {
+        console.error(errorPosition);
+        return <Text>errorPosition</Text>;
+    }
+
+    if (loadingStaff) {
+        return <CenterSpinner />;
+    }
+
+    if (loadingPosition) {
+        return <CenterSpinner />;
+    }
 
 
     return (
-        <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
-            <View style={styles.wrap}>
-                <List.Item
-                    style={styles.staff}
-                    title={staffOnDivision.name}
-                    description={<Caption>{positionOnDivision.position_name}</Caption>}
-                    left={() => <Avatar.Image size={50} source={{ uri: staffOnDivision.picture }} />}
-                />
-            </View>
-        </TouchableCmp>
+        <List.Item
+            style={styles.staffs}
+            title={staff.getStaff.name}
+            description={<Caption>{position.getPosition.name}</Caption>}
+            left={() => <Avatar.Image size={50} source={{ uri: staff.getStaff.picture }} />}
+        />
     );
 };
 
 const styles = StyleSheet.create({
-    staff: {
+    staffs: {
         marginLeft: 10,
         marginTop: 3
     },

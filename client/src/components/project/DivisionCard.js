@@ -24,8 +24,6 @@ const DivisionCard = props => {
                 title={props.name}
                 expanded={expanded}
                 onPress={handlePress}>
-                <List.Item title="First item"  onPress={()=>{}}/>
-                <List.Item title="Second item" onPress={()=>{}}/>
             </List.Accordion>
         </View>
     );

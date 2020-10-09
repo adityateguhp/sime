@@ -196,7 +196,7 @@ const FormEditStaff = props => {
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
                                             onChangeText={(val) => onChange('department_id', val, '')}
-                                            useNativeDriver
+                                            useNativeDriver={true}
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>

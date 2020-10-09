@@ -37,7 +37,19 @@ module.exports = {
             } catch (err) {
                 throw new Error(err);
             }
-        }
+        },
+        async getCommitteesInDivision(_, { divisionId }, context) {
+            try {
+                const committees = await Committee.find({ division_id: divisionId }).sort({ createdAt: -1 });
+                if (committees) {
+                    return committees;
+                } else {
+                    throw new Error('Committees not found');
+                }
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
     },
     Mutation: {
         async addCommittee(_, { staffId, positionId, divisionId, projectId }, context) {

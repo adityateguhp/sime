@@ -8,8 +8,6 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import DropDownPicker from 'react-native-dropdown-picker'
-import { Picker } from '@react-native-community/picker';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
@@ -188,7 +186,7 @@ const FormStaff = props => {
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
                                             onChangeText={(val) => onChange('department_id', val, '')}
-                                            useNativeDriver
+                                            useNativeDriver={true}
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>

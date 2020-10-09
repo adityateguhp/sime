@@ -102,6 +102,20 @@ export const passwordValidator = (password, confirmPassword) => {
   return '';
 }
 
+export const staffValidator = (staff) => {
+  if (!staff || staff.length <= 0) return 'Staff must not be empty';
+  return '';
+}
+
+export const divisionValidator = (division) => {
+  if (!division || division.length <= 0) return 'Division must not be empty';
+  return '';
+}
+
+export const positionValidator = (position) => {
+  if (!position || position.length <= 0) return 'Position must not be empty';
+  return '';
+}
 
 
 

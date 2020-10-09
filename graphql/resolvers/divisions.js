@@ -8,7 +8,7 @@ module.exports = {
   Query: {
     async getDivisions(_, {projectId}, context) {
       try {
-        const divisions = await Division.find({ project_id: projectId }).sort({ createdAt: 1 });
+        const divisions = await Division.find({ project_id: projectId }).sort({ name: 1 });
         if (divisions) {
           return divisions;
         } else {
@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async addDivision(_, { name }, context) {
+    async addDivision(_, { name, projectId }, context) {
       const user = checkAuth(context);
       const { valid, errors } = validateDivisionInput(name);
       if (!valid) {
@@ -40,6 +40,7 @@ module.exports = {
       }
       const newDivision = new Division({
         name,
+        project_id: projectId,
         createdAt: new Date().toISOString()
       });
 

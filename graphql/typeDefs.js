@@ -62,6 +62,7 @@ module.exports = gql`
     type Division {
         id: ID!
         name: String!
+        project_id: ID!
         createdAt: String!
     }
     
@@ -122,11 +123,12 @@ module.exports = gql`
         getProject(projectId: ID!): Project
         getPositions: [Position]
         getPosition(positionId: ID!): Position
-        getDivisions: [Division]
+        getDivisions(projectId: ID!): [Division]
         getDivision(divisionId: ID!): Division
         getCommittees(projectId: ID!): [Committee]
         getCommittee(committeeId: ID!): Committee 
         getHeadProject(projectId: ID!, positionId: ID!): Committee
+        getCommitteesInDivision(divisionId: ID!): [Committee] 
         getEvents(projectId: ID!): [Event]
         getEvent(eventId: ID!): Event  
         getExternals(eventId: ID!): [External]
@@ -245,7 +247,7 @@ module.exports = gql`
         
         deletePosition(positionId: ID!): String!
 
-        addDivision(name: String!): Division!
+        addDivision(name: String!, projectId:ID!): Division!
         
         updateDivision(divisionId: ID!, name: String!): Division!
         

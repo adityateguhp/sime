@@ -562,10 +562,11 @@ export const DELETE_POSITION = gql`
 `;
 
 export const FETCH_DIVISIONS_QUERY = gql`
-  {
-    getDivisions{
+   query($projectId: ID!){
+    getDivisions(projectId: $projectId){
       id
       name
+      project_id
       createdAt
   }
   }
@@ -576,16 +577,18 @@ export const FETCH_DIVISION_QUERY = gql`
     getDivision(divisionId: $divisionId){
       id
       name
+      project_id
       createdAt
   }
   }
 `;
 
 export const ADD_DIVISION_MUTATION = gql`
-  mutation addDivision($name: String!) {
-    addDivision(name: $name) {
+  mutation addDivision($name: String!, $projectId: ID!) {
+    addDivision(name: $name, projectId: $projectId) {
       id
       name
+      project_id
       createdAt
   }
   } 
@@ -596,6 +599,7 @@ export const UPDATE_DIVISION_MUTATION = gql`
     updateDivision(divisionId: $divisionId, name: $name) {
       id
       name
+      project_id
       createdAt
   }
   } 
@@ -636,6 +640,19 @@ export const FETCH_COMMITTEE_QUERY = gql`
 export const FETCH_HEADPROJECT_QUERY = gql`
    query($projectId: ID!, $positionId: ID!) {
     getHeadProject(projectId: $projectId, positionId: $positionId){
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_COMMITTEES_IN_DIVISION_QUERY = gql`
+   query($divisionId: ID!) {
+    getCommitteesInDivision(divisionId: $divisionId){
       id
       staff_id
       position_id

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Alert, StyleSheet, ScrollView, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { Alert, StyleSheet, ScrollView, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, SectionList } from 'react-native';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import Modal from "react-native-modal";
@@ -86,18 +86,23 @@ const RundownScreen = props => {
     setRundownVal(rundown.getRundown);
   }
 
-  const groupBy = function (data, key) {
-    return data.reduce(function (storage, item) {
-      var group = item[key];
-      storage[group] = storage[group] || [];
-      storage[group].push(item);
-      return storage;
-    }, {});
-  };
-
   const rundownDataFetch = () => {
     if (rundowns) {
-      setRundownsVal(rundowns.getRundowns)
+      let dataSource = rundowns.getRundowns.reduce(function (sections, item) {
+
+        let section = sections.find(section => section.date === item.date);
+
+        if (!section) {
+          section = { date: item.date, data: [] };
+          sections.push(section);
+        }
+
+        section.data.push(item);
+
+        return sections;
+
+      }, []);
+      setRundownsVal(dataSource)
     }
   }
 
@@ -105,7 +110,7 @@ const RundownScreen = props => {
     setRefreshing(true), refetch();
     if (loadingRundowns) {
       return <CenterSpinner />;
-    }else{
+    } else {
       setRefreshing(false)
     }
   }, []);
@@ -117,8 +122,6 @@ const RundownScreen = props => {
       console.log("This will be logged on unmount rundownDataFetch");
     }
   }, [rundowns])
-
-  const groubedByDate = groupBy(rundownsVal, 'date');
 
   const [deleteRundown] = useMutation(DELETE_RUNDOWN, {
     update(proxy) {
@@ -182,27 +185,29 @@ const RundownScreen = props => {
 
   return (
     <Provider theme={theme}>
-      <ScrollView style={{ marginTop: 5 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {Object.keys(groubedByDate).map((category) => (
-          <View style={styles.container}>
-            <RundownContainer key={category} date={moment(category).format('dddd, MMM D YYYY')} />
-            {groubedByDate[category].map((obj) => (
+      <View style={styles.container}>
+        <SectionList
+          sections={rundownsVal}
+          keyExtractor={(item, index) => item.id + index}
+          renderItem={
+            ({ item, index, section }) => (
               <RundownTime
-                key={obj.id}
-                start_time={moment(obj.start_time).format('LT')}
-                end_time={moment(obj.end_time).format('LT')}
-                agenda={obj.agenda}
-                details={obj.details}
-                onLongPress={() => { longPressHandler(obj.agenda, obj.id) }}
+                key={index}
+                start_time={moment(item.start_time).format('LT')}
+                end_time={moment(item.end_time).format('LT')}
+                agenda={item.agenda}
+                details={item.details}
+                onLongPress={() => { longPressHandler(item.agenda, item.id) }}
               />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
+            )
+          }
+          renderSectionHeader={
+            ({ section: { date } }) => (
+              <RundownContainer key={date} date={moment(date).format('dddd, MMM D YYYY')} />
+            )
+          }
+        />
+      </View>
       <Portal>
         <Modal
           useNativeDriver={true}
