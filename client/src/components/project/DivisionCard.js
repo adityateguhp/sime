@@ -27,6 +27,7 @@ const DivisionCard = props => {
                 onPress={handlePress}>
                 <CommitteeListContainer
                     division_id={props.division_id}
+                    onSelect={props.onSelect}
                 />
             </List.Accordion>
         </View>

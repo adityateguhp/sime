@@ -39,13 +39,10 @@ const DivisionListScreen = ({ navigation }) => {
 
     const [divisionVal, setDivisionVal] = useState(null);
 
-    const selectItemHandler = (name, id) => {
-        navigation.navigate('Committee List', {
-            divisionName: name,
-            divisionId: id
-        });
-        sime.setDepartment_id(id);
-        sime.setDivision_name(division_name);
+    const selectItemHandler = () => {
+        navigation.navigate('Committee Profile', {
+            committeeId: sime.committee_id
+        })
     };
 
     const [visible, setVisible] = useState(false);
@@ -147,6 +144,7 @@ const DivisionListScreen = ({ navigation }) => {
                     <DivisionCard
                         name={itemData.item.name}
                         division_id={itemData.item.id}
+                        onSelect={selectItemHandler}
                     />
                 )}
             />
@@ -178,7 +176,6 @@ const DivisionListScreen = ({ navigation }) => {
             <FormCommittee
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
-                deleteButton={deleteHandler}
                 closeButton={closeModalForm}
             />
             <FormEditDivision

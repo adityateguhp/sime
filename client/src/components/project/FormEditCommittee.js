@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
-import { FETCH_COMMITTEES_IN_DIVISION_QUERY, ADD_COMMITTEE_MUTATION, FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
+import { FETCH_COMMITTEES_IN_DIVISION_QUERY, UPDATE_COMMITTEE_MUTATION, FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
@@ -32,15 +32,15 @@ const FormCommittee = props => {
         }
     );
 
-    const { data: positions, error: errorPositions, loading: loadingPositions } = useQuery(
-        FETCH_POSITIONS_QUERY
-    );
-
     const { data: committees, error: errorCommittees, loading: loadingCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
             variables: { projectId: sime.project_id }
         }
+    );
+
+    const { data: positions, error: errorPositions, loading: loadingPositions } = useQuery(
+        FETCH_POSITIONS_QUERY
     );
 
     const [errors, setErrors] = useState({
@@ -50,14 +50,13 @@ const FormCommittee = props => {
     });
 
     const [values, setValues] = useState({
+        committeeId: '',
         staffId: '',
         positionId: '',
-        divisionId: '',
-        projectId: sime.project_id
+        divisionId: ''
     });
 
     const [positionsValue, setPositionValue] = useState([]);
-    const [staffsValue, setStaffsValue] = useState([]);
 
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
@@ -76,17 +75,34 @@ const FormCommittee = props => {
         }
     };
 
-    const [addCommittee, { loading }] = useMutation(ADD_COMMITTEE_MUTATION, {
+
+    useEffect(() => {
+        if (props.committee) {
+            setValues({
+                committeeId: props.committee.id,
+                staffId: props.committee.staff_id,
+                positionId: props.committee.position_id,
+                divisionId: props.committee.division_id
+            })
+            const div = divisions.getDivisions.find((d) => d.name === "Core Committee");
+            if (div.id === props.committee.division_id) {
+                const pos = positions.getPositions.filter((p) => p.core === true);
+                setPositionValue(pos)
+            } else {
+                const pos = positions.getPositions.filter((p) => p.core === false);
+                setPositionValue(pos)
+            }
+            
+        }
+    }, [props.committee])
+
+    const [updateCommittee, { loading }] = useMutation(UPDATE_COMMITTEE_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_COMMITTEES_IN_DIVISION_QUERY,
                 variables: { divisionId: values.divisionId }
             });
-            data.getCommitteesInDivision = [result.data.addCommittee, ...data.getCommitteesInDivision];
             proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: values.divisionId } });
-            values.staffId = '';
-            values.positionId = '';
-            values.divisionId = '';
             props.closeModalForm();
         },
         onError(err) {
@@ -117,7 +133,7 @@ const FormCommittee = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addCommittee();
+        updateCommittee();
     };
 
     if (errorStaffs) {
@@ -175,7 +191,8 @@ const FormCommittee = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="New Committee" />
+                            <Appbar.Content title="Edit Committee" />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <ScrollView>
@@ -184,8 +201,9 @@ const FormCommittee = props => {
                                     <Dropdown
                                         useNativeDriver={true}
                                         label='Staff'
+                                        disabled={true}
                                         value={values.staffId}
-                                        data={staffsValue}
+                                        data={staffs.getStaffs}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('staffId', val, 'staff_error')}
@@ -206,7 +224,6 @@ const FormCommittee = props => {
                                     <Dropdown
                                         useNativeDriver={true}
                                         label='Position'
-                                        disabled={values.divisionId ? false : true}
                                         value={values.positionId}
                                         data={positionsValue}
                                         valueExtractor={({ id }) => id}

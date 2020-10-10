@@ -7,6 +7,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
+import FormEditCommittee from './FormEditCommittee';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 
@@ -16,12 +17,6 @@ const CommitteeList = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-
-    const selectItemHandler = (id, name) => {
-        navigation.navigate('Event Detail');
-        sime.setStaff_id(id);
-        sime.setStaff_name(name);
-    };
 
     const sime = useContext(SimeContext);
 
@@ -69,7 +64,10 @@ const CommitteeList = props => {
         closeModal();
         setVisibleFormEdit(true);
         setCommitteeVal(committee.getCommittee);
-        console.log(committeeVal)
+    }
+
+    const selectItemHandler = () => {
+        sime.setCommittee_id(props.committee_id)
     }
 
     const deleteHandler = () => {
@@ -116,10 +114,11 @@ const CommitteeList = props => {
 
     return (
         <Provider theme={theme}>
-            <TouchableCmp 
-            onPress={() => {selectItemHandler(props.staff_id)}} 
-            onLongPress={() => {longPressHandler(props.committee_id, props.staff_id, staff.getStaff.name)}} 
-            useForeground>
+            <TouchableCmp
+                onPress={props.onSelect}
+                onPressIn={() => { selectItemHandler() }}
+                onLongPress={() => { longPressHandler(props.committee_id, props.staff_id, staff.getStaff.name) }}
+                useForeground>
                 <View style={styles.wrap}>
                     <List.Item
                         style={styles.staffs}
@@ -153,13 +152,19 @@ const CommitteeList = props => {
                     </View>
                 </Modal>
             </Portal>
-            
+            <FormEditCommittee
+                closeModalForm={closeModalFormEdit}
+                visibleForm={visibleFormEdit}
+                deleteButton={deleteHandler}
+                closeButton={closeModalFormEdit}
+                committee={committeeVal}
+            />
         </Provider>
     );
 };
 
 const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(46.5);
+const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     staffs: {

@@ -64,6 +64,7 @@ const CommitteeListContainer = props => {
                             staff_id = {itemData.item.staff_id}
                             position_id = {itemData.item.position_id}
                             deleteFunction = {deleteCommittee}
+                            onSelect={props.onSelect}
                          />
                      )}
                 />
