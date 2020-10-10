@@ -271,6 +271,7 @@ const EventOverviewScreen = props => {
         picture={external.picture}
         positionName={false}
         onPressInfo={() => { selectInfoHandler(external.id) }}
+        onPressIn={closeModal}
       />
     </Provider>
   );

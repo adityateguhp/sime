@@ -7,6 +7,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
+import ModalProfile from '../common/ModalProfile';
 import FormEditCommittee from './FormEditCommittee';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
@@ -42,10 +43,15 @@ const CommitteeList = props => {
 
     const [committeeVal, setCommitteeVal] = useState(null);
     const [visible, setVisible] = useState(false);
+    const [visibleModalProfile, setVisibleModalProfile] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     const closeModal = () => {
         setVisible(false);
+    }
+
+    const closeModalProfile = () => {
+        setVisibleModalProfile(false);
     }
 
     const closeModalFormEdit = () => {
@@ -67,7 +73,8 @@ const CommitteeList = props => {
     }
 
     const selectItemHandler = () => {
-        sime.setCommittee_id(props.committee_id)
+        sime.setCommittee_id(props.committee_id);
+        setVisibleModalProfile(true);
     }
 
     const deleteHandler = () => {
@@ -115,8 +122,7 @@ const CommitteeList = props => {
     return (
         <Provider theme={theme}>
             <TouchableCmp
-                onPress={props.onSelect}
-                onPressIn={() => { selectItemHandler() }}
+                onPress={() => { selectItemHandler() }}
                 onLongPress={() => { longPressHandler(props.committee_id, props.staff_id, staff.getStaff.name) }}
                 useForeground>
                 <View style={styles.wrap}>
@@ -158,6 +164,19 @@ const CommitteeList = props => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
                 committee={committeeVal}
+            />
+            <ModalProfile
+                visible={visibleModalProfile}
+                onBackButtonPress={closeModalProfile}
+                onBackdropPress={closeModalProfile}
+                name={staff.getStaff.name}
+                position_name={position.getPosition.name}
+                email={staff.getStaff.email}
+                phone_number={staff.getStaff.phone_number}
+                picture={staff.getStaff.picture}
+                positionName={true}
+                onPressInfo={props.onSelect}
+                onPressIn={closeModalProfile}
             />
         </Provider>
     );

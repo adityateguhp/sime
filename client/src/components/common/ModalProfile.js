@@ -28,7 +28,7 @@ const ModalProfile = props => {
                         <Image style={styles.picture} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png')  : { uri: props.picture }} />
                         <View style={styles.info}>
                             <Title style={{ marginTop: 5, marginLeft: 13 }}>{props.name}</Title>
-                            <TouchableCmp onPress={props.onPressInfo} useForeground>
+                            <TouchableCmp onPress={props.onPressInfo} onPressIn={props.onPressIn} useForeground>
                                 <Icon name="information" size={23} color='grey' style={{ marginTop: 5, marginRight: 13, opacity: 0.5 }} />
                             </TouchableCmp>
                         </View>
@@ -58,7 +58,7 @@ const ModalProfile = props => {
                         <Image style={styles.picture} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png')  : { uri: props.picture }} />
                         <View style={styles.info}>
                             <Title style={{ marginTop: 5, marginLeft: 13 }}>{props.name}</Title>
-                            <TouchableCmp onPress={props.onPressInfo} useForeground>
+                            <TouchableCmp onPress={props.onPressInfo} onPressIn={props.onPressIn} useForeground>
                                 <Icon name="information" size={23} color='grey' style={{ marginTop: 5, marginRight: 13, opacity: 0.5 }} />
                             </TouchableCmp>
                         </View>

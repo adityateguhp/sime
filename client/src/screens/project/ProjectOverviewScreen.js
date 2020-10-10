@@ -235,6 +235,7 @@ const ProjectOverviewScreen = props => {
             picture={staff.picture}
             positionName={true}
             onPressInfo={() => { selectItemHandler(headProject.id) }}
+            onPressIn={closeModal}
           />
       }
 
