@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
 
+import CommitteeListContainer from '../../components/project/CommitteeListContainer';
 import Colors from '../../constants/Colors';
 
 const DivisionCard = props => {
@@ -20,10 +21,13 @@ const DivisionCard = props => {
         <View style={styles.container}>
             <List.Accordion
                 style={styles.accordion}
-                titleStyle={{fontWeight:'bold'}}
+                titleStyle={{ fontWeight: 'bold' }}
                 title={props.name}
                 expanded={expanded}
                 onPress={handlePress}>
+                <CommitteeListContainer
+                    division_id={props.division_id}
+                />
             </List.Accordion>
         </View>
     );
@@ -31,7 +35,7 @@ const DivisionCard = props => {
 
 const styles = StyleSheet.create({
     accordion: {
-       
+
     },
     task: {
         display: "flex"
@@ -39,14 +43,14 @@ const styles = StyleSheet.create({
     status: {
         fontSize: 11
     },
-    container:{
+    container: {
         marginVertical: 5,
         marginHorizontal: 10,
-        flex:1,
+        flex: 1,
         backgroundColor: 'white',
         elevation: 3,
         borderRadius: 4
-        
+
     }
 });
 

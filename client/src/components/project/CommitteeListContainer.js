@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
 import { Avatar, List, Caption } from 'react-native-paper';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import {FETCH_COMMITTEES_IN_DIVISION_QUERY } from '../../util/graphql';
+import {DELETE_COMMITTEE, FETCH_COMMITTEES_IN_DIVISION_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import CommitteeList from './CommitteeList';
-
+import { SimeContext } from '../../context/SimePovider';
 
 const CommitteeListContainer = props => {
     let TouchableCmp = TouchableOpacity;
@@ -15,6 +15,8 @@ const CommitteeListContainer = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const sime = useContext(SimeContext);
+
     const { data: committee, error: errorCommittee, loading: loadingCommittee } = useQuery(
         FETCH_COMMITTEES_IN_DIVISION_QUERY,
         {
@@ -22,6 +24,21 @@ const CommitteeListContainer = props => {
         }
     );
 
+    const committeeId = sime.committee_id;
+
+    const [deleteCommittee] = useMutation(DELETE_COMMITTEE, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_COMMITTEES_IN_DIVISION_QUERY,
+                variables: { divisionId: props.division_id }
+            });
+            data.getCommitteesInDivision = data.getCommitteesInDivision.filter((e) => e.id !== committeeId);
+            proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: props.division_id } });
+        },
+        variables: {
+            committeeId
+        }
+    });
 
     if (errorCommittee) {
         console.error(errorCommittee);
@@ -38,20 +55,18 @@ const CommitteeListContainer = props => {
     }
 
     return (
-        <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
-            <View style={styles.wrap}>
                 <FlatList
                      data={committee.getCommitteesInDivision}
                      keyExtractor={item => item.id}
                      renderItem={itemData => (
                          <CommitteeList
+                            committee_id = {itemData.item.id}
                             staff_id = {itemData.item.staff_id}
                             position_id = {itemData.item.position_id}
+                            deleteFunction = {deleteCommittee}
                          />
                      )}
                 />
-            </View>
-        </TouchableCmp>
     );
 };
 

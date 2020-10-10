@@ -78,14 +78,16 @@ const FormRundown = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
-    const onChangeStartTime = (key, val, err) => {
-        setValues({ ...values, [key]: val });
+    const onChangeStartTime = (key, dateVal, val, err) => {
+        let timeVal = dateVal.concat(' ',val);
+        setValues({ ...values, [key]: timeVal });
         setErrors({ ...errors, [err]: '' });
         closeStartTimepicker();
     };
 
-    const onChangeEndTime = (key, val, err) => {
-        setValues({ ...values, [key]: val });
+    const onChangeEndTime = (key, dateVal, val, err) => {
+        let timeVal = dateVal.concat(' ',val);
+        setValues({ ...values, [key]: timeVal });
         setErrors({ ...errors, [err]: '' });
         closeEndTimepicker();
     };
@@ -236,14 +238,14 @@ const FormRundown = props => {
                                 <Portal>
                                     <DateTimePicker
                                         isVisible={showStartTime}
-                                        onConfirm={(val) => onChangeStartTime('start_time', val, 'time_error')}
+                                        onConfirm={(val) => onChangeStartTime('start_time', values.date, val.toLocaleTimeString(), 'time_error')}
                                         onCancel={closeStartTimepicker}
                                         mode="time"
                                         display="default"
                                     />
                                     <DateTimePicker
                                         isVisible={showEndTime}
-                                        onConfirm={(val) => onChangeEndTime('end_time', val, 'time_error')}
+                                        onConfirm={(val) => onChangeEndTime('end_time', values.date, val.toLocaleTimeString(), 'time_error')}
                                         onCancel={closeEndTimepicker}
                                         mode="time"
                                         display="default"

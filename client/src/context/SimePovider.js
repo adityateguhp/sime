@@ -24,6 +24,7 @@ const SimeProvider = (props) => {
   const [cancelProject, setCancelProject] = useState(false);
   const [rundown_id, setRundown_id] = useState('');
   const [rundown_agenda, setRundown_agenda] = useState('');
+  const [committee_id, setCommittee_id] = useState('');
 
   return (
     <SimeContext.Provider
@@ -49,6 +50,7 @@ const SimeProvider = (props) => {
         cancelProject,
         rundown_id,
         rundown_agenda,
+        committee_id,
         setUser,
         setDepartment_id,
         setDepartment_name,
@@ -69,7 +71,8 @@ const SimeProvider = (props) => {
         setExternal_type_name,
         setCancelProject,
         setRundown_id,
-        setRundown_agenda
+        setRundown_agenda,
+        setCommittee_id
       }}
     >
       {props.children}
