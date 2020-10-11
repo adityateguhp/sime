@@ -13,7 +13,7 @@ import DivisionCard from '../../components/project/DivisionCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DIVISIONS_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY } from '../../util/graphql';
+import { FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY } from '../../util/graphql';
 
 const DivisionListScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -24,10 +24,40 @@ const DivisionListScreen = ({ navigation }) => {
 
     const sime = useContext(SimeContext);
 
-    const { data: divisions, error: error1, loading: loading1 } = useQuery(
+    const [positionsValue, setPositionValue] = useState([]);
+    const [staffsValue, setStaffsValue] = useState([]);
+    const [committeesValue, setCommitteesValue] = useState([]);
+    const [divisionsValue, setDivisionsValue] = useState([]);
+
+    const { data: staffs, error: errorStaffs, loading: loadingStaffs } = useQuery(
+        FETCH_STAFFS_QUERY,
+        {
+            onCompleted: () => { setStaffsValue(staffs.getStaffs) }
+        }
+    );
+
+    const { data: divisions, error: errorDivisions, loading: loadingDivisions } = useQuery(
         FETCH_DIVISIONS_QUERY,
         {
             variables: { projectId: sime.project_id },
+            onCompleted: () => { setDivisionsValue(divisions.getDivisions) }
+        }
+    );
+
+    const { data: positions, error: errorPositions, loading: loadingPositions } = useQuery(
+        FETCH_POSITIONS_QUERY,
+        {
+            onCompleted: () => { setPositionValue(positions.getPositions) }
+        }
+    );
+
+    const { data: committees, error: errorCommittees, loading: loadingCommittees } = useQuery(
+        FETCH_COMMITTEES_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+            onCompleted: () => {
+                setCommitteesValue(committees.getCommittees)
+            }
         }
     );
 
@@ -35,6 +65,9 @@ const DivisionListScreen = ({ navigation }) => {
         FETCH_DIVISION_QUERY,
         {
             variables: { divisionId: sime.division_id },
+            onCompleted: () => {
+                setDivisionVal(division.getDivision);
+            },
         });
 
     const [divisionVal, setDivisionVal] = useState(null);
@@ -75,7 +108,14 @@ const DivisionListScreen = ({ navigation }) => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setDivisionVal(division.getDivision);
+    }
+
+    const addCommitteesStateUpdate = (e) => {
+        setCommitteesValue([...committeesValue, e]);
+    }
+
+    const deleteCommitteesStateUpdate = (e) => {
+        setCommitteesValue(e);
     }
 
     const divisionId = sime.division_id;
@@ -86,8 +126,8 @@ const DivisionListScreen = ({ navigation }) => {
                 query: FETCH_DIVISIONS_QUERY,
                 variables: { projectId: sime.project_id },
             });
-            divisions.getDivisions = divisions.getDivisions.filter((d) => d.id !== divisionId);
-            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data,  variables: { projectId: sime.project_id }});
+            divisionsValue = divisionsValue.filter((d) => d.id !== divisionId);
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
             divisionId
@@ -108,12 +148,39 @@ const DivisionListScreen = ({ navigation }) => {
         ]);
     };
 
-    if (error1) {
-        console.error(error1);
-        return <Text>Error</Text>;
+    if (errorStaffs) {
+        console.error(errorStaffs);
+        return <Text>errorStaffs</Text>;
     }
 
-    if (loading1) {
+    if (errorDivisions) {
+        console.error(errorDivisions);
+        return <Text>errorDivisions</Text>;
+    }
+
+    if (errorPositions) {
+        console.error(errorPositions);
+        return <Text>errorPositions</Text>;
+    }
+
+    if (errorCommittees) {
+        console.error(errorCommittees);
+        return <Text>errorCommittees</Text>;
+    }
+
+    if (loadingStaffs) {
+        return <CenterSpinner />;
+    }
+
+    if (loadingDivisions) {
+        return <CenterSpinner />;
+    }
+
+    if (loadingPositions) {
+        return <CenterSpinner />;
+    }
+
+    if (loadingCommittees) {
         return <CenterSpinner />;
     }
 
@@ -123,10 +190,10 @@ const DivisionListScreen = ({ navigation }) => {
     }
 
     if (loading2) {
-       
+
     }
 
-    if (divisions.getDivisions.length === 0) {
+    if (divisionsValue.length === 0) {
         return (
             <View style={styles.content}>
                 <Text>No divisions found, let's add divisions!</Text>
@@ -138,13 +205,14 @@ const DivisionListScreen = ({ navigation }) => {
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={divisions.getDivisions}
+                data={divisionsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DivisionCard
                         name={itemData.item.name}
                         division_id={itemData.item.id}
                         onSelect={selectItemHandler}
+                        deleteCommitteesStateUpdate={deleteCommitteesStateUpdate}
                     />
                 )}
             />
@@ -177,6 +245,11 @@ const DivisionListScreen = ({ navigation }) => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                staffs={staffsValue}
+                divisions={divisionsValue}
+                positions={positionsValue}
+                committees={committeesValue}
+                addCommitteesStateUpdate={addCommitteesStateUpdate}
             />
             <FormEditDivision
                 closeModalForm={closeModalFormEdit}

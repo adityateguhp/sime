@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, 
 import { Avatar, List, Caption } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import {DELETE_COMMITTEE, FETCH_COMMITTEES_IN_DIVISION_QUERY } from '../../util/graphql';
+import {DELETE_COMMITTEE, FETCH_COMMITTEES_IN_DIVISION_QUERY, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import CommitteeList from './CommitteeList';
 import { SimeContext } from '../../context/SimePovider';
@@ -33,6 +33,14 @@ const CommitteeListContainer = props => {
                 variables: { divisionId: props.division_id }
             });
             data.getCommitteesInDivision = data.getCommitteesInDivision.filter((e) => e.id !== committeeId);
+            
+            const dataState = proxy.readQuery({
+                query: FETCH_COMMITTEES_QUERY,
+                variables: { projectId: sime.project_id }
+            });
+            dataState.getCommittees = dataState.getCommittees.filter((e) => e.id !== committeeId);
+            
+            props.deleteCommitteesStateUpdate(dataState.getCommittees)
             proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: props.division_id } });
         },
         variables: {

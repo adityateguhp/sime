@@ -36,7 +36,6 @@ const LoginOrganizationScreen = ({ navigation }) => {
       }
     ) {
       login(userData);
-      console.log("success");
     },
     onError(err) {
       setErrors(err.graphQLErrors[0].extensions.exception.errors);

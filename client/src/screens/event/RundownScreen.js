@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { Alert, StyleSheet, ScrollView, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, SectionList } from 'react-native';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
@@ -42,12 +42,30 @@ const RundownScreen = props => {
     variables: {
       eventId: sime.event_id
     },
+    onCompleted: () => {
+      let dataSource = rundowns.getRundowns.reduce(function (sections, item) {
+
+        let section = sections.find(section => section.date === item.date);
+
+        if (!section) {
+          section = { date: item.date, data: [] };
+          sections.push(section);
+        }
+
+        section.data.push(item);
+
+        return sections;
+
+      }, []);
+      setRundownsVal(dataSource)
+    }
   });
 
   const [loadExistData, { called, data: rundown, error: errorRundown, loading: loadingRundown }] = useLazyQuery(
     FETCH_RUNDOWN_QUERY,
     {
       variables: { rundownId: sime.rundown_id },
+      onCompleted: () => { setRundownVal(rundown.getRundown) }
     });
 
   const [rundownsVal, setRundownsVal] = useState([]);
@@ -83,27 +101,6 @@ const RundownScreen = props => {
   const openFormEdit = () => {
     closeModal();
     setVisibleFormEdit(true);
-    setRundownVal(rundown.getRundown);
-  }
-
-  const rundownDataFetch = () => {
-    if (rundowns) {
-      let dataSource = rundowns.getRundowns.reduce(function (sections, item) {
-
-        let section = sections.find(section => section.date === item.date);
-
-        if (!section) {
-          section = { date: item.date, data: [] };
-          sections.push(section);
-        }
-
-        section.data.push(item);
-
-        return sections;
-
-      }, []);
-      setRundownsVal(dataSource)
-    }
   }
 
   const onRefresh = useCallback(() => {
@@ -114,14 +111,6 @@ const RundownScreen = props => {
       setRefreshing(false)
     }
   }, []);
-
-  useEffect(() => {
-    console.log("mounted rundownDataFetch")
-    rundownDataFetch()
-    return () => {
-      console.log("This will be logged on unmount rundownDataFetch");
-    }
-  }, [rundowns])
 
   const [deleteRundown] = useMutation(DELETE_RUNDOWN, {
     update(proxy) {

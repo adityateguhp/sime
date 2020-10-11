@@ -61,7 +61,6 @@ const FormEditExternal = props => {
                 method: 'POST',
             }).then(async r => {
                 let data = await r.json()
-                console.log(data)
                 setValues({...values, picture: data.secure_url })
             }).catch(err => console.log(err))
         })

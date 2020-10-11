@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext} from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, List, Avatar, Subheading, Paragraph, Divider, Provider, Title, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -62,6 +62,15 @@ const EventOverviewScreen = props => {
     variables: {
       eventId: sime.event_id
     },
+    onCompleted: () => {
+      setEvent({
+        description: eventData.getEvent.description,
+        start_date: eventData.getEvent.start_date,
+        end_date: eventData.getEvent.end_date,
+        cancel: eventData.getEvent.cancel,
+        location: eventData.getEvent.location
+      })
+    }
   });
 
   const { data: guestData, error: errorGuestData, loading: loadingGuestData } = useQuery(
@@ -93,22 +102,7 @@ const EventOverviewScreen = props => {
     variables: {
       externalId: sime.external_id
     },
-  });
-
-  const eventDataFetch = () => {
-    if (eventData) {
-      setEvent({
-        description: eventData.getEvent.description,
-        start_date: eventData.getEvent.start_date,
-        end_date: eventData.getEvent.end_date,
-        cancel: eventData.getEvent.cancel,
-        location: eventData.getEvent.location
-      })
-    }
-  }
-
-  const externalDataFetch = () => {
-    if (externalData) {
+    onCompleted: () => {
       setExternal({
         id: externalData.getExternal.id,
         name: externalData.getExternal.name,
@@ -117,24 +111,7 @@ const EventOverviewScreen = props => {
         email: externalData.getExternal.email
       })
     }
-  }
-
-  useEffect(() => {
-    console.log("mounted eventDataFetch")
-    eventDataFetch()
-    return () => {
-      console.log("This will be logged on unmount eventDataFetch");
-    }
-  }, [eventData])
-
-  useEffect(() => {
-    console.log("mounted externalDataFetch")
-    externalDataFetch()
-    return () => {
-      console.log("This will be logged on unmount externalDataFetch");
-    }
-  }, [externalData])
-
+  });
 
   if (errorEventData) {
     console.error(errorEventData);

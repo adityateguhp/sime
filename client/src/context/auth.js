@@ -14,7 +14,6 @@ async function tokenCheck() {
     } else {
       initialState.user = decodedToken;
     }
-    console.log(decodedToken);
   }
 }
 

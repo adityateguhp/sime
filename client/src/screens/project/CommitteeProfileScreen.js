@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
@@ -42,6 +42,16 @@ const CommitteeProfileScreen = ({ route }) => {
         variables: {
             committeeId: cId
         },
+        onCompleted: () => {
+            setCommittee({
+                position_id: committeeData.getCommittee.position_id,
+                division_id: committeeData.getCommittee.division_id,
+                staff_id: committeeData.getCommittee.staff_id
+            })
+            loadStaffData();
+            loadPositionData();
+            loaDivisionData();
+        }
     });
 
 
@@ -50,45 +60,7 @@ const CommitteeProfileScreen = ({ route }) => {
         variables: {
             staffId: committee.staff_id
         },
-    });
-
-    const [loadDepartmentData, { called: called2, data: departmentData, error: error3, loading: loading3 }] = useLazyQuery(
-        FETCH_DEPARTMENT_QUERY, {
-        variables: {
-            departmentId: staff.department_id
-        },
-    });
-
-    const [loadPositionData, { called: called3, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
-        FETCH_POSITION_QUERY, {
-        variables: {
-            positionId: committee.position_id
-        },
-    });
-
-    const [loaDivisionData, { called: called4, data: divisionData, error: error5, loading: loading5 }] = useLazyQuery(
-        FETCH_DIVISION_QUERY, {
-        variables: {
-            divisionId: committee.division_id
-        },
-    });
-
-    const committeeDataFetch = () => {
-        if (committeeData) {
-            setCommittee({
-                position_id: committeeData.getCommittee.position_id,
-                division_id: committeeData.getCommittee.division_id,
-                staff_id: committeeData.getCommittee.staff_id
-            })
-            console.log(committeeData.getCommittee)
-            loadStaffData();
-            loadPositionData();
-            loaDivisionData();
-        }
-    }
-
-    const staffDataFetch = () => {
-        if (staffData) {
+        onCompleted: () => {
             setStaff({
                 name: staffData.getStaff.name,
                 email: staffData.getStaff.email,
@@ -97,58 +69,45 @@ const CommitteeProfileScreen = ({ route }) => {
                 department_id: staffData.getStaff.department_id,
                 position_name: staffData.getStaff.position_name
             })
-            console.log(staffData.getStaff)
             loadDepartmentData();
         }
+    });
 
-        if (positionData) {
-            setPosition({
-                name: positionData.getPosition.name
-            })
-            console.log(positionData.getPosition)
-        }
-
-        if (divisionData) {
-            setDivision({
-                name: divisionData.getDivision.name
-            })
-            console.log(divisionData.getDivision)
-        }
-    }
-
-    const departmentDataFetch = () => {
-        if (departmentData) {
+    const [loadDepartmentData, { called: called2, data: departmentData, error: error3, loading: loading3 }] = useLazyQuery(
+        FETCH_DEPARTMENT_QUERY, {
+        variables: {
+            departmentId: staff.department_id
+        },
+        onCompleted: () => {
             setDepartment({
                 name: departmentData.getDepartment.name
             })
-            console.log(departmentData.getDepartment)
         }
-    }
+    });
 
-    useEffect(() => {
-        console.log("mounted committeeDataFetch")
-        committeeDataFetch()
-        return () => {
-          console.log("This will be logged on unmount committeeDataFetch");
+    const [loadPositionData, { called: called3, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
+        FETCH_POSITION_QUERY, {
+        variables: {
+            positionId: committee.position_id
+        },
+        onCompleted: () => {
+            setPosition({
+                name: positionData.getPosition.name
+            })
         }
-      }, [committeeData])
-    
-      useEffect(() => {
-        console.log("mounted staffDataFetch")
-        staffDataFetch()
-        return () => {
-          console.log("This will be logged on unmount staffDataFetch");
-        }
-      }, [staffData, positionData, divisionData])
+    });
 
-      useEffect(() => {
-        console.log("mounted departmentDataFetch")
-        departmentDataFetch()
-        return () => {
-          console.log("This will be logged on unmount departmentDataFetch");
+    const [loaDivisionData, { called: called4, data: divisionData, error: error5, loading: loading5 }] = useLazyQuery(
+        FETCH_DIVISION_QUERY, {
+        variables: {
+            divisionId: committee.division_id
+        },
+        onCompleted: () => {
+            setDivision({
+                name: divisionData.getDivision.name
+            })
         }
-      }, [departmentData])
-
+    });
 
     if (error1) {
         console.error(error1);
@@ -198,7 +157,7 @@ const CommitteeProfileScreen = ({ route }) => {
     return (
         <ScrollView style={styles.screen}>
             <View style={styles.profilePicture}>
-                <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.picture === null || staff.picture === '' ? require('../../assets/avatar.png')  : { uri: staff.picture }} />
+                <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.picture === null || staff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.picture }} />
                 <Headline>{staff.name}</Headline>
             </View>
             <Divider />

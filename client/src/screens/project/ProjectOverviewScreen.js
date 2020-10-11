@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, List, Avatar, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -63,6 +63,14 @@ const ProjectOverviewScreen = props => {
     variables: {
       projectId: sime.project_id
     },
+    onCompleted: () => {
+      setProject({
+        description: projectData.getProject.description,
+        start_date: projectData.getProject.start_date,
+        end_date: projectData.getProject.end_date,
+        cancel: projectData.getProject.cancel
+      })
+    }
   });
 
   const { data: headProjectData, error: error2, loading: loading2 } = useQuery(
@@ -71,33 +79,7 @@ const ProjectOverviewScreen = props => {
       projectId: sime.project_id,
       positionId: '5f58d8288ba59232dcda020d'
     },
-  });
-
-  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3 }] = useLazyQuery(
-    FETCH_STAFF_QUERY, {
-    variables: {
-      staffId: headProject.staff_id
-    },
-  });
-
-  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
-    FETCH_POSITION_QUERY, {
-    variables: {
-      positionId: headProject.position_id
-    },
-  });
-
-  const headProjectFetch = () => {
-    if (projectData) {
-      setProject({
-        description: projectData.getProject.description,
-        start_date: projectData.getProject.start_date,
-        end_date: projectData.getProject.end_date,
-        cancel: projectData.getProject.cancel
-      })
-    }
-
-    if (headProjectData) {
+    onCompleted: () => {
       if (headProjectData.getHeadProject === null) {
         return;
       } else {
@@ -108,45 +90,36 @@ const ProjectOverviewScreen = props => {
         })
         loadStaffData()
         loadPositionData()
-        console.log(headProjectData.getHeadProject)
       }
     }
-  }
+  });
 
-  const staffDataFetch = () => {
-    if (staffData) {
+  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3 }] = useLazyQuery(
+    FETCH_STAFF_QUERY, {
+    variables: {
+      staffId: headProject.staff_id
+    },
+    onCompleted: () => {
       setStaff({
         name: staffData.getStaff.name,
         email: staffData.getStaff.email,
         phone_number: staffData.getStaff.phone_number,
         picture: staffData.getStaff.picture
       })
-      console.log(staffData.getStaff)
     }
+  });
 
-    if (positionData) {
+  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
+    FETCH_POSITION_QUERY, {
+    variables: {
+      positionId: headProject.position_id
+    },
+    onCompleted: () => {
       setPosition({
         name: positionData.getPosition.name
       })
-      console.log(positionData.getPosition)
     }
-  }
-
-  useEffect(() => {
-    console.log("mounted headProjectFetch")
-    headProjectFetch()
-    return () => {
-      console.log("This will be logged on unmount headProjectFetch");
-    }
-  }, [projectData, headProjectData])
-
-  useEffect(() => {
-    console.log("mounted staffDataFetch")
-    staffDataFetch()
-    return () => {
-      console.log("This will be logged on unmount staffDataFetch");
-    }
-  }, [staffData, positionData])
+  });
 
   if (error1) {
     console.error(error1);

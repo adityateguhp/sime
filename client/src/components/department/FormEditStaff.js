@@ -71,7 +71,6 @@ const FormEditStaff = props => {
                 method: 'POST',
             }).then(async r => {
                 let data = await r.json()
-                console.log(data)
                 setValues({ ...values, picture: data.secure_url })
             }).catch(err => console.log(err))
         })
@@ -151,8 +150,6 @@ const FormEditStaff = props => {
     if (loading1) {
         return <CenterSpinner />;
     }
-
-    console.log(values.department_id)
 
     return (
         <Portal>

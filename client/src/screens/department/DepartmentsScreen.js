@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
+import React, { useState, useLayoutEffect, useContext } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Portal } from 'react-native-paper';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
@@ -22,6 +22,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
         variables: {
             staffId: sId
         },
+        onCompleted: () => {setStaffVal(staff.getStaff)}
     });
 
     const { data: department, error: error2, loading: loading2 } = useQuery(
@@ -34,12 +35,6 @@ const StaffProfileScreen = ({ route, navigation }) => {
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     const [staffVal, setStaffVal] = useState(null);
-
-    useEffect(() => {
-        if (staff) {
-            setStaffVal(staff.getStaff);
-        }
-    }, [staff])
 
     const closeModalFormEdit = () => {
         setVisibleFormEdit(false);

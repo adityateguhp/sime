@@ -28,6 +28,7 @@ const DivisionCard = props => {
                 <CommitteeListContainer
                     division_id={props.division_id}
                     onSelect={props.onSelect}
+                    deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
                 />
             </List.Accordion>
         </View>

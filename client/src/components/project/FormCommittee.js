@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
-import { FETCH_COMMITTEES_IN_DIVISION_QUERY, ADD_COMMITTEE_MUTATION, FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
+import { FETCH_COMMITTEES_IN_DIVISION_QUERY, ADD_COMMITTEE_MUTATION, } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
@@ -20,28 +20,8 @@ const FormCommittee = props => {
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const sime = useContext(SimeContext);
-
-    const { data: staffs, error: errorStaffs, loading: loadingStaffs } = useQuery(
-        FETCH_STAFFS_QUERY
-    );
-
-    const { data: divisions, error: errorDivisions, loading: loadingDivisions } = useQuery(
-        FETCH_DIVISIONS_QUERY,
-        {
-            variables: { projectId: sime.project_id }
-        }
-    );
-
-    const { data: positions, error: errorPositions, loading: loadingPositions } = useQuery(
-        FETCH_POSITIONS_QUERY
-    );
-
-    const { data: committees, error: errorCommittees, loading: loadingCommittees } = useQuery(
-        FETCH_COMMITTEES_QUERY,
-        {
-            variables: { projectId: sime.project_id }
-        }
-    );
+    
+    const [positionsFiltered, setPositionsFiltered] = useState([]);
 
     const [errors, setErrors] = useState({
         staff_error: '',
@@ -56,9 +36,6 @@ const FormCommittee = props => {
         projectId: sime.project_id
     });
 
-    const [positionsValue, setPositionValue] = useState([]);
-    const [staffsValue, setStaffsValue] = useState([]);
-
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
         setErrors({ ...errors, [err]: '' })
@@ -68,13 +45,23 @@ const FormCommittee = props => {
         setValues({ ...values, [key]: val, positionId: '' });
         setErrors({ ...errors, [err]: '' })
         if (index === 0) {
-            const pos = positions.getPositions.filter((e) => e.core === true);
-            setPositionValue(pos)
+            const pos = props.positions.filter((e) => e.core === true);
+            setPositionsFiltered(pos)
         } else {
-            const pos = positions.getPositions.filter((e) => e.core === false);
-            setPositionValue(pos)
+            const pos = props.positions.filter((e) => e.core === false);
+            setPositionsFiltered(pos)
         }
     };
+
+    let dataFiltered = [];
+    props.committees.map((committee) =>
+        props.staffs.map((staff) => {
+            if (staff.id === committee.staff_id) {
+                dataFiltered.push(staff.id);
+            }
+        }))
+
+    console.log("ini" + dataFiltered)
 
     const [addCommittee, { loading }] = useMutation(ADD_COMMITTEE_MUTATION, {
         update(proxy, result) {
@@ -84,6 +71,7 @@ const FormCommittee = props => {
             });
             data.getCommitteesInDivision = [result.data.addCommittee, ...data.getCommitteesInDivision];
             proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: values.divisionId } });
+            props.addCommitteesStateUpdate(result.data.addCommittee)
             values.staffId = '';
             values.positionId = '';
             values.divisionId = '';
@@ -120,42 +108,6 @@ const FormCommittee = props => {
         addCommittee();
     };
 
-    if (errorStaffs) {
-        console.error(errorStaffs);
-        return <Text>errorStaffs</Text>;
-    }
-
-    if (errorDivisions) {
-        console.error(errorDivisions);
-        return <Text>errorDivisions</Text>;
-    }
-
-    if (errorPositions) {
-        console.error(errorPositions);
-        return <Text>errorPositions</Text>;
-    }
-
-    if (errorCommittees) {
-        console.error(errorCommittees);
-        return <Text>errorCommittees</Text>;
-    }
-
-    if (loadingStaffs) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingDivisions) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingPositions) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingCommittees) {
-        return <CenterSpinner />;
-    }
-
     return (
         <Portal>
             <Modal
@@ -185,7 +137,7 @@ const FormCommittee = props => {
                                         useNativeDriver={true}
                                         label='Staff'
                                         value={values.staffId}
-                                        data={staffsValue}
+                                        data={props.staffs}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('staffId', val, 'staff_error')}
@@ -196,7 +148,7 @@ const FormCommittee = props => {
                                         useNativeDriver={true}
                                         label='Division'
                                         value={values.divisionId}
-                                        data={divisions.getDivisions}
+                                        data={props.divisions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val, index) => onChangeDivision('divisionId', val, 'division_error', index)}
@@ -208,7 +160,7 @@ const FormCommittee = props => {
                                         label='Position'
                                         disabled={values.divisionId ? false : true}
                                         value={values.positionId}
-                                        data={positionsValue}
+                                        data={positionsFiltered}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('positionId', val, 'position_error')}

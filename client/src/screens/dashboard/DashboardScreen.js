@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 
@@ -12,21 +12,11 @@ const DashboardScreen = props => {
   const sime = useContext(SimeContext);
 
   const { data: org, error, loading } = useQuery(
-    FETCH_ORGANIZATION_QUERY
+    FETCH_ORGANIZATION_QUERY,
+    {
+      onCompleted: () => {sime.setUser(org.getUserOrganization)}
+    }
   );
-
-  function userDataCheck() {
-    if (loading === false) {
-      sime.setUser(org.getUserOrganization)
-    }
-  }
-
-  useEffect(() => {
-    userDataCheck()
-    return () => {
-      console.log("This will be logged on unmount userDataCheck");
-    }
-  }, [loading])
 
   if (loading) {
     return <CenterSpinner />;

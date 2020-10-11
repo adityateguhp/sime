@@ -33,7 +33,6 @@ const RegisterScreen = ({ navigation }) => {
 
     const [addUser, { loading }] = useMutation(REGISTER_ORGANIZATION, {
         update(_, result) {
-            console.log(result);
             navigation.dispatch(
                 CommonActions.reset({
                    index: 0,
