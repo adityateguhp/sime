@@ -21,28 +21,6 @@ const FormCommittee = props => {
 
     const sime = useContext(SimeContext);
 
-    const { data: staffs, error: errorStaffs, loading: loadingStaffs } = useQuery(
-        FETCH_STAFFS_QUERY
-    );
-
-    const { data: divisions, error: errorDivisions, loading: loadingDivisions } = useQuery(
-        FETCH_DIVISIONS_QUERY,
-        {
-            variables: { projectId: sime.project_id }
-        }
-    );
-
-    const { data: committees, error: errorCommittees, loading: loadingCommittees } = useQuery(
-        FETCH_COMMITTEES_QUERY,
-        {
-            variables: { projectId: sime.project_id }
-        }
-    );
-
-    const { data: positions, error: errorPositions, loading: loadingPositions } = useQuery(
-        FETCH_POSITIONS_QUERY
-    );
-
     const [errors, setErrors] = useState({
         staff_error: '',
         position_error: '',
@@ -56,7 +34,7 @@ const FormCommittee = props => {
         divisionId: ''
     });
 
-    const [positionsValue, setPositionValue] = useState([]);
+    const [positionsFiltered, setPositionsFiltered] = useState([]);
 
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
@@ -67,14 +45,13 @@ const FormCommittee = props => {
         setValues({ ...values, [key]: val, positionId: '' });
         setErrors({ ...errors, [err]: '' })
         if (index === 0) {
-            const pos = positions.getPositions.filter((e) => e.core === true);
-            setPositionValue(pos)
+            const pos = props.positions.filter((e) => e.core === true);
+            setPositionsFiltered(pos)
         } else {
-            const pos = positions.getPositions.filter((e) => e.core === false);
-            setPositionValue(pos)
+            const pos = props.positions.filter((e) => e.core === false);
+            setPositionsFiltered(pos)
         }
     };
-
 
     useEffect(() => {
         if (props.committee) {
@@ -84,17 +61,44 @@ const FormCommittee = props => {
                 positionId: props.committee.position_id,
                 divisionId: props.committee.division_id
             })
-            const div = divisions.getDivisions.find((d) => d.name === "Core Committee");
+            const div = props.divisions.find((d) => d.name === "Core Committee");
             if (div.id === props.committee.division_id) {
-                const pos = positions.getPositions.filter((p) => p.core === true);
-                setPositionValue(pos)
+                const pos = props.positions.filter((p) => p.core === true);
+                setPositionsFiltered(pos)
             } else {
-                const pos = positions.getPositions.filter((p) => p.core === false);
-                setPositionValue(pos)
+                const pos = props.positions.filter((p) => p.core === false);
+                setPositionsFiltered(pos)
             }
-            
+
         }
     }, [props.committee])
+
+    let checkPositions = [];
+    props.committees.map((committee) =>
+        positionsFiltered.map((position) => {
+            if (position.id === committee.position_id
+                && sime.project_id === committee.project_id
+                && values.divisionId === committee.division_id
+                && position.name !== "Member"
+            ) {
+                checkPositions.push(position.id)
+            } else {
+                return null
+            }
+            return null;
+        })
+    );
+
+    let filteredPositions = []
+    positionsFiltered.map((position) => {
+        if (checkPositions.indexOf(position.id) > -1)
+            if (props.committee.position_id === position.id)
+                filteredPositions.push(position)
+            else
+                return null
+        else
+            filteredPositions.push(position)
+    })
 
     const [updateCommittee, { loading }] = useMutation(UPDATE_COMMITTEE_MUTATION, {
         update(proxy, result) {
@@ -136,42 +140,6 @@ const FormCommittee = props => {
         updateCommittee();
     };
 
-    if (errorStaffs) {
-        console.error(errorStaffs);
-        return <Text>errorStaffs</Text>;
-    }
-
-    if (errorDivisions) {
-        console.error(errorDivisions);
-        return <Text>errorDivisions</Text>;
-    }
-
-    if (errorPositions) {
-        console.error(errorPositions);
-        return <Text>errorPositions</Text>;
-    }
-
-    if (errorCommittees) {
-        console.error(errorCommittees);
-        return <Text>errorCommittees</Text>;
-    }
-
-    if (loadingStaffs) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingDivisions) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingPositions) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingCommittees) {
-        return <CenterSpinner />;
-    }
-
     return (
         <Portal>
             <Modal
@@ -203,7 +171,7 @@ const FormCommittee = props => {
                                         label='Staff'
                                         disabled={true}
                                         value={values.staffId}
-                                        data={staffs.getStaffs}
+                                        data={props.staffs}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('staffId', val, 'staff_error')}
@@ -213,8 +181,9 @@ const FormCommittee = props => {
                                     <Dropdown
                                         useNativeDriver={true}
                                         label='Division'
+                                        disabled={true}
                                         value={values.divisionId}
-                                        data={divisions.getDivisions}
+                                        data={props.divisions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val, index) => onChangeDivision('divisionId', val, 'division_error', index)}
@@ -225,7 +194,7 @@ const FormCommittee = props => {
                                         useNativeDriver={true}
                                         label='Position'
                                         value={values.positionId}
-                                        data={positionsValue}
+                                        data={filteredPositions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('positionId', val, 'position_error')}

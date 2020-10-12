@@ -39,6 +39,9 @@ const CommitteeList = props => {
         FETCH_COMMITTEE_QUERY,
         {
             variables: { committeeId: sime.committee_id },
+            onCompleted: () => {
+                setCommitteeVal(committee.getCommittee);
+            }
         });
 
     const [committeeVal, setCommitteeVal] = useState(null);
@@ -69,7 +72,6 @@ const CommitteeList = props => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setCommitteeVal(committee.getCommittee);
     }
 
     const selectItemHandler = () => {
@@ -164,6 +166,10 @@ const CommitteeList = props => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
                 committee={committeeVal}
+                staffs={props.staffs}
+                divisions={props.divisions}
+                positions={props.positions}
+                committees={props.committees}
             />
             <ModalProfile
                 visible={visibleModalProfile}

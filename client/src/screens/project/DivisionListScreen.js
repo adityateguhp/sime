@@ -115,7 +115,12 @@ const DivisionListScreen = ({ navigation }) => {
     }
 
     const deleteCommitteesStateUpdate = (e) => {
-        setCommitteesValue(e);
+        const temp = [...committeesValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setCommitteesValue(temp);
     }
 
     const divisionId = sime.division_id;
@@ -211,6 +216,10 @@ const DivisionListScreen = ({ navigation }) => {
                     <DivisionCard
                         name={itemData.item.name}
                         division_id={itemData.item.id}
+                        staffs={staffsValue}
+                        divisions={divisionsValue}
+                        positions={positionsValue}
+                        committees={committeesValue}
                         onSelect={selectItemHandler}
                         deleteCommitteesStateUpdate={deleteCommitteesStateUpdate}
                     />

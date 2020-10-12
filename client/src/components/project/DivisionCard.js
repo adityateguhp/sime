@@ -27,6 +27,10 @@ const DivisionCard = props => {
                 onPress={handlePress}>
                 <CommitteeListContainer
                     division_id={props.division_id}
+                    staffs={props.staffs}
+                    divisions={props.divisions}
+                    positions={props.positions}
+                    committees={props.committees}
                     onSelect={props.onSelect}
                     deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
                 />

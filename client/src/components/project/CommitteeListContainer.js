@@ -33,14 +33,7 @@ const CommitteeListContainer = props => {
                 variables: { divisionId: props.division_id }
             });
             data.getCommitteesInDivision = data.getCommitteesInDivision.filter((e) => e.id !== committeeId);
-            
-            const dataState = proxy.readQuery({
-                query: FETCH_COMMITTEES_QUERY,
-                variables: { projectId: sime.project_id }
-            });
-            dataState.getCommittees = dataState.getCommittees.filter((e) => e.id !== committeeId);
-            
-            props.deleteCommitteesStateUpdate(dataState.getCommittees)
+            props.deleteCommitteesStateUpdate(committeeId)
             proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: props.division_id } });
         },
         variables: {
@@ -71,6 +64,10 @@ const CommitteeListContainer = props => {
                             committee_id = {itemData.item.id}
                             staff_id = {itemData.item.staff_id}
                             position_id = {itemData.item.position_id}
+                            staffs={props.staffs}
+                            divisions={props.divisions}
+                            positions={props.positions}
+                            committees={props.committees}
                             deleteFunction = {deleteCommittee}
                             onSelect={props.onSelect}
                          />

@@ -12,15 +12,13 @@ import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
 import { FETCH_COMMITTEES_IN_DIVISION_QUERY, ADD_COMMITTEE_MUTATION, } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
-import TextInput from '../common/TextInput';
-import CenterSpinner from '../common/CenterSpinner';
 
 const FormCommittee = props => {
 
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const sime = useContext(SimeContext);
-    
+
     const [positionsFiltered, setPositionsFiltered] = useState([]);
 
     const [errors, setErrors] = useState({
@@ -53,15 +51,50 @@ const FormCommittee = props => {
         }
     };
 
-    let dataFiltered = [];
+    let checkStaffs = [];
     props.committees.map((committee) =>
         props.staffs.map((staff) => {
-            if (staff.id === committee.staff_id) {
-                dataFiltered.push(staff.id);
+            if (staff.id === committee.staff_id && sime.project_id === committee.project_id) {
+                checkStaffs.push(staff.id);
+            } else {
+                return null
             }
+            return null;
         }))
 
-    console.log("ini" + dataFiltered)
+    let filteredStaffs = []
+    props.staffs.map((staff) => {
+        if (checkStaffs.indexOf(staff.id) > -1) {
+            return null
+        } else {
+            filteredStaffs.push(staff)
+        }
+    })
+
+    let checkPositions = [];
+    props.committees.map((committee) =>
+        positionsFiltered.map((position) => {
+            if (position.id === committee.position_id
+                && sime.project_id === committee.project_id
+                && values.divisionId === committee.division_id
+                && position.name !== "Member"
+            ) {
+                checkPositions.push(position.id)
+            } else {
+                return null
+            }
+            return null;
+        })
+    );
+
+    let filteredPositions = []
+    positionsFiltered.map((position) => {
+        if (checkPositions.indexOf(position.id) > -1) {
+            return null
+        } else {
+            filteredPositions.push(position)
+        }
+    })
 
     const [addCommittee, { loading }] = useMutation(ADD_COMMITTEE_MUTATION, {
         update(proxy, result) {
@@ -137,7 +170,7 @@ const FormCommittee = props => {
                                         useNativeDriver={true}
                                         label='Staff'
                                         value={values.staffId}
-                                        data={props.staffs}
+                                        data={filteredStaffs}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('staffId', val, 'staff_error')}
@@ -160,7 +193,7 @@ const FormCommittee = props => {
                                         label='Position'
                                         disabled={values.divisionId ? false : true}
                                         value={values.positionId}
-                                        data={positionsFiltered}
+                                        data={filteredPositions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('positionId', val, 'position_error')}
