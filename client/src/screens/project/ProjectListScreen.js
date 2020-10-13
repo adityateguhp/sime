@@ -24,13 +24,14 @@ const ProjectListScreen = props => {
 
     const sime = useContext(SimeContext);
 
-    const selectItemHandler = (id, name) => {
+    const selectItemHandler = (id, name, data) => {
         props.navigation.navigate('Project Menu', {
             projectName: name
         }
         );
         sime.setProject_id(id);
         sime.setProject_name(name);
+        sime.setProjectData(data)
     };
 
     const { data: projects, error: error1, loading: loading1 } = useQuery(
@@ -41,6 +42,9 @@ const ProjectListScreen = props => {
         FETCH_PROJECT_QUERY,
         {
             variables: { projectId: sime.project_id },
+            onCompleted: () => {
+                setProjectVal(project.getProject);
+            }
         });
 
     const [projectVal, setProjectVal] = useState(null);
@@ -79,7 +83,6 @@ const ProjectListScreen = props => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setProjectVal(project.getProject);
     }
 
     const projectId = sime.project_id;
@@ -179,7 +182,7 @@ const ProjectListScreen = props => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item) }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
                         loading={loading1}
                     >

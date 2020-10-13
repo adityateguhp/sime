@@ -123,6 +123,17 @@ const DivisionListScreen = ({ navigation }) => {
         setCommitteesValue(temp);
     }
 
+    const updateCommitteesStateUpdate = (e) => {
+        const temp = [...committeesValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index]=e
+        setCommitteesValue(temp)
+    }
+
+    console.log("div " + committeesValue.length);
+
     const divisionId = sime.division_id;
 
     const [deleteDivision] = useMutation(DELETE_DIVISION, {
@@ -222,6 +233,7 @@ const DivisionListScreen = ({ navigation }) => {
                         committees={committeesValue}
                         onSelect={selectItemHandler}
                         deleteCommitteesStateUpdate={deleteCommitteesStateUpdate}
+                        updateCommitteesStateUpdate={updateCommitteesStateUpdate}
                     />
                 )}
             />

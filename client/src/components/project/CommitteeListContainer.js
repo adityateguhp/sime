@@ -70,6 +70,7 @@ const CommitteeListContainer = props => {
                             committees={props.committees}
                             deleteFunction = {deleteCommittee}
                             onSelect={props.onSelect}
+                            updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                          />
                      )}
                 />

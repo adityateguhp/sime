@@ -79,6 +79,10 @@ const CommitteeList = props => {
         setVisibleModalProfile(true);
     }
 
+    const updateCommitteeStateUpdate = (e) => {
+        setCommitteeVal(e)
+    }
+
     const deleteHandler = () => {
         closeModal();
         closeModalFormEdit();
@@ -170,6 +174,8 @@ const CommitteeList = props => {
                 divisions={props.divisions}
                 positions={props.positions}
                 committees={props.committees}
+                updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
+                updateCommitteeStateUpdate={updateCommitteeStateUpdate}
             />
             <ModalProfile
                 visible={visibleModalProfile}

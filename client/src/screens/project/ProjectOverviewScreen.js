@@ -1,10 +1,11 @@
-import React, { useState, useContext } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
 import { Text, List, Avatar, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { NetworkStatus } from '@apollo/client';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
@@ -16,13 +17,6 @@ import CenterSpinner from '../../components/common/CenterSpinner';
 
 const ProjectOverviewScreen = props => {
   const sime = useContext(SimeContext);
-
-  const [project, setProject] = useState({
-    description: '',
-    start_date: '',
-    end_date: '',
-    cancel: false
-  });
 
   const [headProject, setHeadProject] = useState({
     id: '',
@@ -58,27 +52,13 @@ const ProjectOverviewScreen = props => {
     setVisible(false);
   }
 
-  const { data: projectData, error: error1, loading: loading1 } = useQuery(
-    FETCH_PROJECT_QUERY, {
-    variables: {
-      projectId: sime.project_id
-    },
-    onCompleted: () => {
-      setProject({
-        description: projectData.getProject.description,
-        start_date: projectData.getProject.start_date,
-        end_date: projectData.getProject.end_date,
-        cancel: projectData.getProject.cancel
-      })
-    }
-  });
-
-  const { data: headProjectData, error: error2, loading: loading2 } = useQuery(
+  const { data: headProjectData, error: error2, loading: loading2, refetch: refetchHeadProject, networkStatus } = useQuery(
     FETCH_HEADPROJECT_QUERY, {
     variables: {
       projectId: sime.project_id,
       positionId: '5f58d8288ba59232dcda020d'
     },
+    notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       if (headProjectData.getHeadProject === null) {
         return;
@@ -90,11 +70,12 @@ const ProjectOverviewScreen = props => {
         })
         loadStaffData()
         loadPositionData()
+        console.log('fecthed')
       }
     }
   });
 
-  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3 }] = useLazyQuery(
+  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3, refetch: refetchStaff }] = useLazyQuery(
     FETCH_STAFF_QUERY, {
     variables: {
       staffId: headProject.staff_id
@@ -106,10 +87,11 @@ const ProjectOverviewScreen = props => {
         phone_number: staffData.getStaff.phone_number,
         picture: staffData.getStaff.picture
       })
+      console.log('staffFetct')
     }
   });
 
-  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4 }] = useLazyQuery(
+  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4, refetch: refecthPositions }] = useLazyQuery(
     FETCH_POSITION_QUERY, {
     variables: {
       positionId: headProject.position_id
@@ -118,13 +100,41 @@ const ProjectOverviewScreen = props => {
       setPosition({
         name: positionData.getPosition.name
       })
+      console.log('posFetct')
     }
   });
 
-  if (error1) {
-    console.error(error1);
-    return <Text>Error 1</Text>;
-  }
+  const onRefresh = () => {
+    refetchHeadProject();
+    if (headProjectData.getHeadProject === null) {
+      setStaff(
+        {
+          name: '',
+          email: '',
+          phone_number: '',
+          picture: ''
+        }
+      );
+      setPosition(
+        {
+          name: ''
+        }
+      )
+    } else {
+      refetchStaff();
+      refecthPositions();
+      setStaff({
+        name: staffData.getStaff.name,
+        email: staffData.getStaff.email,
+        phone_number: staffData.getStaff.phone_number,
+        picture: staffData.getStaff.picture
+      })
+      setPosition({
+        name: positionData.getPosition.name
+      })
+    }
+  };
+
 
   if (error2) {
     console.error(error2);
@@ -141,10 +151,6 @@ const ProjectOverviewScreen = props => {
     return <Text>Error 4</Text>;
   }
 
-  if (loading1) {
-    return <CenterSpinner />;
-  }
-
   if (loading2) {
     return <CenterSpinner />;
   }
@@ -157,12 +163,21 @@ const ProjectOverviewScreen = props => {
     return <CenterSpinner />;
   }
 
-  const startDate = moment(project.start_date).format('ddd, MMM D YYYY');
-  const endDate = moment(project.end_date).format('ddd, MMM D YYYY');
+  if (networkStatus === NetworkStatus.refetch) return console.log('Refetching!');
+
+  const startDate = moment(sime.projectData.start_date).format('ddd, MMM D YYYY');
+  const endDate = moment(sime.projectData.end_date).format('ddd, MMM D YYYY');
 
   return (
     <Provider theme={theme}>
-      <ScrollView style={styles.overviewContainer}>
+      <ScrollView
+        style={styles.overviewContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading4}
+            onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.overview}>
           <Subheading style={{ fontWeight: 'bold' }}>Head of Project</Subheading>
           <List.Item
@@ -174,12 +189,12 @@ const ProjectOverviewScreen = props => {
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
             left={() =>
-              <Status start_date={project.start_date} end_date={project.end_date} cancel={project.cancel} fontSize={wp(3)} />}
+              <Status start_date={sime.projectData.start_date} end_date={sime.projectData.end_date} cancel={sime.projectData.cancel} fontSize={wp(3)} />}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Project Description</Subheading>
           <List.Item
-            title={project.description === null || project.description === '' ? "-" : project.description}
+            title={sime.projectData.description === null || sime.projectData.description === '' ? "-" : sime.projectData.description}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />

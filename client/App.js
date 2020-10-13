@@ -23,7 +23,7 @@ import { SimeProvider } from './src/context/SimePovider';
 enableScreens();
 
 const httpLink = createHttpLink({
-  uri: 'https://sime-playground.herokuapp.com/'
+  uri: 'http://192.168.1.8:5000/'
 });
 
 const authLink = setContext(async () => {

@@ -33,6 +33,7 @@ const DivisionCard = props => {
                     committees={props.committees}
                     onSelect={props.onSelect}
                     deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
+                    updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                 />
             </List.Accordion>
         </View>

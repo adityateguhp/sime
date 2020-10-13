@@ -91,14 +91,18 @@ const FormCommittee = props => {
 
     let filteredPositions = []
     positionsFiltered.map((position) => {
-        if (checkPositions.indexOf(position.id) > -1)
-            if (props.committee.position_id === position.id)
+        if (checkPositions.indexOf(position.id) > -1) {
+            if (props.committee.position_id === position.id){
                 filteredPositions.push(position)
-            else
+            }else{
                 return null
-        else
+            }
+        } else{
             filteredPositions.push(position)
+        }
     })
+
+    console.log(filteredPositions.length)
 
     const [updateCommittee, { loading }] = useMutation(UPDATE_COMMITTEE_MUTATION, {
         update(proxy, result) {
@@ -106,6 +110,8 @@ const FormCommittee = props => {
                 query: FETCH_COMMITTEES_IN_DIVISION_QUERY,
                 variables: { divisionId: values.divisionId }
             });
+            props.updateCommitteesStateUpdate(result.data.updateCommittee);
+            props.updateCommitteeStateUpdate(result.data.updateCommittee);
             proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: values.divisionId } });
             props.closeModalForm();
         },
