@@ -112,6 +112,7 @@ const FormCommittee = props => {
             });
             props.updateCommitteesStateUpdate(result.data.updateCommittee);
             props.updateCommitteeStateUpdate(result.data.updateCommittee);
+            props.updateCommitteeDivisionStateUpdate(result.data.updateCommittee)
             proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: values.divisionId } });
             props.closeModalForm();
         },

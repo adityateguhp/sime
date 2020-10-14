@@ -17,10 +17,15 @@ const CommitteeListContainer = props => {
 
     const sime = useContext(SimeContext);
 
+    const [committeeDivision, setCommitteeDivision] = useState([])
+
     const { data: committee, error: errorCommittee, loading: loadingCommittee } = useQuery(
         FETCH_COMMITTEES_IN_DIVISION_QUERY,
         {
-            variables: { divisionId: props.division_id }
+            variables: { divisionId: props.division_id },
+            onCompleted: () => {
+                setCommitteeDivision(committee.getCommitteesInDivision)
+            }
         }
     );
 
@@ -41,6 +46,17 @@ const CommitteeListContainer = props => {
         }
     });
 
+    
+    const updateCommitteeDivisionStateUpdate = (e) => {
+        const temp = [...committeeDivision];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        setCommitteeDivision(temp)
+    }
+
+
     if (errorCommittee) {
         console.error(errorCommittee);
         return <Text>errorCommittee</Text>;
@@ -57,7 +73,7 @@ const CommitteeListContainer = props => {
 
     return (
                 <FlatList
-                     data={committee.getCommitteesInDivision}
+                     data={committeeDivision}
                      keyExtractor={item => item.id}
                      renderItem={itemData => (
                          <CommitteeList
@@ -71,6 +87,7 @@ const CommitteeListContainer = props => {
                             deleteFunction = {deleteCommittee}
                             onSelect={props.onSelect}
                             updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
+                            updateCommitteeDivisionStateUpdate={updateCommitteeDivisionStateUpdate}
                          />
                      )}
                 />

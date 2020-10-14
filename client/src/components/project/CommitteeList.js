@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, Provider, Portal, Title, Text } from 'react-native-paper';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
@@ -38,16 +38,17 @@ const CommitteeList = props => {
     const [loadExistData, { called, data: committee, error: errorCommittee, loading: loadingCommittee }] = useLazyQuery(
         FETCH_COMMITTEE_QUERY,
         {
-            variables: { committeeId: sime.committee_id },
-            onCompleted: () => {
-                setCommitteeVal(committee.getCommittee);
-            }
+            variables: { committeeId: sime.committee_id }
         });
 
     const [committeeVal, setCommitteeVal] = useState(null);
     const [visible, setVisible] = useState(false);
     const [visibleModalProfile, setVisibleModalProfile] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
+
+    useEffect(()=>{
+        if(committee) setCommitteeVal(committee.getCommittee);
+    },[committee])
 
     const closeModal = () => {
         setVisible(false);
@@ -68,6 +69,8 @@ const CommitteeList = props => {
         sime.setStaff_id(staff_id);
         loadExistData();
     }
+
+    console.log("ini commite" + committeeVal)
 
     const openFormEdit = () => {
         closeModal();
@@ -176,6 +179,7 @@ const CommitteeList = props => {
                 committees={props.committees}
                 updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                 updateCommitteeStateUpdate={updateCommitteeStateUpdate}
+                updateCommitteeDivisionStateUpdate={props.updateCommitteeDivisionStateUpdate}
             />
             <ModalProfile
                 visible={visibleModalProfile}

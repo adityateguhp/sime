@@ -102,7 +102,7 @@ const LoginOrganizationScreen = ({ navigation }) => {
           <View style={styles.row}>
             <Text style={styles.label}>Don’t have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.link}>Sign up</Text>
+              <Text style={styles.link}>Register</Text>
             </TouchableOpacity>
           </View>
         </View>

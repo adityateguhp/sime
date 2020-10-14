@@ -18,6 +18,13 @@ import CenterSpinner from '../../components/common/CenterSpinner';
 const ProjectOverviewScreen = props => {
   const sime = useContext(SimeContext);
 
+  const [project, setProject] = useState({
+    start_date: '',
+    end_date: '',
+    description: '',
+    cancel: false
+  });
+
   const [headProject, setHeadProject] = useState({
     id: '',
     staff_id: '',
@@ -52,7 +59,23 @@ const ProjectOverviewScreen = props => {
     setVisible(false);
   }
 
-  const { data: headProjectData, error: error2, loading: loading2, refetch: refetchHeadProject, networkStatus } = useQuery(
+  const { data: projectData, error: error1, loading: loading1, refetch: refetchProject, networkStatus: networkStatusProject } = useQuery(
+    FETCH_PROJECT_QUERY,
+    {
+      variables: { projectId: sime.project_id },
+      notifyOnNetworkStatusChange: true,
+      onCompleted: () => {
+        setProject({
+          start_date: projectData.getProject.start_date,
+          end_date: projectData.getProject.end_date,
+          description: projectData.getProject.description,
+          cancel: projectData.getProject.cancel
+        });
+        console.log('fecthed project');
+      }
+    });
+
+  const { data: headProjectData, error: error2, loading: loading2, refetch: refetchHeadProject, networkStatus: networkStatusHeadProject } = useQuery(
     FETCH_HEADPROJECT_QUERY, {
     variables: {
       projectId: sime.project_id,
@@ -67,19 +90,20 @@ const ProjectOverviewScreen = props => {
           id: headProjectData.getHeadProject.id,
           position_id: headProjectData.getHeadProject.position_id,
           staff_id: headProjectData.getHeadProject.staff_id,
-        })
-        loadStaffData()
-        loadPositionData()
-        console.log('fecthed')
+        });
+        loadStaffData();
+        loadPositionData();
+        console.log('fecthed head project');
       }
     }
   });
 
-  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3, refetch: refetchStaff }] = useLazyQuery(
+  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3, refetch: refetchStaff, networkStatus: networkStatusStaff }] = useLazyQuery(
     FETCH_STAFF_QUERY, {
     variables: {
       staffId: headProject.staff_id
     },
+    notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       setStaff({
         name: staffData.getStaff.name,
@@ -87,24 +111,26 @@ const ProjectOverviewScreen = props => {
         phone_number: staffData.getStaff.phone_number,
         picture: staffData.getStaff.picture
       })
-      console.log('staffFetct')
+      console.log('fecthed staff');
     }
   });
 
-  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4, refetch: refecthPositions }] = useLazyQuery(
+  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4, refetch: refecthPositions, networkStatus: networkStatusPosition }] = useLazyQuery(
     FETCH_POSITION_QUERY, {
     variables: {
       positionId: headProject.position_id
     },
+    notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       setPosition({
         name: positionData.getPosition.name
       })
-      console.log('posFetct')
+      console.log('fecthed position');
     }
   });
 
   const onRefresh = () => {
+    refetchProject();
     refetchHeadProject();
     if (headProjectData.getHeadProject === null) {
       setStaff(
@@ -135,6 +161,10 @@ const ProjectOverviewScreen = props => {
     }
   };
 
+  if (error1) {
+    console.error(error1);
+    return <Text>Error 1</Text>;
+  }
 
   if (error2) {
     console.error(error2);
@@ -151,6 +181,10 @@ const ProjectOverviewScreen = props => {
     return <Text>Error 4</Text>;
   }
 
+  if (loading1) {
+    return <CenterSpinner />;
+  }
+
   if (loading2) {
     return <CenterSpinner />;
   }
@@ -163,10 +197,13 @@ const ProjectOverviewScreen = props => {
     return <CenterSpinner />;
   }
 
-  if (networkStatus === NetworkStatus.refetch) return console.log('Refetching!');
+  if (networkStatusProject === NetworkStatus.refetch) return console.log('Refetching project!');
+  if (networkStatusHeadProject === NetworkStatus.refetch) return console.log('Refetching head project!');
+  if (networkStatusPosition === NetworkStatus.refetch) return console.log('Refetching position!');
+  if (networkStatusStaff === NetworkStatus.refetch) return console.log('Refetching staff!');
 
-  const startDate = moment(sime.projectData.start_date).format('ddd, MMM D YYYY');
-  const endDate = moment(sime.projectData.end_date).format('ddd, MMM D YYYY');
+  const startDate = moment(project.start_date).format('ddd, MMM D YYYY');
+  const endDate = moment(project.end_date).format('ddd, MMM D YYYY');
 
   return (
     <Provider theme={theme}>
@@ -189,12 +226,12 @@ const ProjectOverviewScreen = props => {
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
             left={() =>
-              <Status start_date={sime.projectData.start_date} end_date={sime.projectData.end_date} cancel={sime.projectData.cancel} fontSize={wp(3)} />}
+              <Status start_date={project.start_date} end_date={project.end_date} cancel={project.cancel} fontSize={wp(3)} />}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Project Description</Subheading>
           <List.Item
-            title={sime.projectData.description === null || sime.projectData.description === '' ? "-" : sime.projectData.description}
+            title={project.description === null || project.description === '' ? "-" : project.description}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />

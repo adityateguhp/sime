@@ -24,14 +24,13 @@ const ProjectListScreen = props => {
 
     const sime = useContext(SimeContext);
 
-    const selectItemHandler = (id, name, data) => {
+    const selectItemHandler = (id, name) => {
         props.navigation.navigate('Project Menu', {
             projectName: name
         }
         );
         sime.setProject_id(id);
         sime.setProject_name(name);
-        sime.setProjectData(data)
     };
 
     const { data: projects, error: error1, loading: loading1 } = useQuery(
@@ -182,7 +181,7 @@ const ProjectListScreen = props => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
                         loading={loading1}
                     >

@@ -1,9 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useReducer } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
@@ -24,37 +25,43 @@ const DivisionListScreen = ({ navigation }) => {
 
     const sime = useContext(SimeContext);
 
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+
     const [positionsValue, setPositionValue] = useState([]);
     const [staffsValue, setStaffsValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);
 
-    const { data: staffs, error: errorStaffs, loading: loadingStaffs } = useQuery(
+    const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
+            notifyOnNetworkStatusChange: true,
             onCompleted: () => { setStaffsValue(staffs.getStaffs) }
         }
     );
 
-    const { data: divisions, error: errorDivisions, loading: loadingDivisions } = useQuery(
+    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions, networkStatus: networkStatusDivisions } = useQuery(
         FETCH_DIVISIONS_QUERY,
         {
             variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
             onCompleted: () => { setDivisionsValue(divisions.getDivisions) }
         }
     );
 
-    const { data: positions, error: errorPositions, loading: loadingPositions } = useQuery(
+    const { data: positions, error: errorPositions, loading: loadingPositions, refetch: refetchPositions, networkStatus: networkStatusPositions } = useQuery(
         FETCH_POSITIONS_QUERY,
         {
+            notifyOnNetworkStatusChange: true,
             onCompleted: () => { setPositionValue(positions.getPositions) }
         }
     );
 
-    const { data: committees, error: errorCommittees, loading: loadingCommittees } = useQuery(
+    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
             variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setCommitteesValue(committees.getCommittees)
             }
@@ -128,7 +135,7 @@ const DivisionListScreen = ({ navigation }) => {
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
-        temp[index]=e
+        temp[index] = e
         setCommitteesValue(temp)
     }
 
@@ -149,6 +156,14 @@ const DivisionListScreen = ({ navigation }) => {
             divisionId
         }
     });
+
+    const onRefresh = () => {
+        refetchCommittees();
+        refetchDivisions();
+        refetchPositions();
+        refetchStaffs();
+    };
+
 
 
     const deleteHandler = () => {
@@ -209,6 +224,8 @@ const DivisionListScreen = ({ navigation }) => {
 
     }
 
+    console.log("duv " + committeesValue.length)
+
     if (divisionsValue.length === 0) {
         return (
             <View style={styles.content}>
@@ -217,10 +234,20 @@ const DivisionListScreen = ({ navigation }) => {
         );
     }
 
+    if (networkStatusCommittees === NetworkStatus.refetch) return console.log('Refetching committees!');
+    if (networkStatusDivisions === NetworkStatus.refetch) return console.log('Refetching head divisions!');
+    if (networkStatusStaffs === NetworkStatus.refetch) return console.log('Refetching staffs!');
+    if (networkStatusPositions === NetworkStatus.refetch) return console.log('Refetching positions!');
+
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
+                refreshControl={
+                    <RefreshControl
+                      refreshing={loadingCommittees}
+                      onRefresh={onRefresh} />
+                  }
                 data={divisionsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
