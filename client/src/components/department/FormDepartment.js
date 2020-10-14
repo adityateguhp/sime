@@ -32,6 +32,7 @@ const FormDepartment = props => {
                 query: FETCH_DEPARTMENTS_QUERY
             });
             data.getDepartments = [result.data.addDepartment, ...data.getDepartments];
+            props.addDepartmentsStateUpdate(result.data.addDepartment);
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
             values.name = '';
             props.closeModalForm();

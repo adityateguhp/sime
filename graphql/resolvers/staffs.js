@@ -10,7 +10,7 @@ module.exports = {
     async getStaffs(_, args, context) {
       const user = checkAuth(context);
       try {
-        const staffs = await Staff.find({ organization_id: user.id }).sort({ createdAt: -1 });
+        const staffs = await Staff.find({ organization_id: user.id }).collation({ locale: "en" }).sort({ name: 1 });
         if (staffs) {
           return staffs;
         } else {
@@ -22,7 +22,7 @@ module.exports = {
     },
     async getStaffsByDepartment(_, { departmentId }, context) {
       try {
-        const staffs = await Staff.find({ department_id: departmentId }).sort({ createdAt: -1 });
+        const staffs = await Staff.find({ department_id: departmentId }).collation({ locale: "en" }).sort({ name: 1 });
         if (staffs) {
           return staffs;
         } else {

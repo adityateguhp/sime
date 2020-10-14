@@ -9,7 +9,7 @@ module.exports = {
     async getDepartments(_, args, context) {
       const user = checkAuth(context);
       try {
-        const departments = await Department.find({ organization_id: user.id }).sort({ createdAt: -1 });
+        const departments = await Department.find({ organization_id: user.id }).collation({ locale: "en" }).sort({ name: 1 });
         if (departments) {
           return departments;
         } else {

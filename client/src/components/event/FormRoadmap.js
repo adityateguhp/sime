@@ -84,6 +84,7 @@ const FormRoadmap = props => {
                 variables: { eventId: sime.event_id }
             });
             data.getRoadmaps = [result.data.addRoadmap, ...data.getRoadmaps];
+            props.addRoadmapsStateUpdate(result.data.addRoadmap);
             proxy.writeQuery({ query: FETCH_ROADMAPS_QUERY, data, variables: { eventId: sime.event_id } });
             values.name = '';
             values.start_date = '';

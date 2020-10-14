@@ -123,6 +123,8 @@ const FormEditProject = props => {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY
             });
+            props.updateProjectsStateUpdate(result.data.updateProject);
+            props.updateProjectStateUpdate(result.data.updateProject)
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
             props.closeModalForm();
         },

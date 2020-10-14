@@ -155,8 +155,9 @@ const FormProject = props => {
                 query: FETCH_PROJECTS_QUERY
             });
             data.getProjects = [result.data.addProject, ...data.getProjects];
+            props.addProjectsStateUpdate(result.data.addProject);
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
-            updateFieldChanged('projectId', result.data.addProject.id)
+            updateFieldChanged('projectId', result.data.addProject.id);
             values.name = '';
             values.description = '';
             values.start_date = '';

@@ -45,6 +45,8 @@ const FormEditDepartment = props => {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY
             });
+            props.updateDepartmentsStateUpdate(result.data.updateDepartment)
+            props.updateDepartmentStateUpdate(result.data.updateDepartment)
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
             props.closeModalForm();
         },

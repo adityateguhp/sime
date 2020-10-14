@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
@@ -18,8 +19,16 @@ import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT, FETCH_DEPARTMENT_QUERY } fr
 const DepartmentsScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
 
-    const { data: departments, error: error1 , loading: loading1 } = useQuery(
-        FETCH_DEPARTMENTS_QUERY
+    const [departmentsValue, setDepartmentsValue] = useState([]);
+
+    const { data: departments, error: error1 , loading: loading1, refetch, networkStatus } = useQuery(
+        FETCH_DEPARTMENTS_QUERY,
+        {
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setDepartmentsValue(departments.getDepartments)
+            }
+        }
     );
 
     const [loadExistData, { called, data: department , error: error2 , loading: loading2 }] = useLazyQuery(
@@ -49,6 +58,10 @@ const DepartmentsScreen = ({ navigation }) => {
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
+    useEffect(() => {
+        if (department) setDepartmentVal(department.getDepartment);
+    }, [department])
+
     const closeModal = () => {
         setVisible(false);
     }
@@ -75,7 +88,6 @@ const DepartmentsScreen = ({ navigation }) => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setDepartmentVal(department.getDepartment);
     }
 
     const departmentId = sime.department_id;
@@ -86,6 +98,7 @@ const DepartmentsScreen = ({ navigation }) => {
                 query: FETCH_DEPARTMENTS_QUERY
             });
             departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
+            deleteDepartmentsStateUpdate(departmentId)
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
         },
         variables: {
@@ -106,6 +119,50 @@ const DepartmentsScreen = ({ navigation }) => {
         ]);
     };
 
+    const addDepartmentsStateUpdate = (e) => {
+        const temp = [e, ...departmentsValue];
+        temp.sort(function (a, b) {
+            var textA = a.name.toUpperCase();
+            var textB = b.name.toUpperCase();
+
+            return textA.localeCompare(textB)
+        })
+        setDepartmentsValue(temp);
+    }
+
+    const deleteDepartmentsStateUpdate = (e) => {
+        const temp = [...departmentsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setDepartmentsValue(temp);
+    }
+
+    const updateDepartmentsStateUpdate = (e) => {
+        const temp = [...departmentsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        temp.sort(function (a, b) {
+            var textA = a.name.toUpperCase();
+            var textB = b.name.toUpperCase();
+
+            return textA.localeCompare(textB)
+        })
+        setDepartmentsValue(temp)
+    }
+
+    const updateDepartmentStateUpdate = (e) => {
+        setDepartmentVal(e)
+    }
+
+    const onRefresh = () => {
+        refetch();
+    };
+
+
     if (error1) {
         console.error(error1);
         return <Text>Error</Text>;
@@ -124,7 +181,7 @@ const DepartmentsScreen = ({ navigation }) => {
        
     }
 
-    if (departments.getDepartments.length === 0) {
+    if (departmentsValue.length === 0) {
         return (
             <Provider theme={theme}>
                 <View style={styles.content}>
@@ -140,11 +197,18 @@ const DepartmentsScreen = ({ navigation }) => {
         );
     }
 
+    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching departments!');
+
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={departments.getDepartments}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
+                data={departmentsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <DepartmentCard
@@ -185,6 +249,7 @@ const DepartmentsScreen = ({ navigation }) => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                addDepartmentsStateUpdate={addDepartmentsStateUpdate}
             />
             <FormEditDepartment
                 closeModalForm={closeModalFormEdit}
@@ -192,6 +257,8 @@ const DepartmentsScreen = ({ navigation }) => {
                 department={departmentVal}
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
+                updateDepartmentsStateUpdate={updateDepartmentsStateUpdate}
+                updateDepartmentStateUpdate={updateDepartmentStateUpdate}
             />
         </Provider>
     );

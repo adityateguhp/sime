@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
-import { FETCH_COMMITTEES_IN_DIVISION_QUERY, ADD_COMMITTEE_MUTATION, } from '../../util/graphql';
+import { FETCH_COMMITTEES_QUERY, ADD_COMMITTEE_MUTATION, } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 
 const FormCommittee = props => {
@@ -99,11 +99,11 @@ const FormCommittee = props => {
     const [addCommittee, { loading }] = useMutation(ADD_COMMITTEE_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_COMMITTEES_IN_DIVISION_QUERY,
-                variables: { divisionId: values.divisionId }
+                query: FETCH_COMMITTEES_QUERY,
+                variables: { projectId: sime.project_id }
             });
-            data.getCommitteesInDivision = [result.data.addCommittee, ...data.getCommitteesInDivision];
-            proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: values.divisionId } });
+            data.getCommittees = [result.data.addCommittee, ...data.getCommittees];
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
             props.addCommitteesStateUpdate(result.data.addCommittee)
             values.staffId = '';
             values.positionId = '';

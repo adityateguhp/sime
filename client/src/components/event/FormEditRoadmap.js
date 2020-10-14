@@ -94,6 +94,8 @@ const FormEditRoadmap = props => {
                 query: FETCH_ROADMAPS_QUERY,
                 variables: { eventId: sime.event_id }
             });
+            props.updateRoadmapsStateUpdate(result.data.updateRoadmap);
+            props.updateRoadmapStateUpdate(result.data.updateRoadmap);
             proxy.writeQuery({ query: FETCH_ROADMAPS_QUERY, data, variables: { eventId: sime.event_id } });
             props.closeModalForm();
         },

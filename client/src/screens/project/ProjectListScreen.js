@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import ProjectCard from '../../components/project/ProjectCard';
@@ -24,6 +25,8 @@ const ProjectListScreen = props => {
 
     const sime = useContext(SimeContext);
 
+    const [projectsValue, setProjectsValue] = useState([]);
+
     const selectItemHandler = (id, name) => {
         props.navigation.navigate('Project Menu', {
             projectName: name
@@ -33,17 +36,18 @@ const ProjectListScreen = props => {
         sime.setProject_name(name);
     };
 
-    const { data: projects, error: error1, loading: loading1 } = useQuery(
-        FETCH_PROJECTS_QUERY
+    const { data: projects, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
+        FETCH_PROJECTS_QUERY,
+        {
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setProjectsValue(projects.getProjects) }
+        }
     );
 
     const [loadExistData, { called, data: project, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_PROJECT_QUERY,
         {
-            variables: { projectId: sime.project_id },
-            onCompleted: () => {
-                setProjectVal(project.getProject);
-            }
+            variables: { projectId: sime.project_id }
         });
 
     const [projectVal, setProjectVal] = useState(null);
@@ -54,6 +58,10 @@ const ProjectListScreen = props => {
         projectId: '',
         cancel: false
     });
+
+    useEffect(()=>{
+        if(project) setProjectVal(project.getProject);
+    },[project])
 
     const closeModal = () => {
         setVisible(false);
@@ -92,6 +100,7 @@ const ProjectListScreen = props => {
                 query: FETCH_PROJECTS_QUERY
             });
             projects.getProjects = projects.getProjects.filter((p) => p.id !== projectId);
+            deleteProjectsStateUpdate(projectId)
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
         },
         variables: {
@@ -104,6 +113,7 @@ const ProjectListScreen = props => {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY
             });
+            cancelProjectsStateUpdate(result.data.cancelProject);
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
             closeModal();
         },
@@ -119,6 +129,44 @@ const ProjectListScreen = props => {
         cancelProject();
     };
 
+    const addProjectsStateUpdate = (e) => {
+        setProjectsValue([e, ...projectsValue]);
+    }
+
+    const deleteProjectsStateUpdate = (e) => {
+        const temp = [...projectsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setProjectsValue(temp);
+    }
+
+    const updateProjectsStateUpdate = (e) => {
+        const temp = [...projectsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        setProjectsValue(temp)
+    }
+
+    const updateProjectStateUpdate = (e) => {
+        setProjectVal(e)
+    }
+
+    const cancelProjectsStateUpdate = (e) => {
+        const temp = [...projectsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        setProjectsValue(temp)
+    }
+
+    const onRefresh = () => {
+        refetch();
+    };
 
     const deleteHandler = () => {
         closeModal();
@@ -153,7 +201,7 @@ const ProjectListScreen = props => {
 
     }
 
-    if (projects.getProjects.length === 0) {
+    if (projectsValue.length === 0) {
         return (
             <View style={styles.content}>
                 <Text>No projects found, let's add projects!</Text>
@@ -167,12 +215,19 @@ const ProjectListScreen = props => {
         );
     }
 
+    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching projects!');
+
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
                 contentContainerStyle={styles.container}
-                data={projects.getProjects}
+                refreshControl={
+                    <RefreshControl
+                      refreshing={loading1}
+                      onRefresh={onRefresh} />
+                  }
+                data={projectsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <ProjectCard
@@ -232,6 +287,7 @@ const ProjectListScreen = props => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                addProjectsStateUpdate={addProjectsStateUpdate}
             />
             <FormEditProject
                 closeModalForm={closeModalFormEdit}
@@ -239,6 +295,8 @@ const ProjectListScreen = props => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
                 project={projectVal}
+                updateProjectsStateUpdate={updateProjectsStateUpdate}
+                updateProjectStateUpdate={updateProjectStateUpdate}
             />
         </Provider>
     );

@@ -179,7 +179,6 @@ const CommitteeList = props => {
                 committees={props.committees}
                 updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                 updateCommitteeStateUpdate={updateCommitteeStateUpdate}
-                updateCommitteeDivisionStateUpdate={props.updateCommitteeDivisionStateUpdate}
             />
             <ModalProfile
                 visible={visibleModalProfile}

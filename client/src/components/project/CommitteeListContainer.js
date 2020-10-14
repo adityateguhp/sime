@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, 
 import { Avatar, List, Caption } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import {DELETE_COMMITTEE, FETCH_COMMITTEES_IN_DIVISION_QUERY, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
+import {DELETE_COMMITTEE, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import CommitteeList from './CommitteeList';
 import { SimeContext } from '../../context/SimePovider';
@@ -19,53 +19,26 @@ const CommitteeListContainer = props => {
 
     const [committeeDivision, setCommitteeDivision] = useState([])
 
-    const { data: committee, error: errorCommittee, loading: loadingCommittee } = useQuery(
-        FETCH_COMMITTEES_IN_DIVISION_QUERY,
-        {
-            variables: { divisionId: props.division_id },
-            onCompleted: () => {
-                setCommitteeDivision(committee.getCommitteesInDivision)
-            }
-        }
-    );
+    const comiteeInDivision = props.committees.filter((e) => e.division_id === props.division_id);
 
     const committeeId = sime.committee_id;
 
     const [deleteCommittee] = useMutation(DELETE_COMMITTEE, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_COMMITTEES_IN_DIVISION_QUERY,
-                variables: { divisionId: props.division_id }
+                query: FETCH_COMMITTEES_QUERY,
+                variables: {projectId: sime.project_id }
             });
-            data.getCommitteesInDivision = data.getCommitteesInDivision.filter((e) => e.id !== committeeId);
+            data.getCommittees = data.getCommittees.filter((e) => e.id !== committeeId);
             props.deleteCommitteesStateUpdate(committeeId)
-            proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: props.division_id } });
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
             committeeId
         }
     });
 
-    
-    const updateCommitteeDivisionStateUpdate = (e) => {
-        const temp = [...committeeDivision];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e.id);
-        temp[index] = e
-        setCommitteeDivision(temp)
-    }
-
-
-    if (errorCommittee) {
-        console.error(errorCommittee);
-        return <Text>errorCommittee</Text>;
-    }
-    if (loadingCommittee) {
-        return <CenterSpinner />;
-    }
-
-    if (committee.getCommitteesInDivision.length === 0) {
+    if (comiteeInDivision.length === 0) {
         return (
                 <Text>No committees found, let's add committees!</Text>
         );
@@ -73,7 +46,7 @@ const CommitteeListContainer = props => {
 
     return (
                 <FlatList
-                     data={committeeDivision}
+                     data={comiteeInDivision}
                      keyExtractor={item => item.id}
                      renderItem={itemData => (
                          <CommitteeList
@@ -87,7 +60,6 @@ const CommitteeListContainer = props => {
                             deleteFunction = {deleteCommittee}
                             onSelect={props.onSelect}
                             updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
-                            updateCommitteeDivisionStateUpdate={updateCommitteeDivisionStateUpdate}
                          />
                      )}
                 />

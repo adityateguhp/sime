@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
-import { FETCH_COMMITTEES_IN_DIVISION_QUERY, UPDATE_COMMITTEE_MUTATION, FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
+import { FETCH_COMMITTEES_QUERY, UPDATE_COMMITTEE_MUTATION, FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
@@ -107,13 +107,12 @@ const FormCommittee = props => {
     const [updateCommittee, { loading }] = useMutation(UPDATE_COMMITTEE_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_COMMITTEES_IN_DIVISION_QUERY,
-                variables: { divisionId: values.divisionId }
+                query: FETCH_COMMITTEES_QUERY,
+                variables: { projectId: sime.project_id }
             });
             props.updateCommitteesStateUpdate(result.data.updateCommittee);
             props.updateCommitteeStateUpdate(result.data.updateCommittee);
-            props.updateCommitteeDivisionStateUpdate(result.data.updateCommittee)
-            proxy.writeQuery({ query: FETCH_COMMITTEES_IN_DIVISION_QUERY, data, variables: { divisionId: values.divisionId } });
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -188,7 +187,6 @@ const FormCommittee = props => {
                                     <Dropdown
                                         useNativeDriver={true}
                                         label='Division'
-                                        disabled={true}
                                         value={values.divisionId}
                                         data={props.divisions}
                                         valueExtractor={({ id }) => id}

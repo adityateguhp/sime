@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormEvent from '../../components/event/FormEvent';
@@ -24,23 +25,29 @@ const EventListScreen = ({ route, navigation }) => {
 
     const sime = useContext(SimeContext);
 
+    const [eventsValue, setEventsValue] = useState([]);
+
     const selectItemHandler = (_id, event_name) => {
         navigation.navigate('Event Detail');
         sime.setEvent_id(_id);
         sime.setEvent_name(event_name);
     };
 
-    const { data: events, error: error1, loading: loading1 } = useQuery(
+    const { data: events, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
         FETCH_EVENTS_QUERY,
         {
-            variables: { projectId: sime.project_id }
+            variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setEventsValue(events.getEvents)
+            }
         }
     );
 
     const [loadExistData, { called, data: event, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_EVENT_QUERY,
         {
-            variables: { eventId: sime.event_id },
+            variables: { eventId: sime.event_id }
         });
 
     const [eventVal, setEventVal] = useState(null);
@@ -51,6 +58,10 @@ const EventListScreen = ({ route, navigation }) => {
         eventId: '',
         cancel: false
     });
+
+    useEffect(()=>{
+        if(event) setEventVal(event.getEvent);
+    },[event])
 
     const closeModal = () => {
         setVisible(false);
@@ -79,7 +90,6 @@ const EventListScreen = ({ route, navigation }) => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setEventVal(event.getEvent);
     }
 
     const deleteHandler = () => {
@@ -104,6 +114,7 @@ const EventListScreen = ({ route, navigation }) => {
                 variables: { projectId: sime.project_id }
             });
             events.getEvents = events.getEvents.filter((e) => e.id !== eventId);
+            deleteEventsStateUpdate(eventId)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
@@ -117,6 +128,7 @@ const EventListScreen = ({ route, navigation }) => {
                 query: FETCH_EVENTS_QUERY,
                 variables: { projectId: sime.project_id }
             });
+            cancelEventsStateUpdate(result.data.cancelEvent);
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
             closeModal();
         },
@@ -130,6 +142,45 @@ const EventListScreen = ({ route, navigation }) => {
     const onCancel = (event) => {
         event.preventDefault();
         cancelEvent();
+    };
+
+    const addEventsStateUpdate = (e) => {
+        setEventsValue([e, ...eventsValue]);
+    }
+
+    const deleteEventsStateUpdate = (e) => {
+        const temp = [...eventsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setEventsValue(temp);
+    }
+
+    const updateEventsStateUpdate = (e) => {
+        const temp = [...eventsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        setEventsValue(temp)
+    }
+
+    const updateEventStateUpdate = (e) => {
+        setEventVal(e)
+    }
+
+    const cancelEventsStateUpdate = (e) => {
+        const temp = [...eventsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        setEventsValue(temp)
+    }
+
+    const onRefresh = () => {
+        refetch();
     };
 
     if (error1) {
@@ -150,7 +201,7 @@ const EventListScreen = ({ route, navigation }) => {
 
     }
 
-    if (events.getEvents.length === 0) {
+    if (eventsValue.length === 0) {
         return (
             <View style={styles.content}>
                 <Text>No events found, let's add events!</Text>
@@ -164,11 +215,18 @@ const EventListScreen = ({ route, navigation }) => {
         );
     }
 
+    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching events!');
+
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={events.getEvents}
+                data={eventsValue}
+                refreshControl={
+                    <RefreshControl
+                      refreshing={loading1}
+                      onRefresh={onRefresh} />
+                  }
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <EventCard
@@ -228,6 +286,7 @@ const EventListScreen = ({ route, navigation }) => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                addEventsStateUpdate={addEventsStateUpdate}
             />
             <FormEditEvent
                 closeModalForm={closeModalFormEdit}
@@ -235,6 +294,8 @@ const EventListScreen = ({ route, navigation }) => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
                 event={eventVal}
+                updateEventsStateUpdate={updateEventsStateUpdate}
+                updateEventStateUpdate={updateEventStateUpdate}
             />
         </Provider>
     );

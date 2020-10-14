@@ -29,10 +29,6 @@ const FormEditStaff = props => {
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
-    const { data: departments, error: error1, loading: loading1 } = useQuery(
-        FETCH_DEPARTMENTS_QUERY
-    );
-
     const [errors, setErrors] = useState({
         staff_name_error: '',
         position_name_error: '',
@@ -100,6 +96,8 @@ const FormEditStaff = props => {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY
             });
+            props.updateStaffsStateUpdate(result.data.updateStaff);
+            props.updateStaffStateUpdate(result.data.updateStaff)
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data});
             props.closeModalForm();
         },
@@ -142,15 +140,6 @@ const FormEditStaff = props => {
     // });
     // const safeArea = useSafeArea();
 
-    if (error1) {
-        console.error(error1);
-        return <Text>Error</Text>;
-    }
-
-    if (loading1) {
-        return <CenterSpinner />;
-    }
-
     return (
         <Portal>
             <Modal
@@ -189,7 +178,7 @@ const FormEditStaff = props => {
                                         <Dropdown
                                             label='Department'
                                             value={values.department_id === '' || values.department_id !== sime.department_id? sime.department_id : values.department_id}
-                                            data={departments.getDepartments}
+                                            data={props.departments}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
                                             onChangeText={(val) => onChange('department_id', val, '')}

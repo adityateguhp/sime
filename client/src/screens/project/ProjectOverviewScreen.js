@@ -103,8 +103,19 @@ const ProjectOverviewScreen = props => {
     variables: {
       staffId: headProject.staff_id
     },
-    notifyOnNetworkStatusChange: true,
-    onCompleted: () => {
+    notifyOnNetworkStatusChange: true
+  });
+
+  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4, refetch: refecthPositions, networkStatus: networkStatusPosition }] = useLazyQuery(
+    FETCH_POSITION_QUERY, {
+    variables: {
+      positionId: headProject.position_id
+    },
+    notifyOnNetworkStatusChange: true
+  });
+
+  useEffect(() => {
+    if (staffData) {
       setStaff({
         name: staffData.getStaff.name,
         email: staffData.getStaff.email,
@@ -113,21 +124,16 @@ const ProjectOverviewScreen = props => {
       })
       console.log('fecthed staff');
     }
-  });
+  }, [staffData])
 
-  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4, refetch: refecthPositions, networkStatus: networkStatusPosition }] = useLazyQuery(
-    FETCH_POSITION_QUERY, {
-    variables: {
-      positionId: headProject.position_id
-    },
-    notifyOnNetworkStatusChange: true,
-    onCompleted: () => {
+  useEffect(() => {
+    if (positionData) {
       setPosition({
         name: positionData.getPosition.name
       })
       console.log('fecthed position');
     }
-  });
+  }, [positionData])
 
   const onRefresh = () => {
     refetchProject();

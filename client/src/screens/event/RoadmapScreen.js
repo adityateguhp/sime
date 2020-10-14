@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormRoadmap from '../../components/event/FormRoadmap';
@@ -24,17 +25,21 @@ const RoadmapScreen = ({ route, navigation }) => {
 
     const sime = useContext(SimeContext);
 
-    const { data: roadmaps, error: errorRoadmaps, loading: loadingRoadmaps } = useQuery(
+    const [roadmapsValue, setRoadmapsValue] = useState([]);
+
+    const { data: roadmaps, error: errorRoadmaps, loading: loadingRoadmaps, refetch, networkStatus } = useQuery(
         FETCH_ROADMAPS_QUERY,
         {
-            variables: { eventId: sime.event_id }
+            variables: { eventId: sime.event_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setRoadmapsValue(roadmaps.getRoadmaps) }
         }
     );
 
     const [loadExistData, { called, data: roadmap, error: errorRoadmap, loading: loadingRoadmap }] = useLazyQuery(
         FETCH_ROADMAP_QUERY,
         {
-            variables: { roadmapId: sime.roadmap_id },
+            variables: { roadmapId: sime.roadmap_id }
         });
 
     const selectItemHandler = (_id, name) => {
@@ -48,6 +53,10 @@ const RoadmapScreen = ({ route, navigation }) => {
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
    
+    useEffect(()=>{
+        if(roadmap) setRoadmapVal(roadmap.getRoadmap);
+    },[roadmap])
+
     const closeModal = () => {
         setVisible(false);
     }
@@ -74,7 +83,6 @@ const RoadmapScreen = ({ route, navigation }) => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setRoadmapVal(roadmap.getRoadmap);
     }
 
     const roadmapId = sime.roadmap_id;
@@ -86,12 +94,44 @@ const RoadmapScreen = ({ route, navigation }) => {
                 variables: { eventId: sime.event_id }
             });
             roadmaps.getRoadmaps = roadmaps.getRoadmaps.filter((e) => e.id !== roadmapId);
+            deleteRoadmapsStateUpdate(roadmapId)
             proxy.writeQuery({ query: FETCH_ROADMAPS_QUERY, data, variables: { eventId: sime.event_id } });
         },
         variables: {
             roadmapId
         }
     });
+
+    
+    const addRoadmapsStateUpdate = (e) => {
+        setRoadmapsValue([e, ...roadmapsValue]);
+    }
+
+    const deleteRoadmapsStateUpdate = (e) => {
+        const temp = [...roadmapsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setRoadmapsValue(temp);
+    }
+
+    const updateRoadmapsStateUpdate = (e) => {
+        const temp = [...roadmapsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        setRoadmapsValue(temp)
+    }
+
+    const updateRoadmapStateUpdate = (e) => {
+        setRoadmapVal(e)
+    }
+
+    const onRefresh = () => {
+        refetch();
+    };
 
     const deleteHandler = () => {
         setVisible(false);
@@ -138,11 +178,18 @@ const RoadmapScreen = ({ route, navigation }) => {
         );
     }
 
+    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching roadmaps!');
+
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={roadmaps.getRoadmaps}
+                refreshControl={
+                    <RefreshControl
+                      refreshing={loadingRoadmaps}
+                      onRefresh={onRefresh} />
+                  }
+                data={roadmapsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <RoadmapCard
@@ -183,6 +230,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                addRoadmapsStateUpdate={addRoadmapsStateUpdate}
             />
             <FormEditRoadmap
                 closeModalForm={closeModalFormEdit}
@@ -190,6 +238,8 @@ const RoadmapScreen = ({ route, navigation }) => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
                 roadmap={roadmapVal}
+                updateRoadmapsStateUpdate={updateRoadmapsStateUpdate}
+                updateRoadmapStateUpdate={updateRoadmapStateUpdate}
             />
         </Provider>
     );

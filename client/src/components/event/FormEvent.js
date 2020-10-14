@@ -113,6 +113,7 @@ const FormEvent = props => {
                 variables: { projectId: sime.project_id }
             });
             data.getEvents = [result.data.addEvent, ...data.getEvents];
+            props.addEventsStateUpdate(result.data.addEvent)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
             values.name = '';
             values.description = '';

@@ -25,8 +25,6 @@ const DivisionListScreen = ({ navigation }) => {
 
     const sime = useContext(SimeContext);
 
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
-
     const [positionsValue, setPositionValue] = useState([]);
     const [staffsValue, setStaffsValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
@@ -139,8 +137,6 @@ const DivisionListScreen = ({ navigation }) => {
         setCommitteesValue(temp)
     }
 
-    console.log("div " + committeesValue.length);
-
     const divisionId = sime.division_id;
 
     const [deleteDivision] = useMutation(DELETE_DIVISION, {
@@ -163,8 +159,6 @@ const DivisionListScreen = ({ navigation }) => {
         refetchPositions();
         refetchStaffs();
     };
-
-
 
     const deleteHandler = () => {
         closeModal();
@@ -223,8 +217,6 @@ const DivisionListScreen = ({ navigation }) => {
     if (loading2) {
 
     }
-
-    console.log("duv " + committeesValue.length)
 
     if (divisionsValue.length === 0) {
         return (

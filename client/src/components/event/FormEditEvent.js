@@ -127,6 +127,8 @@ const FormEditEvent = props => {
                 query: FETCH_EVENTS_QUERY,
                 variables: { projectId: sime.project_id }
             });
+            props.updateEventsStateUpdate(result.data.updateEvent)
+            props.updateEventStateUpdate(result.data.updateEvent)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
             props.closeModalForm();
         },
