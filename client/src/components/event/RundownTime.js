@@ -13,8 +13,8 @@ const RundownTime = props => {
     }
     return (
         <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
-            <View>
-                <View style={styles.containerTime}>
+            <View style={styles.containerTime}>
+                <View>
                     <View style={styles.time}>
                         <Icon name="clock" size={20} color={Colors.primaryColor} style={{ marginRight: 10 }} />
                         <Paragraph style={{ fontWeight: 'bold', color: Colors.primaryColor }}>{props.start_time} to {props.end_time}</Paragraph>
@@ -34,14 +34,18 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         marginVertical: 8,
         backgroundColor: 'white',
+        elevation: 3,
+        borderRadius: 4
     },
     time: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: 15
+        marginLeft: 10,
+        marginTop: 10
     },
     agenda: {
-        marginLeft: 45
+        marginLeft: 41,
+        marginBottom: 10
     }
 });
 

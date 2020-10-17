@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -11,7 +11,7 @@ import moment from 'moment';
 import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider';
 import { singleDateValidator, timeValidator, agendaValidator } from '../../util/validator';
-import { FETCH_RUNDOWNS_QUERY, ADD_RUNDOWN_MUTATION } from '../../util/graphql';
+import { FETCH_RUNDOWNS_QUERY, UPDATE_RUNDOWN_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
 
@@ -28,6 +28,7 @@ const FormRundown = props => {
     });
 
     const [values, setValues] = useState({
+        rundownId: '',
         agenda: '',
         event_id: sime.event_id,
         date: '',
@@ -98,14 +99,28 @@ const FormRundown = props => {
         closeDatepicker();
     };
 
-    const [addRundown, { loading }] = useMutation(ADD_RUNDOWN_MUTATION, {
+    useEffect(() => {
+        if (props.rundown) {
+            setValues({
+                rundownId: props.rundown.id,
+                agenda: props.rundown.agenda,
+                date: props.rundown.date,
+                start_time: props.rundown.start_time,
+                end_time: props.rundown.end_time,
+                details: props.rundown.details
+            })
+        }
+    }, [props.rundown])
+
+    const [updateRundown, { loading }] = useMutation(UPDATE_RUNDOWN_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_RUNDOWNS_QUERY,
                 variables: { eventId: sime.event_id }
             });
-            data.getRundowns = [result.data.addRundown, ...data.getRundowns];
-            props.addRundownsStateUpdate(result.data.addRundown);
+            data.getRundowns = [result.data.updateRundown, ...data.getRundowns];
+            props.updateRundownsStateUpdate(result.data.updateRundown);
+            props.updateRundownStateUpdate(result.data.updateRundown);
             proxy.writeQuery({ query: FETCH_RUNDOWNS_QUERY, data, variables: { eventId: sime.event_id } });
             values.agenda = '';
             values.start_time = '';
@@ -137,7 +152,7 @@ const FormRundown = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addRundown();
+        updateRundown();
     };
 
     return (
@@ -160,6 +175,7 @@ const FormRundown = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="New Agenda" />
+                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView

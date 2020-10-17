@@ -87,11 +87,11 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     const longPressHandler = (name, id, department_id) => {
+        setVisible(true);
         sime.setStaff_name(name);
         sime.setStaff_id(id);
         sime.setDepartment_id(department_id)
         loadExistData();
-        setVisible(true);
     }
 
     const openForm = () => {

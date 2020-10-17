@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     container: {
         margin: 3,
         backgroundColor: 'white',
+        
     },
     date: {
         margin: 10,

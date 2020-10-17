@@ -32,30 +32,30 @@ const StaffProfileScreen = ({ route, navigation }) => {
         },
     });
 
-    const [visibleFormEdit, setVisibleFormEdit] = useState(false);
+    // const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     const [staffVal, setStaffVal] = useState(null);
 
-    const closeModalFormEdit = () => {
-        setVisibleFormEdit(false);
-    }
+    // const closeModalFormEdit = () => {
+    //     setVisibleFormEdit(false);
+    // }
 
-    const openFormEdit = () => {
-        setVisibleFormEdit(true);
-    }
+    // const openFormEdit = () => {
+    //     setVisibleFormEdit(true);
+    // }
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <HeaderButtons HeaderButtonComponent={HeaderButton}>
-                    <Item
-                        iconName="pencil"
-                        onPress={openFormEdit}
-                    />
-                </HeaderButtons>
-            ),
-        });
-    }, [navigation]);
+    // useLayoutEffect(() => {
+    //     navigation.setOptions({
+    //         headerRight: () => (
+    //             <HeaderButtons HeaderButtonComponent={HeaderButton}>
+    //                 <Item
+    //                     iconName="pencil"
+    //                     onPress={openFormEdit}
+    //                 />
+    //             </HeaderButtons>
+    //         ),
+    //     });
+    // }, [navigation]);
 
     if (error1) {
         console.error(error1);
@@ -114,13 +114,13 @@ const StaffProfileScreen = ({ route, navigation }) => {
                 </View>
                 <Divider style={{ marginBottom: 20 }} />
             </ScrollView>
-            <FormEditStaff
+            {/* <FormEditStaff
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
                 staff={staffVal}
                 deleteButtonVisible={false}
                 closeButton={closeModalFormEdit}
-            />
+            /> */}
         </Provider>
     );
 }

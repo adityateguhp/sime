@@ -23,7 +23,7 @@ import { SimeProvider } from './src/context/SimePovider';
 enableScreens();
 
 const httpLink = createHttpLink({
-  uri: 'http://10.10.8.160:5000/'
+  uri: 'http://192.168.1.8:5000/'
 });
 
 const authLink = setContext(async () => {
@@ -63,6 +63,8 @@ const client = new ApolloClient({
   link,
   cache
 });
+
+console.disableYellowBox = true
 
 export default function App() {
   return (
