@@ -16,6 +16,7 @@ import { SimeContext } from '../../context/SimePovider'
 import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
 
 const FormEditDepartment = props => {
+    const sime = useContext(SimeContext);
 
     const [errors, setErrors] = useState({
         department_name_error: '',
@@ -23,7 +24,8 @@ const FormEditDepartment = props => {
 
     const [values, setValues] = useState({
         departmentId: '',
-        name: ''
+        name: '',
+        organizationId: ''
     });
 
     const onChange = (key, val, err) => {
@@ -35,7 +37,8 @@ const FormEditDepartment = props => {
         if(props.department){
             setValues({
                 departmentId: props.department.id, 
-                name: props.department.name
+                name: props.department.name,
+                organizationId: props.department.organization_id
             })
         }
     }, [props.department])    
@@ -43,11 +46,12 @@ const FormEditDepartment = props => {
     const [updateDepartment] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY
+                query: FETCH_DEPARTMENTS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             props.updateDepartmentsStateUpdate(result.data.updateDepartment)
             props.updateDepartmentStateUpdate(result.data.updateDepartment)
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
             props.closeModalForm();
         },
         onError() {

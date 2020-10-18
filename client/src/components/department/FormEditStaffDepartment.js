@@ -44,6 +44,7 @@ const FormEditStaffDepartment = props => {
         email: '',
         phone_number: '',
         picture: null,
+        organizationId: ''
     });
 
     const handleUpload = () => {
@@ -87,6 +88,7 @@ const FormEditStaffDepartment = props => {
                 email: props.staff.email,
                 phone_number: props.staff.phone_number,
                 picture: props.staff.picture,
+                organizationId: props.staff.organization_id
             })
         }
     }, [props.staff])

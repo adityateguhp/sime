@@ -4,10 +4,11 @@ import {
   View,
 } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
+import LottieView from 'lottie-react-native';
 
 const CenterSpinner = () => (
   <View style={styles.container}>
-    <ActivityIndicator size="large" />
+   <LottieView source={require('../../assets/loading_animation2.json')} autoPlay loop />
   </View>
 )
 

@@ -33,7 +33,7 @@ module.exports.validateRegisterOrganizationInput = (
     };
 };
 
-module.exports.validateLoginOrganizationInput = (email, password) => {
+module.exports.validateLoginInput = (email, password) => {
     const errors = {};
     if (email.trim() === '') {
         errors.email = 'Email address must not be empty';

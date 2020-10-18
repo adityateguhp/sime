@@ -10,7 +10,7 @@ const ExternalList = props => {
     }
 
     return (
-        <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
+        <TouchableCmp onPress={props.onSelect} onPressIn={props.onPressIn} onLongPress={props.onLongPress} useForeground>
             <View style={styles.wrap}>
                 <List.Item
                     style={props.style}

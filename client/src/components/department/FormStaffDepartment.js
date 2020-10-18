@@ -44,6 +44,7 @@ const FormStaffDepartment = props => {
         phone_number: '',
         password: '12345678',
         picture: null,
+        organizationId: sime.user.id
     });
 
     const handleUpload = () => {

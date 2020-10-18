@@ -15,8 +15,7 @@ import HeaderButton from '../components/common/HeaderButton';
 import { AuthContext } from '../context/auth';
 
 import HomeScreen from '../screens/home/HomeScreen';
-import LoginOrganizationScreen from '../screens/home/LoginOrganizationScreen';
-import LoginStaffScreen from '../screens/home/LoginStaffScreen';
+import LoginScreen from '../screens/home/LoginScreen';
 import RegisterScreen from '../screens/home/RegisterScreen';
 import RegisterCompletedScreen from '../screens/home/RegisterCompletedScreen';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
@@ -344,11 +343,13 @@ const Drawer = createDrawerNavigator();
 const Main = createStackNavigator();
 
 export default function MainNavigator() {
+  const sime = useContext(SimeContext);
   const { user, logout } = useContext(AuthContext);
   const [isLogin, setLogin] = useState(null);
   async function loginCheck() {
     if (await AsyncStorage.getItem('jwtToken')) {
       setLogin(await AsyncStorage.getItem('jwtToken'))
+      sime.setUser((jwtDecode(await AsyncStorage.getItem('jwtToken'))))
     } else {
       setLogin(null)
     }
@@ -388,15 +389,8 @@ export default function MainNavigator() {
             }}
           >
             <Main.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{
-                headerShown: false
-              }}
-            />
-            <Main.Screen
-              name="Login Organization"
-              component={LoginOrganizationScreen}
+              name="Login"
+              component={LoginScreen}
               options={{
                 title: ""
               }}
@@ -413,13 +407,6 @@ export default function MainNavigator() {
               component={RegisterCompletedScreen}
               options={{
                 headerShown: false,
-              }}
-            />
-            <Main.Screen
-              name="Login Staff"
-              component={LoginStaffScreen}
-              options={{
-                title: ""
               }}
             />
           </Main.Navigator>

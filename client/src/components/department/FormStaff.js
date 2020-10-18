@@ -44,6 +44,7 @@ const FormStaff = props => {
         phone_number: '',
         password: '12345678',
         picture: null,
+        organizationId: sime.user.id
     });
 
     const handleUpload = () => {
@@ -80,11 +81,12 @@ const FormStaff = props => {
     const [addStaff, { loading }] = useMutation(ADD_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY
+                query: FETCH_STAFFS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             data.getStaffs = [result.data.addStaff, ...data.getStaffs];
             props.addStaffsStateUpdate(result.data.addStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {organizationId: sime.user.id} });
             values.name = '';
             values.position_name = '';
             values.email = '';

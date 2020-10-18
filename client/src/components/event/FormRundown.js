@@ -93,7 +93,7 @@ const FormRundown = props => {
     };
 
     const onChangeDate = (key, val, err) => {
-        setValues({ ...values, [key]: val });
+        setValues({ ...values, [key]: val, start_time: '', end_time: '' });
         setErrors({ ...errors, [err]: '' });
         closeDatepicker();
     };
@@ -199,6 +199,7 @@ const FormRundown = props => {
                                         <View style={styles.dateButtonContainer}>
                                             <Button
                                                 style={styles.dateButton}
+                                                disabled={values.date? false: true}
                                                 labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={showStartTimepicker}
                                                 mode="outlined"
@@ -207,6 +208,7 @@ const FormRundown = props => {
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
+                                                disabled={values.date? false: true}
                                                 labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={showEndTimepicker}
                                                 mode="outlined"
@@ -230,6 +232,7 @@ const FormRundown = props => {
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                              style={styles.input}
+                                             multiline={true}
                                              label='Details'
                                              value={values.details}
                                              onChangeText={(val) => onChange('details', val, '')}

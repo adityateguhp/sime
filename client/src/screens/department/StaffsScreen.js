@@ -32,6 +32,7 @@ const StaffsScreen = ({ route, navigation }) => {
     const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
+            variables: {organizationId: sime.user.id},
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setStaffsValue(staffs.getStaffs)
@@ -42,6 +43,7 @@ const StaffsScreen = ({ route, navigation }) => {
     const { data: departments, error: error3, loading: loading3, refetch: refetchDepartment, networkStatus: networkStatusDepartments } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
+            variables: {organizationId: sime.user.id},
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setDepartmentsValue(departments.getDepartments)
@@ -109,11 +111,12 @@ const StaffsScreen = ({ route, navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
+                variables: {organizationId: sime.user.id}
 
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {organizationId: sime.user.id} });
         },
         variables: {
             staffId

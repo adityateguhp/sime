@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -26,6 +26,12 @@ const FormProject = props => {
 
     const sime = useContext(SimeContext);
 
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
+
     //const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
@@ -40,6 +46,7 @@ const FormProject = props => {
         start_date: '',
         end_date: '',
         picture: null,
+        organizationId: sime.user.id
     });
 
     const [divisionValues, setDivisionValues] = useState([
@@ -145,18 +152,19 @@ const FormProject = props => {
         });
         setDivisionValues(newArr);
         newArr.map((data) => {
-            addDivision(({ variables: data}))
+            addDivision(({ variables: data }))
         })
     };
 
     const [addProject, { loading1 }] = useMutation(ADD_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_PROJECTS_QUERY
+                query: FETCH_PROJECTS_QUERY,
+                variables: { organizationId: sime.user.id }
             });
             data.getProjects = [result.data.addProject, ...data.getProjects];
             props.addProjectsStateUpdate(result.data.addProject);
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id } });
             updateFieldChanged('projectId', result.data.addProject.id);
             values.name = '';
             values.description = '';
@@ -165,6 +173,7 @@ const FormProject = props => {
             values.picture = '';
             values.cancel = false;
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const projectNameError = projectNameValidator(values.name);
@@ -184,7 +193,7 @@ const FormProject = props => {
 
     const [addDivision, { loading2 }] = useMutation(ADD_DIVISION_MUTATION, {
         update(_, result) {
-            
+
         }
     });
 
@@ -220,12 +229,12 @@ const FormProject = props => {
                     // top: keyboardSpace ? -10 -keyboardSpace : 0,
                 }}
                 statusBarTranslucent>
-                <View style={styles.buttomView}>
+                <View>
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="New Project" />
-                            <Appbar.Action icon="check" onPress={onSubmit} />
+                            <Appbar.Action icon="check" onPress={onSubmit}/>
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
@@ -319,6 +328,12 @@ const FormProject = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Project added!
+            </Snackbar>
         </Portal >
     );
 };

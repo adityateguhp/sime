@@ -33,7 +33,6 @@ module.exports = {
   },
   Mutation: {
     async addDivision(_, { name, projectId }, context) {
-      const user = checkAuth(context);
       const { valid, errors } = validateDivisionInput(name);
       if (!valid) {
         throw new UserInputError('Error', { errors });

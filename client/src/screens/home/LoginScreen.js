@@ -7,17 +7,18 @@ import { ActivityIndicator, List } from 'react-native-paper';
 import { CommonActions } from "@react-navigation/native";
 
 import Header from '../../components/common/Header';
+import Paragraph from '../../components/common/Paragraph';
 import Background from '../../components/common/Background';
 import Logo from '../../components/common/Logo';
 import Button from '../../components/common/Button';
-import TextInput from '../../components/common//TextInput';
+import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
 import { SimeContext } from '../../context/SimePovider';
 import { LOGIN_ORGANIZATION, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 
-const LoginOrganizationScreen = ({ navigation }) => {
-  const {login} = useContext(AuthContext);
+const LoginScreen = ({ navigation }) => {
+  const { login } = useContext(AuthContext);
   const [errors, setErrors] = useState({});
 
   const [values, setValues] = useState({
@@ -54,9 +55,9 @@ const LoginOrganizationScreen = ({ navigation }) => {
       <ScrollView>
         <View style={styles.container}>
           <Logo />
-
-          <Header>Login as Organization</Header>
-
+          <Paragraph>
+            Sistem Informasi Manajemen Event
+          </Paragraph>
           <TextInput
             label="Email"
             returnKeyType="next"
@@ -157,4 +158,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default memo(LoginOrganizationScreen);
+export default memo(LoginScreen);

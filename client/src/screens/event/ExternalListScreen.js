@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { Provider, Portal, Title, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormExternal from '../../components/event/FormExternal';
@@ -24,12 +25,18 @@ const ExternalListScreen = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const { data: externals, error: errorExternals, loading: loadingExternals } = useQuery(
+    const [externalsValue, setExternalsValue] = useState([]);
+
+    const { data: externals, error: errorExternals, loading: loadingExternals, refetch, networkStatus } = useQuery(
         FETCH_EXBYTYPE_QUERY, {
         variables: {
             eventId: sime.event_id,
             externalType: sime.external_type
         },
+        notifyOnNetworkStatusChange: true,
+        onCompleted: () => {
+            setExternalsValue(externals.getExternalByType)
+        }
     });
 
     const [loadExistData, { called, data: external, error: errorExternal, loading: loadingExternal }] = useLazyQuery(
@@ -49,6 +56,10 @@ const ExternalListScreen = props => {
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
+
+    useEffect(() => {
+        if (external) setExternalVal(external.getExternal);
+    }, [external])
 
 
     const closeModal = () => {
@@ -77,7 +88,7 @@ const ExternalListScreen = props => {
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
-        setExternalVal(external.getExternal);
+
     }
 
     const externalId = sime.external_id;
@@ -91,6 +102,7 @@ const ExternalListScreen = props => {
                 variables: {eventId, externalType}
             });
             externals.getExternalByType = externals.getExternalByType.filter((e) => e.id !== externalId);
+            deleteExternalsStateUpdate(externalId);
             proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId, externalType} });
         },
         variables: {
@@ -109,6 +121,49 @@ const ExternalListScreen = props => {
                 onPress: deleteExternal
             }
         ]);
+    };
+
+    const addExternalsStateUpdate = (e) => {
+        const temp = [e, ...externalsValue];
+        temp.sort(function (a, b) {
+            var textA = a.name.toUpperCase();
+            var textB = b.name.toUpperCase();
+
+            return textA.localeCompare(textB)
+        })
+        setExternalsValue(temp);
+    }
+
+    const deleteExternalsStateUpdate = (e) => {
+        const temp = [...externalsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setExternalsValue(temp);
+    }
+
+    const updateExternalsStateUpdate = (e) => {
+        const temp = [...externalsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        temp.sort(function (a, b) {
+            var textA = a.name.toUpperCase();
+            var textB = b.name.toUpperCase();
+
+            return textA.localeCompare(textB)
+        })
+        setExternalsValue(temp)
+    }
+
+    const updateExternalStateUpdate = (e) => {
+        setExternalVal(e)
+    }
+
+    const onRefresh = () => {
+        refetch();
     };
 
     if (errorExternals) {
@@ -138,16 +193,24 @@ const ExternalListScreen = props => {
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    addExternalsStateUpdate={addExternalsStateUpdate}
                 />
             </View>
         );
     }
 
+    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching externals!');
+
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
-                data={externals.getExternalByType}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loadingExternals}
+                        onRefresh={onRefresh} />
+                }
+                data={externalsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <ExternalList
@@ -190,6 +253,7 @@ const ExternalListScreen = props => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                addExternalsStateUpdate={addExternalsStateUpdate}
             />
             <FormEditExternal
                  closeModalForm={closeModalFormEdit}
@@ -198,6 +262,8 @@ const ExternalListScreen = props => {
                  deleteButton={deleteHandler}
                  deleteButtonVisible={true}
                  closeButton={closeModalFormEdit}
+                 updateExternalStateUpdate={updateExternalStateUpdate}
+                 updateExternalsStateUpdate={updateExternalsStateUpdate}
             />
         </Provider>
     );

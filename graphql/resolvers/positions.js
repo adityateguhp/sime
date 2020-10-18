@@ -33,7 +33,6 @@ module.exports = {
   },
   Mutation: {
     async addPosition(_, { name, core }, context) {
-      const user = checkAuth(context);
       const { valid, errors } = validatePositionInput(name, core);
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -62,7 +61,6 @@ module.exports = {
       }
     },
     async deletePosition(_, { positionId }, context) {
-      const user = checkAuth(context);
       try {
         const position = await Position.findById(positionId);
         await position.delete();

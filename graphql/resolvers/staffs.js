@@ -7,10 +7,9 @@ const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getStaffs(_, args, context) {
-      const user = checkAuth(context);
+    async getStaffs(_, {organizationId}, context) {
       try {
-        const staffs = await Staff.find({ organization_id: user.id }).collation({ locale: "en" }).sort({ name: 1 });
+        const staffs = await Staff.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ name: 1 });
         if (staffs) {
           return staffs;
         } else {
@@ -53,9 +52,9 @@ module.exports = {
       email,
       phone_number,
       password,
-      picture
+      picture,
+      organizationId
     }, context) {
-      const user = checkAuth(context);
       const { valid, errors } =
         validateStaffInput(
           name,
@@ -82,7 +81,7 @@ module.exports = {
       const newStaff = new Staff({
         name,
         position_name,
-        organization_id: user.id,
+        organization_id: organizationId,
         department_id,
         email,
         phone_number,

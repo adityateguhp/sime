@@ -9,7 +9,7 @@ module.exports = {
   Query: {
     async getExternals(_, {eventId}, context) {
       try {
-        const externals = await External.find({ event_id: eventId }).sort({ createdAt: -1 });
+        const externals = await External.find({ event_id: eventId }).collation({ locale: "en" }).sort({ name: 1 });
         if (externals) {
           return externals;
         } else {
@@ -33,7 +33,7 @@ module.exports = {
     },
     async getExternalByType(_, {eventId, externalType}, context) {
         try {
-          const externals = await External.find({ event_id: eventId, external_type: externalType }).sort({ createdAt: -1 });
+          const externals = await External.find({ event_id: eventId, external_type: externalType }).collation({ locale: "en" }).sort({ name: 1 });
           if (externals) {
             return externals;
           } else {

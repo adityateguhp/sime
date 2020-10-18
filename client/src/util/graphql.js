@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const FETCH_ORGANIZATION_QUERY = gql`
-   {
-    getUserOrganization{
+   query($organizationId: ID!){
+    getOrganization(organizationId: $organizationId){
         id
         name
         description
@@ -56,8 +56,8 @@ mutation registerOrganization(
 `;
 
 export const FETCH_DEPARTMENTS_QUERY = gql`
-  {
-    getDepartments{
+   query($organizationId: ID!){
+    getDepartments(organizationId: $organizationId){
     id
     name
     organization_id
@@ -78,8 +78,8 @@ export const FETCH_DEPARTMENT_QUERY = gql`
 `;
 
 export const ADD_DEPARTMENT_MUTATION = gql`
-  mutation addDepartment($name: String!) {
-    addDepartment(name: $name) {
+  mutation addDepartment($name: String!, $organizationId: ID!) {
+    addDepartment(name: $name, organizationId: $organizationId) {
       id
       name
       organization_id
@@ -100,14 +100,14 @@ export const UPDATE_DEPARTMENT_MUTATION = gql`
 `;
 
 export const DELETE_DEPARTMENT = gql`
-  mutation deleteDepartment($departmentId: ID!) {
-    deleteDepartment(departmentId: $departmentId)
+  mutation deleteDepartment($departmentId: ID!, $organizationId: ID!) {
+    deleteDepartment(departmentId: $departmentId, organizationId: $organizationId)
   }
 `;
 
 export const FETCH_STAFFS_QUERY = gql`
- {
-    getStaffs{
+  query($organizationId: ID!){
+    getStaffs(organizationId: $organizationId){
     id
     name
     position_name
@@ -162,7 +162,8 @@ export const ADD_STAFF_MUTATION = gql`
     $email: String!,
     $phone_number: String!,
     $password: String!,
-    $picture: String
+    $picture: String,
+    $organizationId: ID!
   ) {
   addStaff(
     name: $name,
@@ -171,7 +172,8 @@ export const ADD_STAFF_MUTATION = gql`
     email: $email,
     phone_number: $phone_number,
     password: $password,
-    picture: $picture
+    picture: $picture,
+    organizationId: $organizationId
   ) {
     id
     name
@@ -251,8 +253,8 @@ export const DELETE_STAFF = gql`
 `;
 
 export const FETCH_PROJECTS_QUERY = gql`
-  {
-    getProjects{
+query($organizationId: ID!){
+    getProjects(organizationId: $organizationId){
     id
     name
     description
@@ -291,6 +293,7 @@ export const ADD_PROJECT_MUTATION = gql`
     $start_date: String!,
     $end_date: String!,
     $picture: String,
+    $organizationId: ID!
   ) {
   addProject(
     name: $name,
@@ -298,7 +301,8 @@ export const ADD_PROJECT_MUTATION = gql`
     cancel: $cancel, 	
     start_date: $start_date,
     end_date: $end_date,
-    picture: $picture
+    picture: $picture,
+    organizationId: $organizationId
   ) {
     id
     name

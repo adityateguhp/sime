@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NetworkStatus } from '@apollo/client';
@@ -25,6 +25,26 @@ const ProjectListScreen = props => {
 
     const sime = useContext(SimeContext);
 
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+    
+    const [visibleCancel, setVisibleCancel] = useState(false);
+
+    const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
+
+    const onDismissSnackBarCancel = () => setVisibleCancel(false);
+
+    const [visibleActivate, setVisibleActivate] = useState(false);
+
+    const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
+
+    const onDismissSnackBarActivate = () => setVisibleActivate(false);
+
+
     const [projectsValue, setProjectsValue] = useState([]);
 
     const selectItemHandler = (id, name) => {
@@ -39,6 +59,7 @@ const ProjectListScreen = props => {
     const { data: projects, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
         FETCH_PROJECTS_QUERY,
         {
+            variables: {organizationId: sime.user.id},
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setProjectsValue(projects.getProjects) }
         }
@@ -97,11 +118,13 @@ const ProjectListScreen = props => {
     const [deleteProject] = useMutation(DELETE_PROJECT, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_PROJECTS_QUERY
+                query: FETCH_PROJECTS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             projects.getProjects = projects.getProjects.filter((p) => p.id !== projectId);
             deleteProjectsStateUpdate(projectId)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user.id}, });
+            onToggleSnackBarDelete();
         },
         variables: {
             projectId
@@ -111,10 +134,11 @@ const ProjectListScreen = props => {
     const [cancelProject, { loading }] = useMutation(CANCEL_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_PROJECTS_QUERY
+                query: FETCH_PROJECTS_QUERY,
+                variables: {organizationId: sime.user.id},
             });
             cancelProjectsStateUpdate(result.data.cancelProject);
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: {organizationId: sime.user.id} });
             closeModal();
         },
         onError(err) {
@@ -262,13 +286,13 @@ const ProjectListScreen = props => {
                         </TouchableCmp>
                         {
                             cancelValue.cancel === true ?
-                                <TouchableCmp onPress={onCancel}>
+                                <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
                                     <View style={styles.textView}>
-                                        <Text style={styles.text}>Active project</Text>
+                                        <Text style={styles.text}>Activate project</Text>
                                     </View>
                                 </TouchableCmp>
                                 :
-                                <TouchableCmp onPress={onCancel}>
+                                <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
                                     <View style={styles.textView}>
                                         <Text style={styles.text}>Cancel project</Text>
                                     </View>
@@ -298,6 +322,24 @@ const ProjectListScreen = props => {
                 updateProjectsStateUpdate={updateProjectsStateUpdate}
                 updateProjectStateUpdate={updateProjectStateUpdate}
             />
+             <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Project deleted!
+            </Snackbar>
+            <Snackbar
+                visible={visibleCancel}
+                onDismiss={onDismissSnackBarCancel}
+            >
+                Project canceled!
+            </Snackbar>
+            <Snackbar
+                visible={visibleActivate}
+                onDismiss={onDismissSnackBarActivate}
+            >
+                Project activated!
+            </Snackbar>
         </Provider>
     );
 }

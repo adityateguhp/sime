@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -27,6 +27,12 @@ const FormEditProject = props => {
 
     const sime = useContext(SimeContext);
 
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
+
     const [errors, setErrors] = useState({
         project_name_error: '',
         date_error: ''
@@ -40,6 +46,7 @@ const FormEditProject = props => {
         start_date: '',
         end_date: '',
         picture: null,
+        organizationId: ''
     });
 
     const [showStartDate, setShowStartDate] = useState(false);
@@ -114,6 +121,7 @@ const FormEditProject = props => {
                 start_date: props.project.start_date,
                 end_date: props.project.end_date,
                 picture: props.project.picture,
+                organizationId: props.project.organization_id,
             })
         }
     }, [props.project])
@@ -121,12 +129,14 @@ const FormEditProject = props => {
     const [updateProject, { loading }] = useMutation(UPDATE_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_PROJECTS_QUERY
+                query: FETCH_PROJECTS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             props.updateProjectsStateUpdate(result.data.updateProject);
             props.updateProjectStateUpdate(result.data.updateProject)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user.id} });
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const projectNameError = projectNameValidator(values.name);
@@ -274,6 +284,12 @@ const FormEditProject = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Project updated!
+            </Snackbar>
         </Portal >
     );
 };

@@ -113,13 +113,13 @@ module.exports = gql`
     }
 
     type Query {
-        getUserOrganization: Organization
-        getDepartments: [Department]
+        getOrganization(organizationId: ID!): Organization
+        getDepartments(organizationId: ID!): [Department]
         getDepartment(departmentId: ID!): Department
-        getStaffs: [Staff]
+        getStaffs(organizationId: ID!): [Staff]
         getStaffsByDepartment(departmentId: ID!): [Staff]
         getStaff(staffId: ID!): Staff
-        getProjects: [Project]
+        getProjects(organizationId: ID!): [Project]
         getProject(projectId: ID!): Project
         getPositions: [Position]
         getPosition(positionId: ID!): Position
@@ -152,11 +152,11 @@ module.exports = gql`
         
         loginOrganization(email: String!, password: String!): Organization!
         
-        addDepartment(name: String!): Department!
+        addDepartment(name: String!, organizationId: ID!): Department!
         
         updateDepartment(departmentId: ID!, name: String!): Department!
         
-        deleteDepartment(departmentId: ID!): String!
+        deleteDepartment(departmentId: ID!, organizationId: ID!): String!
         
         addStaff(
             name: String!,
@@ -165,7 +165,8 @@ module.exports = gql`
             email: String!,
             phone_number: String!,
             password: String!,
-            picture: String
+            picture: String,
+            organizationId: ID!
         ): Staff!
         
         updateStaff( 
@@ -193,6 +194,7 @@ module.exports = gql`
             start_date: String!,
             end_date: String!,
             picture: String,
+            organizationId: ID!
         ): Project!
 
         updateProject(

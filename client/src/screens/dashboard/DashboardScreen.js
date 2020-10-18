@@ -11,21 +11,6 @@ import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 const DashboardScreen = props => {
   const sime = useContext(SimeContext);
 
-  const { data: org, error, loading } = useQuery(
-    FETCH_ORGANIZATION_QUERY,
-    {
-      onCompleted: () => {sime.setUser(org.getUserOrganization)}
-    }
-  );
-
-  if (loading) {
-    return <CenterSpinner />;
-  }
-
-  if (error) {
-    console.log(error);
-    return <Text>Error</Text>;
-  }
 
   return (
     <View style={styles.screen}>

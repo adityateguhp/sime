@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
 import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -11,14 +11,18 @@ import { departmentNameValidator } from '../../util/validator';
 import { FETCH_DEPARTMENTS_QUERY, ADD_DEPARTMENT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider'
 
 const FormDepartment = props => {
+    const sime = useContext(SimeContext);
+
     const [errors, setErrors] = useState({
         department_name_error: '',
     });
 
     const [values, setValues] = useState({
         name: '',
+        organizationId: sime.user.id
     });
 
     const onChange = (key, val, err) => {
@@ -29,11 +33,12 @@ const FormDepartment = props => {
     const [addDepartment, { loading }] = useMutation(ADD_DEPARTMENT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY
+                query: FETCH_DEPARTMENTS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             data.getDepartments = [result.data.addDepartment, ...data.getDepartments];
             props.addDepartmentsStateUpdate(result.data.addDepartment);
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
             values.name = '';
             props.closeModalForm();
         },

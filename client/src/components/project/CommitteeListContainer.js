@@ -17,8 +17,6 @@ const CommitteeListContainer = props => {
 
     const sime = useContext(SimeContext);
 
-    const [committeeDivision, setCommitteeDivision] = useState([])
-
     const comiteeInDivision = props.committees.filter((e) => e.division_id === props.division_id);
 
     const committeeId = sime.committee_id;

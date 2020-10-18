@@ -6,10 +6,10 @@ const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getDepartments(_, args, context) {
-      const user = checkAuth(context);
+    async getDepartments(_, {organizationId}, context) {
+      
       try {
-        const departments = await Department.find({ organization_id: user.id }).collation({ locale: "en" }).sort({ name: 1 });
+        const departments = await Department.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ name: 1 });
         if (departments) {
           return departments;
         } else {
@@ -33,15 +33,15 @@ module.exports = {
     }
   },
   Mutation: {
-    async addDepartment(_, { name }, context) {
-      const user = checkAuth(context);
+    async addDepartment(_, { name, organizationId }, context) {
+      
       const { valid, errors } = validateDepartmentInput(name);
       if (!valid) {
         throw new UserInputError('Error', { errors });
       }
       const newDepartment = new Department({
         name,
-        organization_id: user.id,
+        organization_id: organizationId,
         createdAt: new Date().toISOString()
       });
 
@@ -62,11 +62,11 @@ module.exports = {
         throw new Error(err);
       }
     },
-    async deleteDepartment(_, { departmentId }, context) {
-      const user = checkAuth(context);
+    async deleteDepartment(_, { departmentId, organizationId }, context) {
+      
       try {
         const department = await Department.findById(departmentId);
-        if (user.id.toString() === department.organization_id.toString()) {
+        if (organizationId.toString() === department.organization_id.toString()) {
           await department.delete();
           return 'Department deleted successfully';
         } else {

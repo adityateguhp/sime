@@ -1,11 +1,12 @@
-import React, { useState, useContext} from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { StyleSheet, View, ScrollView, RefreshControl, FlatList } from 'react-native';
 import { Text, List, Avatar, Subheading, Paragraph, Divider, Provider, Title, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { NetworkStatus } from '@apollo/client';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
@@ -36,6 +37,12 @@ const EventOverviewScreen = props => {
     picture: ''
   });
 
+  const [guest, setGuest] = useState([])
+
+  const [sponsor, setSponsor] = useState([])
+
+  const [media, setMedia] = useState([])
+
   const [visible, setVisible] = useState(false);
 
   const selectInfoHandler = (id) => {
@@ -57,11 +64,12 @@ const EventOverviewScreen = props => {
     setVisible(false);
   }
 
-  const { data: eventData, error: errorEventData, loading: loadingEventData } = useQuery(
+  const { data: eventData, error: errorEventData, loading: loadingEventData, refetch: refetchEvent, networkStatus: networkStatusEvent } = useQuery(
     FETCH_EVENT_QUERY, {
     variables: {
       eventId: sime.event_id
     },
+    notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       setEvent({
         description: eventData.getEvent.description,
@@ -73,28 +81,40 @@ const EventOverviewScreen = props => {
     }
   });
 
-  const { data: guestData, error: errorGuestData, loading: loadingGuestData } = useQuery(
+  const { data: guestData, error: errorGuestData, loading: loadingGuestData, refetch: refetchGuest, networkStatus: networkStatusGuest } = useQuery(
     FETCH_EXBYTYPE_QUERY, {
     variables: {
       eventId: sime.event_id,
       externalType: '5f684a4b6101fe2a38fe4904'
     },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: () => {
+     setGuest(guestData.getExternalByType)
+    }
   });
 
-  const { data: sponsorData, error: errorSponsorData, loading: loadingSponsorData } = useQuery(
+  const { data: sponsorData, error: errorSponsorData, loading: loadingSponsorData, refetch: refetchSponsor, networkStatus: networkStatusSponsor } = useQuery(
     FETCH_EXBYTYPE_QUERY, {
     variables: {
       eventId: sime.event_id,
       externalType: '5f684a726101fe2a38fe4905'
     },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: () => {
+      setSponsor(sponsorData.getExternalByType)
+     }
   });
 
-  const { data: mediaPartnerData, error: errorMediaPartnerData, loading: loadingMediaPartnerData } = useQuery(
+  const { data: mediaPartnerData, error: errorMediaPartnerData, loading: loadingMediaPartnerData, refetch: refetchMedia, networkStatus: networkStatusMedia } = useQuery(
     FETCH_EXBYTYPE_QUERY, {
     variables: {
       eventId: sime.event_id,
       externalType: '5f684a856101fe2a38fe4906'
     },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: () => {
+      setMedia(mediaPartnerData.getExternalByType)
+     }
   });
 
   const [loadExternalData, { called: calledExternalData, data: externalData, error: errorExternalData, loading: loadingExternalData }] = useLazyQuery(
@@ -102,7 +122,11 @@ const EventOverviewScreen = props => {
     variables: {
       externalId: sime.external_id
     },
-    onCompleted: () => {
+    notifyOnNetworkStatusChange: true,
+  });
+
+  useEffect(() => {
+    if (externalData) {
       setExternal({
         id: externalData.getExternal.id,
         name: externalData.getExternal.name,
@@ -111,7 +135,14 @@ const EventOverviewScreen = props => {
         email: externalData.getExternal.email
       })
     }
-  });
+  }, [externalData])
+
+  const onRefresh = () => {
+    refetchEvent();
+    refetchGuest();
+    refetchMedia();
+    refetchSponsor();
+  };
 
   if (errorEventData) {
     console.error(errorEventData);
@@ -154,54 +185,80 @@ const EventOverviewScreen = props => {
     return <CenterSpinner />;
   }
 
+  if (loadingExternalData) {
+
+  }
+
+  if (networkStatusEvent === NetworkStatus.refetch) return console.log('Refetching event!');
+  if (networkStatusGuest === NetworkStatus.refetch) return console.log('Refetching guest!');
+  if (networkStatusMedia === NetworkStatus.refetch) return console.log('Refetching media!');
+  if (networkStatusSponsor === NetworkStatus.refetch) return console.log('Refetching sponsor!');
+
+
   const startDate = moment(event.start_date).format('ddd, MMM D YYYY');
   const endDate = moment(event.end_date).format('ddd, MMM D YYYY');
 
   return (
     <Provider theme={theme}>
-      <ScrollView style={styles.overviewContainer}>
+      <ScrollView
+        style={styles.overviewContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={loadingGuestData}
+            onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.overview}>
           <Subheading style={{ fontWeight: 'bold' }}>Guests</Subheading>
-          {
-            guestData.getExternalByType.length === 0? <Text>-</Text> :
-            guestData.getExternalByType.map((Guest) => (
+          <FlatList
+            data={guest}
+            keyExtractor={item => item.id}
+            renderItem={itemData => (
               <ExternalList
-                key={Guest.id}
-                name={Guest.name}
-                picture={Guest.picture}
+                name={itemData.item.name}
+                picture={itemData.item.picture}
                 size={35}
-                onSelect={() => { openModal(Guest.id) }}
+                onSelect={() => { openModal(itemData.item.id) }}
               />
-            ))
-          }
+            )}
+            ListEmptyComponent={
+              <Text>-</Text>
+            }
+          />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Sponsors</Subheading>
-          {
-            sponsorData.getExternalByType.length === 0? <Text>-</Text> :
-            sponsorData.getExternalByType.map((Sponsor) => (
+          <FlatList
+            data={sponsor}
+            keyExtractor={item => item.id}
+            renderItem={itemData => (
               <ExternalList
-                key={Sponsor.id}
-                name={Sponsor.name}
-                picture={Sponsor.picture}
+                name={itemData.item.name}
+                picture={itemData.item.picture}
                 size={35}
-                onSelect={() => { openModal(Sponsor.id) }}
+                onSelect={() => { openModal(itemData.item.id) }}
               />
-            ))
-          }
+            )}
+            ListEmptyComponent={
+              <Text>-</Text>
+            }
+          />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Media Partners</Subheading>
-          {
-            mediaPartnerData.getExternalByType.length === 0? <Text>-</Text> :
-            mediaPartnerData.getExternalByType.map((Media) => (
+          <FlatList
+            data={media}
+            keyExtractor={item => item.id}
+            renderItem={itemData => (
               <ExternalList
-                key={Media.id}
-                name={Media.name}
-                picture={Media.picture}
+                name={itemData.item.name}
+                picture={itemData.item.picture}
                 size={35}
-                onSelect={() => { openModal(Media.id) }}
+                onSelect={() => { openModal(itemData.item.id) }}
               />
-            )) 
-          }
+            )}
+            ListEmptyComponent={
+              <Text>-</Text>
+            }
+          />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
@@ -230,9 +287,9 @@ const EventOverviewScreen = props => {
           <List.Item
             title={
               event.location === null || event.location === '' ? "-" :
-              <Text>
-                <Icon name="map-marker" size={16} color='black' /> {event.location}
-              </Text>}
+                <Text>
+                  <Icon name="map-marker" size={16} color='black' /> {event.location}
+                </Text>}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />

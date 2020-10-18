@@ -44,6 +44,7 @@ const FormEditStaff = props => {
         email: '',
         phone_number: '',
         picture: null,
+        organizationId: ''
     });
 
     const handleUpload = () => {
@@ -87,6 +88,7 @@ const FormEditStaff = props => {
                 email: props.staff.email,
                 phone_number: props.staff.phone_number,
                 picture: props.staff.picture,
+                organizationId: props.staff.organization_id
             })
         }
     }, [props.staff])
@@ -94,11 +96,12 @@ const FormEditStaff = props => {
     const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY
+                query: FETCH_STAFFS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             props.updateStaffsStateUpdate(result.data.updateStaff);
             props.updateStaffStateUpdate(result.data.updateStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data});
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {organizationId: sime.user.id}});
             props.closeModalForm();
         },
         onError(err) {

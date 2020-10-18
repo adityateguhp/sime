@@ -24,6 +24,7 @@ const DepartmentsScreen = ({ navigation }) => {
     const { data: departments, error: error1 , loading: loading1, refetch, networkStatus } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
+            variables: {organizationId: sime.user.id},
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setDepartmentsValue(departments.getDepartments)
@@ -91,18 +92,21 @@ const DepartmentsScreen = ({ navigation }) => {
     }
 
     const departmentId = sime.department_id;
+    const organizationId = sime.user.id;
 
     const [deleteDepartment] = useMutation(DELETE_DEPARTMENT, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY
+                query: FETCH_DEPARTMENTS_QUERY,
+                variables: {organizationId}
             });
             departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
             deleteDepartmentsStateUpdate(departmentId)
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data });
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data,  variables: {organizationId} });
         },
         variables: {
-            departmentId
+            departmentId,
+            organizationId
         }
     });
 

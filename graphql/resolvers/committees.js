@@ -53,7 +53,6 @@ module.exports = {
     },
     Mutation: {
         async addCommittee(_, { staffId, positionId, divisionId, projectId }, context) {
-            const user = checkAuth(context);
             const { valid, errors } = validateCommitteeInput(staffId, divisionId, positionId);
             if (!valid) {
                 throw new UserInputError('Error', { errors });

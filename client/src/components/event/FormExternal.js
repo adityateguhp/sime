@@ -79,6 +79,7 @@ const FormExternal = props => {
                 variables: {eventId: values.event_id, externalType: values.external_type}
             });
             data.getExternalByType = [result.data.addExternal, ...data.getExternalByType];
+            props.addExternalsStateUpdate(result.data.addExternal);
             proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: values.event_id, externalType: values.external_type} });
             values.name = '';
             values.email = '';
@@ -185,6 +186,7 @@ const FormExternal = props => {
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                            style={styles.input}
+                                           multiline={true}
                                            label='Details'
                                            value={values.details}
                                            onChangeText={(val) => onChange('details', val, '')}

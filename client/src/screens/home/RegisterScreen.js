@@ -114,12 +114,12 @@ const RegisterScreen = ({ navigation }) => {
                     )}
 
                     <Button mode="contained" onPress={onSubmit} style={styles.button} loading={loading ? true : false} >
-                        Sign Up
+                        Register
                     </Button>
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Already have an account? </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('Login Organization')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                             <Text style={styles.link}>Login</Text>
                         </TouchableOpacity>
                     </View>

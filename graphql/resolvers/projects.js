@@ -7,10 +7,9 @@ const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getProjects(_, args, context) {
-      const user = checkAuth(context);
+    async getProjects(_, {organizationId}, context) {
       try {
-        const projects = await Project.find({ organization_id: user.id }).sort({ createdAt: -1 });
+        const projects = await Project.find({ organization_id: organizationId }).sort({ createdAt: -1 });
         if (projects) {
           return projects;
         } else {
@@ -40,9 +39,9 @@ module.exports = {
       cancel,
       start_date,
       end_date,
-      picture
+      picture,
+      organizationId
     }, context) {
-      const user = checkAuth(context);
       const { valid, errors } =
         validateProjectInput(
           name,
@@ -59,7 +58,7 @@ module.exports = {
         cancel,
         start_date,
         end_date,
-        organization_id: user.id,
+        organization_id: organizationId,
         picture,
         createdAt: new Date().toISOString()
       });

@@ -33,6 +33,7 @@ const DivisionListScreen = ({ navigation }) => {
     const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
+            variables: {organizationId: sime.user.id},
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setStaffsValue(staffs.getStaffs) }
         }

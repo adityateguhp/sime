@@ -90,6 +90,8 @@ const FormEditExternal = props => {
                 query: FETCH_EXBYTYPE_QUERY,
                 variables: {eventId: sime.event_id, externalType: sime.external_type}
             });
+            props.updateExternalsStateUpdate(result.data.updateExternal);
+            props.updateExternalStateUpdate(result.data.updateExternal)
             proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: sime.event_id, externalType: sime.external_type} });
             props.closeModalForm();
         },
@@ -192,6 +194,7 @@ const FormEditExternal = props => {
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                            style={styles.input}
+                                           multiline={true}
                                            label='Details'
                                            value={values.details}
                                            onChangeText={(val) => onChange('details', val, '')}
