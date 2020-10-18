@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
@@ -17,6 +17,12 @@ import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/
 
 const FormEditDepartment = props => {
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     const [errors, setErrors] = useState({
         department_name_error: '',
@@ -53,6 +59,7 @@ const FormEditDepartment = props => {
             props.updateDepartmentStateUpdate(result.data.updateDepartment)
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError() {
             const departementNameError = departmentNameValidator(values.name);
@@ -119,6 +126,12 @@ const FormEditDepartment = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Department updated!
+            </Snackbar>
         </Portal >
     );
 };

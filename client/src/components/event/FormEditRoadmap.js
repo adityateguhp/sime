@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,6 +20,12 @@ const FormEditRoadmap = props => {
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     let TouchableCmp = TouchableOpacity;
 
@@ -98,6 +104,7 @@ const FormEditRoadmap = props => {
             props.updateRoadmapStateUpdate(result.data.updateRoadmap);
             proxy.writeQuery({ query: FETCH_ROADMAPS_QUERY, data, variables: { eventId: sime.event_id } });
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const roadmapNameError = roadmapNameValidator(values.name);
@@ -218,6 +225,12 @@ const FormEditRoadmap = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Roadmap updated!
+            </Snackbar>
         </Portal >
     );
 };

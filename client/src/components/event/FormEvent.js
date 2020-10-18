@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,6 +25,12 @@ const FormEvent = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     const [errors, setErrors] = useState({
         event_name_error: '',
@@ -123,6 +129,7 @@ const FormEvent = props => {
             values.picture = '';
             values.cancel = false;
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const eventNameError = eventNameValidator(values.name);
@@ -277,6 +284,12 @@ const FormEvent = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Event added!
+            </Snackbar>
         </Portal >
     );
 };

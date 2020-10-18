@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Snackbar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
@@ -18,6 +18,12 @@ const FormCommittee = props => {
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     const [positionsFiltered, setPositionsFiltered] = useState([]);
 
@@ -109,6 +115,7 @@ const FormCommittee = props => {
             values.positionId = '';
             values.divisionId = '';
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const staffError = staffValidator(values.name);
@@ -204,6 +211,12 @@ const FormCommittee = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Committee added!
+            </Snackbar>
         </Portal >
     );
 };

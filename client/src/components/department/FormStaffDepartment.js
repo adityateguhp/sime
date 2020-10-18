@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
-import { Button, Appbar, Portal, Text, Avatar } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
@@ -26,6 +26,12 @@ const FormStaffDepartment = props => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
@@ -94,6 +100,7 @@ const FormStaffDepartment = props => {
             values.picture = '';
             values.department_id = '';
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const staffNameError = staffNameValidator(values.name);
@@ -213,6 +220,12 @@ const FormStaffDepartment = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Staff added!
+            </Snackbar>
         </Portal >
     );
 };

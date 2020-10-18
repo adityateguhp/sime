@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
-import { Button, Appbar, Portal, Text, Avatar } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
@@ -26,6 +26,12 @@ const FormEditStaff = props => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
@@ -103,6 +109,7 @@ const FormEditStaff = props => {
             props.updateStaffStateUpdate(result.data.updateStaff)
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {organizationId: sime.user.id}});
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const staffNameError = staffNameValidator(values.name);
@@ -234,6 +241,12 @@ const FormEditStaff = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Staff updated!
+            </Snackbar>
         </Portal >
     );
 };

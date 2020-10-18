@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,6 +20,12 @@ const FormRundown = props => {
     const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     const [errors, setErrors] = useState({
         agenda_error: '',
@@ -113,6 +119,7 @@ const FormRundown = props => {
             values.date = '';
             values.details = '';
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const agendaError = agendaValidator(values.agenda);
@@ -267,6 +274,12 @@ const FormRundown = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Agenda added!
+            </Snackbar>
         </Portal >
     );
 };

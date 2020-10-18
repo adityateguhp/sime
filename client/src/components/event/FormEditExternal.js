@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Button, Appbar, Portal, Text, Avatar } from 'react-native-paper';
+import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,6 +22,12 @@ const FormEditExternal = props => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
@@ -94,6 +100,7 @@ const FormEditExternal = props => {
             props.updateExternalStateUpdate(result.data.updateExternal)
             proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: sime.event_id, externalType: sime.external_type} });
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError(err) {
             const externalNameError = externalNameValidator(values.name);
@@ -206,6 +213,12 @@ const FormEditExternal = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                External updated!
+            </Snackbar>
         </Portal >
     );
 };

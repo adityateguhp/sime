@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
+import { Button, Appbar, Portal, Snackbar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -16,6 +16,13 @@ import { SimeContext } from '../../context/SimePovider';
 const FormEditDivision = props => {
 
     const sime = useContext(SimeContext);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
+
 
     const [errors, setErrors] = useState({
         division_name_error: '',
@@ -48,6 +55,7 @@ const FormEditDivision = props => {
             });
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: sime.project_id}});
             props.closeModalForm();
+            onToggleSnackBar();
         },
         onError() {
             const divisionNameError = divisionNameValidator(values.name);
@@ -115,6 +123,12 @@ const FormEditDivision = props => {
                     </View>
                 </View>
             </Modal>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+            >
+                Division updated!
+            </Snackbar>
         </Portal >
     );
 };
