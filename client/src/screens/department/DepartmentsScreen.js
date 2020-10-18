@@ -1,7 +1,7 @@
 import React, { useContext, useState,useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NetworkStatus } from '@apollo/client';
@@ -18,6 +18,12 @@ import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT, FETCH_DEPARTMENT_QUERY } fr
 
 const DepartmentsScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
 
     const [departmentsValue, setDepartmentsValue] = useState([]);
 
@@ -103,6 +109,7 @@ const DepartmentsScreen = ({ navigation }) => {
             departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
             deleteDepartmentsStateUpdate(departmentId)
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data,  variables: {organizationId} });
+            onToggleSnackBarDelete();
         },
         variables: {
             departmentId,
@@ -264,6 +271,12 @@ const DepartmentsScreen = ({ navigation }) => {
                 updateDepartmentsStateUpdate={updateDepartmentsStateUpdate}
                 updateDepartmentStateUpdate={updateDepartmentStateUpdate}
             />
+             <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Department deleted!
+            </Snackbar>
         </Provider>
     );
 }

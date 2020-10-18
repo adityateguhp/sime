@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NetworkStatus } from '@apollo/client';
@@ -25,6 +25,13 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
 
     const [staffsValue, setStaffsValue] = useState([]);
     const [departmentsValue, setDepartmentsValue] = useState([]);
@@ -117,6 +124,7 @@ const StaffsScreen = ({ route, navigation }) => {
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId)
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {organizationId: sime.user.id} });
+            onToggleSnackBarDelete();
         },
         variables: {
             staffId
@@ -291,6 +299,12 @@ const StaffsScreen = ({ route, navigation }) => {
                 updateStaffStateUpdate={updateStaffStateUpdate}
                 updateStaffsStateUpdate={updateStaffsStateUpdate}
             />
+             <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Staff deleted!
+            </Snackbar>
         </Provider>
     );
 }

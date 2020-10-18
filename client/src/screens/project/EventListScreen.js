@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
@@ -24,6 +24,27 @@ const EventListScreen = ({ route, navigation }) => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+    
+    const [visibleCancel, setVisibleCancel] = useState(false);
+
+    const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
+
+    const onDismissSnackBarCancel = () => setVisibleCancel(false);
+
+    
+    const [visibleActivate, setVisibleActivate] = useState(false);
+
+    const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
+
+    const onDismissSnackBarActivate = () => setVisibleActivate(false);
+
 
     const [eventsValue, setEventsValue] = useState([]);
 
@@ -116,6 +137,7 @@ const EventListScreen = ({ route, navigation }) => {
             events.getEvents = events.getEvents.filter((e) => e.id !== eventId);
             deleteEventsStateUpdate(eventId)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
+            onToggleSnackBarDelete();
         },
         variables: {
             eventId
@@ -261,13 +283,13 @@ const EventListScreen = ({ route, navigation }) => {
                         </TouchableCmp>
                         {
                             cancelValue.cancel === true ?
-                                <TouchableCmp onPress={onCancel}>
+                                <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
                                     <View style={styles.textView}>
                                         <Text style={styles.text}>Active event</Text>
                                     </View>
                                 </TouchableCmp>
                                 :
-                                <TouchableCmp onPress={onCancel}>
+                                <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
                                     <View style={styles.textView}>
                                         <Text style={styles.text}>Cancel event</Text>
                                     </View>
@@ -297,6 +319,24 @@ const EventListScreen = ({ route, navigation }) => {
                 updateEventsStateUpdate={updateEventsStateUpdate}
                 updateEventStateUpdate={updateEventStateUpdate}
             />
+              <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Event deleted!
+            </Snackbar>
+            <Snackbar
+                visible={visibleCancel}
+                onDismiss={onDismissSnackBarCancel}
+            >
+                Event canceled!
+            </Snackbar>
+            <Snackbar
+                visible={visibleActivate}
+                onDismiss={onDismissSnackBarActivate}
+            >
+                Event activated!
+            </Snackbar>
         </Provider>
     );
 }

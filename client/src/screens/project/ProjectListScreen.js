@@ -38,6 +38,7 @@ const ProjectListScreen = props => {
 
     const onDismissSnackBarCancel = () => setVisibleCancel(false);
 
+    
     const [visibleActivate, setVisibleActivate] = useState(false);
 
     const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
