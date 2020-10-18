@@ -304,7 +304,7 @@ const DivisionListScreen = ({ navigation }) => {
                     </View>
                 </Modal>
             </Portal>
-            <FABbutton Icon="plus" label="DIVISION" onPress={openForm} />
+            <FABbutton Icon="plus" label="COMMITTEE" onPress={openForm} />
             <FormCommittee
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
