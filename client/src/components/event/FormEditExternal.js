@@ -23,12 +23,6 @@ const FormEditExternal = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
@@ -100,7 +94,6 @@ const FormEditExternal = props => {
             props.updateExternalStateUpdate(result.data.updateExternal)
             proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: sime.event_id, externalType: sime.external_type} });
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const externalNameError = externalNameValidator(values.name);
@@ -213,12 +206,6 @@ const FormEditExternal = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                External updated!
-            </Snackbar>
         </Portal >
     );
 };

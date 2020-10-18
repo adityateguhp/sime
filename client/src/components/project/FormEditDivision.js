@@ -17,13 +17,6 @@ const FormEditDivision = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
-
     const [errors, setErrors] = useState({
         division_name_error: '',
     });
@@ -55,7 +48,6 @@ const FormEditDivision = props => {
             });
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: sime.project_id}});
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError() {
             const divisionNameError = divisionNameValidator(values.name);
@@ -123,12 +115,6 @@ const FormEditDivision = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Division updated!
-            </Snackbar>
         </Portal >
     );
 };

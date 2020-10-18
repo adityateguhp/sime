@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
@@ -12,7 +12,7 @@ import FormEditRoadmap from '../../components/event/FormEditRoadmap';
 import RoadmapCard from '../../components/event/RoadmapCard';;
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
-import {theme} from '../../constants/Theme';
+import { theme } from '../../constants/Theme';
 import { FETCH_ROADMAPS_QUERY, FETCH_ROADMAP_QUERY, DELETE_ROADMAP } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
@@ -24,6 +24,27 @@ const RoadmapScreen = ({ route, navigation }) => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
+
 
     const [roadmapsValue, setRoadmapsValue] = useState([]);
 
@@ -52,10 +73,10 @@ const RoadmapScreen = ({ route, navigation }) => {
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
-   
-    useEffect(()=>{
-        if(roadmap) setRoadmapVal(roadmap.getRoadmap);
-    },[roadmap])
+
+    useEffect(() => {
+        if (roadmap) setRoadmapVal(roadmap.getRoadmap);
+    }, [roadmap])
 
     const closeModal = () => {
         setVisible(false);
@@ -102,9 +123,10 @@ const RoadmapScreen = ({ route, navigation }) => {
         }
     });
 
-    
+
     const addRoadmapsStateUpdate = (e) => {
         setRoadmapsValue([e, ...roadmapsValue]);
+        onToggleSnackBarAdd();
     }
 
     const deleteRoadmapsStateUpdate = (e) => {
@@ -114,6 +136,7 @@ const RoadmapScreen = ({ route, navigation }) => {
         }).indexOf(e);
         temp.splice(index, 1);
         setRoadmapsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateRoadmapsStateUpdate = (e) => {
@@ -122,7 +145,8 @@ const RoadmapScreen = ({ route, navigation }) => {
             return item.id
         }).indexOf(e.id);
         temp[index] = e
-        setRoadmapsValue(temp)
+        setRoadmapsValue(temp);
+        onToggleSnackBarUpdate();
     }
 
     const updateRoadmapStateUpdate = (e) => {
@@ -166,15 +190,35 @@ const RoadmapScreen = ({ route, navigation }) => {
 
     if (roadmaps.getRoadmaps.length === 0) {
         return (
-            <View style={styles.content}>
-                <Text>No roadmap found, let's add roadmap!</Text>
+            <ScrollView
+                contentContainerStyle={styles.content}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loadingRoadmaps}
+                        onRefresh={onRefresh} />
+                }
+            >
+                <Text>No roadmaps found, let's add roadmaps!</Text>
                 <FABbutton Icon="plus" label="roadmap" onPress={openForm} />
                 <FormRoadmap
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    addRoadmapsStateUpdate={addRoadmapsStateUpdate}
                 />
-            </View>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Roadmap added!
+            </Snackbar>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Roadmap deleted!
+            </Snackbar>
+            </ScrollView>
         );
     }
 
@@ -186,9 +230,9 @@ const RoadmapScreen = ({ route, navigation }) => {
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                      refreshing={loadingRoadmaps}
-                      onRefresh={onRefresh} />
-                  }
+                        refreshing={loadingRoadmaps}
+                        onRefresh={onRefresh} />
+                }
                 data={roadmapsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
@@ -225,7 +269,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                     </Modal>
                 </View>
             </Portal>
-            <FABbutton Icon="plus"  label="roadmap" onPress={openForm} />
+            <FABbutton Icon="plus" label="roadmap" onPress={openForm} />
             <FormRoadmap
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
@@ -241,6 +285,24 @@ const RoadmapScreen = ({ route, navigation }) => {
                 updateRoadmapsStateUpdate={updateRoadmapsStateUpdate}
                 updateRoadmapStateUpdate={updateRoadmapStateUpdate}
             />
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Roadmap added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Roadmap updated!
+            </Snackbar>
+            <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Roadmap deleted!
+            </Snackbar>
         </Provider>
     );
 }

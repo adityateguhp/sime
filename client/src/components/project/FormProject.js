@@ -26,12 +26,6 @@ const FormProject = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     //const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
@@ -173,7 +167,6 @@ const FormProject = props => {
             values.picture = '';
             values.cancel = false;
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const projectNameError = projectNameValidator(values.name);
@@ -328,12 +321,6 @@ const FormProject = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Project added!
-            </Snackbar>
         </Portal >
     );
 };

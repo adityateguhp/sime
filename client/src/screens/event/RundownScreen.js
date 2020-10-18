@@ -4,7 +4,7 @@ import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -27,6 +27,26 @@ const RundownScreen = props => {
   if (Platform.OS === 'android' && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }
+
+  const [visibleDelete, setVisibleDelete] = useState(false);
+
+  const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+  const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+
+  const [visibleAdd, setVisibleAdd] = useState(false);
+
+  const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+  const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+  const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+  const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+  const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
   const { data: rundowns, error: errorRundowns, loading: loadingRundowns, refetch, networkStatus } = useQuery(
     FETCH_RUNDOWNS_QUERY, {
@@ -163,6 +183,7 @@ const RundownScreen = props => {
 
     }, []);
     setRundownsVal(dataSource)
+    onToggleSnackBarAdd();
   }
 
   const deleteRundownsStateUpdate = (e) => {
@@ -187,6 +208,7 @@ const RundownScreen = props => {
 
     }, []);
     setRundownsVal(dataSource)
+    onToggleSnackBarDelete();
   }
 
   const updateRundownsStateUpdate = (e) => {
@@ -205,6 +227,7 @@ const RundownScreen = props => {
       return dateA - dateB || timeA - timeB
     })
     setRundownsValTemp(temp)
+    onToggleSnackBarUpdate();
   }
 
   const updateRundownStateUpdate = (e) => {
@@ -237,7 +260,14 @@ const RundownScreen = props => {
 
   if (rundownsVal.length === 0) {
     return (
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={loadingRundowns}
+            onRefresh={onRefresh} />
+        }
+      >
         <Text>No agendas found, let's add agendas!</Text>
         <FABbutton Icon="plus" label="agenda" onPress={openForm} />
         <FormRundown
@@ -246,7 +276,19 @@ const RundownScreen = props => {
           closeButton={closeModalForm}
           addRundownsStateUpdate={addRundownsStateUpdate}
         />
-      </View>
+        <Snackbar
+          visible={visibleAdd}
+          onDismiss={onDismissSnackBarAdd}
+        >
+          Agenda added!
+            </Snackbar>
+        <Snackbar
+          visible={visibleDelete}
+          onDismiss={onDismissSnackBarDelete}
+        >
+          Agenda deleted!
+            </Snackbar>
+      </ScrollView>
     );
   }
 
@@ -314,7 +356,7 @@ const RundownScreen = props => {
         closeButton={closeModalForm}
         addRundownsStateUpdate={addRundownsStateUpdate}
       />
-       <FormEditRundown
+      <FormEditRundown
         closeModalForm={closeModalFormEdit}
         visibleForm={visibleFormEdit}
         deleteButton={deleteHandler}
@@ -323,6 +365,24 @@ const RundownScreen = props => {
         updateRundownStateUpdate={updateRundownStateUpdate}
         updateRundownsStateUpdate={updateRundownsStateUpdate}
       />
+      <Snackbar
+        visible={visibleAdd}
+        onDismiss={onDismissSnackBarAdd}
+      >
+        Agenda added!
+            </Snackbar>
+      <Snackbar
+        visible={visibleUpdate}
+        onDismiss={onDismissSnackBarUpdate}
+      >
+        Agenda updated!
+            </Snackbar>
+      <Snackbar
+        visible={visibleDelete}
+        onDismiss={onDismissSnackBarDelete}
+      >
+        Agenda deleted!
+            </Snackbar>
     </Provider>
   );
 }

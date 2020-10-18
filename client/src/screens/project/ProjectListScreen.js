@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -31,19 +31,33 @@ const ProjectListScreen = props => {
 
     const onDismissSnackBarDelete = () => setVisibleDelete(false);
 
-    
+
     const [visibleCancel, setVisibleCancel] = useState(false);
 
     const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
 
     const onDismissSnackBarCancel = () => setVisibleCancel(false);
 
-    
+
     const [visibleActivate, setVisibleActivate] = useState(false);
 
     const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
 
     const onDismissSnackBarActivate = () => setVisibleActivate(false);
+
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
 
     const [projectsValue, setProjectsValue] = useState([]);
@@ -60,7 +74,7 @@ const ProjectListScreen = props => {
     const { data: projects, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
         FETCH_PROJECTS_QUERY,
         {
-            variables: {organizationId: sime.user.id},
+            variables: { organizationId: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setProjectsValue(projects.getProjects) }
         }
@@ -81,9 +95,9 @@ const ProjectListScreen = props => {
         cancel: false
     });
 
-    useEffect(()=>{
-        if(project) setProjectVal(project.getProject);
-    },[project])
+    useEffect(() => {
+        if (project) setProjectVal(project.getProject);
+    }, [project])
 
     const closeModal = () => {
         setVisible(false);
@@ -120,12 +134,11 @@ const ProjectListScreen = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
             });
             projects.getProjects = projects.getProjects.filter((p) => p.id !== projectId);
             deleteProjectsStateUpdate(projectId)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user.id}, });
-            onToggleSnackBarDelete();
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id }, });
         },
         variables: {
             projectId
@@ -136,10 +149,10 @@ const ProjectListScreen = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: {organizationId: sime.user.id},
+                variables: { organizationId: sime.user.id },
             });
             cancelProjectsStateUpdate(result.data.cancelProject);
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: {organizationId: sime.user.id} });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id } });
             closeModal();
         },
         onError(err) {
@@ -156,6 +169,7 @@ const ProjectListScreen = props => {
 
     const addProjectsStateUpdate = (e) => {
         setProjectsValue([e, ...projectsValue]);
+        onToggleSnackBarAdd();
     }
 
     const deleteProjectsStateUpdate = (e) => {
@@ -165,6 +179,7 @@ const ProjectListScreen = props => {
         }).indexOf(e);
         temp.splice(index, 1);
         setProjectsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateProjectsStateUpdate = (e) => {
@@ -174,6 +189,7 @@ const ProjectListScreen = props => {
         }).indexOf(e.id);
         temp[index] = e
         setProjectsValue(temp)
+        onToggleSnackBarUpdate();
     }
 
     const updateProjectStateUpdate = (e) => {
@@ -228,15 +244,35 @@ const ProjectListScreen = props => {
 
     if (projectsValue.length === 0) {
         return (
-            <View style={styles.content}>
+            <ScrollView
+                contentContainerStyle={styles.content}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
+            >
                 <Text>No projects found, let's add projects!</Text>
                 <FABbutton Icon="plus" label="staff" onPress={openForm} />
                 <FormProject
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    addProjectsStateUpdate={addProjectsStateUpdate}
                 />
-            </View>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Project deleted!
+                </Snackbar>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Project added!
+            </Snackbar>
+            </ScrollView>
         );
     }
 
@@ -249,9 +285,9 @@ const ProjectListScreen = props => {
                 contentContainerStyle={styles.container}
                 refreshControl={
                     <RefreshControl
-                      refreshing={loading1}
-                      onRefresh={onRefresh} />
-                  }
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
                 data={projectsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
@@ -323,7 +359,7 @@ const ProjectListScreen = props => {
                 updateProjectsStateUpdate={updateProjectsStateUpdate}
                 updateProjectStateUpdate={updateProjectStateUpdate}
             />
-             <Snackbar
+            <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
             >
@@ -340,6 +376,18 @@ const ProjectListScreen = props => {
                 onDismiss={onDismissSnackBarActivate}
             >
                 Project activated!
+            </Snackbar>
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Project added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Project updated!
             </Snackbar>
         </Provider>
     );

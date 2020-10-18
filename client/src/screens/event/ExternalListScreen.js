@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
@@ -24,6 +24,26 @@ const ExternalListScreen = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
     const [externalsValue, setExternalsValue] = useState([]);
 
@@ -99,11 +119,11 @@ const ExternalListScreen = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_EXBYTYPE_QUERY,
-                variables: {eventId, externalType}
+                variables: { eventId, externalType }
             });
             externals.getExternalByType = externals.getExternalByType.filter((e) => e.id !== externalId);
             deleteExternalsStateUpdate(externalId);
-            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId, externalType} });
+            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: { eventId, externalType } });
         },
         variables: {
             externalId
@@ -132,6 +152,7 @@ const ExternalListScreen = props => {
             return textA.localeCompare(textB)
         })
         setExternalsValue(temp);
+        onToggleSnackBarAdd();
     }
 
     const deleteExternalsStateUpdate = (e) => {
@@ -141,6 +162,7 @@ const ExternalListScreen = props => {
         }).indexOf(e);
         temp.splice(index, 1);
         setExternalsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateExternalsStateUpdate = (e) => {
@@ -156,6 +178,7 @@ const ExternalListScreen = props => {
             return textA.localeCompare(textB)
         })
         setExternalsValue(temp)
+        onToggleSnackBarUpdate();
     }
 
     const updateExternalStateUpdate = (e) => {
@@ -184,9 +207,16 @@ const ExternalListScreen = props => {
 
     }
 
-    if (externals.getExternalByType.length === 0) {
+    if (externalsValue.length === 0) {
         return (
-            <View style={styles.content}>
+            <ScrollView
+                contentContainerStyle={styles.content}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loadingExternals}
+                        onRefresh={onRefresh} />
+                }
+            >
                 <Text>No {sime.external_type_name} found, let's add {sime.external_type_name}!</Text>
                 <FABbutton Icon="plus" label={sime.external_type_name} onPress={openForm} />
                 <FormExternal
@@ -195,7 +225,19 @@ const ExternalListScreen = props => {
                     closeButton={closeModalForm}
                     addExternalsStateUpdate={addExternalsStateUpdate}
                 />
-            </View>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    External added!
+            </Snackbar>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    External deleted!
+            </Snackbar>
+            </ScrollView>
         );
     }
 
@@ -256,15 +298,33 @@ const ExternalListScreen = props => {
                 addExternalsStateUpdate={addExternalsStateUpdate}
             />
             <FormEditExternal
-                 closeModalForm={closeModalFormEdit}
-                 visibleForm={visibleFormEdit}
-                 external={externalVal}
-                 deleteButton={deleteHandler}
-                 deleteButtonVisible={true}
-                 closeButton={closeModalFormEdit}
-                 updateExternalStateUpdate={updateExternalStateUpdate}
-                 updateExternalsStateUpdate={updateExternalsStateUpdate}
+                closeModalForm={closeModalFormEdit}
+                visibleForm={visibleFormEdit}
+                external={externalVal}
+                deleteButton={deleteHandler}
+                deleteButtonVisible={true}
+                closeButton={closeModalFormEdit}
+                updateExternalStateUpdate={updateExternalStateUpdate}
+                updateExternalsStateUpdate={updateExternalsStateUpdate}
             />
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                External added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                External updated!
+            </Snackbar>
+            <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                External deleted!
+            </Snackbar>
         </Provider>
     );
 }

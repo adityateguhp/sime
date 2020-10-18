@@ -26,12 +26,6 @@ const FormEvent = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [errors, setErrors] = useState({
         event_name_error: '',
         date_error: ''
@@ -129,7 +123,6 @@ const FormEvent = props => {
             values.picture = '';
             values.cancel = false;
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const eventNameError = eventNameValidator(values.name);
@@ -284,12 +277,6 @@ const FormEvent = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Event added!
-            </Snackbar>
         </Portal >
     );
 };

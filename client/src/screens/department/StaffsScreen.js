@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -33,13 +33,26 @@ const StaffsScreen = ({ route, navigation }) => {
     const onDismissSnackBarDelete = () => setVisibleDelete(false);
 
 
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
+
     const [staffsValue, setStaffsValue] = useState([]);
     const [departmentsValue, setDepartmentsValue] = useState([]);
 
     const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
-            variables: {organizationId: sime.user.id},
+            variables: { organizationId: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setStaffsValue(staffs.getStaffs)
@@ -50,7 +63,7 @@ const StaffsScreen = ({ route, navigation }) => {
     const { data: departments, error: error3, loading: loading3, refetch: refetchDepartment, networkStatus: networkStatusDepartments } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
-            variables: {organizationId: sime.user.id},
+            variables: { organizationId: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setDepartmentsValue(departments.getDepartments)
@@ -118,13 +131,12 @@ const StaffsScreen = ({ route, navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
 
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {organizationId: sime.user.id} });
-            onToggleSnackBarDelete();
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
         },
         variables: {
             staffId
@@ -153,6 +165,7 @@ const StaffsScreen = ({ route, navigation }) => {
             return textA.localeCompare(textB)
         })
         setStaffsValue(temp);
+        onToggleSnackBarAdd();
     }
 
     const deleteStaffsStateUpdate = (e) => {
@@ -162,6 +175,7 @@ const StaffsScreen = ({ route, navigation }) => {
         }).indexOf(e);
         temp.splice(index, 1);
         setStaffsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateStaffsStateUpdate = (e) => {
@@ -176,7 +190,8 @@ const StaffsScreen = ({ route, navigation }) => {
 
             return textA.localeCompare(textB)
         })
-        setStaffsValue(temp)
+        setStaffsValue(temp);
+        onToggleSnackBarUpdate();
     }
 
     const updateStaffStateUpdate = (e) => {
@@ -218,7 +233,14 @@ const StaffsScreen = ({ route, navigation }) => {
 
     if (staffsValue.length === 0) {
         return (
-            <View style={styles.content}>
+            <ScrollView
+                contentContainerStyle={styles.content}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
+            >
                 <Text>No staffs found, let's add staffs!</Text>
                 <FABbutton Icon="plus" label="staff" onPress={openForm} />
                 <FormStaff
@@ -226,7 +248,19 @@ const StaffsScreen = ({ route, navigation }) => {
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
                 />
-            </View>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Staff added!
+            </Snackbar>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Staff deleted!
+            </Snackbar>
+            </ScrollView>
         );
     }
 
@@ -299,7 +333,19 @@ const StaffsScreen = ({ route, navigation }) => {
                 updateStaffStateUpdate={updateStaffStateUpdate}
                 updateStaffsStateUpdate={updateStaffsStateUpdate}
             />
-             <Snackbar
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Staff added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Staff updated!
+            </Snackbar>
+            <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
             >

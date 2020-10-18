@@ -16,12 +16,6 @@ import { SimeContext } from '../../context/SimePovider'
 const FormDepartment = props => {
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [errors, setErrors] = useState({
         department_name_error: '',
     });
@@ -47,7 +41,6 @@ const FormDepartment = props => {
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
             values.name = '';
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError() {
             const departementNameError = departmentNameValidator(values.name);
@@ -114,12 +107,6 @@ const FormDepartment = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Department added!
-            </Snackbar>
         </Portal >
     );
 };

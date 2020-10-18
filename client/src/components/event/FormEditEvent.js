@@ -26,12 +26,6 @@ const FormEditEvent = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [errors, setErrors] = useState({
         event_name_error: '',
         date_error: ''
@@ -137,7 +131,6 @@ const FormEditEvent = props => {
             props.updateEventStateUpdate(result.data.updateEvent)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const eventNameError = eventNameValidator(values.name);
@@ -293,12 +286,6 @@ const FormEditEvent = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Event updated!
-            </Snackbar>
         </Portal >
     );
 };

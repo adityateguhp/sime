@@ -18,12 +18,6 @@ import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/
 const FormEditDepartment = props => {
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [errors, setErrors] = useState({
         department_name_error: '',
     });
@@ -59,7 +53,6 @@ const FormEditDepartment = props => {
             props.updateDepartmentStateUpdate(result.data.updateDepartment)
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError() {
             const departementNameError = departmentNameValidator(values.name);
@@ -126,12 +119,6 @@ const FormEditDepartment = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Department updated!
-            </Snackbar>
         </Portal >
     );
 };

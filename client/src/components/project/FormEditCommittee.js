@@ -21,13 +21,6 @@ const FormCommittee = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
-
     const [errors, setErrors] = useState({
         staff_error: '',
         position_error: '',
@@ -121,7 +114,6 @@ const FormCommittee = props => {
             props.updateCommitteeStateUpdate(result.data.updateCommittee);
             proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const staffError = staffValidator(values.name);
@@ -218,12 +210,6 @@ const FormCommittee = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Committee updated!
-            </Snackbar>
         </Portal >
     );
 };

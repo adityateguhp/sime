@@ -27,12 +27,6 @@ const FormEditStaff = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
@@ -109,7 +103,6 @@ const FormEditStaff = props => {
             props.updateStaffStateUpdate(result.data.updateStaff)
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {organizationId: sime.user.id}});
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const staffNameError = staffNameValidator(values.name);
@@ -241,12 +234,6 @@ const FormEditStaff = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Staff updated!
-            </Snackbar>
         </Portal >
     );
 };

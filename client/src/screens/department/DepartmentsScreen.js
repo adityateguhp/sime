@@ -1,6 +1,6 @@
-import React, { useContext, useState,useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -25,12 +25,26 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const onDismissSnackBarDelete = () => setVisibleDelete(false);
 
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
+
     const [departmentsValue, setDepartmentsValue] = useState([]);
 
-    const { data: departments, error: error1 , loading: loading1, refetch, networkStatus } = useQuery(
+    const { data: departments, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
-            variables: {organizationId: sime.user.id},
+            variables: { organizationId: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setDepartmentsValue(departments.getDepartments)
@@ -38,7 +52,7 @@ const DepartmentsScreen = ({ navigation }) => {
         }
     );
 
-    const [loadExistData, { called, data: department , error: error2 , loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: department, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_DEPARTMENT_QUERY,
         {
             variables: { departmentId: sime.department_id },
@@ -104,12 +118,11 @@ const DepartmentsScreen = ({ navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY,
-                variables: {organizationId}
+                variables: { organizationId }
             });
             departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
             deleteDepartmentsStateUpdate(departmentId)
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data,  variables: {organizationId} });
-            onToggleSnackBarDelete();
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId } });
         },
         variables: {
             departmentId,
@@ -139,6 +152,7 @@ const DepartmentsScreen = ({ navigation }) => {
             return textA.localeCompare(textB)
         })
         setDepartmentsValue(temp);
+        onToggleSnackBarAdd();
     }
 
     const deleteDepartmentsStateUpdate = (e) => {
@@ -148,6 +162,7 @@ const DepartmentsScreen = ({ navigation }) => {
         }).indexOf(e);
         temp.splice(index, 1);
         setDepartmentsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateDepartmentsStateUpdate = (e) => {
@@ -162,7 +177,8 @@ const DepartmentsScreen = ({ navigation }) => {
 
             return textA.localeCompare(textB)
         })
-        setDepartmentsValue(temp)
+        setDepartmentsValue(temp);
+        onToggleSnackBarUpdate();
     }
 
     const updateDepartmentStateUpdate = (e) => {
@@ -189,21 +205,40 @@ const DepartmentsScreen = ({ navigation }) => {
     }
 
     if (loading2) {
-       
+
     }
 
     if (departmentsValue.length === 0) {
         return (
             <Provider theme={theme}>
-                <View style={styles.content}>
+                <ScrollView
+                    contentContainerStyle={styles.content}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={loading1}
+                            onRefresh={onRefresh} />
+                    }
+                >
                     <Text>No departments found, let's add departments!</Text>
-                </View>
-                <FABbutton Icon="plus" label="department" onPress={openForm} />
-                <FormDepartment
-                    closeModalForm={closeModalForm}
-                    visibleForm={visibleForm}
-                    closeButton={closeModalForm}
-                />
+                    <FABbutton Icon="plus" label="department" onPress={openForm} />
+                    <FormDepartment
+                        closeModalForm={closeModalForm}
+                        visibleForm={visibleForm}
+                        closeButton={closeModalForm}
+                    />
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                    >
+                        Department added!
+            </Snackbar>
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                    >
+                        Department deleted!
+            </Snackbar>
+                </ScrollView>
             </Provider>
         );
     }
@@ -271,7 +306,19 @@ const DepartmentsScreen = ({ navigation }) => {
                 updateDepartmentsStateUpdate={updateDepartmentsStateUpdate}
                 updateDepartmentStateUpdate={updateDepartmentStateUpdate}
             />
-             <Snackbar
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Department added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Department updated!
+            </Snackbar>
+            <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
             >

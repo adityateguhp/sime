@@ -21,12 +21,6 @@ const FormRoadmap = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -96,7 +90,6 @@ const FormRoadmap = props => {
             values.start_date = '';
             values.end_date = '';
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const roadmapNameError = roadmapNameValidator(values.name);
@@ -216,12 +209,6 @@ const FormRoadmap = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Roadmap added!
-            </Snackbar>
         </Portal >
     );
 };

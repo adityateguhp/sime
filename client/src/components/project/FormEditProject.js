@@ -27,12 +27,6 @@ const FormEditProject = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [errors, setErrors] = useState({
         project_name_error: '',
         date_error: ''
@@ -136,7 +130,6 @@ const FormEditProject = props => {
             props.updateProjectStateUpdate(result.data.updateProject)
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user.id} });
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const projectNameError = projectNameValidator(values.name);
@@ -284,12 +277,6 @@ const FormEditProject = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Project updated!
-            </Snackbar>
         </Portal >
     );
 };

@@ -21,12 +21,6 @@ const FormRundown = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [errors, setErrors] = useState({
         agenda_error: '',
         date_error: '',
@@ -119,7 +113,6 @@ const FormRundown = props => {
             values.date = '';
             values.details = '';
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const agendaError = agendaValidator(values.agenda);
@@ -274,12 +267,6 @@ const FormRundown = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Agenda added!
-            </Snackbar>
         </Portal >
     );
 };

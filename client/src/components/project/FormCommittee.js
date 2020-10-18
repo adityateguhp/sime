@@ -19,12 +19,6 @@ const FormCommittee = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     const [positionsFiltered, setPositionsFiltered] = useState([]);
 
     const [errors, setErrors] = useState({
@@ -115,7 +109,6 @@ const FormCommittee = props => {
             values.positionId = '';
             values.divisionId = '';
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const staffError = staffValidator(values.name);
@@ -211,12 +204,6 @@ const FormCommittee = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Committee added!
-            </Snackbar>
         </Portal >
     );
 };

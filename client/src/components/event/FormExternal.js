@@ -23,12 +23,6 @@ const FormExternal = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
@@ -93,7 +87,6 @@ const FormExternal = props => {
             values.details = '';
             values.picture = '';
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const externalNameError = externalNameValidator(values.name);
@@ -205,12 +198,6 @@ const FormExternal = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                External added!
-            </Snackbar>
         </Portal >
     );
 };

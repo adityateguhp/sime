@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -31,19 +31,33 @@ const EventListScreen = ({ route, navigation }) => {
 
     const onDismissSnackBarDelete = () => setVisibleDelete(false);
 
-    
+
     const [visibleCancel, setVisibleCancel] = useState(false);
 
     const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
 
     const onDismissSnackBarCancel = () => setVisibleCancel(false);
 
-    
+
     const [visibleActivate, setVisibleActivate] = useState(false);
 
     const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
 
     const onDismissSnackBarActivate = () => setVisibleActivate(false);
+
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
 
     const [eventsValue, setEventsValue] = useState([]);
@@ -80,9 +94,9 @@ const EventListScreen = ({ route, navigation }) => {
         cancel: false
     });
 
-    useEffect(()=>{
-        if(event) setEventVal(event.getEvent);
-    },[event])
+    useEffect(() => {
+        if (event) setEventVal(event.getEvent);
+    }, [event])
 
     const closeModal = () => {
         setVisible(false);
@@ -137,7 +151,6 @@ const EventListScreen = ({ route, navigation }) => {
             events.getEvents = events.getEvents.filter((e) => e.id !== eventId);
             deleteEventsStateUpdate(eventId)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
-            onToggleSnackBarDelete();
         },
         variables: {
             eventId
@@ -168,6 +181,7 @@ const EventListScreen = ({ route, navigation }) => {
 
     const addEventsStateUpdate = (e) => {
         setEventsValue([e, ...eventsValue]);
+        onToggleSnackBarAdd();
     }
 
     const deleteEventsStateUpdate = (e) => {
@@ -177,6 +191,7 @@ const EventListScreen = ({ route, navigation }) => {
         }).indexOf(e);
         temp.splice(index, 1);
         setEventsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateEventsStateUpdate = (e) => {
@@ -184,8 +199,9 @@ const EventListScreen = ({ route, navigation }) => {
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
-        temp[index] = e
-        setEventsValue(temp)
+        temp[index] = e;
+        setEventsValue(temp);
+        onToggleSnackBarUpdate();
     }
 
     const updateEventStateUpdate = (e) => {
@@ -225,7 +241,14 @@ const EventListScreen = ({ route, navigation }) => {
 
     if (eventsValue.length === 0) {
         return (
-            <View style={styles.content}>
+            <ScrollView
+                contentContainerStyle={styles.content}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
+            >
                 <Text>No events found, let's add events!</Text>
                 <FABbutton Icon="plus" label="event" onPress={openForm} />
                 <FormEvent
@@ -233,7 +256,19 @@ const EventListScreen = ({ route, navigation }) => {
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
                 />
-            </View>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Event deleted!
+            </Snackbar>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Event added!
+            </Snackbar>
+            </ScrollView>
         );
     }
 
@@ -246,9 +281,9 @@ const EventListScreen = ({ route, navigation }) => {
                 data={eventsValue}
                 refreshControl={
                     <RefreshControl
-                      refreshing={loading1}
-                      onRefresh={onRefresh} />
-                  }
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <EventCard
@@ -319,7 +354,7 @@ const EventListScreen = ({ route, navigation }) => {
                 updateEventsStateUpdate={updateEventsStateUpdate}
                 updateEventStateUpdate={updateEventStateUpdate}
             />
-              <Snackbar
+            <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
             >
@@ -336,6 +371,18 @@ const EventListScreen = ({ route, navigation }) => {
                 onDismiss={onDismissSnackBarActivate}
             >
                 Event activated!
+            </Snackbar>
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Event added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Event updated!
             </Snackbar>
         </Provider>
     );

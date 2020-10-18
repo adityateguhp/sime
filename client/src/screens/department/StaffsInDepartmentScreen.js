@@ -32,6 +32,20 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
 
     const onDismissSnackBarDelete = () => setVisibleDelete(false);
 
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
+
     const [staffsValue, setStaffsValue] = useState([]);
 
     const { data: staffs, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
@@ -108,7 +122,6 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
             proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId: departmentId } });
-            onToggleSnackBarDelete();
         },
         variables: {
             staffId
@@ -137,6 +150,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             return textA.localeCompare(textB)
         })
         setStaffsValue(temp);
+        onToggleSnackBarAdd();
     }
 
     const deleteStaffsStateUpdate = (e) => {
@@ -146,6 +160,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         }).indexOf(e);
         temp.splice(index, 1);
         setStaffsValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateStaffsStateUpdate = (e) => {
@@ -161,6 +176,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             return textA.localeCompare(textB)
         })
         setStaffsValue(temp)
+        onToggleSnackBarUpdate();
     }
 
     const updateStaffStateUpdate = (e) => {
@@ -207,6 +223,18 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                     closeButton={closeModalForm}
                     addStaffsStateUpdate={addStaffsStateUpdate}
                 />
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Staff added!
+            </Snackbar>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Staff deleted!
+            </Snackbar>
             </ScrollView>
         );
     }
@@ -277,7 +305,19 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                 updateStaffStateUpdate={updateStaffStateUpdate}
                 updateStaffsStateUpdate={updateStaffsStateUpdate}
             />
-             <Snackbar
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Staff added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Staff updated!
+            </Snackbar>
+            <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
             >

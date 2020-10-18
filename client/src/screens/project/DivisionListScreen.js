@@ -1,7 +1,7 @@
 import React, { useContext, useState, useReducer } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text } from 'react-native-paper';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NetworkStatus } from '@apollo/client';
@@ -24,6 +24,26 @@ const DivisionListScreen = ({ navigation }) => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
+
+    const onDismissSnackBarAdd = () => setVisibleAdd(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
     const [positionsValue, setPositionValue] = useState([]);
     const [staffsValue, setStaffsValue] = useState([]);
@@ -118,6 +138,7 @@ const DivisionListScreen = ({ navigation }) => {
 
     const addCommitteesStateUpdate = (e) => {
         setCommitteesValue([...committeesValue, e]);
+        onToggleSnackBarAdd();
     }
 
     const deleteCommitteesStateUpdate = (e) => {
@@ -127,6 +148,7 @@ const DivisionListScreen = ({ navigation }) => {
         }).indexOf(e);
         temp.splice(index, 1);
         setCommitteesValue(temp);
+        onToggleSnackBarDelete();
     }
 
     const updateCommitteesStateUpdate = (e) => {
@@ -134,8 +156,9 @@ const DivisionListScreen = ({ navigation }) => {
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
-        temp[index] = e
-        setCommitteesValue(temp)
+        temp[index] = e;
+        setCommitteesValue(temp);
+        onToggleSnackBarUpdate();
     }
 
     const divisionId = sime.division_id;
@@ -299,6 +322,24 @@ const DivisionListScreen = ({ navigation }) => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
             />
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+            >
+                Committee added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Committee updated!
+            </Snackbar>
+            <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Committee deleted!
+            </Snackbar>
         </Provider>
     );
 }

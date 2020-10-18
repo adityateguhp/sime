@@ -21,12 +21,6 @@ const FormEditRoadmap = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visible, setVisible] = useState(false);
-
-    const onToggleSnackBar = () => setVisible(!visible);
-
-    const onDismissSnackBar = () => setVisible(false);
-
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -104,7 +98,6 @@ const FormEditRoadmap = props => {
             props.updateRoadmapStateUpdate(result.data.updateRoadmap);
             proxy.writeQuery({ query: FETCH_ROADMAPS_QUERY, data, variables: { eventId: sime.event_id } });
             props.closeModalForm();
-            onToggleSnackBar();
         },
         onError(err) {
             const roadmapNameError = roadmapNameValidator(values.name);
@@ -225,12 +218,6 @@ const FormEditRoadmap = props => {
                     </View>
                 </View>
             </Modal>
-            <Snackbar
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-            >
-                Roadmap updated!
-            </Snackbar>
         </Portal >
     );
 };
