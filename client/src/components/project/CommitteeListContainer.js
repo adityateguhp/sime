@@ -38,7 +38,9 @@ const CommitteeListContainer = props => {
 
     if (comiteeInDivision.length === 0) {
         return (
+            <View style={styles.content}>
                 <Text>No committees found, let's add committees!</Text>
+            </View>
         );
     }
 
@@ -71,7 +73,14 @@ const styles = StyleSheet.create({
     },
     wrap: {
         marginTop: 1
-    }
+    },
+    content: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 15
+    },
 });
 
 

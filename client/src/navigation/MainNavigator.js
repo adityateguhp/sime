@@ -21,7 +21,7 @@ import RegisterCompletedScreen from '../screens/home/RegisterCompletedScreen';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import ProjectListScreen from '../screens/project/ProjectListScreen';
 import ProjectOverviewScreen from '../screens/project/ProjectOverviewScreen';
-import DivisionListScreen from '../screens/project/DivisionListScreen';
+import CommitteeListScreen from '../screens/project/CommitteeListScreen';
 import EventListScreen from '../screens/project/EventListScreen';
 import EventOverviewScreen from '../screens/event/EventOverviewScreen';
 import EditEventScreen from '../screens/event/EditEventScreen';
@@ -31,7 +31,6 @@ import StaffsInDepartmentScreen from '../screens/department/StaffsInDepartmentSc
 import TaskScreen from '../screens/event/TaskScreen';
 import DrawerContent from '../components/common/DrawerContent';
 import RoadmapScreen from '../screens/event/RoadmapScreen';
-import CommitteeListScreen from '../screens/project/CommitteeListScreen';
 import EditComiteeScreen from '../screens/project/EditComiteeScreen';
 import ExternalScreen from '../screens/event/ExternalScreen';
 import RundownScreen from '../screens/event/RundownScreen';
@@ -154,20 +153,12 @@ function ProjectStackSceen({ route, navigation }) {
         }}
       />
       <ProjectsStack.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
-      <ProjectsStack.Screen name="Committee List" component={CommitteeListScreen} options={{
-        headerTitle: () =>
-          <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.division_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.project_name}</Text>
-          </View>
-      }} />
       <ProjectsStack.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
           </View>),
       }} />
-      <ProjectsStack.Screen name="Edit Committee" component={EditComiteeScreen} />
       <ProjectsStack.Screen name="Event Detail" component={TopTabEvents} options={{
         headerTitle: () =>
           <View>
@@ -189,7 +180,6 @@ function ProjectStackSceen({ route, navigation }) {
           </View>),
       }} />
       <ProjectsStack.Screen name="Task" component={TaskScreen} options={{title: sime.roadmap_name}} />
-      <ProjectsStack.Screen name="EditEvent" component={EditEventScreen} />
     </ProjectsStack.Navigator>
   );
 }
@@ -210,7 +200,7 @@ function TopTabProjects() {
       }}
     >
       <TopTabProject.Screen name="Event List" component={EventListScreen} />
-      <TopTabProject.Screen name="Committee" component={DivisionListScreen} />
+      <TopTabProject.Screen name="Committee" component={CommitteeListScreen} />
       <TopTabProject.Screen name="Project Overview" component={ProjectOverviewScreen} />
     </TopTabProject.Navigator>
   );
