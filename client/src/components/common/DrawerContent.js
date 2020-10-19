@@ -28,6 +28,7 @@ const DrawerContent = props => {
     });
 
     const sime = useContext(SimeContext);
+    
     const [userData, setUserData] = useState({
         id: '',
         name: '',

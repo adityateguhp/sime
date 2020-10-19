@@ -121,7 +121,7 @@ module.exports.validateStaffInput = (
     };
 };
 
-module.exports.validateUpdatePasswordStaffInput = (
+module.exports.validateUpdatePasswordInput = (
     password,
     confirmPassword
 ) => {

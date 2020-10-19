@@ -2,7 +2,7 @@ const {UserInputError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { validateStaffInput, validateUpdatePasswordStaffInput, validateLoginInput } = require('../../util/validators');
+const { validateStaffInput, validateUpdatePasswordInput, validateLoginInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
 const { SECRET_KEY } = require('../../config')
 const checkAuth = require('../../util/check-auth');
@@ -174,25 +174,37 @@ module.exports = {
     },
     async updatePasswordStaff(_, {
       staffId,
-      password,
-      confirmPassword
+      currentPassword,
+      newPassword,
+      confirmNewPassword
     }, context) {
       try {
+        const staff = await Staff.findById(staffId);
+
+        const match = await bcrypt.compare(currentPassword, staff.password);
+        if (!match) {
+            throw new UserInputError('Wrong credentials', {
+              errors: {
+                  password: 'Wrong credentials'
+              }
+          })
+        }
+
         const { valid, errors } =
-          validateUpdatePasswordStaffInput(
-            password,
-            confirmPassword
+          validateUpdatePasswordInput(
+            newPassword,
+            confirmNewPassword
           );
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }
-
-        password = await bcrypt.hash(password, 12);
+  
+        newPassword = await bcrypt.hash(newPassword, 12);
 
         const updatedPasswordStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
           { 
-            password: password
+            password: newPassword
           },
           { new: true });
 

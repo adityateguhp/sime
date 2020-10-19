@@ -159,6 +159,13 @@ module.exports = gql`
             email: String!
             description: String
             picture: String): Organization!
+
+        updatePasswordOrganization( 
+            organizationId: ID!,
+            currentPassword: String!,
+            newPassword: String!,
+            confirmNewPassword: String!
+        ): Organization!
         
         addDepartment(name: String!, organizationId: ID!): Department!
         
@@ -191,8 +198,9 @@ module.exports = gql`
         
         updatePasswordStaff( 
             staffId: ID!,
-            password: String!,
-            confirmPassword: String!
+            currentPassword: String!,
+            newPassword: String!,
+            confirmNewPassword: String!
         ): Staff!
         
         deleteStaff(staffId: ID!): String!

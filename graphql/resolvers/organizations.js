@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { UserInputError } = require('apollo-server')
 
-const { validateRegisterOrganizationInput, validateLoginInput, validateUpdateOrganizationInput } = require('../../util/validators');
+const { validateRegisterOrganizationInput, validateLoginInput, validateUpdateOrganizationInput, validateUpdatePasswordInput } = require('../../util/validators');
 const { SECRET_KEY } = require('../../config')
 const Organization = require('../../model/Organization');
 const checkAuth = require('../../util/check-auth');
@@ -128,6 +128,47 @@ module.exports = {
                 { new: true });
       
               return updatedOrganization;
+            } catch (err) {
+              throw new Error(err);
+            }
+          },
+          async updatePasswordOrganization(_, {
+            organizationId,
+            currentPassword,
+            newPassword,
+            confirmNewPassword
+          }, context) {
+            try {
+              const organization = await Organization.findById(organizationId);
+      
+              const match = await bcrypt.compare(currentPassword, organization.password);
+              if (!match) {
+                  throw new UserInputError('Wrong credentials', {
+                    errors: {
+                        password: 'Wrong credentials'
+                    }
+                })
+              }
+      
+              const { valid, errors } =
+                validateUpdatePasswordInput(
+                  newPassword,
+                  confirmNewPassword
+                );
+              if (!valid) {
+                throw new UserInputError('Error', { errors });
+              }
+        
+              newPassword = await bcrypt.hash(newPassword, 12);
+      
+              const updatedPasswordOrganization = await Organization.findByIdAndUpdate(
+                { _id: organizationId },
+                { 
+                  password: newPassword
+                },
+                { new: true });
+      
+              return updatedPasswordOrganization;
             } catch (err) {
               throw new Error(err);
             }

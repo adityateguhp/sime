@@ -97,6 +97,31 @@ mutation updateOrganization(
 }
 `;
 
+export const UPDATE_PASSWORD_ORGANIZATION_MUTATION = gql`
+  mutation 
+  updatePasswordOrganization(
+    $organizationId: ID!,
+    $currentPassword: String!,
+    $newPassword: String!,
+    $confirmNewPassword: String!
+  ) {
+  updatePasswordOrganization(
+    organizationId: $organizationId,
+    currentPassword: $currentPassword,
+    newPassword: $newPassword,
+    confirmNewPassword: $confirmNewPassword
+  ) {
+      id
+      name
+      description
+      email
+      picture
+      createdAt
+  }
+  } 
+`;
+
+
 export const FETCH_DEPARTMENTS_QUERY = gql`
    query($organizationId: ID!){
     getDepartments(organizationId: $organizationId){
@@ -265,15 +290,17 @@ export const UPDATE_STAFF_MUTATION = gql`
 
 export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
   mutation 
-  updateStaff(
+  updatePasswordStaff(
     $staffId: ID!,
-    $password: String!,
-    $confirmPassword: String!
+    $currentPassword: String!,
+    $newPassword: String!,
+    $confirmNewPassword: String!
   ) {
-  updateStaff(
+  updatePasswordStaff(
     staffId: $staffId,
-    password: $password,
-    confirmPassword: $confirmPassword
+    currentPassword: $currentPassword,
+    newPassword: $newPassword,
+    confirmNewPassword: $confirmNewPassword
   ) {
     id
     name

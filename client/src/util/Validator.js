@@ -106,6 +106,24 @@ export const passwordValidator = (password, confirmPassword) => {
   return '';
 }
 
+export const singlePasswordValidator = (password) => {
+  if (!password || password.length <= 0) {
+    return 'Password must not be empty';
+  } else if (password.length < 8) {
+    return 'Use 8 characters or more for your password';
+  }
+  return '';
+}
+
+export const confirmPasswordValidator = (password, confirmPassword) => {
+  if (!confirmPassword || confirmPassword.length <= 0) {
+    return 'Confirm password must not be empty';
+  } else if (password !== confirmPassword) {
+    return 'Passwords must match';
+  }
+  return '';
+}
+
 export const staffValidator = (staff) => {
   if (!staff || staff.length <= 0) return 'Staff must not be empty';
   return '';
