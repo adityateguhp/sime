@@ -152,6 +152,13 @@ module.exports = gql`
             picture: String): Organization!
         
         loginOrganization(email: String!, password: String!): Organization!
+
+        updateOrganization(
+            organizationId: ID!
+            name: String!
+            email: String!
+            description: String
+            picture: String): Organization!
         
         addDepartment(name: String!, organizationId: ID!): Department!
         

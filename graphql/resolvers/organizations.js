@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { UserInputError } = require('apollo-server')
 
-const { validateRegisterOrganizationInput, validateLoginInput } = require('../../util/validators');
+const { validateRegisterOrganizationInput, validateLoginInput, validateUpdateOrganizationInput } = require('../../util/validators');
 const { SECRET_KEY } = require('../../config')
 const Organization = require('../../model/Organization');
 const checkAuth = require('../../util/check-auth');
@@ -99,6 +99,38 @@ module.exports = {
                 id: res._id,
                 token
             }
-        }
+        },
+        async updateOrganization(_, {
+            organizationId,
+            name,
+            email,
+            description,
+            picture
+          }, context) {
+            try {
+              const { valid, errors } =
+                validateUpdateOrganizationInput(
+                  name,
+                  email,
+                );
+              if (!valid) {
+                throw new UserInputError('Error', { errors });
+              }
+      
+              const updatedOrganization = await Organization.findByIdAndUpdate(
+                { _id: organizationId },
+                { 
+                  name: name, 
+                  email: email,
+                  description: description,
+                  picture: picture
+                },
+                { new: true });
+      
+              return updatedOrganization;
+            } catch (err) {
+              throw new Error(err);
+            }
+          },
     }
 }

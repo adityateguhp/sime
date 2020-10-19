@@ -8,9 +8,9 @@ import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormDepartment from '../../components/department/FormDepartment';
-import FormEditDepartment from '../../components/department/FormEditDepartment';
-import DepartmentCard from '../../components/department/DepartmentCard';
+import FormDepartment from '../../components/user_management/FormDepartment';
+import FormEditDepartment from '../../components/user_management/FormEditDepartment';
+import DepartmentCard from '../../components/user_management/DepartmentCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';

@@ -6,13 +6,17 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { Avatar, Text } from 'react-native-paper';
+import { Avatar, Text, Menu, Divider } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import jwtDecode from 'jwt-decode';
+import { useQuery } from '@apollo/react-hooks';
+
 
 import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
 import { AuthContext } from '../context/auth';
+import { FETCH_ORGANIZATION_QUERY } from '../util/graphql';
+import CenterSpinner from '../components/common/CenterSpinner';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import LoginScreen from '../screens/home/LoginScreen';
@@ -25,9 +29,9 @@ import CommitteeListScreen from '../screens/project/CommitteeListScreen';
 import EventListScreen from '../screens/project/EventListScreen';
 import EventOverviewScreen from '../screens/event/EventOverviewScreen';
 import EditEventScreen from '../screens/event/EditEventScreen';
-import DepartmentsScreen from '../screens/department/DepartmentsScreen';
-import StaffsScreen from '../screens/department/StaffsScreen';
-import StaffsInDepartmentScreen from '../screens/department/StaffsInDepartmentScreen';
+import DepartmentsScreen from '../screens/user_management/DepartmentsScreen';
+import StaffsScreen from '../screens/user_management/StaffsScreen';
+import StaffsInDepartmentScreen from '../screens/user_management/StaffsInDepartmentScreen';
 import TaskScreen from '../screens/event/TaskScreen';
 import DrawerContent from '../components/common/DrawerContent';
 import RoadmapScreen from '../screens/event/RoadmapScreen';
@@ -37,8 +41,10 @@ import RundownScreen from '../screens/event/RundownScreen';
 import ExternalListScreen from '../screens/event/ExternalListScreen';
 import TaskDivisionScreen from '../screens/event/TaskDivisionScreen';
 import ExternalProfileScreen from '../screens/event/ExternalProfileScreen';
-import StaffProfileScreen from '../screens/department/StaffProfileScreen';
+import StaffProfileScreen from '../screens/user_management/StaffProfileScreen';
 import CommitteeProfileScreen from '../screens/project/CommitteeProfileScreen';
+import OrganizationProfileScreen from '../screens/user_profile/OrganizationProfileScreen';
+import FormEditOrganizationProfile from '../components/user_profile/FormEditOrganizationProfile';
 import Colors from '../constants/Colors';
 
 
@@ -156,7 +162,7 @@ function ProjectStackSceen({ route, navigation }) {
       <ProjectsStack.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Committee Profile Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Event Detail" component={TopTabEvents} options={{
@@ -176,10 +182,10 @@ function ProjectStackSceen({ route, navigation }) {
       <ProjectsStack.Screen name="External Profile" component={ExternalProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>External Profile Information</Text>
           </View>),
       }} />
-      <ProjectsStack.Screen name="Task" component={TaskScreen} options={{title: sime.roadmap_name}} />
+      <ProjectsStack.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
     </ProjectsStack.Navigator>
   );
 }
@@ -266,7 +272,7 @@ function UsersManagementStackScreen({ route, navigation }) {
       <UsersManagementStack.Screen name="Staff Profile" component={StaffProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Staff Profile Information</Text>
           </View>),
       }} />
     </UsersManagementStack.Navigator>
@@ -291,6 +297,40 @@ function TopTabUsersManagements() {
       <TopTabUsersManagement.Screen name="Users" component={StaffsScreen} />
       <TopTabUsersManagement.Screen name="Departments" component={DepartmentsScreen} />
     </TopTabUsersManagement.Navigator>
+  );
+}
+
+const OrganizationProfileStack = createStackNavigator();
+
+function OrganizationProfileStackScreen({ route, navigation }) {
+  return (
+    <OrganizationProfileStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.primaryColor,
+        },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+          fontWeight: 'bold'
+        }
+      }}
+    >
+      <OrganizationProfileStack.Screen name="Organization Profile" component={OrganizationProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+          </View>),
+        headerLeft: () => (
+          <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item
+              iconName="arrow-left"
+              onPress={() => { navigation.navigate('Dashboard') }}
+            />
+          </HeaderButtons>
+        )
+      }} />
+
+    </OrganizationProfileStack.Navigator>
   );
 }
 
@@ -361,6 +401,13 @@ export default function MainNavigator() {
           <Drawer.Screen
             name="Dashboard"
             component={BottomTabs}
+          />
+          <Drawer.Screen
+            name="Organization Profile"
+            component={OrganizationProfileStackScreen}
+            options={{
+              gestureEnabled: false,
+            }}
           />
           <Drawer.Screen
             name="Users Management"

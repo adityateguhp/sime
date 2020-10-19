@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
     setValues({ ...values, [key]: val });
   };
 
-  const [loginOrganization, { loading1 }] = useMutation(LOGIN_ORGANIZATION, {
+  const [loginOrganization, { loading }] = useMutation(LOGIN_ORGANIZATION, {
     update(_,
       {
         data: { loginOrganization: userData }
@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }) => {
     variables: values
   });
 
-  const [loginStaff, { loading2 }] = useMutation(LOGIN_STAFF, {
+  const [loginStaff] = useMutation(LOGIN_STAFF, {
     update(_,
       {
         data: { loginStaff: userData }
@@ -102,7 +102,7 @@ const LoginScreen = ({ navigation }) => {
                     key={value}
                     title={value}
                     titleStyle={styles.errorItem}
-                    titleNumberOfLines={2}
+                    titleNumberOfLines={10}
                     left={() => <List.Icon color={theme.colors.error} style={{ margin: 0 }} icon="alert-circle" />}
                   />
                 ))}
@@ -110,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
             </View>
           )}
 
-          <Button mode="contained" style={styles.button} onPress={onSubmit} loading={loading1? true : false}>
+          <Button mode="contained" style={styles.button} onPress={onSubmit} loading={loading? true : false}>
             Login
       </Button>
 

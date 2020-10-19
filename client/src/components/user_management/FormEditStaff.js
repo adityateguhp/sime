@@ -12,13 +12,13 @@ import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
-import { FETCH_STAFFSBYDEPARTMENT_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
-import CenterSpinner from '../../components/common/CenterSpinner';
+import CenterSpinner from '../common/CenterSpinner';
 
 
-const FormEditStaffDepartment = props => {
+const FormEditStaff = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -96,12 +96,12 @@ const FormEditStaffDepartment = props => {
     const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFSBYDEPARTMENT_QUERY,
-                variables: {departmentId: sime.department_id}
+                query: FETCH_STAFFS_QUERY,
+                variables: {organizationId: sime.user.id}
             });
             props.updateStaffsStateUpdate(result.data.updateStaff);
             props.updateStaffStateUpdate(result.data.updateStaff)
-            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data,  variables: {departmentId: sime.department_id}});
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {organizationId: sime.user.id}});
             props.closeModalForm();
         },
         onError(err) {
@@ -176,6 +176,17 @@ const FormEditStaffDepartment = props => {
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                    </View>
+                                    <View>
+                                        <Dropdown
+                                            label='Department'
+                                            value={values.department_id === '' || values.department_id !== sime.department_id? sime.department_id : values.department_id}
+                                            data={props.departments}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChange('department_id', val, '')}
+                                            useNativeDriver={true}
+                                        />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
@@ -267,4 +278,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormEditStaffDepartment;
+export default FormEditStaff;

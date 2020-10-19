@@ -33,6 +33,29 @@ module.exports.validateRegisterOrganizationInput = (
     };
 };
 
+module.exports.validateUpdateOrganizationInput = (
+    name,
+    email
+) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'Organization name must not be empty';
+    }
+
+    if (email.trim() === '') {
+        errors.email = 'Email address must not be empty';
+    } else {
+        const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
+        if (!email.match(regEx)) {
+            errors.email = 'Ooops! We need a valid email address';
+        }
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
 module.exports.validateLoginInput = (email, password) => {
     const errors = {};
     if (email.trim() === '') {

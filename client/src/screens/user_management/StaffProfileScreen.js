@@ -6,7 +6,7 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormEditStaff from '../../components/department/FormEditStaff';
+import FormEditStaff from '../../components/user_management/FormEditStaff';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import HeaderButton from '../../components/common/HeaderButton';
@@ -17,12 +17,11 @@ const StaffProfileScreen = ({ route, navigation }) => {
     const sId = route.params?.staffId;
     const dId = route.params?.departmentId;
 
-    const { data: staff, error: error1, loading: loading1, called } = useQuery(
+    const { data: staff, error: error1, loading: loading1 } = useQuery(
         FETCH_STAFF_QUERY, {
         variables: {
             staffId: sId
-        },
-        onCompleted: () => {setStaffVal(staff.getStaff)}
+        }
     });
 
     const { data: department, error: error2, loading: loading2 } = useQuery(
@@ -33,8 +32,6 @@ const StaffProfileScreen = ({ route, navigation }) => {
     });
 
     // const [visibleFormEdit, setVisibleFormEdit] = useState(false);
-
-    const [staffVal, setStaffVal] = useState(null);
 
     // const closeModalFormEdit = () => {
     //     setVisibleFormEdit(false);

@@ -8,16 +8,16 @@ import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormStaff from '../../components/department/FormStaff';
-import FormEditStaff from '../../components/department/FormEditStaff';
+import FormStaffDepartment from '../../components/user_management/FormStaffDepartment';
+import FormEditStaffDepartment from '../../components/user_management/FormEditStaffDepartment';
 import { STAFFS } from '../../data/dummy-data';
-import StaffList from '../../components/department/StaffList';
+import StaffList from '../../components/user_management/StaffList';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import { FETCH_STAFFSBYDEPARTMENT_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY } from '../../util/graphql';
 
-const StaffsScreen = ({ route, navigation }) => {
+const StaffsinDepartmentScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -47,29 +47,17 @@ const StaffsScreen = ({ route, navigation }) => {
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
     const [staffsValue, setStaffsValue] = useState([]);
-    const [departmentsValue, setDepartmentsValue] = useState([]);
 
-    const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
-        FETCH_STAFFS_QUERY,
-        {
-            variables: { organizationId: sime.user.id },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => {
-                setStaffsValue(staffs.getStaffs)
-            }
-        }
-    );
-
-    const { data: departments, error: error3, loading: loading3, refetch: refetchDepartment, networkStatus: networkStatusDepartments } = useQuery(
-        FETCH_DEPARTMENTS_QUERY,
-        {
-            variables: { organizationId: sime.user.id },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => {
-                setDepartmentsValue(departments.getDepartments)
-            }
-        }
-    );
+    const { data: staffs, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
+        FETCH_STAFFSBYDEPARTMENT_QUERY, {
+        variables: {
+            departmentId: sime.department_id,
+        },
+        notifyOnNetworkStatusChange: true,
+        onCompleted: () => {
+            setStaffsValue(staffs.getStaffsByDepartment)
+        },
+    });
 
     const [loadExistData, { called, data: staff, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_STAFF_QUERY,
@@ -84,8 +72,6 @@ const StaffsScreen = ({ route, navigation }) => {
             staffId: id,
             departmentId: department_id
         });
-        sime.setStaff_id(id);
-        sime.setDepartment_id(department_id)
     };
 
     const [visible, setVisible] = useState(false);
@@ -108,11 +94,10 @@ const StaffsScreen = ({ route, navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (name, id, department_id) => {
+    const longPressHandler = (name, id) => {
         setVisible(true);
         sime.setStaff_name(name);
         sime.setStaff_id(id);
-        sime.setDepartment_id(department_id)
         loadExistData();
     }
 
@@ -126,17 +111,17 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     const staffId = sime.staff_id;
+    const departmentId = sime.department_id;
 
     const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY,
-                variables: { organizationId: sime.user.id }
-
+                query: FETCH_STAFFSBYDEPARTMENT_QUERY,
+                variables: { departmentId: departmentId }
             });
-            staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
-            deleteStaffsStateUpdate(staffId)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
+            staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
+            deleteStaffsStateUpdate(staffId);
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId: departmentId } });
         },
         variables: {
             staffId
@@ -190,7 +175,7 @@ const StaffsScreen = ({ route, navigation }) => {
 
             return textA.localeCompare(textB)
         })
-        setStaffsValue(temp);
+        setStaffsValue(temp)
         onToggleSnackBarUpdate();
     }
 
@@ -199,10 +184,8 @@ const StaffsScreen = ({ route, navigation }) => {
     }
 
     const onRefresh = () => {
-        refetchStaffs();
-        refetchDepartment();
+        refetch();
     };
-
 
     if (error1) {
         console.error(error1);
@@ -222,15 +205,6 @@ const StaffsScreen = ({ route, navigation }) => {
 
     }
 
-    if (error3) {
-        console.error(error3);
-        return <Text>Error</Text>;
-    }
-
-    if (loading3) {
-        return <CenterSpinner />;
-    }
-
     if (staffsValue.length === 0) {
         return (
             <ScrollView
@@ -243,10 +217,11 @@ const StaffsScreen = ({ route, navigation }) => {
             >
                 <Text>No staffs found, let's add staffs!</Text>
                 <FABbutton Icon="plus" label="staff" onPress={openForm} />
-                <FormStaff
+                <FormStaffDepartment
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    addStaffsStateUpdate={addStaffsStateUpdate}
                 />
                 <Snackbar
                     visible={visibleAdd}
@@ -264,8 +239,7 @@ const StaffsScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatusStaffs === NetworkStatus.refetch) return console.log('Refetching staffs!');
-    if (networkStatusDepartments === NetworkStatus.refetch) return console.log('Refetching departments!');
+    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching staffs!');
 
     return (
         <Provider theme={theme}>
@@ -281,11 +255,11 @@ const StaffsScreen = ({ route, navigation }) => {
                 renderItem={itemData => (
                     <StaffList
                         name={itemData.item.name}
-                        email={itemData.item.email}
+                        email={itemData.item.position_name}
                         picture={itemData.item.picture}
                         onDelete={() => { deleteHandler() }}
                         onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_id) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     >
                     </StaffList>
                 )}
@@ -315,18 +289,16 @@ const StaffsScreen = ({ route, navigation }) => {
                 </Modal>
             </Portal>
             <FABbutton Icon="plus" label="staff" onPress={openForm} />
-            <FormStaff
+            <FormStaffDepartment
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
                 addStaffsStateUpdate={addStaffsStateUpdate}
-                departments={departmentsValue}
             />
-            <FormEditStaff
+            <FormEditStaffDepartment
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
                 staff={staffVal}
-                departments={departmentsValue}
                 deleteButton={deleteHandler}
                 deleteButtonVisible={true}
                 closeButton={closeModalFormEdit}
@@ -389,4 +361,4 @@ const styles = StyleSheet.create({
 
 
 
-export default StaffsScreen;
+export default StaffsinDepartmentScreen;

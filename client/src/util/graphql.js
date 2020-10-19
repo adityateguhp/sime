@@ -72,6 +72,31 @@ mutation registerOrganization(
 }
 `;
 
+export const UPDATE_ORGANIZATION_MUTATION = gql`
+mutation updateOrganization(
+  $organizationId: ID!
+  $name: String!
+  $email: String!
+  $description: String
+  $picture: String
+) {
+  updateOrganization(
+      organizationId: $organizationId
+      name: $name
+      email: $email
+      description: $description
+      picture: $picture
+  ) {
+      id
+      name
+      description
+      email
+      picture
+      createdAt
+  }
+}
+`;
+
 export const FETCH_DEPARTMENTS_QUERY = gql`
    query($organizationId: ID!){
     getDepartments(organizationId: $organizationId){

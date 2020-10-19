@@ -103,8 +103,6 @@ const FormCommittee = props => {
         }
     })
 
-    console.log(filteredPositions.length)
-
     const [updateCommittee, { loading }] = useMutation(UPDATE_COMMITTEE_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({

@@ -71,7 +71,6 @@ const ProjectOverviewScreen = props => {
           description: projectData.getProject.description,
           cancel: projectData.getProject.cancel
         });
-        console.log('fecthed project');
       }
     });
 
@@ -93,7 +92,6 @@ const ProjectOverviewScreen = props => {
         });
         loadStaffData();
         loadPositionData();
-        console.log('fecthed head project');
       }
     }
   });
@@ -122,7 +120,6 @@ const ProjectOverviewScreen = props => {
         phone_number: staffData.getStaff.phone_number,
         picture: staffData.getStaff.picture
       })
-      console.log('fecthed staff');
     }
   }, [staffData])
 
@@ -131,7 +128,6 @@ const ProjectOverviewScreen = props => {
       setPosition({
         name: positionData.getPosition.name
       })
-      console.log('fecthed position');
     }
   }, [positionData])
 

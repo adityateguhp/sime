@@ -86,7 +86,7 @@ const DrawerContent = props => {
                     )}
                     label="Profile"
                     onPress={() => {
-            
+                        props.navigation.navigate('Organization Profile')
                     }}
                 />
 
@@ -98,13 +98,6 @@ const DrawerContent = props => {
                     onPress={() => {
                         props.navigation.navigate('Users Management')
                     }}
-                />
-                <DrawerItem
-                    icon={({ color, size }) => (
-                        <Icon name="tune" color={color} size={size} />
-                    )}
-                    label="Preferences"
-                    onPress={() => { }}
                 />
                 <DrawerItem
                     icon={({ color, size }) => (

@@ -70,8 +70,6 @@ const CommitteeList = props => {
         loadExistData();
     }
 
-    console.log("ini commite" + committeeVal)
-
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
