@@ -24,6 +24,7 @@ module.exports = gql`
         organization_id: ID!
         department_id: ID! 	
         email: String!
+        token: String! 
         phone_number: String!
         password: String!
         picture: String
@@ -158,6 +159,8 @@ module.exports = gql`
         
         deleteDepartment(departmentId: ID!, organizationId: ID!): String!
         
+        loginStaff(email: String!, password: String!): Staff!
+
         addStaff(
             name: String!,
             position_name: String!,

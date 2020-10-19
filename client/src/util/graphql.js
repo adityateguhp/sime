@@ -27,6 +27,23 @@ export const LOGIN_ORGANIZATION = gql`
   }
 `;
 
+export const LOGIN_STAFF = gql`
+  mutation loginStaff($email: String!, $password: String!) {
+    loginStaff(email: $email, password: $password) {
+    id
+    name
+    position_name
+    organization_id
+    department_id 	
+    email
+    token
+    phone_number
+    picture
+    createdAt
+    }
+  }
+`;
+
 export const REGISTER_ORGANIZATION = gql`
 mutation registerOrganization(
   $name: String!

@@ -6,6 +6,7 @@ const { validateRegisterOrganizationInput, validateLoginInput } = require('../..
 const { SECRET_KEY } = require('../../config')
 const Organization = require('../../model/Organization');
 const checkAuth = require('../../util/check-auth');
+const staffsResolvers = require('./staffs');
 
 function generateToken(user) {
     return jwt.sign({
@@ -13,7 +14,6 @@ function generateToken(user) {
         id: user.id,
         name: user.name,
         email: user.email,
-        description: user.description,
         picture: user.picture
     }, SECRET_KEY, { expiresIn: '1h' })
 }
@@ -44,14 +44,14 @@ module.exports = {
             const organization = await Organization.findOne({ email });
 
             if (!organization) {
-                errors.general = 'Organization not found';
-                throw new UserInputError('Organization not found', { errors });
+                errors.general = 'The email and password you entered did not match our records. Please double-check and try again.';
+                throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
             }
 
             const match = await bcrypt.compare(password, organization.password);
             if (!match) {
-                errors.general = 'Wrong credentials'
-                throw new UserInputError('Wrong credentials', { errors });
+                errors.general = 'The email and password you entered did not match our records. Please double-check and try again.'
+                throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
             }
 
             const token = generateToken(organization);

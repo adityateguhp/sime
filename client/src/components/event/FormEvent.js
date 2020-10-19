@@ -351,8 +351,7 @@ const styles = StyleSheet.create({
     error: {
         fontSize: 14,
         color: theme.colors.error,
-        paddingHorizontal: 4,
-        paddingTop: 4,
+        paddingHorizontal: 4
     }
 });
 

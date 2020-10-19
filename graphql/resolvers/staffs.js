@@ -1,9 +1,21 @@
 const {UserInputError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const { validateStaffInput, validateUpdatePasswordStaffInput } = require('../../util/validators');
+const { validateStaffInput, validateUpdatePasswordStaffInput, validateLoginInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
+const { SECRET_KEY } = require('../../config')
 const checkAuth = require('../../util/check-auth');
+
+function generateToken(user) {
+  return jwt.sign({
+      typename: user.__typename,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      picture: user.picture
+  }, SECRET_KEY, { expiresIn: '1h' })
+}
 
 module.exports = {
   Query: {
@@ -45,6 +57,34 @@ module.exports = {
     }
   },
   Mutation: {
+    async loginStaff(_, { email, password }) {
+      const { valid, errors } = validateLoginInput(email, password);
+
+      if (!valid) {
+          throw new UserInputError('Error', { errors });
+      }
+
+      const staff = await Staff.findOne({ email });
+
+      if (!staff) {
+          errors.general = 'The email and password you entered did not match our records. Please double-check and try again.';
+          throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
+      }
+
+      const match = await bcrypt.compare(password, staff.password);
+      if (!match) {
+          errors.general = 'The email and password you entered did not match our records. Please double-check and try again.'
+          throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
+      }
+
+      const token = generateToken(staff);
+
+      return {
+          ...staff._doc,
+          id: staff._id,
+          token
+      }
+  },
     async addStaff(_, {
       name,
       position_name,

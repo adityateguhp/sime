@@ -15,7 +15,7 @@ import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
 import { SimeContext } from '../../context/SimePovider';
-import { LOGIN_ORGANIZATION, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { LOGIN_ORGANIZATION, LOGIN_STAFF } from '../../util/graphql';
 
 const LoginScreen = ({ navigation }) => {
   const { login } = useContext(AuthContext);
@@ -30,10 +30,24 @@ const LoginScreen = ({ navigation }) => {
     setValues({ ...values, [key]: val });
   };
 
-  const [loginUserOrganization, { loading }] = useMutation(LOGIN_ORGANIZATION, {
+  const [loginOrganization, { loading1 }] = useMutation(LOGIN_ORGANIZATION, {
     update(_,
       {
         data: { loginOrganization: userData }
+      }
+    ) {
+      login(userData);
+    },
+    onError(err) {
+      loginStaff();
+    },
+    variables: values
+  });
+
+  const [loginStaff, { loading2 }] = useMutation(LOGIN_STAFF, {
+    update(_,
+      {
+        data: { loginStaff: userData }
       }
     ) {
       login(userData);
@@ -46,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    loginUserOrganization();
+    loginOrganization();
   };
 
 
@@ -96,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
             </View>
           )}
 
-          <Button mode="contained" style={styles.button} onPress={onSubmit} loading={loading ? true : false}>
+          <Button mode="contained" style={styles.button} onPress={onSubmit} loading={loading1? true : false}>
             Login
       </Button>
 

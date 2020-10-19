@@ -79,14 +79,14 @@ const FormRundown = props => {
     };
 
     const onChangeStartTime = (key, dateVal, val, err) => {
-        let timeVal = dateVal.concat(' ',val);
+        let timeVal = dateVal.concat(' ', val);
         setValues({ ...values, [key]: timeVal });
         setErrors({ ...errors, [err]: '' });
         closeStartTimepicker();
     };
 
     const onChangeEndTime = (key, dateVal, val, err) => {
-        let timeVal = dateVal.concat(' ',val);
+        let timeVal = dateVal.concat(' ', val);
         setValues({ ...values, [key]: timeVal });
         setErrors({ ...errors, [err]: '' });
         closeEndTimepicker();
@@ -117,7 +117,7 @@ const FormRundown = props => {
         onError(err) {
             const agendaError = agendaValidator(values.agenda);
             const dateError = singleDateValidator(values.date);
-            const timeError = timeError(values.start_time, values.end_time)
+            const timeError = timeValidator(values.start_time, values.end_time)
             if (agendaError || dateError || timeError) {
                 setErrors({
                     ...errors,
@@ -187,7 +187,9 @@ const FormRundown = props => {
                                             </Button>
                                         </View>
                                     </View>
-                                    {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
+                                    <View style={{marginBottom: 15}}>
+                                        {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
+                                    </View>
 
                                     <View style={styles.dateInputContainer}>
                                         <View style={styles.dateLabel}>
@@ -199,7 +201,7 @@ const FormRundown = props => {
                                         <View style={styles.dateButtonContainer}>
                                             <Button
                                                 style={styles.dateButton}
-                                                disabled={values.date? false: true}
+                                                disabled={values.date ? false : true}
                                                 labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={showStartTimepicker}
                                                 mode="outlined"
@@ -208,7 +210,7 @@ const FormRundown = props => {
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
-                                                disabled={values.date? false: true}
+                                                disabled={values.date ? false : true}
                                                 labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={showEndTimepicker}
                                                 mode="outlined"
@@ -221,21 +223,21 @@ const FormRundown = props => {
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                             style={styles.input}
-                                             label='Agenda'
-                                             value={values.agenda}
-                                             onChangeText={(val) => onChange('agenda', val, 'agenda_error')}
-                                             error={errors.agenda_error ? true : false}
-                                             errorText={errors.agenda_error}
+                                            style={styles.input}
+                                            label='Agenda'
+                                            value={values.agenda}
+                                            onChangeText={(val) => onChange('agenda', val, 'agenda_error')}
+                                            error={errors.agenda_error ? true : false}
+                                            errorText={errors.agenda_error}
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                             style={styles.input}
-                                             multiline={true}
-                                             label='Details'
-                                             value={values.details}
-                                             onChangeText={(val) => onChange('details', val, '')}
+                                            style={styles.input}
+                                            multiline={true}
+                                            label='Details'
+                                            value={values.details}
+                                            onChangeText={(val) => onChange('details', val, '')}
                                         />
                                     </View>
                                 </View>
@@ -254,7 +256,7 @@ const FormRundown = props => {
                                         mode="time"
                                         display="default"
                                     />
-                                     <DateTimePicker
+                                    <DateTimePicker
                                         isVisible={showDate}
                                         onConfirm={(val) => onChangeDate('date', val.toLocaleDateString(), 'date_error')}
                                         onCancel={closeDatepicker}
@@ -321,8 +323,7 @@ const styles = StyleSheet.create({
     error: {
         fontSize: 14,
         color: theme.colors.error,
-        paddingHorizontal: 4,
-        paddingTop: 4,
+        paddingHorizontal: 4
     }
 });
 

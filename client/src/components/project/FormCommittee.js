@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Snackbar } from 'react-native-paper';
+import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Modal from "react-native-modal";
@@ -12,6 +12,7 @@ import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
 import { FETCH_COMMITTEES_QUERY, ADD_COMMITTEE_MUTATION, } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
+import { theme } from '../../constants/Theme';
 
 const FormCommittee = props => {
 
@@ -111,9 +112,9 @@ const FormCommittee = props => {
             props.closeModalForm();
         },
         onError(err) {
-            const staffError = staffValidator(values.name);
-            const positionError = positionValidator(values.position_name);
-            const divisionError = divisionValidator(values.email);
+            const staffError = staffValidator(values.staffId);
+            const positionError = positionValidator(values.positionId);
+            const divisionError = divisionValidator(values.divisionId);
             if (staffError || positionError || divisionError) {
                 setErrors({
                     ...errors,
@@ -174,7 +175,9 @@ const FormCommittee = props => {
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('staffId', val, 'staff_error')}
+                                        error={errors.staff_error}
                                     />
+                                    {errors.staff_error ? <Text style={styles.error}>{errors.staff_error}</Text> : null}
                                 </View>
                                 <View>
                                     <Dropdown
@@ -185,7 +188,9 @@ const FormCommittee = props => {
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val, index) => onChangeDivision('divisionId', val, 'division_error', index)}
+                                        error={errors.division_error}
                                     />
+                                     {errors.division_error ? <Text style={styles.error}>{errors.division_error}</Text> : null}
                                 </View>
                                 <View>
                                     <Dropdown
@@ -197,7 +202,9 @@ const FormCommittee = props => {
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
                                         onChangeText={(val) => onChange('positionId', val, 'position_error')}
+                                        error={errors.position_error}
                                     />
+                                    {errors.position_error ? <Text style={styles.error}>{errors.position_error}</Text> : null}
                                 </View>
                             </View>
                         </ScrollView>
@@ -233,7 +240,12 @@ const styles = StyleSheet.create({
     },
     input: {
         backgroundColor: 'white'
-    }
+    },
+    error: {
+        fontSize: 14,
+        color: theme.colors.error,
+        paddingHorizontal: 4
+      },
 });
 
 
