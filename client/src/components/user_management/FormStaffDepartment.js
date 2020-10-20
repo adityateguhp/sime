@@ -111,9 +111,10 @@ const FormStaffDepartment = props => {
                 return;
             }
             if (err.graphQLErrors[0].extensions.exception.errors) {
-                Alert.alert('Hmmm...', 'Email address is already exist', [
-                    { text: 'Close', style: 'default' },
-                ]);
+                setErrors({
+                    ...errors,
+                    email_error: 'Email address is already exist'
+                })
             }
         },
         variables: values

@@ -139,6 +139,15 @@ module.exports = {
             confirmNewPassword
           }, context) {
             try {
+              const { valid, errors } =
+                validateUpdatePasswordInput(
+                  newPassword,
+                  confirmNewPassword
+                );
+              if (!valid) {
+                throw new UserInputError('Error', { errors });
+              }
+
               const organization = await Organization.findById(organizationId);
       
               const match = await bcrypt.compare(currentPassword, organization.password);
@@ -148,16 +157,7 @@ module.exports = {
                         password: 'Wrong credentials'
                     }
                 })
-              }
-      
-              const { valid, errors } =
-                validateUpdatePasswordInput(
-                  newPassword,
-                  confirmNewPassword
-                );
-              if (!valid) {
-                throw new UserInputError('Error', { errors });
-              }
+              }   
         
               newPassword = await bcrypt.hash(newPassword, 12);
       

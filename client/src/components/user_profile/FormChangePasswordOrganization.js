@@ -51,27 +51,35 @@ const FormChangePasswordOrganization = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ORGANIZATION_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
             });
-            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: {organizationId: sime.user.id}});
-            values.currentPassword=''
-            values.newPassword=''
-            values.confirmNewPassword=''
+            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: { organizationId: sime.user.id } });
+            values.currentPassword = ''
+            values.newPassword = ''
+            values.confirmNewPassword = ''
             props.closeModalForm();
         },
         onError(err) {
-            const currentPasswordError = err.graphQLErrors[0].extensions.exception.errors.password;
+            const currentPassword = singlePasswordValidator(values.currentPassword);
             const newPasswordError = singlePasswordValidator(values.newPassword);
-            const confirmPasswordError = confirmPasswordValidator(values.newPassword,values.confirmNewPassword);
-            if (currentPasswordError || newPasswordError || confirmPasswordError ) {
+            const confirmPasswordError = confirmPasswordValidator(values.newPassword, values.confirmNewPassword);
+            if ( currentPassword || newPasswordError || confirmPasswordError) {
                 setErrors({
                     ...errors,
-                    current_password_error: currentPasswordError,
+                    current_password_error: currentPassword,
                     new_password_error: newPasswordError,
                     confirm_password_error: confirmPasswordError
                 })
                 return;
             }
+            if (err) {
+                setErrors({
+                    ...errors,
+                    current_password_error: 'Wrong credentials'
+                })
+            }
+
+
         },
         variables: values
     });
@@ -131,7 +139,7 @@ const FormChangePasswordOrganization = props => {
                                             secureTextEntry
                                         />
                                     </View>
-                                   
+
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
