@@ -225,6 +225,7 @@ const DepartmentsScreen = ({ navigation }) => {
                         closeModalForm={closeModalForm}
                         visibleForm={visibleForm}
                         closeButton={closeModalForm}
+                        addDepartmentsStateUpdate={addDepartmentsStateUpdate}
                     />
                     <Snackbar
                         visible={visibleAdd}

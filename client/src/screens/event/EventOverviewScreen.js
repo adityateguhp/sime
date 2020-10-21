@@ -89,7 +89,7 @@ const EventOverviewScreen = props => {
     },
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {
-     setGuest(guestData.getExternalByType)
+      setGuest(guestData.getExternalByType)
     }
   });
 
@@ -102,7 +102,7 @@ const EventOverviewScreen = props => {
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       setSponsor(sponsorData.getExternalByType)
-     }
+    }
   });
 
   const { data: mediaPartnerData, error: errorMediaPartnerData, loading: loadingMediaPartnerData, refetch: refetchMedia, networkStatus: networkStatusMedia } = useQuery(
@@ -114,7 +114,7 @@ const EventOverviewScreen = props => {
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       setMedia(mediaPartnerData.getExternalByType)
-     }
+    }
   });
 
   const [loadExternalData, { called: calledExternalData, data: externalData, error: errorExternalData, loading: loadingExternalData }] = useLazyQuery(
@@ -210,55 +210,46 @@ const EventOverviewScreen = props => {
       >
         <View style={styles.overview}>
           <Subheading style={{ fontWeight: 'bold' }}>Guests</Subheading>
-          <FlatList
-            data={guest}
-            keyExtractor={item => item.id}
-            renderItem={itemData => (
-              <ExternalList
-                name={itemData.item.name}
-                picture={itemData.item.picture}
-                size={35}
-                onSelect={() => { openModal(itemData.item.id) }}
-              />
-            )}
-            ListEmptyComponent={
-              <Text>-</Text>
-            }
-          />
+          {
+            guestData.getExternalByType.length === 0 ? <Text>-</Text> :
+              guestData.getExternalByType.map((Guest) => (
+                <ExternalList
+                  key={Guest.id}
+                  name={Guest.name}
+                  picture={Guest.picture}
+                  size={35}
+                  onSelect={() => { openModal(Guest.id) }}
+                />
+              ))
+          }
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Sponsors</Subheading>
-          <FlatList
-            data={sponsor}
-            keyExtractor={item => item.id}
-            renderItem={itemData => (
-              <ExternalList
-                name={itemData.item.name}
-                picture={itemData.item.picture}
-                size={35}
-                onSelect={() => { openModal(itemData.item.id) }}
-              />
-            )}
-            ListEmptyComponent={
-              <Text>-</Text>
-            }
-          />
+          {
+            sponsorData.getExternalByType.length === 0 ? <Text>-</Text> :
+              sponsorData.getExternalByType.map((Sponsor) => (
+                <ExternalList
+                  key={Sponsor.id}
+                  name={Sponsor.name}
+                  picture={Sponsor.picture}
+                  size={35}
+                  onSelect={() => { openModal(Sponsor.id) }}
+                />
+              ))
+          }
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Media Partners</Subheading>
-          <FlatList
-            data={media}
-            keyExtractor={item => item.id}
-            renderItem={itemData => (
-              <ExternalList
-                name={itemData.item.name}
-                picture={itemData.item.picture}
-                size={35}
-                onSelect={() => { openModal(itemData.item.id) }}
-              />
-            )}
-            ListEmptyComponent={
-              <Text>-</Text>
-            }
-          />
+          {
+            mediaPartnerData.getExternalByType.length === 0 ? <Text>-</Text> :
+              mediaPartnerData.getExternalByType.map((Media) => (
+                <ExternalList
+                  key={Media.id}
+                  name={Media.name}
+                  picture={Media.picture}
+                  size={35}
+                  onSelect={() => { openModal(Media.id) }}
+                />
+              ))
+          }
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item

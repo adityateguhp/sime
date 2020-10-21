@@ -40,10 +40,25 @@ const FormEditExternal = props => {
         picture: null,
     });
 
+    const options = {
+        title: 'Change Photo Profile',
+        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton) {
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -61,7 +76,7 @@ const FormEditExternal = props => {
                 method: 'POST',
             }).then(async r => {
                 let data = await r.json()
-                setValues({...values, picture: data.secure_url })
+                setValues({ ...values, picture: data.secure_url })
             }).catch(err => console.log(err))
         })
     }
@@ -88,11 +103,11 @@ const FormEditExternal = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_EXBYTYPE_QUERY,
-                variables: {eventId: sime.event_id, externalType: sime.external_type}
+                variables: { eventId: sime.event_id, externalType: sime.external_type }
             });
             props.updateExternalsStateUpdate(result.data.updateExternal);
             props.updateExternalStateUpdate(result.data.updateExternal)
-            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: sime.event_id, externalType: sime.external_type} });
+            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: { eventId: sime.event_id, externalType: sime.external_type } });
             props.closeModalForm();
         },
         onError(err) {
@@ -100,7 +115,8 @@ const FormEditExternal = props => {
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
             if (externalNameError || emailError || phoneNumberError) {
-                setErrors({ ...errors, 
+                setErrors({
+                    ...errors,
                     external_name_error: externalNameError,
                     email_error: emailError,
                     phone_number_error: phoneNumberError
@@ -146,7 +162,7 @@ const FormEditExternal = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
                             <Appbar.Content title={<Text style={{ fontWeight: "bold", color: "white" }}>Edit {sime.external_type_name}</Text>} />
-                            {props.deleteButtonVisible? <Appbar.Action icon="delete" onPress={props.deleteButton} />: null}
+                            {props.deleteButtonVisible ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -157,14 +173,15 @@ const FormEditExternal = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                    <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
                                     </View>
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'external_name_error')}
                                             error={errors.external_name_error ? true : false}
@@ -175,29 +192,36 @@ const FormEditExternal = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
+                                            returnKeyType="next"
                                             value={values.email}
                                             onChangeText={(val) => onChange('email', val, 'email_error')}
                                             error={errors.email_error ? true : false}
                                             errorText={errors.email_error}
+                                            autoCapitalize="none"
+                                            autoCompleteType="email"
+                                            textContentType="emailAddress"
+                                            keyboardType="email-address"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                           style={styles.input}
-                                           label='Phone Number'
-                                           value={values.phone_number}
-                                           onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
-                                           error={errors.phone_number_error ? true : false}
-                                           errorText={errors.phone_number_error}
+                                            style={styles.input}
+                                            label='Phone Number'
+                                            returnKeyType="next"
+                                            value={values.phone_number}
+                                            onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
+                                            error={errors.phone_number_error ? true : false}
+                                            errorText={errors.phone_number_error}
+                                            keyboardType="phone-pad"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                           style={styles.input}
-                                           multiline={true}
-                                           label='Details'
-                                           value={values.details}
-                                           onChangeText={(val) => onChange('details', val, '')}
+                                            style={styles.input}
+                                            multiline={true}
+                                            label='Details'
+                                            value={values.details}
+                                            onChangeText={(val) => onChange('details', val, '')}
                                         />
                                     </View>
                                 </View>
@@ -215,7 +239,7 @@ const modalFormHeight = hp(80);
 
 const styles = StyleSheet.create({
     appbar: {
-        
+
     },
     formView: {
         backgroundColor: 'white',

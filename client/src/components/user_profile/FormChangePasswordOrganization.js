@@ -132,6 +132,7 @@ const FormChangePasswordOrganization = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Current Password'
+                                            returnKeyType="next"
                                             value={values.currentPassword}
                                             onChangeText={(val) => onChange('currentPassword', val, 'current_password_error')}
                                             error={errors.current_password_error ? true : false}
@@ -144,6 +145,7 @@ const FormChangePasswordOrganization = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='New Password'
+                                            returnKeyType="next"
                                             value={values.newPassword}
                                             onChangeText={(val) => onChange('newPassword', val, 'new_password_error')}
                                             error={errors.new_password_error ? true : false}
@@ -156,6 +158,7 @@ const FormChangePasswordOrganization = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Confirm New Password'
+                                            returnKeyType="done"
                                             value={values.confirmNewPassword}
                                             onChangeText={(val) => onChange('confirmNewPassword', val, 'confirm_password_error')}
                                             error={errors.confirm_password_error ? true : false}

@@ -63,8 +63,18 @@ const FormEvent = props => {
         setShowEndDate(false);
     };
 
+    const options = {
+        title: 'Select Event Cover Image',
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        maxWidth: 500, 
+        maxHeight: 500
+      };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
             }
@@ -230,6 +240,7 @@ const FormEvent = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Event Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'event_name_error')}
                                             error={errors.event_name_error ? true : false}
@@ -240,6 +251,7 @@ const FormEvent = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Location'
+                                            returnKeyType="next"
                                             value={values.location}
                                             onChangeText={(val) => onChange('location', val, '')}
                                         />

@@ -225,6 +225,7 @@ const FormRundown = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Agenda'
+                                            returnKeyType="next"
                                             value={values.agenda}
                                             onChangeText={(val) => onChange('agenda', val, 'agenda_error')}
                                             error={errors.agenda_error ? true : false}

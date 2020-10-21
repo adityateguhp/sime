@@ -97,8 +97,18 @@ const FormProject = props => {
         setShowEndDate(false);
     };
 
+    const options = {
+        title: 'Select Project Cover Image',
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        maxWidth: 500, 
+        maxHeight: 500
+      };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
             }
@@ -139,6 +149,8 @@ const FormProject = props => {
         setErrors({ ...errors, [err]: '' });
         closeEndDatepicker();
     };
+
+    const [addDivision, { loading2 }] = useMutation(ADD_DIVISION_MUTATION);
 
     const updateFieldChanged = (name, value) => {
         let newArr = divisionValues.map((item) => {
@@ -182,14 +194,6 @@ const FormProject = props => {
         },
         variables: values
     });
-
-
-    const [addDivision, { loading2 }] = useMutation(ADD_DIVISION_MUTATION, {
-        update(_, result) {
-
-        }
-    });
-
 
     const startDate = moment(values.start_date).format('ll');
     const endDate = moment(values.end_date).format('ll');
@@ -282,6 +286,7 @@ const FormProject = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Project Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'project_name_error')}
                                             error={errors.project_name_error ? true : false}

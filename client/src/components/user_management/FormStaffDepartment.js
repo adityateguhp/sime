@@ -47,8 +47,18 @@ const FormStaffDepartment = props => {
         organizationId: sime.user.id
     });
 
+    const options = {
+        title: 'Change Photo Profile',
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
             }
@@ -82,11 +92,11 @@ const FormStaffDepartment = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFSBYDEPARTMENT_QUERY,
-                variables: {departmentId: sime.department_id}
+                variables: { departmentId: sime.department_id }
             });
             data.getStaffsByDepartment = [result.data.addStaff, ...data.getStaffsByDepartment];
             props.addStaffsStateUpdate(result.data.addStaff)
-            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: {departmentId: sime.department_id} });
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId: sime.department_id } });
             values.name = '';
             values.position_name = '';
             values.email = '';
@@ -166,12 +176,13 @@ const FormStaffDepartment = props => {
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'staff_name_error')}
                                             error={errors.staff_name_error ? true : false}
@@ -182,6 +193,7 @@ const FormStaffDepartment = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Position'
+                                            returnKeyType="next"
                                             value={values.position_name}
                                             onChangeText={(val) => onChange('position_name', val, 'position_name_error')}
                                             error={errors.position_name_error ? true : false}
@@ -192,20 +204,27 @@ const FormStaffDepartment = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
+                                            returnKeyType="next"
                                             value={values.email}
                                             onChangeText={(val) => onChange('email', val, 'email_error')}
                                             error={errors.email_error ? true : false}
                                             errorText={errors.email_error}
+                                            autoCapitalize="none"
+                                            autoCompleteType="email"
+                                            textContentType="emailAddress"
+                                            keyboardType="email-address"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Phone Number'
+                                            returnKeyType="done"
                                             value={values.phone_number}
                                             onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
                                             error={errors.phone_number_error ? true : false}
                                             errorText={errors.phone_number_error}
+                                            keyboardType="phone-pad"
                                         />
                                     </View>
                                 </View>

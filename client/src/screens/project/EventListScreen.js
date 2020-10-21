@@ -255,6 +255,7 @@ const EventListScreen = ({ route, navigation }) => {
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    addEventsStateUpdate={addEventsStateUpdate}
                 />
                 <Snackbar
                     visible={visibleDelete}

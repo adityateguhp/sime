@@ -47,10 +47,25 @@ const FormEditStaffDepartment = props => {
         organizationId: ''
     });
 
+    const options = {
+        title: 'Change Photo Profile',
+        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        maxWidth: 500, 
+        maxHeight: 500
+      };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton){
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -176,12 +191,13 @@ const FormEditStaffDepartment = props => {
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'staff_name_error')}
                                             error={errors.staff_name_error ? true : false}
@@ -192,6 +208,7 @@ const FormEditStaffDepartment = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Position'
+                                            returnKeyType="next"
                                             value={values.position_name}
                                             onChangeText={(val) => onChange('position_name', val, 'position_name_error')}
                                             error={errors.position_name_error ? true : false}
@@ -202,20 +219,27 @@ const FormEditStaffDepartment = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
+                                            returnKeyType="next"
                                             value={values.email}
                                             onChangeText={(val) => onChange('email', val, 'email_error')}
                                             error={errors.email_error ? true : false}
                                             errorText={errors.email_error}
+                                            autoCapitalize="none"
+                                            autoCompleteType="email"
+                                            textContentType="emailAddress"
+                                            keyboardType="email-address"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Phone Number'
+                                            returnKeyType="done"
                                             value={values.phone_number}
                                             onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
                                             error={errors.phone_number_error ? true : false}
                                             errorText={errors.phone_number_error}
+                                            keyboardType="phone-pad"
                                         />
                                     </View>
                                 </View>

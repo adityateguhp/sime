@@ -41,8 +41,18 @@ const FormExternal = props => {
         picture: null,
     });
 
+    const options = {
+        title: 'Change Photo Profile',
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        maxWidth: 500, 
+        maxHeight: 500
+      };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
             }
@@ -150,13 +160,14 @@ const FormExternal = props => {
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
                                     <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
                                     </View>
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'external_name_error')}
                                             error={errors.external_name_error ? true : false}
@@ -167,20 +178,27 @@ const FormExternal = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
+                                            returnKeyType="next"
                                             value={values.email}
                                             onChangeText={(val) => onChange('email', val, 'email_error')}
                                             error={errors.email_error ? true : false}
                                             errorText={errors.email_error}
+                                            autoCapitalize="none"
+                                            autoCompleteType="email"
+                                            textContentType="emailAddress"
+                                            keyboardType="email-address"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                            style={styles.input}
                                            label='Phone Number'
+                                           returnKeyType="next"
                                            value={values.phone_number}
                                            onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
                                            error={errors.phone_number_error ? true : false}
                                            errorText={errors.phone_number_error}
+                                           keyboardType="phone-pad"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>

@@ -15,7 +15,7 @@ import StaffList from '../../components/user_management/StaffList';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY, DELETE_COMMITTEE, FETCH_COMMITTEES_BYSTAFF_QUERY } from '../../util/graphql';
 
 const StaffsScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -48,6 +48,8 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const [staffsValue, setStaffsValue] = useState([]);
     const [departmentsValue, setDepartmentsValue] = useState([]);
+    const [staffVal, setStaffVal] = useState(null);
+    const [commiteesVal, setCommitteesVal] = useState([])
 
     const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
@@ -77,7 +79,13 @@ const StaffsScreen = ({ route, navigation }) => {
             variables: { staffId: sime.staff_id },
         });
 
-    const [staffVal, setStaffVal] = useState(null);
+    const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4, loading: loading4 }] = useLazyQuery(
+        FETCH_COMMITTEES_BYSTAFF_QUERY,
+        {
+            variables: { staffId: sime.staff_id },
+        });
+
+
 
     const selectItemHandler = (id, department_id) => {
         navigation.navigate('Staff Profile', {
@@ -95,6 +103,10 @@ const StaffsScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (staff) setStaffVal(staff.getStaff);
     }, [staff])
+
+    useEffect(() => {
+        if (committeeByStaff) setCommitteesVal(committeeByStaff.getCommitteesByStaff);
+    }, [committeeByStaff])
 
     const closeModal = () => {
         setVisible(false);
@@ -114,6 +126,7 @@ const StaffsScreen = ({ route, navigation }) => {
         sime.setStaff_id(id);
         sime.setDepartment_id(department_id)
         loadExistData();
+        loadCommitteeData();
     }
 
     const openForm = () => {
@@ -124,6 +137,14 @@ const StaffsScreen = ({ route, navigation }) => {
         closeModal();
         setVisibleFormEdit(true);
     }
+
+    const [deleteCommittee] = useMutation(DELETE_COMMITTEE);
+
+    const deleteAllComiteeByStaffId = () => {
+        commiteesVal.map((data) => {
+            deleteCommittee(({ variables: { committeeId: data.id } }))
+        })
+    };
 
     const staffId = sime.staff_id;
 
@@ -136,6 +157,7 @@ const StaffsScreen = ({ route, navigation }) => {
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId)
+            deleteAllComiteeByStaffId();
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
         },
         variables: {
@@ -147,6 +169,17 @@ const StaffsScreen = ({ route, navigation }) => {
         closeModal();
         closeModalFormEdit();
         Alert.alert('Are you sure?', 'Do you really want to delete this staff?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Are you really sure?', 'By delete this staff its also delete all', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
@@ -218,7 +251,16 @@ const StaffsScreen = ({ route, navigation }) => {
         return <Text>Error</Text>;
     }
 
+    if (called2 & error4) {
+        console.error(error2);
+        return <Text>Error</Text>;
+    }
+
     if (loading2) {
+
+    }
+
+    if (loading4) {
 
     }
 
@@ -247,6 +289,8 @@ const StaffsScreen = ({ route, navigation }) => {
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    addStaffsStateUpdate={addStaffsStateUpdate}
+                    departments={departmentsValue}
                 />
                 <Snackbar
                     visible={visibleAdd}

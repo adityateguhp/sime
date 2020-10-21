@@ -42,10 +42,25 @@ const FormEditOrganizationProfile = props => {
         picture: null
     });
 
+    const options = {
+        title: 'Change Photo Profile',
+        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        maxWidth: 500, 
+        maxHeight: 500
+      };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton){
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -157,13 +172,14 @@ const FormEditOrganizationProfile = props => {
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Profile Photo</Text>
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
                                     </View>
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'organization_name_error')}
                                             error={errors.organization_name_error ? true : false}
@@ -175,10 +191,15 @@ const FormEditOrganizationProfile = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
+                                            returnKeyType="next"
                                             value={values.email}
                                             onChangeText={(val) => onChange('email', val, 'email_error')}
                                             error={errors.email_error ? true : false}
                                             errorText={errors.email_error}
+                                            autoCapitalize="none"
+                                            autoCompleteType="email"
+                                            textContentType="emailAddress"
+                                            keyboardType="email-address"
                                         />
                                     </View>
 
@@ -186,6 +207,7 @@ const FormEditOrganizationProfile = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Description'
+                                            returnKeyType="done"
                                             multiline={true}
                                             value={values.description}
                                             onChangeText={(val) => onChange('description', val, '')}

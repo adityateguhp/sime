@@ -9,7 +9,7 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Avatar, Text, Menu, Divider } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import jwtDecode from 'jwt-decode';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 
 import { SimeContext } from '../context/SimePovider';
@@ -69,15 +69,28 @@ const DashboardStack = createStackNavigator();
 
 function DashboardStackScreen({ route, navigation }) {
   const sime = useContext(SimeContext);
+  const [userId, setUserId] = useState(null)
   const [userPict, setUserPict] = useState('')
+  
+  const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
+    FETCH_ORGANIZATION_QUERY, {
+    variables: {
+      organizationId: userId
+    }
+  });
+
   useEffect(() => {
     if (sime.user) {
-      setUserPict(sime.user.picture)
+      setUserId(sime.user.id)
+      loadData();
+      if (organization) {
+        setUserPict(organization.getOrganization.picture)
+      }
     }
     return () => {
       console.log("This will be logged on unmount dashboard header pict");
     }
-  }, [sime.user])
+  }, [sime.user, organization])
   return (
     <DashboardStack.Navigator
       screenOptions={{
@@ -117,16 +130,28 @@ const ProjectsStack = createStackNavigator();
 
 function ProjectStackSceen({ route, navigation }) {
   const sime = useContext(SimeContext);
+  const [userId, setUserId] = useState(null)
   const [userPict, setUserPict] = useState('')
+  
+  const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
+    FETCH_ORGANIZATION_QUERY, {
+    variables: {
+      organizationId: userId
+    }
+  });
+
   useEffect(() => {
     if (sime.user) {
-      setUserPict(sime.user.picture)
+      setUserId(sime.user.id)
+      loadData();
+      if (organization) {
+        setUserPict(organization.getOrganization.picture)
+      }
     }
     return () => {
-      console.log("This will be logged on unmount project header pict");
+      console.log("This will be logged on unmount dashboard header pict");
     }
-  }, [sime.user])
-
+  }, [sime.user, organization])
   return (
     <ProjectsStack.Navigator
       screenOptions={{
@@ -294,7 +319,7 @@ function TopTabUsersManagements() {
         style: { backgroundColor: Colors.primaryColor }
       }}
     >
-      <TopTabUsersManagement.Screen name="Users" component={StaffsScreen} />
+      <TopTabUsersManagement.Screen name="Staffs" component={StaffsScreen} />
       <TopTabUsersManagement.Screen name="Departments" component={DepartmentsScreen} />
     </TopTabUsersManagement.Navigator>
   );

@@ -62,10 +62,25 @@ const FormEditProject = props => {
         setShowEndDate(false);
     };
 
+    const options = {
+        title: 'Select Project Cover Image',
+        customButtons: [{ name: 'remove', title: 'Remove Image...' }],
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        maxWidth: 500, 
+        maxHeight: 500
+      };
+
     const handleUpload = () => {
-        ImagePicker.showImagePicker({ maxWidth: 500, maxHeight: 500 }, response => {
+        ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton){
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -238,6 +253,7 @@ const FormEditProject = props => {
                                         <TextInput
                                             style={styles.input}
                                             label='Project Name'
+                                            returnKeyType="next"
                                             value={values.name}
                                             onChangeText={(val) => onChange('name', val, 'project_name_error')}
                                             error={errors.project_name_error ? true : false}

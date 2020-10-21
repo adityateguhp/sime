@@ -127,6 +127,7 @@ module.exports = gql`
         getDivisions(projectId: ID!): [Division]
         getDivision(divisionId: ID!): Division
         getCommittees(projectId: ID!): [Committee]
+        getCommitteesByStaff(staffId: ID!): [Committee]
         getCommittee(committeeId: ID!): Committee 
         getHeadProject(projectId: ID!, positionId: ID!): Committee
         getCommitteesInDivision(divisionId: ID!): [Committee] 

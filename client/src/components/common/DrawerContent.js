@@ -13,9 +13,11 @@ import {
     DrawerContentScrollView,
     DrawerItem,
 } from '@react-navigation/drawer';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 import { AuthContext } from '../../context/auth';
 import { SimeContext } from '../../context/SimePovider';
+import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 
 
 const DrawerContent = props => {
@@ -28,7 +30,9 @@ const DrawerContent = props => {
     });
 
     const sime = useContext(SimeContext);
-    
+
+    const [userId, setUserId] = useState(null)
+
     const [userData, setUserData] = useState({
         id: '',
         name: '',
@@ -36,20 +40,31 @@ const DrawerContent = props => {
         picture: ''
     })
 
+    const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
+        FETCH_ORGANIZATION_QUERY, {
+        variables: {
+            organizationId: userId
+        }
+    });
+
     useEffect(() => {
         if (sime.user) {
-            setUserData({
-                id: sime.user.id,
-                name: sime.user.name,
-                email: sime.user.email,
-                picture: sime.user.picture
-            })
-
+            setUserId(sime.user.id)
+            loadData();
+            if (organization) {
+                setUserData({
+                    id: organization.getOrganization.id,
+                    name: organization.getOrganization.name,
+                    email: organization.getOrganization.email,
+                    picture: organization.getOrganization.picture
+                })
+                sime.setUser(organization.getOrganization)
+            }
         }
         return () => {
             console.log("This will be logged on unmount drawer");
         }
-    }, [sime.user])
+    }, [sime.user, organization])
 
 
     return (

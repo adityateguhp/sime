@@ -352,7 +352,6 @@ const RundownScreen = props => {
       <FormRundown
         closeModalForm={closeModalForm}
         visibleForm={visibleForm}
-        deleteButton={deleteHandler}
         closeButton={closeModalForm}
         addRundownsStateUpdate={addRundownsStateUpdate}
       />
