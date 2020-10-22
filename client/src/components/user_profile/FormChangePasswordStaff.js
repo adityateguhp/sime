@@ -11,14 +11,14 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
-import { organizationNameValidator, emailValidator } from '../../util/validator';
-import { UPDATE_ORGANIZATION_MUTATION, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { singlePasswordValidator, confirmPasswordValidator } from '../../util/validator';
+import { UPDATE_PASSWORD_STAFF_MUTATION, FETCH_STAFF_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
 
 
-const FormEditOrganizationProfile = props => {
+const FormChangePasswordStaff = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -30,111 +30,63 @@ const FormEditOrganizationProfile = props => {
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
-        organization_name_error: '',
-        email_error: '',
+        current_password_error: '',
+        new_password_error: '',
+        confirm_password_error: ''
     });
 
     const [values, setValues] = useState({
-        organizationId: '',
-        name: '',
-        description: '',
-        email: '',
-        picture: null
+        staffId: sime.user.id,
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: ''
     });
-
-    const options = {
-        title: 'Change Photo Profile',
-        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
-        storageOptions: {
-          skipBackup: true,
-          path: 'images',
-        },
-        maxWidth: 500, 
-        maxHeight: 500
-      };
-
-    const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
-            if (response.didCancel) {
-                return;
-            }
-
-            if (response.customButton){
-                setValues({ ...values, picture: '' });
-            }
-
-            let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
-
-            let data = {
-                "file": 'data:image/jpg;base64,' + response.data,
-                "upload_preset": "oj5r0s34",
-            }
-
-            fetch(apiUrl, {
-                body: JSON.stringify(data),
-                headers: {
-                    'content-type': 'application/json'
-                },
-                method: 'POST',
-            }).then(async r => {
-                let data = await r.json()
-                setValues({ ...values, picture: data.secure_url })
-            }).catch(err => console.log(err))
-        })
-    }
 
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
         setErrors({ ...errors, [err]: '' })
     };
 
-    useEffect(() => {
-        if (props.organization) {
-            setValues({
-                organizationId: props.organization.id,
-                name: props.organization.name,
-                email: props.organization.email,
-                description: props.organization.description,
-                picture: props.organization.picture,
-            })
-        }
-    }, [props.organization])
-
-    const [updateOrganization, { loading }] = useMutation(UPDATE_ORGANIZATION_MUTATION, {
+    const [updatePasswordStaff, { loading }] = useMutation(UPDATE_PASSWORD_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_ORGANIZATION_QUERY,
-                variables: {organizationId: sime.user.id}
+                query: FETCH_STAFF_QUERY,
+                variables: { staffId: sime.user.id }
             });
-            props.updateOrganizationStateUpdate(result.data.updateOrganization);
-            sime.setUser(result.data.updateOrganization)
-            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: {organizationId: sime.user.id}});
+            proxy.writeQuery({ query: FETCH_STAFF_QUERY, data, variables: { staffId: sime.user.id } });
+            values.currentPassword = ''
+            values.newPassword = ''
+            values.confirmNewPassword = ''
             props.closeModalForm();
         },
         onError(err) {
-            const organizationNameError = organizationNameValidator(values.name);
-            const emailError = emailValidator(values.email);
-            if (organizationNameError || emailError) {
+            const currentPassword = singlePasswordValidator(values.currentPassword);
+            const newPasswordError = singlePasswordValidator(values.newPassword);
+            const confirmPasswordError = confirmPasswordValidator(values.newPassword, values.confirmNewPassword);
+            if ( currentPassword || newPasswordError || confirmPasswordError) {
                 setErrors({
                     ...errors,
-                    organization_name_error: organizationNameError,
-                    email_error: emailError,
+                    current_password_error: currentPassword,
+                    new_password_error: newPasswordError,
+                    confirm_password_error: confirmPasswordError
                 })
                 return;
             }
             if (err) {
                 setErrors({
                     ...errors,
-                    email_error: 'Email address is already exist'
+                    current_password_error: 'Wrong credentials'
                 })
             }
+
+
         },
         variables: values
     });
 
     const onSubmit = (event) => {
         event.preventDefault();
-        updateOrganization();
+        updatePasswordStaff();
     };
 
     //for get keyboard height
@@ -166,7 +118,7 @@ const FormEditOrganizationProfile = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
-                            <Appbar.Content title="Edit Profile" />
+                            <Appbar.Content title="Change Password" />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -176,47 +128,42 @@ const FormEditOrganizationProfile = props => {
                         >
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
-                                    <View style={styles.imageUploadContainer}>
-                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
-                                    </View>
-
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
-                                            label='Name'
+                                            label='Current Password'
                                             returnKeyType="next"
-                                            value={values.name}
-                                            onChangeText={(val) => onChange('name', val, 'organization_name_error')}
-                                            error={errors.organization_name_error ? true : false}
-                                            errorText={errors.organization_name_error}
-                                        />
-                                    </View>
-                                   
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
-                                            label='Email Address'
-                                            returnKeyType="next"
-                                            value={values.email}
-                                            onChangeText={(val) => onChange('email', val, 'email_error')}
-                                            error={errors.email_error ? true : false}
-                                            errorText={errors.email_error}
-                                            autoCapitalize="none"
-                                            autoCompleteType="email"
-                                            textContentType="emailAddress"
-                                            keyboardType="email-address"
+                                            value={values.currentPassword}
+                                            onChangeText={(val) => onChange('currentPassword', val, 'current_password_error')}
+                                            error={errors.current_password_error ? true : false}
+                                            errorText={errors.current_password_error}
+                                            secureTextEntry
                                         />
                                     </View>
 
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
-                                            label='Description'
+                                            label='New Password'
+                                            returnKeyType="next"
+                                            value={values.newPassword}
+                                            onChangeText={(val) => onChange('newPassword', val, 'new_password_error')}
+                                            error={errors.new_password_error ? true : false}
+                                            errorText={errors.new_password_error}
+                                            secureTextEntry
+                                        />
+                                    </View>
+
+                                    <View style={styles.inputStyle}>
+                                        <TextInput
+                                            style={styles.input}
+                                            label='Confirm New Password'
                                             returnKeyType="done"
-                                            multiline={true}
-                                            value={values.description}
-                                            onChangeText={(val) => onChange('description', val, '')}
+                                            value={values.confirmNewPassword}
+                                            onChangeText={(val) => onChange('confirmNewPassword', val, 'confirm_password_error')}
+                                            error={errors.confirm_password_error ? true : false}
+                                            errorText={errors.confirm_password_error}
+                                            secureTextEntry
                                         />
                                     </View>
                                 </View>
@@ -269,4 +216,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormEditOrganizationProfile;
+export default FormChangePasswordStaff;

@@ -1,4 +1,4 @@
-const {UserInputError } = require('apollo-server');
+const { UserInputError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -9,17 +9,17 @@ const checkAuth = require('../../util/check-auth');
 
 function generateToken(user) {
   return jwt.sign({
-      typename: user.__typename,
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      picture: user.picture
+    user_type: "staff",
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    picture: user.picture
   }, SECRET_KEY, { expiresIn: '1h' })
 }
 
 module.exports = {
   Query: {
-    async getStaffs(_, {organizationId}, context) {
+    async getStaffs(_, { organizationId }, context) {
       try {
         const staffs = await Staff.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ name: 1 });
         if (staffs) {
@@ -61,30 +61,30 @@ module.exports = {
       const { valid, errors } = validateLoginInput(email, password);
 
       if (!valid) {
-          throw new UserInputError('Error', { errors });
+        throw new UserInputError('Error', { errors });
       }
 
       const staff = await Staff.findOne({ email });
 
       if (!staff) {
-          errors.general = 'The email and password you entered did not match our records. Please double-check and try again.';
-          throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
+        errors.general = 'The email and password you entered did not match our records. Please double-check and try again.';
+        throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
       }
 
       const match = await bcrypt.compare(password, staff.password);
       if (!match) {
-          errors.general = 'The email and password you entered did not match our records. Please double-check and try again.'
-          throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
+        errors.general = 'The email and password you entered did not match our records. Please double-check and try again.'
+        throw new UserInputError('The email and password you entered did not match our records. Please double-check and try again.', { errors });
       }
 
       const token = generateToken(staff);
 
       return {
-          ...staff._doc,
-          id: staff._id,
-          token
+        ...staff._doc,
+        id: staff._id,
+        token
       }
-  },
+    },
     async addStaff(_, {
       name,
       position_name,
@@ -109,11 +109,11 @@ module.exports = {
       // Make sure email doesnt already exist
       const staff = await Staff.findOne({ email });
       if (staff) {
-          throw new UserInputError('Email address is already exist', {
-              errors: {
-                  email: 'This email address already exist'
-              }
-          })
+        throw new UserInputError('Email address is already exist', {
+          errors: {
+            email: 'This email address already exist'
+          }
+        })
       }
 
       password = await bcrypt.hash(password, 12);
@@ -155,10 +155,23 @@ module.exports = {
           throw new UserInputError('Error', { errors });
         }
 
+        const selectedStaff = await Staff.findById(staffId);
+
+        if (email !== selectedStaff.email) {
+          const staff = await Staff.findOne({ email });
+          if (staff) {
+            throw new UserInputError('Email address is already exist', {
+              errors: {
+                email: 'This email address already exist'
+              }
+            })
+          }
+        }
+
         const updatedStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
-          { 
-            name: name, 
+          {
+            name: name,
             position_name: position_name,
             department_id: department_id,
             email: email,
@@ -183,10 +196,10 @@ module.exports = {
 
         const match = await bcrypt.compare(currentPassword, staff.password);
         if (!match) {
-            throw new UserInputError('Wrong credentials', {
-              errors: {
-                  password: 'Wrong credentials'
-              }
+          throw new UserInputError('Wrong credentials', {
+            errors: {
+              password: 'Wrong credentials'
+            }
           })
         }
 
@@ -198,12 +211,12 @@ module.exports = {
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }
-  
+
         newPassword = await bcrypt.hash(newPassword, 12);
 
         const updatedPasswordStaff = await Staff.findByIdAndUpdate(
           { _id: staffId },
-          { 
+          {
             password: newPassword
           },
           { new: true });

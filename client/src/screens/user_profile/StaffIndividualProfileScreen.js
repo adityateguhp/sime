@@ -1,35 +1,41 @@
 import React, { useState, useLayoutEffect, useContext } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Menu, Snackbar } from 'react-native-paper';
+import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Snackbar, Menu } from 'react-native-paper';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
-import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormEditStaff from '../../components/user_management/FormEditStaff';
+import FormEditStaffProfile from '../../components/user_profile/FormEditStaffProfile';
+import FormChangePasswordStaff from '../../components/user_profile/FormChangePasswordStaff';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import HeaderButton from '../../components/common/HeaderButton';
-import FormEditOrganizationProfile from '../../components/user_profile/FormEditOrganizationProfile';
-import FormChangePasswordOrganization from '../../components/user_profile/FormChangePasswordOrganization';
 
-const OrganizationProfileScreen = ({ route, navigation }) => {
+const StaffIndividualProfileScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
 
     const [visibleUpdate, setVisibleUpdate] = useState(false);
-    const [organizationVal, setOrganizationVal] = useState(null);
+    const [staffVal, setStaffVal] = useState(null);
     const [visibleMenu, setVisibleMenu] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
     const [visibleFormPassword, setVisibleFormPassword] = useState(false);
 
-    const { data: organization, error: error1, loading: loading1 } = useQuery(
-        FETCH_ORGANIZATION_QUERY, {
+    const { data: staff, error: error1, loading: loading1 } = useQuery(
+        FETCH_STAFF_QUERY, {
         variables: {
-            organizationId: sime.user.id
+            staffId: sime.user.id
         },
         onCompleted: () => {
-            setOrganizationVal(organization.getOrganization)
+            setStaffVal(staff.getStaff)
         }
+    });
+
+    const { data: department, error: error2, loading: loading2 } = useQuery(
+        FETCH_DEPARTMENT_QUERY, {
+        variables: {
+            departmentId: sime.user.department_id
+        },
     });
 
     const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
@@ -62,8 +68,8 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         setVisibleFormPassword(true);
     }
 
-    const updateOrganizationStateUpdate = (e) => {
-        setOrganizationVal(e);
+    const updateStaffStateUpdate = (e) => {
+        setStaffVal(e);
         onToggleSnackBarUpdate();
     }
 
@@ -93,7 +99,16 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         return <Text>Error 1</Text>;
     }
 
+    if (error2) {
+        console.error(error1);
+        return <Text>Error 2</Text>;
+    }
+
     if (loading1) {
+        return <CenterSpinner />;
+    }
+
+    if (loading2) {
         return <CenterSpinner />;
     }
 
@@ -101,35 +116,49 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         <Provider theme={theme}>
             <ScrollView style={styles.screen}>
                 <View style={styles.profilePicture}>
-                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture === null || organization.getOrganization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.getOrganization.picture }} />
-                    <Headline>{organization.getOrganization.name}</Headline>
+                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />
+                    <Headline>{staff.getStaff.name}</Headline>
                 </View>
                 <Divider />
                 <View style={styles.profileDetails}>
                     <Title style={styles.titleInfo}>
-                        Email Address
+                        Department
                 </Title>
                     <Paragraph>
-                        {organization.getOrganization.email}
+                        {department.getDepartment.name}
                     </Paragraph>
                     <Divider />
                     <Title style={styles.titleInfo}>
-                        description
+                        Position
                 </Title>
                     <Paragraph>
-                        {organization.getOrganization.description}
+                        {staff.getStaff.position_name}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Email Address
+                </Title>
+                    <Paragraph>
+                        {staff.getStaff.email}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Phone Number
+                </Title>
+                    <Paragraph>
+                        {staff.getStaff.phone_number}
                     </Paragraph>
                 </View>
                 <Divider style={{ marginBottom: 20 }} />
             </ScrollView>
-            <FormEditOrganizationProfile
+             <FormEditStaffProfile
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
                 closeButton={closeModalFormEdit}
-                organization={organizationVal}
-                updateOrganizationStateUpdate={updateOrganizationStateUpdate}
+                staff={staffVal}
+                updateStaffStateUpdate={updateStaffStateUpdate}
             />
-            <FormChangePasswordOrganization
+            <FormChangePasswordStaff
                 closeModalForm={closeModalFormPassword}
                 visibleForm={visibleFormPassword}
                 closeButton={closeModalFormPassword}
@@ -163,4 +192,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default OrganizationProfileScreen;
+export default StaffIndividualProfileScreen;

@@ -14,7 +14,7 @@ const DashboardScreen = props => {
 
   return (
     <View style={styles.screen}>
-      <Text>{JSON.stringify(sime.user)}</Text>
+      <Text>Department Screen</Text>
     </View>
   );
 }

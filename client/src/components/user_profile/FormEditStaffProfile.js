@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
 import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -11,14 +11,15 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
-import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator, departmentValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, ADD_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import { staffNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
+import { FETCH_STAFF_QUERY, UPDATE_STAFF_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
-import { theme } from '../../constants/Theme';
 
-const FormStaff = props => {
+
+const FormEditStaffProfile
+ = props => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -30,26 +31,25 @@ const FormStaff = props => {
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
-        department_error: '',
         staff_name_error: '',
-        position_name_error: '',
         email_error: '',
         phone_number_error: '',
     });
 
     const [values, setValues] = useState({
+        staffId: '',
         name: '',
         position_name: '',
         department_id: '',
         email: '',
         phone_number: '',
-        password: '12345678',
         picture: null,
-        organizationId: sime.user.id
+        organizationId: ''
     });
 
     const options = {
         title: 'Change Photo Profile',
+        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
         storageOptions: {
           skipBackup: true,
           path: 'images',
@@ -62,6 +62,10 @@ const FormStaff = props => {
         ImagePicker.showImagePicker(options, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton){
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -89,41 +93,46 @@ const FormStaff = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
-    const [addStaff, { loading }] = useMutation(ADD_STAFF_MUTATION, {
+    useEffect(() => {
+        if (props.staff) {
+            setValues({
+                staffId: props.staff.id,
+                name: props.staff.name,
+                position_name: props.staff.position_name,
+                department_id: props.staff.department_id,
+                email: props.staff.email,
+                phone_number: props.staff.phone_number,
+                picture: props.staff.picture,
+                organizationId: props.staff.organization_id
+            })
+        }
+    }, [props.staff])
+
+    const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY,
-                variables: {organizationId: sime.user.id}
+                query: FETCH_STAFF_QUERY,
+                variables: {staffId: sime.user.id}
             });
-            data.getStaffs = [result.data.addStaff, ...data.getStaffs];
-            props.addStaffsStateUpdate(result.data.addStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {organizationId: sime.user.id} });
-            values.name = '';
-            values.position_name = '';
-            values.email = '';
-            values.phone_number = '';
-            values.picture = '';
-            values.department_id = '';
+            props.updateStaffStateUpdate(result.data.updateStaff)
+            sime.setUser(result.data.updateStaff)
+            proxy.writeQuery({ query: FETCH_STAFF_QUERY, data, variables: {staffId: sime.user.id}});
             props.closeModalForm();
         },
         onError(err) {
-            const departmenError = departmentValidator(values.department_id);
             const staffNameError = staffNameValidator(values.name);
-            const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
-            if (departmenError || staffNameError || positionNameError || emailError || phoneNumberError) {
+            if (staffNameError || emailError || phoneNumberError) {
                 setErrors({
                     ...errors,
-                    department_error: departmenError,
                     staff_name_error: staffNameError,
-                    position_name_error: positionNameError,
                     email_error: emailError,
                     phone_number_error: phoneNumberError
                 })
                 return;
             }
-            if (err.graphQLErrors[0].extensions.exception.errors) {
+            if (err) {
                 setErrors({
                     ...errors,
                     email_error: 'Email address is already exist'
@@ -135,7 +144,7 @@ const FormStaff = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addStaff();
+        updateStaff();
     };
 
     //for get keyboard height
@@ -167,32 +176,20 @@ const FormStaff = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
-                            <Appbar.Content title="New Staff" />
+                            <Appbar.Content title="Edit Staff" />
+                            {props.deleteButtonVisible? <Appbar.Action icon="delete" onPress={props.deleteButton} />: null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
                             behavior="padding"
-                            keyboardVerticalOffset={hp(26)}
+                            keyboardVerticalOffset={hp(36)}
                         >
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
-                                    </View>
-                                    <View>
-                                        <Dropdown
-                                            label='Department'
-                                            value={values.department_id}
-                                            data={props.departments}
-                                            valueExtractor={({ id }) => id}
-                                            labelExtractor={({ name }) => name}
-                                            onChangeText={(val) => onChange('department_id', val, 'department_error')}
-                                            useNativeDriver={true}
-                                            error={errors.department_error}
-                                        />
-                                        {errors.department_error ? <Text style={styles.error}>{errors.department_error}</Text> : null}
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
@@ -203,17 +200,6 @@ const FormStaff = props => {
                                             onChangeText={(val) => onChange('name', val, 'staff_name_error')}
                                             error={errors.staff_name_error ? true : false}
                                             errorText={errors.staff_name_error}
-                                        />
-                                    </View>
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
-                                            label='Position'
-                                            returnKeyType="next"
-                                            value={values.position_name}
-                                            onChangeText={(val) => onChange('position_name', val, 'position_name_error')}
-                                            error={errors.position_name_error ? true : false}
-                                            errorText={errors.position_name_error}
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
@@ -254,7 +240,7 @@ const FormStaff = props => {
 };
 
 const modalFormWidth = wp(100);
-const modalFormHeight = hp(80);
+const modalFormHeight = hp(70);
 
 const styles = StyleSheet.create({
     appbar: {
@@ -289,13 +275,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 10,
-    },
-    error: {
-        fontSize: 14,
-        color: theme.colors.error,
-        paddingHorizontal: 4
-      },
+    }
 });
 
 
-export default FormStaff;
+export default FormEditStaffProfile
+;

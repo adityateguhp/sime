@@ -17,10 +17,11 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import { AuthContext } from '../../context/auth';
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY } from '../../util/graphql';
+import DrawerContentOrganization from './DrawerContentOrganization';
 
 
-const DrawerContent = props => {
+const DrawerContentStaff = props => {
     const { logout } = useContext(AuthContext);
     const paperTheme = useTheme();
 
@@ -40,31 +41,33 @@ const DrawerContent = props => {
         picture: ''
     })
 
-    const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
-        FETCH_ORGANIZATION_QUERY, {
+    const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+        FETCH_STAFF_QUERY, {
         variables: {
-            organizationId: userId
+            staffId: userId
         }
     });
 
     useEffect(() => {
         if (sime.user) {
             setUserId(sime.user.id)
+            sime.setUser_type(sime.user.__typename)
             loadData();
-            if (organization) {
+            if (staff) {
                 setUserData({
-                    id: organization.getOrganization.id,
-                    name: organization.getOrganization.name,
-                    email: organization.getOrganization.email,
-                    picture: organization.getOrganization.picture
+                    id: staff.getStaff.id,
+                    name: staff.getStaff.name,
+                    email: staff.getStaff.email,
+                    picture: staff.getStaff.picture
                 })
-                sime.setUser(organization.getOrganization)
+                sime.setUser(staff.getStaff)
+                sime.setUser_type(staff.getStaff.__typename)
             }
         }
         return () => {
             console.log("This will be logged on unmount drawer");
         }
-    }, [sime.user, organization])
+    }, [sime.user, staff])
 
 
     return (
@@ -102,17 +105,7 @@ const DrawerContent = props => {
                     )}
                     label="Profile"
                     onPress={() => {
-                        props.navigation.navigate('Organization Profile')
-                    }}
-                />
-
-                <DrawerItem
-                    icon={({ color, size }) => (
-                        <Icon name="account-group-outline" color={color} size={size} />
-                    )}
-                    label="Users Management"
-                    onPress={() => {
-                        props.navigation.navigate('Users Management')
+                        props.navigation.navigate('Staff Profile')
                     }}
                 />
                 <DrawerItem
@@ -144,4 +137,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DrawerContent;
+export default DrawerContentStaff;

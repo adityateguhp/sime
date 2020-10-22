@@ -16,7 +16,7 @@ import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } fr
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import CenterSpinner from '../common/CenterSpinner';
-
+import { theme } from '../../constants/Theme';
 
 const FormEditStaff = props => {
     let TouchableCmp = TouchableOpacity;
@@ -30,6 +30,7 @@ const FormEditStaff = props => {
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
+        department_error: '',
         staff_name_error: '',
         position_name_error: '',
         email_error: '',
@@ -120,13 +121,15 @@ const FormEditStaff = props => {
             props.closeModalForm();
         },
         onError(err) {
+            const departmenError = departmentValidator(values.department_id);
             const staffNameError = staffNameValidator(values.name);
             const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
-            if (staffNameError || positionNameError || emailError || phoneNumberError) {
+            if (departmenError ||  staffNameError || positionNameError || emailError || phoneNumberError) {
                 setErrors({
                     ...errors,
+                    department_error: departmenError,
                     staff_name_error: staffNameError,
                     position_name_error: positionNameError,
                     email_error: emailError,
@@ -134,7 +137,7 @@ const FormEditStaff = props => {
                 })
                 return;
             }
-            if (err.graphQLErrors[0].extensions.exception.errors) {
+            if (err) {
                 setErrors({
                     ...errors,
                     email_error: 'Email address is already exist'
@@ -200,9 +203,11 @@ const FormEditStaff = props => {
                                             data={props.departments}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
-                                            onChangeText={(val) => onChange('department_id', val, '')}
+                                            onChangeText={(val) => onChange('department_id', val, 'department_error')}
                                             useNativeDriver={true}
-                                        />
+                                            error={errors.department_error}
+                                            />
+                                            {errors.department_error ? <Text style={styles.error}>{errors.department_error}</Text> : null}
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput

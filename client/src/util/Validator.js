@@ -139,5 +139,10 @@ export const positionValidator = (position) => {
   return '';
 }
 
+export const departmentValidator = (department) => {
+  if (!department || department.length <= 0) return 'Department must not be empty';
+  return '';
+}
+
 
 

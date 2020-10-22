@@ -25,13 +25,6 @@ const ProjectListScreen = props => {
 
     const sime = useContext(SimeContext);
 
-    const [visibleDelete, setVisibleDelete] = useState(false);
-
-    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
-
-    const onDismissSnackBarDelete = () => setVisibleDelete(false);
-
-
     const [visibleCancel, setVisibleCancel] = useState(false);
 
     const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
@@ -44,13 +37,6 @@ const ProjectListScreen = props => {
     const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
 
     const onDismissSnackBarActivate = () => setVisibleActivate(false);
-
-
-    const [visibleAdd, setVisibleAdd] = useState(false);
-
-    const onToggleSnackBarAdd = () => setVisibleAdd(!visibleAdd);
-
-    const onDismissSnackBarAdd = () => setVisibleAdd(false);
 
 
     const [visibleUpdate, setVisibleUpdate] = useState(false);
@@ -88,7 +74,6 @@ const ProjectListScreen = props => {
 
     const [projectVal, setProjectVal] = useState(null);
     const [visible, setVisible] = useState(false);
-    const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
     const [cancelValue, setCancelValues] = useState({
         projectId: '',
@@ -103,10 +88,6 @@ const ProjectListScreen = props => {
         setVisible(false);
     }
 
-    const closeModalForm = () => {
-        setVisibleForm(false);
-    }
-
     const closeModalFormEdit = () => {
         setVisibleFormEdit(false);
     }
@@ -119,31 +100,10 @@ const ProjectListScreen = props => {
         loadExistData();
     }
 
-    const openForm = () => {
-        setVisibleForm(true);
-    }
-
     const openFormEdit = () => {
         closeModal();
         setVisibleFormEdit(true);
     }
-
-    const projectId = sime.project_id;
-
-    const [deleteProject] = useMutation(DELETE_PROJECT, {
-        update(proxy) {
-            const data = proxy.readQuery({
-                query: FETCH_PROJECTS_QUERY,
-                variables: { organizationId: sime.user.id }
-            });
-            projects.getProjects = projects.getProjects.filter((p) => p.id !== projectId);
-            deleteProjectsStateUpdate(projectId)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id }, });
-        },
-        variables: {
-            projectId
-        }
-    });
 
     const [cancelProject, { loading }] = useMutation(CANCEL_PROJECT_MUTATION, {
         update(proxy, result) {
@@ -166,21 +126,6 @@ const ProjectListScreen = props => {
         event.preventDefault();
         cancelProject();
     };
-
-    const addProjectsStateUpdate = (e) => {
-        setProjectsValue([e, ...projectsValue]);
-        onToggleSnackBarAdd();
-    }
-
-    const deleteProjectsStateUpdate = (e) => {
-        const temp = [...projectsValue];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e);
-        temp.splice(index, 1);
-        setProjectsValue(temp);
-        onToggleSnackBarDelete();
-    }
 
     const updateProjectsStateUpdate = (e) => {
         const temp = [...projectsValue];
@@ -207,19 +152,6 @@ const ProjectListScreen = props => {
 
     const onRefresh = () => {
         refetch();
-    };
-
-    const deleteHandler = () => {
-        closeModal();
-        closeModalFormEdit();
-        Alert.alert('Are you sure?', 'Do you really want to delete this project?', [
-            { text: 'No', style: 'default' },
-            {
-                text: 'Yes',
-                style: 'destructive',
-                onPress: deleteProject
-            }
-        ]);
     };
 
     const numColumns = 2;
@@ -252,26 +184,7 @@ const ProjectListScreen = props => {
                         onRefresh={onRefresh} />
                 }
             >
-                <Text>No projects found, let's add projects!</Text>
-                <FABbutton Icon="plus" label="project" onPress={openForm} />
-                <FormProject
-                    closeModalForm={closeModalForm}
-                    visibleForm={visibleForm}
-                    closeButton={closeModalForm}
-                    addProjectsStateUpdate={addProjectsStateUpdate}
-                />
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                >
-                    Project deleted!
-                </Snackbar>
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                >
-                    Project added!
-            </Snackbar>
+                <Text>No projects found</Text>
             </ScrollView>
         );
     }
@@ -335,21 +248,9 @@ const ProjectListScreen = props => {
                                     </View>
                                 </TouchableCmp>
                         }
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete project</Text>
-                            </View>
-                        </TouchableCmp>
                     </View>
                 </Modal>
             </Portal>
-            <FABbutton Icon="plus" label="project" onPress={openForm} />
-            <FormProject
-                closeModalForm={closeModalForm}
-                visibleForm={visibleForm}
-                closeButton={closeModalForm}
-                addProjectsStateUpdate={addProjectsStateUpdate}
-            />
             <FormEditProject
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
@@ -359,12 +260,6 @@ const ProjectListScreen = props => {
                 updateProjectsStateUpdate={updateProjectsStateUpdate}
                 updateProjectStateUpdate={updateProjectStateUpdate}
             />
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-            >
-                Project deleted!
-            </Snackbar>
             <Snackbar
                 visible={visibleCancel}
                 onDismiss={onDismissSnackBarCancel}
@@ -376,12 +271,6 @@ const ProjectListScreen = props => {
                 onDismiss={onDismissSnackBarActivate}
             >
                 Project activated!
-            </Snackbar>
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-            >
-                Project added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
@@ -398,12 +287,11 @@ const modalMenuHeight = wp(46.5);
 
 const styles = StyleSheet.create({
     screen: {
-        marginTop: 5,
+        marginTop: 5
     },
     container: {
         justifyContent: "space-between",
-        alignSelf: 'flex-start',
-        marginLeft: 7
+        alignSelf: "center"
     },
     modalView: {
         backgroundColor: 'white',

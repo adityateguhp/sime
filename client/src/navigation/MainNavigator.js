@@ -15,7 +15,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import { SimeContext } from '../context/SimePovider';
 import HeaderButton from '../components/common/HeaderButton';
 import { AuthContext } from '../context/auth';
-import { FETCH_ORGANIZATION_QUERY } from '../util/graphql';
+import { FETCH_ORGANIZATION_QUERY, FETCH_STAFF_QUERY } from '../util/graphql';
 import CenterSpinner from '../components/common/CenterSpinner';
 
 import HomeScreen from '../screens/home/HomeScreen';
@@ -24,6 +24,7 @@ import RegisterScreen from '../screens/home/RegisterScreen';
 import RegisterCompletedScreen from '../screens/home/RegisterCompletedScreen';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import ProjectListScreen from '../screens/project/ProjectListScreen';
+import ProjectListStaffScreen from '../screens/project/ProjectListStaffScreen';
 import ProjectOverviewScreen from '../screens/project/ProjectOverviewScreen';
 import CommitteeListScreen from '../screens/project/CommitteeListScreen';
 import EventListScreen from '../screens/project/EventListScreen';
@@ -33,7 +34,8 @@ import DepartmentsScreen from '../screens/user_management/DepartmentsScreen';
 import StaffsScreen from '../screens/user_management/StaffsScreen';
 import StaffsInDepartmentScreen from '../screens/user_management/StaffsInDepartmentScreen';
 import TaskScreen from '../screens/event/TaskScreen';
-import DrawerContent from '../components/common/DrawerContent';
+import DrawerContentOrganization from '../components/common/DrawerContentOrganization';
+import DrawerContentStaff from '../components/common/DrawerContentStaff';
 import RoadmapScreen from '../screens/event/RoadmapScreen';
 import EditComiteeScreen from '../screens/project/EditComiteeScreen';
 import ExternalScreen from '../screens/event/ExternalScreen';
@@ -44,7 +46,8 @@ import ExternalProfileScreen from '../screens/event/ExternalProfileScreen';
 import StaffProfileScreen from '../screens/user_management/StaffProfileScreen';
 import CommitteeProfileScreen from '../screens/project/CommitteeProfileScreen';
 import OrganizationProfileScreen from '../screens/user_profile/OrganizationProfileScreen';
-import FormEditOrganizationProfile from '../components/user_profile/FormEditOrganizationProfile';
+import StaffIndividualProfileScreen from '../screens/user_profile/StaffIndividualProfileScreen';
+
 import Colors from '../constants/Colors';
 
 
@@ -71,7 +74,7 @@ function DashboardStackScreen({ route, navigation }) {
   const sime = useContext(SimeContext);
   const [userId, setUserId] = useState(null)
   const [userPict, setUserPict] = useState('')
-  
+
   const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
     FETCH_ORGANIZATION_QUERY, {
     variables: {
@@ -126,13 +129,72 @@ function DashboardStackScreen({ route, navigation }) {
   );
 }
 
+function DashboardStackStaffScreen({ route, navigation }) {
+  const sime = useContext(SimeContext);
+  const [userId, setUserId] = useState(null)
+  const [userPict, setUserPict] = useState('')
+
+  const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+    FETCH_STAFF_QUERY, {
+    variables: {
+      staffId: userId
+    }
+  });
+
+  useEffect(() => {
+    if (sime.user) {
+      setUserId(sime.user.id)
+      loadData();
+      if (staff) {
+        setUserPict(staff.getStaff.picture)
+      }
+    }
+    return () => {
+      console.log("This will be logged on unmount dashboard header pict");
+    }
+  }, [sime.user, staff])
+  return (
+    <DashboardStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.primaryColor,
+        },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        }
+      }}
+    >
+      <DashboardStack.Screen
+        name="Dashboard"
+        component={DashboardScreen}
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 10 }}
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}
+            >
+              <Avatar.Image
+                size={40}
+                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
+              />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+    </DashboardStack.Navigator>
+  );
+}
+
 const ProjectsStack = createStackNavigator();
 
 function ProjectStackSceen({ route, navigation }) {
   const sime = useContext(SimeContext);
   const [userId, setUserId] = useState(null)
   const [userPict, setUserPict] = useState('')
-  
+
   const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
     FETCH_ORGANIZATION_QUERY, {
     variables: {
@@ -212,6 +274,96 @@ function ProjectStackSceen({ route, navigation }) {
       }} />
       <ProjectsStack.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
     </ProjectsStack.Navigator>
+  );
+}
+
+
+const ProjectsStackStaff = createStackNavigator();
+
+function ProjectStackStaffSceen({ route, navigation }) {
+  const sime = useContext(SimeContext);
+  const [userId, setUserId] = useState(null)
+  const [userPict, setUserPict] = useState('')
+
+  const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+    FETCH_STAFF_QUERY, {
+    variables: {
+      staffId: userId
+    }
+  });
+
+  useEffect(() => {
+    if (sime.user) {
+      setUserId(sime.user.id)
+      loadData();
+      if (staff) {
+        setUserPict(staff.getStaff.picture)
+      }
+    }
+    return () => {
+      console.log("This will be logged on unmount dashboard header pict");
+    }
+  }, [sime.user, staff])
+  return (
+    <ProjectsStackStaff.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.primaryColor,
+        },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+          fontWeight: 'bold'
+        }
+      }}
+    >
+      <ProjectsStackStaff.Screen
+        name="Projects"
+        component={ProjectListStaffScreen}
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 10 }}
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}
+            >
+              <Avatar.Image
+                size={40}
+                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
+              />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <ProjectsStackStaff.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
+      <ProjectsStackStaff.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Committee Profile Information</Text>
+          </View>),
+      }} />
+      <ProjectsStackStaff.Screen name="Event Detail" component={TopTabEvents} options={{
+        headerTitle: () =>
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.event_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }}>{sime.project_name}</Text>
+          </View>
+      }} />
+      <ProjectsStackStaff.Screen name="External List" component={ExternalListScreen} options={{
+        headerTitle: () =>
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.external_type_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }}>{sime.event_name}</Text>
+          </View>
+      }} />
+      <ProjectsStackStaff.Screen name="External Profile" component={ExternalProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>External Profile Information</Text>
+          </View>),
+      }} />
+      <ProjectsStackStaff.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
+    </ProjectsStackStaff.Navigator>
   );
 }
 
@@ -359,6 +511,40 @@ function OrganizationProfileStackScreen({ route, navigation }) {
   );
 }
 
+const StaffIndividualProfileStack = createStackNavigator();
+
+function StaffIndividualProfileStackScreen({ route, navigation }) {
+  return (
+    <StaffIndividualProfileStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.primaryColor,
+        },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+          fontWeight: 'bold'
+        }
+      }}
+    >
+      <StaffIndividualProfileStack.Screen name="Staff Profile" component={StaffIndividualProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+          </View>),
+        headerLeft: () => (
+          <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item
+              iconName="arrow-left"
+              onPress={() => { navigation.navigate('Dashboard') }}
+            />
+          </HeaderButtons>
+        )
+      }} />
+
+    </StaffIndividualProfileStack.Navigator>
+  );
+}
+
 const BottomTab = createBottomTabNavigator();
 
 function BottomTabs() {
@@ -394,6 +580,41 @@ function BottomTabs() {
   );
 }
 
+const BottomTabStaff = createBottomTabNavigator();
+
+function BottomTabsStaff() {
+  return (
+    <BottomTabStaff.Navigator
+      barStyle={{ backgroundColor: '#fff' }}
+      tabBarOptions={{
+        activeTintColor: Colors.primaryColor,
+      }}
+      screenOptions={({ route }) => ({
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+        headerTintColor: 'black',
+        tabBarVisible: TabVisible(route),
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          size = 23;
+          if (route.name === 'Dashboard') {
+            iconName = focused ? 'view-dashboard' : 'view-dashboard-outline';
+          } else if (route.name === 'Projects') {
+            iconName = focused ? 'folder-open' : 'folder';
+          }
+
+          // You can return any component that you like here!
+          return <Icon name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <BottomTabStaff.Screen name="Dashboard" component={DashboardStackStaffScreen} />
+      <BottomTabStaff.Screen name="Projects" component={ProjectStackStaffSceen} />
+    </BottomTabStaff.Navigator>
+  );
+}
+
 const Drawer = createDrawerNavigator();
 const Main = createStackNavigator();
 
@@ -419,30 +640,49 @@ export default function MainNavigator() {
 
   return (
     user || isLogin ? (
-      <>
-        <Drawer.Navigator
-          drawerContent={props => <DrawerContent {...props} />}
-        >
-          <Drawer.Screen
-            name="Dashboard"
-            component={BottomTabs}
-          />
-          <Drawer.Screen
-            name="Organization Profile"
-            component={OrganizationProfileStackScreen}
-            options={{
-              gestureEnabled: false,
-            }}
-          />
-          <Drawer.Screen
-            name="Users Management"
-            component={UsersManagementStackScreen}
-            options={{
-              gestureEnabled: false,
-            }}
-          />
-        </Drawer.Navigator>
-      </>
+      sime.user_type === "Organization" ? (
+        <>
+          <Drawer.Navigator
+            drawerContent={props => <DrawerContentOrganization {...props} />}
+          >
+            <Drawer.Screen
+              name="Dashboard"
+              component={BottomTabs}
+            />
+            <Drawer.Screen
+              name="Organization Profile"
+              component={OrganizationProfileStackScreen}
+              options={{
+                gestureEnabled: false,
+              }}
+            />
+            <Drawer.Screen
+              name="Users Management"
+              component={UsersManagementStackScreen}
+              options={{
+                gestureEnabled: false,
+              }}
+            />
+          </Drawer.Navigator>
+        </>) :
+        (
+          <>
+            <Drawer.Navigator
+              drawerContent={props => <DrawerContentStaff {...props} />}
+            >
+              <Drawer.Screen
+                name="Dashboard"
+                component={BottomTabsStaff}
+              />
+              <Drawer.Screen
+              name="Staff Profile"
+              component={StaffIndividualProfileStackScreen}
+              options={{
+                gestureEnabled: false,
+              }}
+            />
+            </Drawer.Navigator>
+          </>)
     ) : (
         <>
           <Main.Navigator
