@@ -47,6 +47,7 @@ import StaffProfileScreen from '../screens/user_management/StaffProfileScreen';
 import CommitteeProfileScreen from '../screens/project/CommitteeProfileScreen';
 import OrganizationProfileScreen from '../screens/user_profile/OrganizationProfileScreen';
 import StaffIndividualProfileScreen from '../screens/user_profile/StaffIndividualProfileScreen';
+import StaffOrganizationProfileScreen from '../screens/user_profile/StaffOrganizationProfileScreen';
 
 import Colors from '../constants/Colors';
 
@@ -246,6 +247,12 @@ function ProjectStackSceen({ route, navigation }) {
         }}
       />
       <ProjectsStack.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
+      <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Organization Profile Information</Text>
+          </View>),
+      }} />
       <ProjectsStack.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
@@ -336,6 +343,12 @@ function ProjectStackStaffSceen({ route, navigation }) {
         }}
       />
       <ProjectsStackStaff.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
+      <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Organization Profile Information</Text>
+          </View>),
+      }} />
       <ProjectsStackStaff.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>

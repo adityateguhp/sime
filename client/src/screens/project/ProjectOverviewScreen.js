@@ -9,7 +9,7 @@ import { NetworkStatus } from '@apollo/client';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
-import { FETCH_STAFF_QUERY, FETCH_PROJECT_QUERY, FETCH_POSITION_QUERY, FETCH_HEADPROJECT_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY, FETCH_PROJECT_QUERY, FETCH_POSITION_QUERY, FETCH_HEADPROJECT_QUERY, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
@@ -22,7 +22,8 @@ const ProjectOverviewScreen = props => {
     start_date: '',
     end_date: '',
     description: '',
-    cancel: false
+    cancel: false,
+    organization_id: ''
   });
 
   const [headProject, setHeadProject] = useState({
@@ -38,15 +39,27 @@ const ProjectOverviewScreen = props => {
     picture: ''
   });
 
+  const [organization, setOrganization] = useState({
+    name: '',
+    email: '',
+    picture: ''
+  });
+
   const [position, setPosition] = useState({
     name: ''
   });
 
-  const selectItemHandler = (id) => {
+  const selectInfoHandler = (id) => {
     props.navigation.navigate('Committee Profile', {
       committeeId: id
     });
     setVisible(false);
+  };
+
+  const selectOrganizationHandler = (organization_id) => {
+    props.navigation.navigate('Staff Organization Profile', {
+      organizationId: organization_id,
+    })
   };
 
   const [visible, setVisible] = useState(false);
@@ -69,8 +82,10 @@ const ProjectOverviewScreen = props => {
           start_date: projectData.getProject.start_date,
           end_date: projectData.getProject.end_date,
           description: projectData.getProject.description,
-          cancel: projectData.getProject.cancel
+          cancel: projectData.getProject.cancel,
+          organization_id: projectData.getProject.organization_id
         });
+        loadOrganizationData();
       }
     });
 
@@ -112,6 +127,13 @@ const ProjectOverviewScreen = props => {
     notifyOnNetworkStatusChange: true
   });
 
+  const [loadOrganizationData, { called: called3, data: organizationData, error: error5, loading: loading5, refetch: refetchOrganization, networkStatus: networkStatusOrganization }] = useLazyQuery(
+    FETCH_ORGANIZATION_QUERY,
+    {
+      variables: { organizationId: project.organization_id },
+      notifyOnNetworkStatusChange: true
+    });
+
   useEffect(() => {
     if (staffData) {
       setStaff({
@@ -131,8 +153,19 @@ const ProjectOverviewScreen = props => {
     }
   }, [positionData])
 
+  useEffect(() => {
+    if (organizationData) {
+      setOrganization({
+        name: organizationData.getOrganization.name,
+        email: organizationData.getOrganization.email,
+        picture: organizationData.getOrganization.picture
+      })
+    }
+  }, [organizationData])
+
   const onRefresh = () => {
     refetchProject();
+    refetchOrganization();
     refetchHeadProject();
     if (headProjectData.getHeadProject === null) {
       setStaff(
@@ -183,6 +216,11 @@ const ProjectOverviewScreen = props => {
     return <Text>Error 4</Text>;
   }
 
+  if (called3 && error5) {
+    console.error(error5);
+    return <Text>Error 5</Text>;
+  }
+
   if (loading1) {
     return <CenterSpinner />;
   }
@@ -199,10 +237,15 @@ const ProjectOverviewScreen = props => {
     return <CenterSpinner />;
   }
 
+  if (loading5) {
+    return <CenterSpinner />;
+  }
+
   if (networkStatusProject === NetworkStatus.refetch) return console.log('Refetching project!');
   if (networkStatusHeadProject === NetworkStatus.refetch) return console.log('Refetching head project!');
   if (networkStatusPosition === NetworkStatus.refetch) return console.log('Refetching position!');
   if (networkStatusStaff === NetworkStatus.refetch) return console.log('Refetching staff!');
+  if (networkStatusOrganization === NetworkStatus.refetch) return console.log('Refetching organization!');
 
   const startDate = moment(project.start_date).format('ddd, MMM D YYYY');
   const endDate = moment(project.end_date).format('ddd, MMM D YYYY');
@@ -218,6 +261,12 @@ const ProjectOverviewScreen = props => {
         }
       >
         <View style={styles.overview}>
+          <Subheading style={{ fontWeight: 'bold' }}>Organization</Subheading>
+          <List.Item
+            title={organization.name === null || organization.name === '' ? "-" : organization.name}
+            left={() => <Avatar.Image size={35} source={organization.picture === null || organization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.picture }} />}
+            onPress={()=>{selectOrganizationHandler(project.organization_id)}}
+          />
           <Subheading style={{ fontWeight: 'bold' }}>Head of Project</Subheading>
           <List.Item
             title={staff.name === null || staff.name === '' ? "-" : staff.name}
@@ -261,7 +310,7 @@ const ProjectOverviewScreen = props => {
             phone_number={staff.phone_number}
             picture={staff.picture}
             positionName={true}
-            onPressInfo={() => { selectItemHandler(headProject.id) }}
+            onPressInfo={() => { selectInfoHandler(headProject.id) }}
             onPressIn={closeModal}
           />
       }
