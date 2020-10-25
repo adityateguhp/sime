@@ -20,6 +20,7 @@ const Task = props => {
 
     const [checked, setCheked] = useState(props.completed);
     const [due_date, setDue_date] = useState('');
+    const [completed_date, setCompleted_date] = useState('');
     const [completedValue, setCompletedValue] = useState({
         taskId: props.taskId,
         completed: props.completed
@@ -45,6 +46,7 @@ const Task = props => {
     const onPressCheck = (event) => {
         event.preventDefault();
         setCompletedValue({ ...completedValue, completed: !completedValue.completed });
+        setCompleted_date(moment(new Date()).format('ddd, MMM D YYYY h:mm a'))
         completedTask();
     }
 
@@ -81,19 +83,34 @@ const Task = props => {
     return (
 
         <View style={styles.container}>
-            <View style={styles.taskContainer}>
+            <View style={{
+                ...styles.taskContainer, ...{
+                    backgroundColor:
+                        props.priority === "high" ? "#ff4943" :
+                            props.priority === "medium" ? "#a3cd3b" :
+                                props.priority === "low" ? "#ffc916" : "#e2e2e2",
+                }
+            }}>
                 <View style={styles.checkTask}>
-                    <Checkbox onPress={onPressCheck} status={props.completed === true ? 'checked' : 'unchecked'} color='white' uncheckedColor='white' />
+                    <Checkbox
+                        onPress={onPressCheck}
+                        status={props.completed === true ? 'checked' : 'unchecked'}
+                        color="white"
+                        uncheckedColor="white" />
                 </View>
                 <TouchableCmp>
                     <View style={styles.task}>
                         <View>
                             <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.completed === true ? 'line-through' : 'none', opacity: props.completed === true ? 0.6 : 1 } }}>{props.name}</Subheading>
-                            {props.due_date === null || props.due_date === '' || props.completed === true ? null :
+                            {props.completed === true ?
+                                <Caption style={{ ...styles.statusTask, ...{opacity: props.completed === true ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
+                                :
                                 dueDate > nowDate ?
-                                    <Caption style={{ ...styles.statusTask, ...{ textDecorationLine: props.completed === true ? 'line-through' : 'none', opacity: props.completed === true ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
+                                    <Caption style={{ ...styles.statusTask, ...{opacity: props.completed === true ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
                                     :
-                                    <Caption style={{ ...styles.statusTask, ...{ textDecorationLine: props.completed === true ? 'line-through' : 'none', opacity: props.completed === true ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption>}
+                                    dueDate < nowDate ?
+                                    <Caption style={{ ...styles.statusTask, ...{opacity: props.completed === true ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption>:
+                                    null}
                         </View>
                         <View style={styles.taskSub}>
                             <View style={{ ...styles.comment, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
@@ -123,7 +140,6 @@ const styles = StyleSheet.create({
     taskContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'red',
         borderRadius: 4
     },
     task: {
@@ -154,7 +170,7 @@ const styles = StyleSheet.create({
     statusTask: {
 
     },
-    checkTask:{
+    checkTask: {
         marginHorizontal: 5
     }
 
