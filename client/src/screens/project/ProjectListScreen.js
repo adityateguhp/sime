@@ -276,7 +276,7 @@ const ProjectListScreen = props => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching projects!');
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching projects!');
 
     return (
         <Provider theme={theme}>

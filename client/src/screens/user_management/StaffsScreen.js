@@ -308,8 +308,8 @@ const StaffsScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatusStaffs === NetworkStatus.refetch) return console.log('Refetching staffs!');
-    if (networkStatusDepartments === NetworkStatus.refetch) return console.log('Refetching departments!');
+    if (networkStatusStaffs === NetworkStatus.refetch) console.log('Refetching staffs!');
+    if (networkStatusDepartments === NetworkStatus.refetch) console.log('Refetching departments!');
 
     return (
         <Provider theme={theme}>

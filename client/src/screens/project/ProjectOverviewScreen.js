@@ -241,11 +241,11 @@ const ProjectOverviewScreen = props => {
     return <CenterSpinner />;
   }
 
-  if (networkStatusProject === NetworkStatus.refetch) return console.log('Refetching project!');
-  if (networkStatusHeadProject === NetworkStatus.refetch) return console.log('Refetching head project!');
-  if (networkStatusPosition === NetworkStatus.refetch) return console.log('Refetching position!');
-  if (networkStatusStaff === NetworkStatus.refetch) return console.log('Refetching staff!');
-  if (networkStatusOrganization === NetworkStatus.refetch) return console.log('Refetching organization!');
+  if (networkStatusProject === NetworkStatus.refetch) console.log('Refetching project!');
+  if (networkStatusHeadProject === NetworkStatus.refetch) console.log('Refetching head project!');
+  if (networkStatusPosition === NetworkStatus.refetch) console.log('Refetching position!');
+  if (networkStatusStaff === NetworkStatus.refetch) console.log('Refetching staff!');
+  if (networkStatusOrganization === NetworkStatus.refetch) console.log('Refetching organization!');
 
   const startDate = moment(project.start_date).format('ddd, MMM D YYYY');
   const endDate = moment(project.end_date).format('ddd, MMM D YYYY');

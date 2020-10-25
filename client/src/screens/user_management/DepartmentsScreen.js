@@ -244,7 +244,7 @@ const DepartmentsScreen = ({ navigation }) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching departments!');
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching departments!');
 
     return (
         <Provider theme={theme}>

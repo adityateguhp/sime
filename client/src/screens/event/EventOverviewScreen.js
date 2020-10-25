@@ -189,10 +189,10 @@ const EventOverviewScreen = props => {
 
   }
 
-  if (networkStatusEvent === NetworkStatus.refetch) return console.log('Refetching event!');
-  if (networkStatusGuest === NetworkStatus.refetch) return console.log('Refetching guest!');
-  if (networkStatusMedia === NetworkStatus.refetch) return console.log('Refetching media!');
-  if (networkStatusSponsor === NetworkStatus.refetch) return console.log('Refetching sponsor!');
+  if (networkStatusEvent === NetworkStatus.refetch) console.log('Refetching event!');
+  if (networkStatusGuest === NetworkStatus.refetch) console.log('Refetching guest!');
+  if (networkStatusMedia === NetworkStatus.refetch) console.log('Refetching media!');
+  if (networkStatusSponsor === NetworkStatus.refetch) console.log('Refetching sponsor!');
 
 
   const startDate = moment(event.start_date).format('ddd, MMM D YYYY');

@@ -14,7 +14,7 @@ const DashboardScreen = props => {
 
   return (
     <View style={styles.screen}>
-      <Text>Department Screen</Text>
+      <Text>Dashboard Screen</Text>
     </View>
   );
 }

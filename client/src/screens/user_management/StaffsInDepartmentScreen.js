@@ -239,7 +239,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching staffs!');
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching staffs!');
 
     return (
         <Provider theme={theme}>

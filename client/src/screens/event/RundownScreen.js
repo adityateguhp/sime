@@ -292,7 +292,7 @@ const RundownScreen = props => {
     );
   }
 
-  if (networkStatus === NetworkStatus.refetch) return console.log('Refetching rundowns!');
+  if (networkStatus === NetworkStatus.refetch) console.log('Refetching rundowns!');
 
   return (
     <Provider theme={theme}>

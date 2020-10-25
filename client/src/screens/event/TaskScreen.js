@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, ScrollView } from 'react-native';
 import { Divider, Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -15,9 +15,8 @@ import { theme } from '../../constants/Theme';
 import { FETCH_TASKS_QUERY, FETCH_TASK_QUERY, DELETE_TASK, COMPLETED_TASK } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
-const TaskScreen = ({ route }, props) => {
+const TaskScreen = props => {
     const sime = useContext(SimeContext);
-
 
     const [visibleAdd, setVisibleAdd] = useState(false);
 
@@ -55,27 +54,20 @@ const TaskScreen = ({ route }, props) => {
         onToggleSnackBarAdd();
     }
 
-    const headerTask = () => {
-        let pendingTask = tasksValue.filter((t) => t.completed === false);
-        let completeTask = tasksValue.filter((t) => t.completed === true);
-        return (
-            <View style={styles.taskStatusContainer}>
-                <View style={styles.pending}>
-                    <Text style={styles.textStatus}>Pending: {pendingTask.length} Task</Text>
-                </View>
-                <Divider style={[styles.dividerStatus, {
-                    transform: [
-                        { rotate: "90deg" }
-                    ]
-                }]} />
-                <View style={styles.completed}>
-                    <Text style={styles.textStatus}>Completed: {completeTask.length} Task</Text>
-                </View>
-            </View>
-        )
+    let pendingTask = tasksValue.filter((t) => t.completed === false);
+
+    let completeTask = tasksValue.filter((t) => t.completed === true);
+
+    if (errorTasks) {
+        console.error(errorTasks);
+        return <Text>errorTasks</Text>;
     }
 
-    if (tasks.getTasks.length === 0) {
+    if (loadingTasks) {
+        return <CenterSpinner />;
+    }
+
+    if (tasksValue.length === 0) {
         return (
             <ScrollView
                 contentContainerStyle={styles.content}
@@ -103,29 +95,34 @@ const TaskScreen = ({ route }, props) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching tasks!');
-
-    if (errorTasks) {
-        console.error(errorTasks);
-        return <Text>errorTasks</Text>;
-    }
-
-    if (loadingTasks) {
-        return <CenterSpinner />;
-    }
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching tasks!');
 
     return (
         <Provider theme={theme}>
             <FlatList
-                ListHeaderComponentStyle={styles.screen}
-                data={tasksValue}
                 refreshControl={
                     <RefreshControl
                         refreshing={loadingTasks}
                         onRefresh={onRefresh} />
                 }
+                ListHeaderComponentStyle={styles.screen}
+                data={tasksValue}
                 keyExtractor={item => item.id}
-                ListHeaderComponent={headerTask()}
+                ListHeaderComponent={
+                    <View style={styles.taskStatusContainer}>
+                        <View style={styles.pending}>
+                            <Text style={styles.textStatus}>Pending: {pendingTask.length} Task</Text>
+                        </View>
+                        <Divider style={[styles.dividerStatus, {
+                            transform: [
+                                { rotate: "90deg" }
+                            ]
+                        }]} />
+                        <View style={styles.completed}>
+                            <Text style={styles.textStatus}>Completed: {completeTask.length} Task</Text>
+                        </View>
+                    </View>
+                }
                 renderItem={itemData => (
                     <Task
                         name={itemData.item.name}
@@ -155,6 +152,12 @@ const TaskScreen = ({ route }, props) => {
 const styles = StyleSheet.create({
     screen: {
         marginBottom: 5
+    },
+    content: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     pending: {
         backgroundColor: 'white',

@@ -42,7 +42,7 @@ const FormTask = props => {
                 variables: {roadmapId: values.roadmapId}
             });
             data.getTasks = [result.data.addTask, ...data.getTasks];
-            props.addProjectsStateUpdate(result.data.addTask);
+            props.addTasksStateUpdate(result.data.addTask);
             proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: {roadmapId: values.roadmapId}});
             values.name = '';
             props.closeModalForm();

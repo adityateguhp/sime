@@ -222,7 +222,7 @@ const RoadmapScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching roadmaps!');
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching roadmaps!');
 
     return (
         <Provider theme={theme}>

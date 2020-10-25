@@ -273,7 +273,7 @@ const EventListScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching events!');
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching events!');
 
     return (
         <Provider theme={theme}>

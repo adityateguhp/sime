@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Subheading, Divider, Checkbox, Caption } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -16,12 +16,19 @@ const Task = props => {
     }
 
     const [checked, setCheked] = useState(false);
+    const [due_date, setDue_date] = useState('');
+
 
     const onPressCheck = () => {
         setCheked(!checked);
     }
 
-    const date = moment(props.due_date).format('dddd, MMM D YYYY')
+    useEffect(() => {
+        if (props.due_date) {
+            const date = moment(props.due_date).format('dddd, MMM D YYYY')
+            setDue_date(date);
+        }
+    }, [props.due_date])
 
     return (
         <TouchableCmp>
@@ -33,7 +40,7 @@ const Task = props => {
                     <View style={styles.task}>
                         <View>
                             <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>{props.name}</Subheading>
-                            <Caption style={{ ...styles.statusTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>{props.due_date === null || props.due_date === ''? '' : "Due on " + {date}}</Caption>
+                            {props.due_date === null || props.due_date === '' ? null : <Caption style={{ ...styles.statusTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>{"Due on " + date}</Caption>}
                         </View>
                         <View style={styles.taskSub}>
                             <View style={{ ...styles.comment, ...{ opacity: checked ? 0.6 : 1 } }}>

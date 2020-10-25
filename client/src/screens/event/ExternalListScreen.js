@@ -241,7 +241,7 @@ const ExternalListScreen = props => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) return console.log('Refetching externals!');
+    if (networkStatus === NetworkStatus.refetch) console.log('Refetching externals!');
 
     return (
         <Provider theme={theme}>

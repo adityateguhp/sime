@@ -250,10 +250,10 @@ const CommitteeListScreen = ({ navigation }) => {
         );
     }
 
-    if (networkStatusCommittees === NetworkStatus.refetch) return console.log('Refetching committees!');
-    if (networkStatusDivisions === NetworkStatus.refetch) return console.log('Refetching head divisions!');
-    if (networkStatusStaffs === NetworkStatus.refetch) return console.log('Refetching staffs!');
-    if (networkStatusPositions === NetworkStatus.refetch) return console.log('Refetching positions!');
+    if (networkStatusCommittees === NetworkStatus.refetch) console.log('Refetching committees!');
+    if (networkStatusDivisions === NetworkStatus.refetch) console.log('Refetching head divisions!');
+    if (networkStatusStaffs === NetworkStatus.refetch) console.log('Refetching staffs!');
+    if (networkStatusPositions === NetworkStatus.refetch) console.log('Refetching positions!');
 
     return (
         <Provider theme={theme}>
