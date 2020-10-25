@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform }
 import { Subheading, Divider, Checkbox, Caption } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import moment from 'moment';
 
 import Colors from '../../constants/Colors';
 
@@ -20,6 +21,8 @@ const Task = props => {
         setCheked(!checked);
     }
 
+    const date = moment(props.due_date).format('dddd, MMM D YYYY')
+
     return (
         <TouchableCmp>
             <View style={styles.container}>
@@ -29,8 +32,8 @@ const Task = props => {
                     </View>
                     <View style={styles.task}>
                         <View>
-                            <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>{props.task_name}</Subheading>
-                            <Caption style={{ ...styles.statusTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>Due on Tue 09 June 2020</Caption>
+                            <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>{props.name}</Subheading>
+                            <Caption style={{ ...styles.statusTask, ...{ textDecorationLine: checked ? 'line-through' : 'none', opacity: checked ? 0.6 : 1 } }}>{props.due_date === null || props.due_date === ''? '' : "Due on " + {date}}</Caption>
                         </View>
                         <View style={styles.taskSub}>
                             <View style={{ ...styles.comment, ...{ opacity: checked ? 0.6 : 1 } }}>

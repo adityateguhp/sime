@@ -43,6 +43,11 @@ export const organizationNameValidator = (name) => {
   return '';
 };
 
+export const taskNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Task name must not be empty';
+  return '';
+};
+
 export const dateValidator = (start_date, end_date) => {
   if ((!start_date || start_date.length <= 0) && (!end_date || end_date.length <= 0)){
     return 'Date must not be empty';

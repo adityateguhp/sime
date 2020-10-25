@@ -113,6 +113,17 @@ module.exports = gql`
         createdAt: String!
     }
 
+    type Task {
+        id: ID!
+        name: String!
+        description: String
+        completed: Boolean!
+        due_date: String
+        roadmap_id: ID!
+        createdAt: String!
+        createdBy: ID!
+    }
+
     type Query {
         getOrganization(organizationId: ID!): Organization
         getDepartments(organizationId: ID!): [Department]
@@ -142,6 +153,8 @@ module.exports = gql`
         getRoadmap(roadmapId: ID!): Roadmap  
         getRundowns(eventId: ID!): [Rundown]
         getRundown(rundownId: ID!): Rundown 
+        getTasks(roadmapId: ID!): [Task]
+        getTask(taskId: ID!): Task
     }
     type Mutation {
         registerOrganization(
@@ -333,7 +346,7 @@ module.exports = gql`
         ): Rundown!
 
         updateRundown(
-            rundownId: ID!,
+            rundownId: ID!
             agenda: String!
             date: String!
             start_time: String!
@@ -343,5 +356,25 @@ module.exports = gql`
 
         deleteRundown(rundownId: ID!): String!
 
+        addTask(
+            name: String!
+            description: String
+            completed: Boolean!
+            due_date: String
+            roadmapId: ID!
+            createdBy: ID!
+        ): Task!
+
+        updateTask(
+            taskId: ID!
+            name: String!
+            description: String
+            completed: Boolean!
+            due_date: String
+        ): Task!
+
+        deleteTask(taskId: ID!): String!
+
+        completedTask(taskId: ID!, completed: Boolean!): Task!
     }
 `;

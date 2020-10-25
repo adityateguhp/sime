@@ -244,6 +244,20 @@ module.exports.validateRundownInput = (
     };
 };
 
+
+module.exports.validateTaskInput = (
+    name
+) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'Task name must not be empty';
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
 module.exports.validateExternalInput = (
     name,
     email,

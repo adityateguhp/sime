@@ -1091,3 +1091,116 @@ export const DELETE_RUNDOWN = gql`
     deleteRundown(rundownId: $rundownId)
   }
 `;
+
+
+export const FETCH_TASKS_QUERY = gql`
+  query($roadmapId: ID!) {
+    getTasks(roadmapId: $roadmapId){
+    id
+    name
+    description
+    completed
+    due_date
+    roadmap_id
+    createdAt
+    createdBy
+  }
+  }
+`;
+
+export const FETCH_TASK_QUERY = gql`
+   query($taskId: ID!) {
+    getTask(taskId: $taskId){
+    id
+    name
+    description
+    completed
+    due_date
+    roadmap_id
+    createdAt
+    createdBy
+  }
+  }
+`;
+
+export const ADD_TASK_MUTATION = gql`
+  mutation 
+  addTask(
+    $name: String!,
+    $description: String,
+    $completed: Boolean!,
+    $due_date: String!,
+    $roadmapId: ID!,
+    $createdBy: ID!
+  ) {
+  addTask(
+    name: $name,
+    description: $description,
+    completed: $completed,
+    due_date: $due_date,
+    roadmapId: $roadmapId,
+    createdBy: $createdBy
+  ) {
+    id
+    name
+    description
+    completed
+    due_date
+    roadmap_id
+    createdAt
+    createdBy
+  }
+  } 
+`;
+
+export const UPDATE_TASK_MUTATION = gql`
+  mutation 
+  updateTask(
+    $taskId: ID!,
+    $name: String!,
+    $description: String,
+    $completed: Boolean!,
+    $due_date: String!,
+  ) {
+  updateTask(
+    taskId: $taskId,
+    name: $name,
+    description: $description,
+    completed: $completed,
+    due_date: $due_date,
+  ) {
+    id
+    name
+    description
+    completed
+    due_date
+    roadmap_id
+    createdAt
+    createdBy
+  }
+  } 
+`;
+
+export const DELETE_TASK = gql`
+  mutation deleteTask($taskId: ID!) {
+    deleteTask(taskId: $taskId)
+  }
+`;
+
+export const COMPLETED_TASK = gql`
+  mutation completedTask(
+    $taskId: ID!,
+    $completed: Boolean!
+    ) {
+    completedTask(taskId: $taskId, completed: $completed){
+    id
+    name
+    description
+    completed
+    due_date
+    roadmap_id
+    createdAt
+    createdBy
+    }
+  }
+`;

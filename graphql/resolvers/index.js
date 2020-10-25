@@ -10,6 +10,7 @@ const externalResolvers = require('./externals');
 const externalTypeResolvers = require('./externalTypes');
 const roadmapResolvers = require('./roadmaps');
 const rundownResolvers = require('./rundowns');
+const taskResolvers = require('./tasks');
 
 module.exports = {
     Query: {
@@ -24,7 +25,8 @@ module.exports = {
         ...externalResolvers.Query,
         ...externalTypeResolvers.Query,
         ...roadmapResolvers.Query,
-        ...rundownResolvers.Query
+        ...rundownResolvers.Query,
+        ...taskResolvers.Query
     },
     Mutation: {
         ...organizationResolvers.Mutation,
@@ -38,6 +40,7 @@ module.exports = {
         ...externalResolvers.Mutation,
         ...externalTypeResolvers.Mutation,
         ...roadmapResolvers.Mutation,
-        ...rundownResolvers.Mutation
+        ...rundownResolvers.Mutation,
+        ...taskResolvers.Mutation
     }
 }
