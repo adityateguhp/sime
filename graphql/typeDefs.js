@@ -119,9 +119,10 @@ module.exports = gql`
         description: String
         completed: Boolean!
         due_date: String
+        priority: String
         roadmap_id: ID!
         createdAt: String!
-        createdBy: ID!
+        createdBy: String!
     }
 
     type Query {
@@ -361,8 +362,9 @@ module.exports = gql`
             description: String
             completed: Boolean!
             due_date: String
+            priority: String
             roadmapId: ID!
-            createdBy: ID!
+            createdBy: String!
         ): Task!
 
         updateTask(
@@ -371,6 +373,7 @@ module.exports = gql`
             description: String
             completed: Boolean!
             due_date: String
+            priority: String
         ): Task!
 
         deleteTask(taskId: ID!): String!

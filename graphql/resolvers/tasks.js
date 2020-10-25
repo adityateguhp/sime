@@ -7,7 +7,7 @@ module.exports = {
     Query: {
         async getTasks(_, { roadmapId }, context) {
             try {
-                const tasks = await Task.find({ roadmap_id: roadmapId }).sort({ createdAt: -1 });
+                const tasks = await Task.find({ roadmap_id: roadmapId }).sort({ createdAt: -1, completed: 1 });
                 if (tasks) {
                     return tasks;
                 } else {
@@ -36,6 +36,7 @@ module.exports = {
             description,
             completed,
             due_date,
+            priority,
             roadmapId,
             createdBy
         }, context) {
@@ -52,6 +53,7 @@ module.exports = {
                 description,
                 completed,
                 due_date,
+                priority,
                 roadmap_id: roadmapId,
                 createdAt: new Date().toISOString(),
                 createdBy
@@ -66,7 +68,8 @@ module.exports = {
             name,
             description,
             completed,
-            due_date
+            due_date,
+            priority
         }, context) {
             try {
                 const { valid, errors } =
@@ -83,7 +86,8 @@ module.exports = {
                         name,
                         description,
                         completed,
-                        due_date
+                        due_date,
+                        priority
                     },
                     { new: true });
 

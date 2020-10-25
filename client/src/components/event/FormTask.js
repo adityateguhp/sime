@@ -26,8 +26,9 @@ const FormTask = props => {
         description: '',
         completed: false,
         due_date: '',
+        priority:'',
         roadmapId: sime.roadmap_id,
-        createdBy: sime.user.id
+        createdBy: sime.user.name
     });
 
     const onChange = (key, val, err) => {

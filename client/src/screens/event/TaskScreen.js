@@ -31,7 +31,15 @@ const TaskScreen = props => {
         {
             variables: { roadmapId: sime.roadmap_id },
             notifyOnNetworkStatusChange: true,
-            onCompleted: () => { setTasksValue(tasks.getTasks) }
+            onCompleted: () => {
+                tasks.getTasks.sort(function (x, y) {
+                    return new Date(x.createdAt) - new Date(y.createdAt);
+                }).reverse();
+                tasks.getTasks.sort(function (x, y) {
+                    return Number(x.completed) - Number(y.completed);
+                });
+                setTasksValue(tasks.getTasks)
+            }
         }
     );
 
@@ -52,6 +60,21 @@ const TaskScreen = props => {
     const addTasksStateUpdate = (e) => {
         setTasksValue([e, ...tasksValue]);
         onToggleSnackBarAdd();
+    }
+
+    const completedTasksStateUpdate = (e) => {
+        const temp = [...tasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        temp.sort(function (x, y) {
+            return new Date(x.createdAt) - new Date(y.createdAt);
+        }).reverse();
+        temp.sort(function (x, y) {
+            return Number(x.completed) - Number(y.completed);
+        });
+        setTasksValue(temp)
     }
 
     let pendingTask = tasksValue.filter((t) => t.completed === false);
@@ -125,8 +148,13 @@ const TaskScreen = props => {
                 }
                 renderItem={itemData => (
                     <Task
+                        taskId={itemData.item.id}
                         name={itemData.item.name}
                         due_date={itemData.item.due_date}
+                        completed={itemData.item.completed}
+                        roadmapId={itemData.item.roadmap_id}
+                        completedTasksStateUpdate={completedTasksStateUpdate}
+                        priority={itemData.item.priority}
                     >
                     </Task>
                 )}
