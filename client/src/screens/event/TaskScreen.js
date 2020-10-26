@@ -155,6 +155,7 @@ const TaskScreen = props => {
                         roadmapId={itemData.item.roadmap_id}
                         completedTasksStateUpdate={completedTasksStateUpdate}
                         priority={itemData.item.priority}
+                        completed_date={itemData.item.completed_date}
                     >
                     </Task>
                 )}

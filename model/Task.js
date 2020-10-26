@@ -5,6 +5,7 @@ const taskSchema = new Schema({
     description: String,
     completed: Boolean,
     due_date: String,
+    completed_date: String,
     priority: String,
     roadmap_id:{
         type: Schema.Types.ObjectId,

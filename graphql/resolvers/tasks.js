@@ -36,6 +36,7 @@ module.exports = {
             description,
             completed,
             due_date,
+            completed_date,
             priority,
             roadmapId,
             createdBy
@@ -53,6 +54,7 @@ module.exports = {
                 description,
                 completed,
                 due_date,
+                completed_date,
                 priority,
                 roadmap_id: roadmapId,
                 createdAt: new Date().toISOString(),
@@ -69,6 +71,7 @@ module.exports = {
             description,
             completed,
             due_date,
+            completed_date,
             priority
         }, context) {
             try {
@@ -87,6 +90,7 @@ module.exports = {
                         description,
                         completed,
                         due_date,
+                        completed_date,
                         priority
                     },
                     { new: true });
@@ -108,13 +112,15 @@ module.exports = {
         async completedTask(_, {
             taskId,
             completed,
+            completed_date,
           }, context) {
             try {
       
               const updatedTask = await Task.findByIdAndUpdate(
                 { _id: taskId },
                 {
-                  completed
+                  completed,
+                  completed_date,
                 },
                 { new: true });
       

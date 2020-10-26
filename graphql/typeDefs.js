@@ -119,6 +119,7 @@ module.exports = gql`
         description: String
         completed: Boolean!
         due_date: String
+        completed_date: String
         priority: String
         roadmap_id: ID!
         createdAt: String!
@@ -362,6 +363,7 @@ module.exports = gql`
             description: String
             completed: Boolean!
             due_date: String
+            completed_date: String
             priority: String
             roadmapId: ID!
             createdBy: String!
@@ -373,11 +375,12 @@ module.exports = gql`
             description: String
             completed: Boolean!
             due_date: String
+            completed_date: String
             priority: String
         ): Task!
 
         deleteTask(taskId: ID!): String!
 
-        completedTask(taskId: ID!, completed: Boolean!): Task!
+        completedTask(taskId: ID!, completed: Boolean!, completed_date: String!): Task!
     }
 `;

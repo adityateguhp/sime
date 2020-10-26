@@ -17,13 +17,13 @@ const Task = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-
-    const [checked, setCheked] = useState(props.completed);
+    
     const [due_date, setDue_date] = useState('');
     const [completed_date, setCompleted_date] = useState('');
     const [completedValue, setCompletedValue] = useState({
         taskId: props.taskId,
-        completed: props.completed
+        completed: props.completed,
+        completed_date: props.completed_date
     });
 
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
@@ -39,14 +39,13 @@ const Task = props => {
             console.log(err)
             return err;
         },
-        variables: { ...completedValue, completed: !completedValue.completed }
+        variables: completedValue
     });
 
 
     const onPressCheck = (event) => {
         event.preventDefault();
-        setCompletedValue({ ...completedValue, completed: !completedValue.completed });
-        setCompleted_date(moment(new Date()).format('ddd, MMM D YYYY h:mm a'))
+        setCompletedValue({ ...completedValue, completed: !completedValue.completed, completed_date: new Date() });
         completedTask();
     }
 
@@ -79,6 +78,12 @@ const Task = props => {
             }
         }
     }, [props.due_date])
+
+    useEffect(() => {
+        if (props.completed_date !== '') {
+            setCompleted_date(moment(props.completed_date).format('ddd, MMM D YYYY h:mm a'))
+        }
+    }, [props.completed_date])
 
     return (
 

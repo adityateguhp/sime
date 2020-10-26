@@ -1101,6 +1101,7 @@ export const FETCH_TASKS_QUERY = gql`
     description
     completed
     due_date
+    completed_date
     priority
     roadmap_id
     createdAt
@@ -1117,6 +1118,7 @@ export const FETCH_TASK_QUERY = gql`
     description
     completed
     due_date
+    completed_date
     priority
     roadmap_id
     createdAt
@@ -1132,6 +1134,7 @@ export const ADD_TASK_MUTATION = gql`
     $description: String,
     $completed: Boolean!,
     $due_date: String,
+    $completed_date: String,
     $priority: String,
     $roadmapId: ID!,
     $createdBy: String!
@@ -1141,6 +1144,7 @@ export const ADD_TASK_MUTATION = gql`
     description: $description,
     completed: $completed,
     due_date: $due_date,
+    completed_date: $completed_date,
     priority: $priority,
     roadmapId: $roadmapId,
     createdBy: $createdBy
@@ -1150,6 +1154,7 @@ export const ADD_TASK_MUTATION = gql`
     description
     completed
     due_date
+    completed_date
     priority
     roadmap_id
     createdAt
@@ -1166,6 +1171,7 @@ export const UPDATE_TASK_MUTATION = gql`
     $description: String,
     $completed: Boolean!,
     $due_date: String,
+    $completed_date: String,
     $priority: String
   ) {
   updateTask(
@@ -1174,6 +1180,7 @@ export const UPDATE_TASK_MUTATION = gql`
     description: $description,
     completed: $completed,
     due_date: $due_date,
+    completed_date: $completed_date,
     priority: $priority
   ) {
     id
@@ -1181,6 +1188,7 @@ export const UPDATE_TASK_MUTATION = gql`
     description
     completed
     due_date
+    completed_date
     priority
     roadmap_id
     createdAt
@@ -1198,14 +1206,16 @@ export const DELETE_TASK = gql`
 export const COMPLETED_TASK = gql`
   mutation completedTask(
     $taskId: ID!,
-    $completed: Boolean!
+    $completed: Boolean!,
+    $completed_date: String!
     ) {
-    completedTask(taskId: $taskId, completed: $completed){
+    completedTask(taskId: $taskId, completed: $completed, completed_date: $completed_date){
     id
     name
     description
     completed
     due_date
+    completed_date
     priority
     roadmap_id
     createdAt
