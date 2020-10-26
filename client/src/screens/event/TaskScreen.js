@@ -24,6 +24,21 @@ const TaskScreen = props => {
 
     const onDismissSnackBarAdd = () => setVisibleAdd(false);
 
+
+    const [visibleDelete, setVisibleDelete] = useState(false);
+
+    const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
+
+    const onDismissSnackBarDelete = () => setVisibleDelete(false);
+
+
+    const [visibleUpdate, setVisibleUpdate] = useState(false);
+
+    const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
+
+    const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
+
+
     const [tasksValue, setTasksValue] = useState([]);
 
     const { data: tasks, error: errorTasks, loading: loadingTasks, refetch, networkStatus } = useQuery(
@@ -77,6 +92,32 @@ const TaskScreen = props => {
         setTasksValue(temp)
     }
 
+    const deleteTasksStateUpdate = (e) => {
+        const temp = [...tasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setTasksValue(temp);
+        onToggleSnackBarDelete();
+    }
+
+    const updateTasksStateUpdate = (e) => {
+        const temp = [...tasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        temp.sort(function (x, y) {
+            return new Date(x.createdAt) - new Date(y.createdAt);
+        }).reverse();
+        temp.sort(function (x, y) {
+            return Number(x.completed) - Number(y.completed);
+        });
+        setTasksValue(temp);
+        onToggleSnackBarUpdate();
+    }
+
     let pendingTask = tasksValue.filter((t) => t.completed === false);
 
     let completeTask = tasksValue.filter((t) => t.completed === true);
@@ -114,6 +155,12 @@ const TaskScreen = props => {
                 >
                     Task added!
             </Snackbar>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Task deleted!
+            </Snackbar>
             </ScrollView>
         );
     }
@@ -148,14 +195,20 @@ const TaskScreen = props => {
                 }
                 renderItem={itemData => (
                     <Task
+                        tasks={tasksValue}
+                        task={itemData.item}
                         taskId={itemData.item.id}
                         name={itemData.item.name}
                         due_date={itemData.item.due_date}
                         completed={itemData.item.completed}
                         roadmapId={itemData.item.roadmap_id}
                         completedTasksStateUpdate={completedTasksStateUpdate}
+                        deleteTasksStateUpdate={deleteTasksStateUpdate}
+                        updateTasksStateUpdate={updateTasksStateUpdate}
                         priority={itemData.item.priority}
                         completed_date={itemData.item.completed_date}
+                        createdAt={itemData.item.createdAt}
+                        createdBy={itemData.item.createdBy}
                     >
                     </Task>
                 )}
@@ -172,6 +225,18 @@ const TaskScreen = props => {
                 onDismiss={onDismissSnackBarAdd}
             >
                 Task added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+            >
+                Task deleted!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Task updated!
             </Snackbar>
         </Provider>
 

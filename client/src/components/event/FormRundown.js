@@ -195,7 +195,7 @@ const FormRundown = props => {
                                         <View style={styles.dateLabel}>
                                             <Icon name="clock" size={25} color={Colors.primaryColor} />
                                             <Text style={styles.textDate}>
-                                                time :
+                                                Time :
                                 </Text>
                                         </View>
                                         <View style={styles.dateButtonContainer}>

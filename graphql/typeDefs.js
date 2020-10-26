@@ -381,6 +381,6 @@ module.exports = gql`
 
         deleteTask(taskId: ID!): String!
 
-        completedTask(taskId: ID!, completed: Boolean!, completed_date: String!): Task!
+        completedTask(taskId: ID!, completed: Boolean!, completed_date: String): Task!
     }
 `;

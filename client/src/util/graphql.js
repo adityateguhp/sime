@@ -1207,7 +1207,7 @@ export const COMPLETED_TASK = gql`
   mutation completedTask(
     $taskId: ID!,
     $completed: Boolean!,
-    $completed_date: String!
+    $completed_date: String
     ) {
     completedTask(taskId: $taskId, completed: $completed, completed_date: $completed_date){
     id

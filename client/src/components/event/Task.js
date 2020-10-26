@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Subheading, Divider, Checkbox, Caption } from 'react-native-paper';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform , Alert} from 'react-native';
+import { Subheading, Divider, Checkbox, Caption, Provider } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
-import { FETCH_TASKS_QUERY, FETCH_TASK_QUERY, COMPLETED_TASK } from '../../util/graphql';
+import { FETCH_TASKS_QUERY, DELETE_TASK, COMPLETED_TASK } from '../../util/graphql';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
+import TaskModal from './TaskModal';
 
 const Task = props => {
 
@@ -17,7 +18,7 @@ const Task = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-    
+
     const [due_date, setDue_date] = useState('');
     const [completed_date, setCompleted_date] = useState('');
     const [completedValue, setCompletedValue] = useState({
@@ -25,6 +26,7 @@ const Task = props => {
         completed: props.completed,
         completed_date: props.completed_date
     });
+    const [visible, setVisible] = useState(false);
 
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
@@ -39,8 +41,48 @@ const Task = props => {
             console.log(err)
             return err;
         },
-        variables: completedValue
+        variables: { ...completedValue, completed: !completedValue.completed, completed_date: completedValue.completed === true ? '' : new Date() }
     });
+
+    
+    const [deleteTask] = useMutation(DELETE_TASK, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_TASKS_QUERY,
+                variables: { roadmapId: props.roadmapId }
+            });
+            props.tasks = props.tasks.filter((p) => p.id !== props.taskId);
+            props.deleteTasksStateUpdate(props.taskId)
+            proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+        },
+        variables: {
+            taskId: props.taskId
+        }
+    });
+
+    const onDeleteTask = () => {
+        closeModal();
+        deleteTask();
+    }
+
+    const deleteHandler = () => {
+        Alert.alert('Are you sure?', 'Do you really want to delete this task?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: onDeleteTask
+            }
+        ]);
+    };
+
+    const closeModal = () => {
+        setVisible(false);
+    }
+
+    const openModal = () => {
+        setVisible(true);
+    }
 
 
     const onPressCheck = (event) => {
@@ -86,51 +128,64 @@ const Task = props => {
     }, [props.completed_date])
 
     return (
-
-        <View style={styles.container}>
-            <View style={{
-                ...styles.taskContainer, ...{
-                    backgroundColor:
-                        props.priority === "high" ? "#ff4943" :
-                            props.priority === "medium" ? "#a3cd3b" :
-                                props.priority === "low" ? "#ffc916" : "#e2e2e2",
-                }
-            }}>
-                <View style={styles.checkTask}>
-                    <Checkbox
-                        onPress={onPressCheck}
-                        status={props.completed === true ? 'checked' : 'unchecked'}
-                        color="white"
-                        uncheckedColor="white" />
-                </View>
-                <TouchableCmp>
-                    <View style={styles.task}>
-                        <View>
-                            <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.completed === true ? 'line-through' : 'none', opacity: props.completed === true ? 0.6 : 1 } }}>{props.name}</Subheading>
-                            {props.completed === true ?
-                                <Caption style={{ ...styles.statusTask, ...{opacity: props.completed === true ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
-                                :
-                                dueDate > nowDate ?
-                                    <Caption style={{ ...styles.statusTask, ...{opacity: props.completed === true ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
-                                    :
-                                    dueDate < nowDate ?
-                                    <Caption style={{ ...styles.statusTask, ...{opacity: props.completed === true ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption>:
-                                    null}
-                        </View>
-                        <View style={styles.taskSub}>
-                            <View style={{ ...styles.comment, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
-                                <Icon name="comment-multiple" size={16} color="grey" />
-                                <Caption style={{ marginLeft: 3 }}>5</Caption>
-                            </View>
-                            <View style={{ ...styles.people, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
-                                <Icon name="account-multiple" size={16} color="grey" />
-                                <Caption style={{ marginLeft: 3 }}>5</Caption>
-                            </View>
-                        </View>
+        <Provider theme={theme}>
+            <View style={styles.container}>
+                <View style={{
+                    ...styles.taskContainer, ...{
+                        backgroundColor:
+                            props.priority === "high" ? "#ff4943" :
+                                props.priority === "medium" ? "#a3cd3b" :
+                                    props.priority === "low" ? "#ffc916" : "#e2e2e2",
+                    }
+                }}>
+                    <View style={styles.checkTask}>
+                        <Checkbox
+                            onPress={onPressCheck}
+                            status={props.completed === true ? 'checked' : 'unchecked'}
+                            color="white"
+                            uncheckedColor="white" />
                     </View>
-                </TouchableCmp>
+                    <TouchableCmp onPress={openModal}>
+                        <View style={styles.task}>
+                            <View>
+                                <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.completed === true ? 'line-through' : 'none', opacity: props.completed === true ? 0.6 : 1 } }}>{props.name}</Subheading>
+                                {props.completed === true ?
+                                    <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
+                                    :
+                                    dueDate > nowDate ?
+                                        <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
+                                        :
+                                        dueDate < nowDate ?
+                                            <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed === true ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption> :
+                                            null}
+                            </View>
+                            <View style={styles.taskSub}>
+                                <View style={{ ...styles.comment, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
+                                    <Icon name="comment-multiple" size={16} color="grey" />
+                                    <Caption style={{ marginLeft: 3 }}>5</Caption>
+                                </View>
+                                <View style={{ ...styles.people, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
+                                    <Icon name="account-multiple" size={16} color="grey" />
+                                    <Caption style={{ marginLeft: 3 }}>5</Caption>
+                                </View>
+                            </View>
+                        </View>
+                    </TouchableCmp>
+                </View>
             </View>
-        </View>
+            <TaskModal
+                visible={visible}
+                closeButton={closeModal}
+                name={props.name}
+                createdBy={props.createdBy}
+                createdAt={props.createdAt}
+                completed={props.completed}
+                checkButton={onPressCheck}
+                deleteButton={deleteHandler}
+                updateTasksStateUpdate={props.updateTasksStateUpdate}
+                task={props.task}
+            />
+        </Provider>
     );
 };
 
