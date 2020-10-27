@@ -98,8 +98,6 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
-    console.log(positionsValue)
-
     const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
@@ -192,7 +190,14 @@ const CommitteeListScreen = ({ navigation }) => {
     }
 
     const addCommitteesStateUpdate = (e) => {
-        setCommitteesValue([...committeesValue, e]);
+        const temp = [e, ...committeesValue];
+        temp.sort(function (a, b) {
+            var textA = a.order.toUpperCase();
+            var textB = b.order.toUpperCase();
+
+            return textA.localeCompare(textB)
+        });
+        setCommitteesValue(temp);
         onToggleSnackBarAdd();
     }
 
@@ -212,6 +217,12 @@ const CommitteeListScreen = ({ navigation }) => {
             return item.id
         }).indexOf(e.id);
         temp[index] = e;
+        temp.sort(function (a, b) {
+            var textA = a.order.toUpperCase();
+            var textB = b.order.toUpperCase();
+
+            return textA.localeCompare(textB)
+        });
         setCommitteesValue(temp);
         onToggleSnackBarUpdate();
     }

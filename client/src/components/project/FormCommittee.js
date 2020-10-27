@@ -32,7 +32,8 @@ const FormCommittee = props => {
         staffId: '',
         positionId: '',
         divisionId: '',
-        projectId: sime.project_id
+        projectId: sime.project_id,
+        order: ''
     });
 
     const onChange = (key, val, err) => {
@@ -40,10 +41,25 @@ const FormCommittee = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
+
+    const onChangePosition = (key, val, err) => {
+        let orderPosition = null
+        props.positions.map((position) => {
+            if (position.id === val) {
+                orderPosition = position.order
+            } else {
+                return null
+            }
+            return null;
+        })
+        setValues({ ...values, [key]: val, order: orderPosition });
+        setErrors({ ...errors, [err]: '' })
+    };
+
     let coreDivision = null
     props.divisions.map((division) => {
         if (division.name === "Core Committee") {
-            coreDivision=division.id
+            coreDivision = division.id
         } else {
             return null
         }
@@ -200,7 +216,7 @@ const FormCommittee = props => {
                                         onChangeText={(val) => onChangeDivision('divisionId', val, 'division_error')}
                                         error={errors.division_error}
                                     />
-                                     {errors.division_error ? <Text style={styles.error}>{errors.division_error}</Text> : null}
+                                    {errors.division_error ? <Text style={styles.error}>{errors.division_error}</Text> : null}
                                 </View>
                                 <View>
                                     <Dropdown
@@ -211,7 +227,7 @@ const FormCommittee = props => {
                                         data={filteredPositions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
-                                        onChangeText={(val) => onChange('positionId', val, 'position_error')}
+                                        onChangeText={(val) => onChangePosition('positionId', val, 'position_error')}
                                         error={errors.position_error}
                                     />
                                     {errors.position_error ? <Text style={styles.error}>{errors.position_error}</Text> : null}
@@ -255,7 +271,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: theme.colors.error,
         paddingHorizontal: 4
-      },
+    },
 });
 
 

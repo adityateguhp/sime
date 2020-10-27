@@ -696,6 +696,7 @@ export const FETCH_COMMITTEES_QUERY = gql`
       position_id
       division_id
       project_id
+      order
       createdAt
   }
   }
@@ -709,6 +710,7 @@ export const FETCH_COMMITTEES_BYSTAFF_QUERY = gql`
       position_id
       division_id
       project_id
+      order
       createdAt
   }
   }
@@ -723,19 +725,21 @@ export const FETCH_COMMITTEE_QUERY = gql`
       position_id
       division_id
       project_id
+      order
       createdAt
   }
   }
 `;
 
 export const FETCH_HEADPROJECT_QUERY = gql`
-   query($projectId: ID!, $positionId: ID!) {
-    getHeadProject(projectId: $projectId, positionId: $positionId){
+   query($projectId: ID!, $order: String!) {
+    getHeadProject(projectId: $projectId, order: $order){
       id
       staff_id
       position_id
       division_id
       project_id
+      order
       createdAt
   }
   }
@@ -755,26 +759,28 @@ export const FETCH_COMMITTEES_IN_DIVISION_QUERY = gql`
 `;
 
 export const ADD_COMMITTEE_MUTATION = gql`
-  mutation addCommittee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!) {
-    addCommittee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId) {
+  mutation addCommittee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!, $order: String!) {
+    addCommittee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId, order: $order) {
       id
       staff_id
       position_id
       division_id
       project_id
+      order
       createdAt
   }
   } 
 `;
 
 export const UPDATE_COMMITTEE_MUTATION = gql`
-  mutation updateCommittee($committeeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!) {
-    updateCommittee(committeeId: $committeeId, staffId: $staffId, positionId: $positionId, divisionId: $divisionId) {
+  mutation updateCommittee($committeeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!, $order: String) {
+    updateCommittee(committeeId: $committeeId, staffId: $staffId, positionId: $positionId, divisionId: $divisionId, order:$order) {
       id
       staff_id
       position_id
       division_id
       project_id
+      order
       createdAt
   }
   } 

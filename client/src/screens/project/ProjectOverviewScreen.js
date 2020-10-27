@@ -93,7 +93,7 @@ const ProjectOverviewScreen = props => {
     FETCH_HEADPROJECT_QUERY, {
     variables: {
       projectId: sime.project_id,
-      positionId: '5f58d8288ba59232dcda020d'
+      order: '1'
     },
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {

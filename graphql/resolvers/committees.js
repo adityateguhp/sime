@@ -8,7 +8,7 @@ module.exports = {
     Query: {
         async getCommittees(_, { projectId }, context) {
             try {
-                const committees = await Committee.find({ project_id: projectId }).sort({ createdAt: -1 });
+                const committees = await Committee.find({ project_id: projectId }).sort({ order: 1 });
                 if (committees) {
                     return committees;
                 } else {
@@ -42,9 +42,9 @@ module.exports = {
                 throw new Error(err);
             }
         },
-        async getHeadProject(_, { projectId, positionId }) {
+        async getHeadProject(_, { projectId, order }) {
             try {
-                const committee = await Committee.findOne({project_id: projectId, position_id: positionId});
+                const committee = await Committee.findOne({project_id: projectId, order: order});
                 return committee;
             } catch (err) {
                 throw new Error(err);
@@ -52,7 +52,7 @@ module.exports = {
         },
         async getCommitteesInDivision(_, { divisionId }, context) {
             try {
-                const committees = await Committee.find({ division_id: divisionId }).sort({ createdAt: -1 });
+                const committees = await Committee.find({ division_id: divisionId }).sort({ order: 1 });
                 if (committees) {
                     return committees;
                 } else {
@@ -64,7 +64,7 @@ module.exports = {
         },
     },
     Mutation: {
-        async addCommittee(_, { staffId, positionId, divisionId, projectId }, context) {
+        async addCommittee(_, { staffId, positionId, divisionId, projectId, order }, context) {
             const { valid, errors } = validateCommitteeInput(staffId, divisionId, positionId);
             if (!valid) {
                 throw new UserInputError('Error', { errors });
@@ -74,6 +74,7 @@ module.exports = {
                 position_id: positionId,
                 division_id: divisionId,
                 project_id: projectId,
+                order,
                 createdAt: new Date().toISOString()
             });
 
@@ -81,13 +82,13 @@ module.exports = {
 
             return division;
         },
-        async updateCommittee(_, { committeeId, staffId, divisionId, positionId }, context) {
+        async updateCommittee(_, { committeeId, staffId, divisionId, positionId, order }, context) {
             try {
                 const { valid, errors } = validateCommitteeInput(staffId, divisionId, positionId);
                 if (!valid) {
                     throw new UserInputError('Error', { errors });
                 }
-                const updatedCommittee = await Committee.findByIdAndUpdate({ _id: committeeId }, { staff_id: staffId, division_id: divisionId, position_id: positionId }, { new: true });
+                const updatedCommittee = await Committee.findByIdAndUpdate({ _id: committeeId }, { staff_id: staffId, division_id: divisionId, position_id: positionId, order: order }, { new: true });
 
                 return updatedCommittee;
             } catch (err) {

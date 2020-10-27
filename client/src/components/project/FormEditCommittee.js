@@ -32,13 +32,28 @@ const FormCommittee = props => {
         committeeId: '',
         staffId: '',
         positionId: '',
-        divisionId: ''
+        divisionId: '',
+        order: ''
     });
 
     const [positionsFiltered, setPositionsFiltered] = useState([]);
 
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
+        setErrors({ ...errors, [err]: '' })
+    };
+
+    const onChangePosition = (key, val, err) => {
+        let orderPosition = null
+        props.positions.map((position) => {
+            if (position.id === val) {
+                orderPosition = position.order
+            } else {
+                return null
+            }
+            return null;
+        })
+        setValues({ ...values, [key]: val, order: orderPosition });
         setErrors({ ...errors, [err]: '' })
     };
 
@@ -70,7 +85,8 @@ const FormCommittee = props => {
                 committeeId: props.committee.id,
                 staffId: props.committee.staff_id,
                 positionId: props.committee.position_id,
-                divisionId: props.committee.division_id
+                divisionId: props.committee.division_id,
+                order: props.committee.order
             })
             const div = props.divisions.find((d) => d.name === "Core Committee");
             if (div.id === props.committee.division_id) {
@@ -213,7 +229,7 @@ const FormCommittee = props => {
                                         data={filteredPositions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
-                                        onChangeText={(val) => onChange('positionId', val, 'position_error')}
+                                        onChangeText={(val) => onChangePosition('positionId', val, 'position_error')}
                                         error={errors.position_error}
                                     />
                                     {errors.position_error ? <Text style={styles.error}>{errors.position_error}</Text> : null}

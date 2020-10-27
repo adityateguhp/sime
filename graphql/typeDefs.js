@@ -74,6 +74,7 @@ module.exports = gql`
         position_id: ID!
         division_id: ID!
         project_id: ID!
+        order: String!
         createdAt: String!
     }
 
@@ -143,7 +144,7 @@ module.exports = gql`
         getCommittees(projectId: ID!): [Committee]
         getCommitteesByStaff(staffId: ID!): [Committee]
         getCommittee(committeeId: ID!): Committee 
-        getHeadProject(projectId: ID!, positionId: ID!): Committee
+        getHeadProject(projectId: ID!, order: String!): Committee
         getCommitteesInDivision(divisionId: ID!): [Committee] 
         getEvents(projectId: ID!): [Event]
         getEvent(eventId: ID!): Event  
@@ -290,9 +291,9 @@ module.exports = gql`
         
         deleteDivision(divisionId: ID!): String!
 
-        addCommittee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!): Committee!
+        addCommittee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!, order: String!): Committee!
         
-        updateCommittee(committeeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!): Committee!
+        updateCommittee(committeeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!, order: String!): Committee!
         
         deleteCommittee(committeeId: ID!): String!
 
