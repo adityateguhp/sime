@@ -58,6 +58,7 @@ module.exports = gql`
         name: String!
         core: Boolean!
         createdAt: String!
+        order: String!
     }
 
     type Division {
@@ -277,9 +278,9 @@ module.exports = gql`
             cancel: Boolean!
         ): Event!
 
-        addPosition(name: String!, core: Boolean!): Position!
+        addPosition(name: String!, core: Boolean!, order: String!): Position!
         
-        updatePosition(positionId: ID!, name: String!, core: Boolean!): Position!
+        updatePosition(positionId: ID!, name: String!, core: Boolean!, order: String!): Position!
         
         deletePosition(positionId: ID!): String!
 

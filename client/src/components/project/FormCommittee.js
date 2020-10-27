@@ -40,10 +40,20 @@ const FormCommittee = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
-    const onChangeDivision = (key, val, err, index) => {
+    let coreDivision = null
+    props.divisions.map((division) => {
+        if (division.name === "Core Committee") {
+            coreDivision=division.id
+        } else {
+            return null
+        }
+        return null;
+    })
+
+    const onChangeDivision = (key, val, err) => {
         setValues({ ...values, [key]: val, positionId: '' });
         setErrors({ ...errors, [err]: '' })
-        if (index === 0) {
+        if (coreDivision === val) {
             const pos = props.positions.filter((e) => e.core === true);
             setPositionsFiltered(pos)
         } else {
@@ -187,7 +197,7 @@ const FormCommittee = props => {
                                         data={props.divisions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
-                                        onChangeText={(val, index) => onChangeDivision('divisionId', val, 'division_error', index)}
+                                        onChangeText={(val) => onChangeDivision('divisionId', val, 'division_error')}
                                         error={errors.division_error}
                                     />
                                      {errors.division_error ? <Text style={styles.error}>{errors.division_error}</Text> : null}

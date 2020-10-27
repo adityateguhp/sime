@@ -19,24 +19,25 @@ const DivisionCard = props => {
 
     return (
         <View style={styles.container}>
-            <List.Accordion
-                style={styles.accordion}
-                titleStyle={{ fontWeight: 'bold' }}
-                title={props.name}
-                expanded={expanded}
-                onPress={handlePress}>
-                <CommitteeListContainer
-                    division_id={props.division_id}
-                    staffs={props.staffs}
-                    divisions={props.divisions}
-                    positions={props.positions}
-                    committees={props.committees}
-                    onSelect={props.onSelect}
-                    deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
-                    updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
-                />
-            </List.Accordion>
-        </View>
+                <List.Accordion
+                    style={styles.accordion}
+                    titleStyle={{ fontWeight: 'bold' }}
+                    title={props.name}
+                    expanded={true}
+                    onPress={props.name === "Core Committee"? null : props.onLongPress}
+                >
+                    <CommitteeListContainer
+                        division_id={props.division_id}
+                        staffs={props.staffs}
+                        divisions={props.divisions}
+                        positions={props.positions}
+                        committees={props.committees}
+                        onSelect={props.onSelect}
+                        deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
+                        updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
+                    />
+                </List.Accordion>
+        </View >
     );
 };
 

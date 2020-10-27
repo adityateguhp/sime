@@ -590,6 +590,7 @@ export const FETCH_POSITIONS_QUERY = gql`
     id
     name
     core
+    order
     createdAt
   }
   }
@@ -601,28 +602,31 @@ export const FETCH_POSITION_QUERY = gql`
     id
     name
     core
+    order
     createdAt
   }
   }
 `;
 
 export const ADD_POSITION_MUTATION = gql`
-  mutation addPosition($name: String!, $core: Boolean!) {
-    addPosition(name: $name, core: $core) {
+  mutation addPosition($name: String!, $core: Boolean!, $order: String!) {
+    addPosition(name: $name, core: $core, order: $order) {
     id
     name
     core
+    order
     createdAt
   }
   } 
 `;
 
 export const UPDATE_POSITION_MUTATION = gql`
-  mutation updatePosition($positionId: ID!, $name: String!, $core: Boolean!) {
-    updatePosition(positionId: $positionId, name: $name, core: $core) {
+  mutation updatePosition($positionId: ID!, $name: String!, $core: Boolean!, $order: String!) {
+    updatePosition(positionId: $positionId, name: $name, core: $core, order: $order) {
     id
     name
     core
+    order
     createdAt
   }
   } 

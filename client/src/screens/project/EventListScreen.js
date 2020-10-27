@@ -311,7 +311,7 @@ const EventListScreen = ({ route, navigation }) => {
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
                     <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.event_name}</Title>
+                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Title>
                         <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>

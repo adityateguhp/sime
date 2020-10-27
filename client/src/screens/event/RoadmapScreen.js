@@ -253,7 +253,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                     <Modal useNativeDriver={true} isVisible={visible} animationIn="zoomIn" animationInTiming={100} animationOut="zoomOut" animationOutTiming={100} onBackButtonPress={closeModal} onBackdropPress={closeModal} statusBarTranslucent>
                         <View style={styles.centeredView}>
                             <View style={styles.modalView}>
-                                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.roadmap_name}</Title>
+                                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.roadmap_name}</Title>
                                 <TouchableCmp onPress={openFormEdit}>
                                     <View style={styles.textView}>
                                         <Text style={styles.text}>Edit</Text>

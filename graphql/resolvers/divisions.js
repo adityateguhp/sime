@@ -37,6 +37,15 @@ module.exports = {
       if (!valid) {
         throw new UserInputError('Error', { errors });
       }
+
+      if (name.toLowerCase() === "core committee") {
+        throw new UserInputError('Core Committee is already exist', {
+          errors: {
+            division: 'Core Committee is already exist'
+          }
+        })
+      }
+
       const newDivision = new Division({
         name,
         project_id: projectId,
@@ -53,6 +62,15 @@ module.exports = {
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }
+
+        if (name.toLowerCase() === "core committee") {
+          throw new UserInputError('Core Committee is already exist', {
+            errors: {
+              division: 'Core Committee is already exist'
+            }
+          })
+        }
+
         const updatedDivision = await Division.findByIdAndUpdate({ _id: divisionId }, { name: name }, { new: true });
 
         return updatedDivision;

@@ -179,10 +179,10 @@ const StaffsScreen = ({ route, navigation }) => {
     };
 
     const confirmToDeleteAll = () => {
-        Alert.alert('Are you really sure?', 'By delete this staff its also delete all', [
-            { text: 'No', style: 'default' },
+        Alert.alert('Wait... are you really sure?', "By deleting this staff, it's also delete all related to this staff", [
+            { text: 'Cancel', style: 'default' },
             {
-                text: 'Yes',
+                text: 'Agree',
                 style: 'destructive',
                 onPress: deleteStaff
             }
@@ -344,7 +344,7 @@ const StaffsScreen = ({ route, navigation }) => {
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
                     <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.staff_name}</Title>
+                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.staff_name}</Title>
                         <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>

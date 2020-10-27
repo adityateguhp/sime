@@ -32,27 +32,35 @@ const FormEditDivision = props => {
     };
 
     useEffect(() => {
-        if(props.division){
+        if (props.division) {
             setValues({
-                divisionId: props.division.id, 
+                divisionId: props.division.id,
                 name: props.division.name
             })
         }
-    }, [props.division])    
+    }, [props.division])
 
     const [updateDivision, { loading }] = useMutation(UPDATE_DIVISION_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_DIVISIONS_QUERY,
-                variables: {projectId: sime.project_id}
+                variables: { projectId: sime.project_id }
             });
-            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: sime.project_id}});
+            props.updateDivisionsStateUpdate(result.data.updateDivision)
+            props.updateDivisionStateUpdate(result.data.updateDivision)
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
             props.closeModalForm();
         },
-        onError() {
+        onError(err) {
             const divisionNameError = divisionNameValidator(values.name);
             if (divisionNameError) {
                 setErrors({ ...errors, division_name_error: divisionNameError })
+            }
+            if (err.graphQLErrors[0].extensions.exception.errors) {
+                setErrors({
+                    ...errors,
+                    division_name_error: 'Core Committee is already exist'
+                })
             }
         },
         variables: values
@@ -67,12 +75,12 @@ const FormEditDivision = props => {
 
     //for get keyboard height
     Keyboard.addListener('keyboardDidShow', (frames) => {
-       if (!frames.endCoordinates) return;
-         setKeyboarSpace(frames.endCoordinates.height);
-     });
-     Keyboard.addListener('keyboardDidHide', (frames) => {
-         setKeyboarSpace(0);
-     });
+        if (!frames.endCoordinates) return;
+        setKeyboarSpace(frames.endCoordinates.height);
+    });
+    Keyboard.addListener('keyboardDidHide', (frames) => {
+        setKeyboarSpace(0);
+    });
     const safeArea = useSafeArea();
 
     return (
@@ -87,7 +95,7 @@ const FormEditDivision = props => {
                 style={{
                     justifyContent: 'flex-end',
                     margin: 0,
-                    top: keyboardSpace ? -10 -keyboardSpace : 0,
+                    top: keyboardSpace ? -10 - keyboardSpace : 0,
                 }}
                 statusBarTranslucent>
                 <View style={styles.buttomView}>
@@ -98,20 +106,20 @@ const FormEditDivision = props => {
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
-                            <ScrollView>
-                                <View style={styles.formViewStyle}>
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
-                                            label='Division Name'
-                                            value={values.name}
-                                            onChangeText={(val) => onChange('name', val, 'division_name_error')}
-                                            error={errors.division_name_error? true : false}
-                                            errorText={errors.division_name_error}
-                                        />
-                                    </View>
+                        <ScrollView>
+                            <View style={styles.formViewStyle}>
+                                <View style={styles.inputStyle}>
+                                    <TextInput
+                                        style={styles.input}
+                                        label='Division Name'
+                                        value={values.name}
+                                        onChangeText={(val) => onChange('name', val, 'division_name_error')}
+                                        error={errors.division_name_error ? true : false}
+                                        errorText={errors.division_name_error}
+                                    />
                                 </View>
-                            </ScrollView>
+                            </View>
+                        </ScrollView>
                     </View>
                 </View>
             </Modal>
@@ -124,7 +132,7 @@ const modalFormHeight = hp(34);
 
 const styles = StyleSheet.create({
     appbar: {
-       
+
     },
     formView: {
         backgroundColor: 'white',

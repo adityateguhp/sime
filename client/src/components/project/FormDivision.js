@@ -38,14 +38,21 @@ const FormDivision = props => {
                 variables: {projectId: values.projectId}
             });
             data.getDivisions = [result.data.addDivision, ...data.getDivisions];
+            props.addDivisionsStateUpdate(result.data.addDivision);
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: values.projectId}});
             values.name = '';
             props.closeModalForm();
         },
-        onError() {
+        onError(err) {
             const divisionNameError = divisionNameValidator(values.name);
             if (divisionNameError) {
                 setErrors({ ...errors, division_name_error: divisionNameError })
+            }
+            if (err.graphQLErrors[0].extensions.exception.errors) {
+                setErrors({
+                    ...errors,
+                    division_name_error: 'Core Committee is already exist'
+                })
             }
         },
         variables: values

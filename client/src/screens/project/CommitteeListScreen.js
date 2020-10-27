@@ -1,20 +1,20 @@
-import React, { useContext, useState, useReducer } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
+import { Provider, Portal, Title, Text, Snackbar, FAB } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NetworkStatus } from '@apollo/client';
 
-import FABbutton from '../../components/common/FABbutton';
 import CenterSpinner from '../../components/common/CenterSpinner';
 import FormCommittee from '../../components/project/FormCommittee';
 import FormEditDivision from '../../components/project/FormEditDivision';
+import FormDivision from '../../components/project/FormDivision';
 import DivisionCard from '../../components/project/DivisionCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY } from '../../util/graphql';
+import { FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY, FETCH_COMMITTEES_IN_DIVISION_QUERY, DELETE_COMMITTEE } from '../../util/graphql';
 
 const CommitteeListScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -45,6 +45,28 @@ const CommitteeListScreen = ({ navigation }) => {
 
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
+
+    const [visibleDeleteDivision, setVisibleDeleteDivision] = useState(false);
+
+    const onToggleSnackBarDeleteDivision = () => setVisibleDeleteDivision(!visibleDeleteDivision);
+
+    const onDismissSnackBarDeleteDivision = () => setVisibleDeleteDivision(false);
+
+
+    const [visibleAddDivision, setVisibleAddDivision] = useState(false);
+
+    const onToggleSnackBarAddDivision = () => setVisibleAddDivision(!visibleAddDivision);
+
+    const onDismissSnackBarAddDivision = () => setVisibleAddDivision(false);
+
+
+    const [visibleUpdateDivision, setVisibleUpdateDivision] = useState(false);
+
+    const onToggleSnackBarUpdateDivision = () => setVisibleUpdateDivision(!visibleUpdateDivision);
+
+    const onDismissSnackBarUpdateDivision = () => setVisibleUpdateDivision(false);
+
+
     const [positionsValue, setPositionValue] = useState([]);
     const [staffsValue, setStaffsValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
@@ -53,7 +75,7 @@ const CommitteeListScreen = ({ navigation }) => {
     const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
-            variables: {organizationId: sime.user.id},
+            variables: { organizationId: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setStaffsValue(staffs.getStaffs) }
         }
@@ -76,6 +98,8 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
+    console.log(positionsValue)
+
     const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
@@ -90,13 +114,29 @@ const CommitteeListScreen = ({ navigation }) => {
     const [loadExistData, { called, data: division, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_DIVISION_QUERY,
         {
-            variables: { divisionId: sime.division_id },
-            onCompleted: () => {
-                setDivisionVal(division.getDivision);
-            },
+            variables: { divisionId: sime.division_id }
+        });
+
+    const [loadCommiteeData, { called: called2, data: commiteeInDiv, error: error3, loading: loading3 }] = useLazyQuery(
+        FETCH_COMMITTEES_IN_DIVISION_QUERY,
+        {
+            variables: { divisionId: sime.division_id }
         });
 
     const [divisionVal, setDivisionVal] = useState(null);
+    const [committeeDivisionVal, setCommitteeDivisionVal] = useState(null);
+
+    useEffect(() => {
+        if (division) {
+            setDivisionVal(division.getDivision)
+        }
+    }, [division])
+
+    useEffect(() => {
+        if (commiteeInDiv) {
+            setCommitteeDivisionVal(commiteeInDiv.getCommitteesInDivision)
+        }
+    }, [commiteeInDiv])
 
     const selectItemHandler = () => {
         navigation.navigate('Committee Profile', {
@@ -106,7 +146,13 @@ const CommitteeListScreen = ({ navigation }) => {
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
-    const [visibleFormEdit, setVisibleFormEdit] = useState(false);
+    const [visibleFormDivision, setVisibleFormDivision] = useState(false);
+    const [visibleFormEditDivision, setVisibleFormEditDivision] = useState(false);
+    const [state, setState] = useState({ open: false });
+
+    const onStateChange = ({ open }) => setState({ open });
+
+    const { open } = state;
 
     const closeModal = () => {
         setVisible(false);
@@ -116,24 +162,33 @@ const CommitteeListScreen = ({ navigation }) => {
         setVisibleForm(false);
     }
 
-    const closeModalFormEdit = () => {
-        setVisibleFormEdit(false);
+    const closeModalFormDivision = () => {
+        setVisibleFormDivision(false);
     }
 
-    const longPressHandler = (name, id) => {
+    const closeModalFormEditDivision = () => {
+        setVisibleFormEditDivision(false);
+    }
+
+    const longPressHandler = (id, name) => {
         setVisible(true);
         sime.setDivision_name(name)
         sime.setDivision_id(id)
         loadExistData();
+        loadCommiteeData();
     }
 
     const openForm = () => {
         setVisibleForm(true);
     }
 
-    const openFormEdit = () => {
+    const openFormDivision = () => {
+        setVisibleFormDivision(true);
+    }
+
+    const openFormEditDivision = () => {
         closeModal();
-        setVisibleFormEdit(true);
+        setVisibleFormEditDivision(true);
     }
 
     const addCommitteesStateUpdate = (e) => {
@@ -161,7 +216,60 @@ const CommitteeListScreen = ({ navigation }) => {
         onToggleSnackBarUpdate();
     }
 
+    const addDivisionsStateUpdate = (e) => {
+        const temp = [e, ...divisionsValue];
+        temp.sort(function (a, b) {
+            var textA = a.name.toUpperCase();
+            var textB = b.name.toUpperCase();
+
+            return textA.localeCompare(textB)
+        })
+        setDivisionsValue(temp);
+        onToggleSnackBarAddDivision();
+    }
+
+    const deleteDivisionsStateUpdate = (e) => {
+        const temp = [...divisionsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setDivisionsValue(temp);
+        onToggleSnackBarDeleteDivision();
+    }
+
+    const updateDivisionsStateUpdate = (e) => {
+        const temp = [...divisionsValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e.id);
+        temp[index] = e
+        temp.sort(function (a, b) {
+            var textA = a.name.toUpperCase();
+            var textB = b.name.toUpperCase();
+
+            return textA.localeCompare(textB)
+        })
+        setDivisionsValue(temp);
+        onToggleSnackBarUpdateDivision();
+    }
+
+    const updateDivisionStateUpdate = (e) => {
+        setDivisionVal(e)
+    }
+
     const divisionId = sime.division_id;
+
+    const [deleteCommittee] = useMutation(DELETE_COMMITTEE);
+
+    const deleteAllComiteeInDivision = () => {
+        committeeDivisionVal.map((committee) => {
+            deleteCommittee(({
+                variables: { committeeId: committee.id },
+            }))
+            deleteCommitteesStateUpdate(committee.id);
+        })
+    };
 
     const [deleteDivision] = useMutation(DELETE_DIVISION, {
         update(proxy) {
@@ -169,7 +277,9 @@ const CommitteeListScreen = ({ navigation }) => {
                 query: FETCH_DIVISIONS_QUERY,
                 variables: { projectId: sime.project_id },
             });
-            divisionsValue = divisionsValue.filter((d) => d.id !== divisionId);
+            data.getDivisions = data.getDivisions.filter((d) => d.id !== divisionId);
+            deleteDivisionsStateUpdate(divisionId);
+            deleteAllComiteeInDivision();
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
@@ -186,11 +296,22 @@ const CommitteeListScreen = ({ navigation }) => {
 
     const deleteHandler = () => {
         closeModal();
-        closeModalFormEdit();
-        Alert.alert('Are you sure?', 'Do you really want to delete this client?', [
+        closeModalFormEditDivision();
+        Alert.alert('Are you sure?', 'Do you really want to delete this division?', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
+                style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this division, it's also delete all committees inside this division", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
                 style: 'destructive',
                 onPress: deleteDivision
             }
@@ -238,7 +359,16 @@ const CommitteeListScreen = ({ navigation }) => {
         return <Text>Error</Text>;
     }
 
+    if (called2 & error3) {
+        console.error(error3);
+        return <Text>Error3</Text>;
+    }
+
     if (loading2) {
+
+    }
+
+    if (loading3) {
 
     }
 
@@ -261,9 +391,9 @@ const CommitteeListScreen = ({ navigation }) => {
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                      refreshing={loadingCommittees}
-                      onRefresh={onRefresh} />
-                  }
+                        refreshing={loadingCommittees}
+                        onRefresh={onRefresh} />
+                }
                 data={divisionsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
@@ -277,6 +407,7 @@ const CommitteeListScreen = ({ navigation }) => {
                         onSelect={selectItemHandler}
                         deleteCommitteesStateUpdate={deleteCommitteesStateUpdate}
                         updateCommitteesStateUpdate={updateCommitteesStateUpdate}
+                        onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
                     />
                 )}
             />
@@ -290,8 +421,8 @@ const CommitteeListScreen = ({ navigation }) => {
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
                     <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.division_name}</Title>
-                        <TouchableCmp onPress={openFormEdit}>
+                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.division_name}</Title>
+                        <TouchableCmp onPress={openFormEditDivision}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>
                             </View>
@@ -304,7 +435,23 @@ const CommitteeListScreen = ({ navigation }) => {
                     </View>
                 </Modal>
             </Portal>
-            <FABbutton Icon="plus" label="COMMITTEE" onPress={openForm} />
+            <FAB.Group
+                open={open}
+                icon={open ? 'account-multiple-plus' : 'plus'}
+                actions={[
+                    {
+                        icon: 'account',
+                        label: 'Committee',
+                        onPress: openForm
+                    },
+                    {
+                        icon: 'account-multiple',
+                        label: 'Division',
+                        onPress: openFormDivision
+                    },
+                ]}
+                onStateChange={onStateChange}
+            />
             <FormCommittee
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
@@ -315,12 +462,20 @@ const CommitteeListScreen = ({ navigation }) => {
                 committees={committeesValue}
                 addCommitteesStateUpdate={addCommitteesStateUpdate}
             />
+            <FormDivision
+                closeModalForm={closeModalFormDivision}
+                visibleForm={visibleFormDivision}
+                closeButton={closeModalFormDivision}
+                addDivisionsStateUpdate={addDivisionsStateUpdate}
+            />
             <FormEditDivision
-                closeModalForm={closeModalFormEdit}
-                visibleForm={visibleFormEdit}
+                closeModalForm={closeModalFormEditDivision}
+                visibleForm={visibleFormEditDivision}
                 division={divisionVal}
                 deleteButton={deleteHandler}
-                closeButton={closeModalFormEdit}
+                closeButton={closeModalFormEditDivision}
+                updateDivisionStateUpdate={updateDivisionStateUpdate}
+                updateDivisionsStateUpdate={updateDivisionsStateUpdate}
             />
             <Snackbar
                 visible={visibleAdd}
@@ -339,6 +494,24 @@ const CommitteeListScreen = ({ navigation }) => {
                 onDismiss={onDismissSnackBarDelete}
             >
                 Committee deleted!
+            </Snackbar>
+            <Snackbar
+                visible={visibleAddDivision}
+                onDismiss={onDismissSnackBarAddDivision}
+            >
+                Division added!
+            </Snackbar>
+            <Snackbar
+                visible={visibleUpdateDivision}
+                onDismiss={onDismissSnackBarUpdateDivision}
+            >
+                Division updated!
+            </Snackbar>
+            <Snackbar
+                visible={visibleDeleteDivision}
+                onDismiss={onDismissSnackBarDeleteDivision}
+            >
+                Division deleted!
             </Snackbar>
         </Provider>
     );

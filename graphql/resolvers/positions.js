@@ -8,7 +8,7 @@ module.exports = {
   Query: {
     async getPositions(_, args, context) {
       try {
-        const positions = await Position.find();
+        const positions = await Position.find().sort({order: 1});
         if (positions) {
           return positions;
         } else {
@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async addPosition(_, { name, core }, context) {
+    async addPosition(_, { name, core, order }, context) {
       const { valid, errors } = validatePositionInput(name, core);
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -40,6 +40,7 @@ module.exports = {
       const newPosition = new Position({
         name,
         core,
+        order,
         createdAt: new Date().toISOString()
       });
 
@@ -47,13 +48,13 @@ module.exports = {
 
       return position;
     },
-    async updatePosition(_, { positionId, name, core }, context) {
+    async updatePosition(_, { positionId, name, core, order }, context) {
       try {
         const { valid, errors } = validatePositionInput(name, core);
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }
-        const updatedPosition = await Position.findByIdAndUpdate({ _id: positionId }, { name: name, core: core }, { new: true });
+        const updatedPosition = await Position.findByIdAndUpdate({ _id: positionId }, { name: name, core: core, order: order }, { new: true });
 
         return updatedPosition;
       } catch (err) {
