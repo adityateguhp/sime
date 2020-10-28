@@ -128,6 +128,14 @@ module.exports = gql`
         createdBy: String!
     }
 
+    type Task_assigned_to {
+        id: ID!
+        roadmap_id: ID!
+        task_id: ID!
+        committee_id: ID!
+        createdAt: String!
+    }
+
     type Query {
         getOrganization(organizationId: ID!): Organization
         getDepartments(organizationId: ID!): [Department]
@@ -159,6 +167,8 @@ module.exports = gql`
         getRundown(rundownId: ID!): Rundown 
         getTasks(roadmapId: ID!): [Task]
         getTask(taskId: ID!): Task
+        getAssignedTasks(roadmapId: ID!): [Task_assigned_to]
+        getAssignedTask(assignedId: ID!): Task_assigned_to
     }
     type Mutation {
         registerOrganization(
@@ -384,5 +394,15 @@ module.exports = gql`
         deleteTask(taskId: ID!): String!
 
         completedTask(taskId: ID!, completed: Boolean!, completed_date: String): Task!
+
+        assignedTask(
+            roadmapId: ID!
+            taskId: ID!
+            committeeId: ID!
+        ): Task_assigned_to!
+
+        deleteAssignedTask(
+            assignedId: ID!
+        ): String!
     }
 `;

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, TouchableOpacity, TouchableNativeFeedback, Platform, ScrollView } from 'react-native';
-import { Paragraph, Portal, Title, Appbar, Caption, Divider, Button, Text } from 'react-native-paper';
+import { Paragraph, Portal, Title, Appbar, Caption, Chip, Divider, Button, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from "react-native-modal";
 import moment from 'moment';
@@ -13,6 +13,7 @@ import { taskNameValidator } from '../../util/validator';
 import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION } from '../../util/graphql';
 import { theme } from '../../constants/Theme';
 import Colors from '../../constants/Colors';
+import CommitteeChipContainer from './CommitteeChipContainer'
 
 const TaskModal = props => {
     let TouchableCmp = TouchableOpacity;
@@ -37,7 +38,11 @@ const TaskModal = props => {
 
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
-        setErrors({ ...errors, [err]: '' })
+        setErrors({ ...errors, [err]: '' });
+    };
+
+    const onCheck = () => {
+        setValues({ ...values, completed: !values.completed, completed_date: values.completed === true ? '' : new Date() });
     };
 
     const onChangeDateTime = (key, val, err) => {
@@ -68,7 +73,6 @@ const TaskModal = props => {
             });
             props.updateTasksStateUpdate(result.data.updateTask);
             proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
-            props.closeButton();
         },
         onError(err) {
             const taskNameError = taskNameValidator(values.name);
@@ -113,14 +117,10 @@ const TaskModal = props => {
         setShowDateTime(false);
     };
 
-    const onCheckButton = (event) => {
-        props.checkButton(event);
-        props.closeButton();
-    }
-
     const onCloseButton = (event) => {
         event.preventDefault();
         updateTask();
+        props.closeButton();
     }
 
     const due_date = moment(values.due_date).format('ddd, MMM D YYYY h:mm a');
@@ -145,7 +145,7 @@ const TaskModal = props => {
                                             values.priority === "low" ? "#ffc916" : "#e2e2e2",
                             }
                         }}>
-                            <Appbar.Action icon={props.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={onCheckButton} />
+                            <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={() => onCheck()} />
                             <Appbar.Content />
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="window-close" onPress={onCloseButton} />
@@ -153,7 +153,6 @@ const TaskModal = props => {
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
                             behavior="padding"
-                            keyboardVerticalOffset={hp(26)}
                         >
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
@@ -199,7 +198,7 @@ const TaskModal = props => {
                                             <View style={styles.containerText}>
                                                 <TouchableCmp onPress={onClickTaskDescription}>
                                                     <View style={styles.descriptionView}>
-                                                        {values.description ? <Paragraph>{values.description}</Paragraph> : <Paragraph style={{color: Colors.secondaryColor, opacity: 0.6}}>Add description</Paragraph>}
+                                                        {values.description ? <Paragraph style={{ fontSize: 15 }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: 15 }}>Add description</Paragraph>}
                                                         <Icon name="pencil" size={15} color='grey' style={{ marginLeft: 10, marginTop: 5, opacity: 0.5 }} />
                                                     </View>
                                                 </TouchableCmp>
@@ -208,16 +207,16 @@ const TaskModal = props => {
                                         </View>
                                     }
                                     <View style={styles.dateInputContainer}>
-                                        <View style={styles.dateLabel}>
-                                            <Icon name="calendar" size={20} color={Colors.primaryColor} />
-                                            <Text style={styles.textDate}>
-                                                Due date :
+                                        <View style={styles.label}>
+                                            <Icon name="calendar" size={25} color={Colors.primaryColor} />
+                                            <Text style={styles.text}>
+                                                Due date
                                             </Text>
                                         </View>
-                                        <View style={styles.dateButtonContainer}>
+                                        <View style={styles.buttonContainer}>
                                             <Button
-                                                style={styles.dateButton}
-                                                labelStyle={{ color: Colors.primaryColor, fontSize: 11 }}
+                                                style={styles.button}
+                                                labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={showDateTimepicker}
                                                 mode="outlined"
                                             >
@@ -225,30 +224,32 @@ const TaskModal = props => {
                                             </Button>
                                             {values.due_date === null || values.due_date === '' ? null :
                                                 <Button
-                                                    labelStyle={{ color: Colors.primaryColor, fontSize: 11 }}
+                                                    style={{ marginRight: 3 }}
+                                                    icon="close"
+                                                    labelStyle={{ color: Colors.primaryColor }}
                                                     onPress={() => onChangeDateTime('due_date', '', '')}
                                                     mode="outlined"
+                                                    compact={true}
                                                 >
-                                                    X
-                                            </Button>}
+                                                </Button>}
                                         </View>
                                     </View>
-                                    <View style={styles.priorityInputContainer}>
-                                        <View style={styles.priorityLabel}>
-                                            <Icon name="alert-box" size={20} color={Colors.primaryColor} />
-                                            <Text style={styles.textPriority}>
-                                                Priority :
+                                    <View style={styles.inputContainer}>
+                                        <View style={styles.label}>
+                                            <Icon name="alert-box" size={25} color={Colors.primaryColor} />
+                                            <Text style={styles.text}>
+                                                Priority
                                             </Text>
                                         </View>
-                                        <View style={styles.priorityButtonContainer}>
+                                        <View style={styles.buttonContainer}>
                                             <Button
                                                 style={{
-                                                    ...styles.priorityButton, ...{
+                                                    ...styles.button, ...{
                                                         backgroundColor:
                                                             values.priority === "low" ? "#ffc916" : "white",
                                                     }
                                                 }}
-                                                labelStyle={{ color: Colors.primaryColor, fontSize: 11 }}
+                                                labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={values.priority === 'low' ? () => onChange('priority', '', '') : () => onChange('priority', 'low', '')}
                                                 mode="outlined"
                                             >
@@ -256,12 +257,12 @@ const TaskModal = props => {
                                             </Button>
                                             <Button
                                                 style={{
-                                                    ...styles.priorityButton, ...{
+                                                    ...styles.button, ...{
                                                         backgroundColor:
                                                             values.priority === "medium" ? "#a3cd3b" : "white",
                                                     }
                                                 }}
-                                                labelStyle={{ color: Colors.primaryColor, fontSize: 11 }}
+                                                labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={values.priority === 'medium' ? () => onChange('priority', '', '') : () => onChange('priority', 'medium', '')}
                                                 mode="outlined"
                                             >
@@ -269,16 +270,49 @@ const TaskModal = props => {
                                             </Button>
                                             <Button
                                                 style={{
-                                                    ...styles.priorityButton, ...{
+                                                    ...styles.button, ...{
                                                         backgroundColor:
                                                             values.priority === "high" ? "#ff4943" : "white",
                                                     }
                                                 }}
-                                                labelStyle={{ color: Colors.primaryColor, fontSize: 11 }}
+                                                labelStyle={{ color: Colors.primaryColor }}
                                                 onPress={values.priority === 'high' ? () => onChange('priority', '', '') : () => onChange('priority', 'high', '')}
                                                 mode="outlined"
                                             >
                                                 high
+                                            </Button>
+                                        </View>
+                                    </View>
+                                    <View style={styles.assignedLabel}>
+                                        <View style={styles.label}>
+                                            <Icon name="account-plus" size={25} color={Colors.primaryColor} />
+                                            <Text style={styles.text}>
+                                                Assigned to
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.assignedInputContainer}>
+                                        {
+                                            props.assignedTasks.length === 0 ? null :
+                                                props.assignedTasks.map((assigned) => (
+                                                    <View style={styles.chip}>
+                                                        <CommitteeChipContainer
+                                                            committeeId={assigned.committee_id}
+                                                            assignedId={assigned.id}
+                                                            taskId={assigned.task_id}
+                                                            deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                                                            roadmapId={props.roadmapId}
+                                                        />
+                                                    </View>
+                                                ))
+                                        }
+                                        <View>
+                                            <Button
+                                                icon="plus"
+                                                onPress={showDateTimepicker}
+                                                mode="outlined"
+                                                compact={true}
+                                            >
                                             </Button>
                                         </View>
                                     </View>
@@ -355,49 +389,45 @@ const styles = StyleSheet.create({
     containerText: {
         marginRight: 25
     },
-    dateLabel: {
+    label: {
         flexDirection: "row",
         alignItems: "center"
     },
     dateInputContainer: {
-        flexDirection: "row",
+        flexDirection: "column",
         marginTop: 35
     },
-    dateButton: {
+    button: {
         flex: 1,
-        marginLeft: 10,
+        marginRight: 3
     },
-    dateButtonContainer: {
+    buttonContainer: {
         flex: 1,
         flexDirection: "row",
+        marginTop: 10
     },
-    textDate: {
-        fontSize: 14,
+    text: {
+        fontSize: 16,
         marginLeft: 5,
         opacity: 0.6
     },
-    priorityLabel: {
+    inputContainer: {
+        flexDirection: "column",
+        marginTop: 20
+    },
+    assignedInputContainer: {
         flexDirection: "row",
-        alignItems: "center"
+        flexWrap: 'wrap',
+        marginTop: 10,
+        marginRight: 3
     },
-    priorityInputContainer: {
-        flexDirection: "row",
-        marginTop: 25
+    assignedLabel: {
+        marginTop: 20
     },
-    priorityButton: {
-        flex: 1,
-        marginLeft: 10,
-    },
-    priorityButtonContainer: {
-        flex: 1,
-        flexDirection: "row",
-    },
-    textPriority: {
-        fontSize: 14,
-        marginLeft: 5,
-        opacity: 0.6
-    },
-
+    chip: {
+        marginBottom: 10,
+        marginRight: 10,
+    }
 });
 
 

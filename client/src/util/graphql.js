@@ -1233,3 +1233,47 @@ export const COMPLETED_TASK = gql`
     }
   }
 `;
+
+export const FETCH_ASSIGNED_TASKS_QUERY = gql`
+  query($roadmapId: ID!){
+    getAssignedTasks(roadmapId: $roadmapId){
+      id
+      roadmap_id
+      task_id
+      committee_id
+      createdAt
+  }
+  }
+`;
+
+
+export const FETCH_ASSIGNED_TASK_QUERY = gql`
+  query($assignedId: ID!){
+    getAssignedTask(assignedId: $assignedId){
+      id
+      roadmap_id
+      task_id
+      committee_id
+      createdAt
+  }
+  }
+`;
+
+
+export const ASSIGNED_TASK_MUTATION = gql`
+  mutation assignedTask($roadmapId: ID!, $taskId: ID!, $committeeId: ID!) {
+    assignedTask(roadmapId: $roadmapId, taskId: $taskId, committeeId: $committeeId) {
+      id
+      roadmap_id
+      task_id
+      committee_id
+      createdAt
+  }
+  } 
+`;
+
+export const DELETE_ASSIGNED_TASK = gql`
+  mutation deleteAssignedTask($assignedId: ID!) {
+    deleteAssignedTask(assignedId: $assignedId)
+  }
+`;

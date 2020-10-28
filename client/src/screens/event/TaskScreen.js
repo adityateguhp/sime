@@ -12,7 +12,7 @@ import { SimeContext } from '../../context/SimePovider';
 import Task from '../../components/event/Task';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_TASKS_QUERY, FETCH_TASK_QUERY, DELETE_TASK, COMPLETED_TASK } from '../../util/graphql';
+import { FETCH_TASKS_QUERY, FETCH_COMMITTEES_QUERY, FETCH_ASSIGNED_TASKS_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const TaskScreen = props => {
@@ -40,6 +40,19 @@ const TaskScreen = props => {
 
 
     const [tasksValue, setTasksValue] = useState([]);
+    const [committeesValue, setCommitteesValue] = useState([]);
+    const [assignedTasksValue, setAssignedTasksValue] = useState([]);
+
+    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
+        FETCH_COMMITTEES_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setCommitteesValue(committees.getCommittees)
+            }
+        }
+    );
 
     const { data: tasks, error: errorTasks, loading: loadingTasks, refetch, networkStatus } = useQuery(
         FETCH_TASKS_QUERY,
@@ -58,6 +71,16 @@ const TaskScreen = props => {
         }
     );
 
+
+    const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch: refetchAssignedTasks, networkStatus: networkStatusAssignedTasks } = useQuery(
+        FETCH_ASSIGNED_TASKS_QUERY,
+        {
+            variables: { roadmapId: sime.roadmap_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
+        }
+    );
+
     const [visibleForm, setVisibleForm] = useState(false);
 
     const closeModalForm = () => {
@@ -70,6 +93,8 @@ const TaskScreen = props => {
 
     const onRefresh = () => {
         refetch();
+        refetchCommittees();
+        refetchAssignedTasks();
     };
 
     const addTasksStateUpdate = (e) => {
@@ -118,6 +143,15 @@ const TaskScreen = props => {
         onToggleSnackBarUpdate();
     }
 
+    const deleteAssignedTasksStateUpdate = (e) => {
+        const temp = [...assignedTasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setAssignedTasksValue(temp);
+    }
+
     let pendingTask = tasksValue.filter((t) => t.completed === false);
 
     let completeTask = tasksValue.filter((t) => t.completed === true);
@@ -130,6 +164,25 @@ const TaskScreen = props => {
     if (loadingTasks) {
         return <CenterSpinner />;
     }
+
+    if (errorCommittees) {
+        console.error(errorCommittees);
+        return <Text>errorCommittees</Text>;
+    }
+
+    if (loadingCommittees) {
+        return <CenterSpinner />;
+    }
+
+    if (errorAssignedTasks) {
+        console.error(errorAssignedTasks);
+        return <Text>errorAssignedTasks</Text>;
+    }
+
+    if (loadingAssignedTasks) {
+        return <CenterSpinner />;
+    }
+
 
     if (tasksValue.length === 0) {
         return (
@@ -166,6 +219,8 @@ const TaskScreen = props => {
     }
 
     if (networkStatus === NetworkStatus.refetch) console.log('Refetching tasks!');
+    if (networkStatusCommittees === NetworkStatus.refetch) console.log('Refetching committees!');
+    if (networkStatusAssignedTasks === NetworkStatus.refetch) console.log('Refetching assigned tasks!');
 
     return (
         <Provider theme={theme}>
@@ -196,8 +251,11 @@ const TaskScreen = props => {
                 renderItem={itemData => (
                     <Task
                         tasks={tasksValue}
+                        committees={committeesValue}
+                        assignedTasks={assignedTasksValue}
                         task={itemData.item}
                         taskId={itemData.item.id}
+                        roadmapId={itemData.item.roadmap_id}
                         name={itemData.item.name}
                         due_date={itemData.item.due_date}
                         completed={itemData.item.completed}
@@ -205,6 +263,7 @@ const TaskScreen = props => {
                         completedTasksStateUpdate={completedTasksStateUpdate}
                         deleteTasksStateUpdate={deleteTasksStateUpdate}
                         updateTasksStateUpdate={updateTasksStateUpdate}
+                        deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
                         priority={itemData.item.priority}
                         completed_date={itemData.item.completed_date}
                         createdAt={itemData.item.createdAt}

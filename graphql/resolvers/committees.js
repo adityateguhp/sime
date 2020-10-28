@@ -78,9 +78,9 @@ module.exports = {
                 createdAt: new Date().toISOString()
             });
 
-            const division = await newCommittee.save();
+            const committee = await newCommittee.save();
 
-            return division;
+            return committee;
         },
         async updateCommittee(_, { committeeId, staffId, divisionId, positionId, order }, context) {
             try {

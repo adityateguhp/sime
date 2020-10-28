@@ -19,6 +19,7 @@ const Task = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const [visible, setVisible] = useState(false);
     const [due_date, setDue_date] = useState('');
     const [completed_date, setCompleted_date] = useState('');
     const [completedValue, setCompletedValue] = useState({
@@ -26,7 +27,6 @@ const Task = props => {
         completed: props.completed,
         completed_date: props.completed_date
     });
-    const [visible, setVisible] = useState(false);
 
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
@@ -176,7 +176,10 @@ const Task = props => {
             <TaskModal
                 visible={visible}
                 closeButton={closeModal}
+                roadmapId={props.roadmapId}
                 name={props.name}
+                assignedTasks={props.assignedTasks}
+                committees={props.committees}
                 createdBy={props.createdBy}
                 createdAt={props.createdAt}
                 completed={props.completed}
@@ -184,6 +187,7 @@ const Task = props => {
                 deleteButton={deleteHandler}
                 updateTasksStateUpdate={props.updateTasksStateUpdate}
                 task={props.task}
+                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
             />
         </Provider>
     );
