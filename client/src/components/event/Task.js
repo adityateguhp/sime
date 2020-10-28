@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform , Alert} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
 import { Subheading, Divider, Checkbox, Caption, Provider } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +18,8 @@ const Task = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+
+    const assignedTasksFilter = props.assignedTasks.filter((e) => e.task_id === props.taskId);
 
     const [visible, setVisible] = useState(false);
     const [due_date, setDue_date] = useState('');
@@ -44,7 +46,7 @@ const Task = props => {
         variables: { ...completedValue, completed: !completedValue.completed, completed_date: completedValue.completed === true ? '' : new Date() }
     });
 
-    
+
     const [deleteTask] = useMutation(DELETE_TASK, {
         update(proxy) {
             const data = proxy.readQuery({
@@ -166,7 +168,7 @@ const Task = props => {
                                 </View>
                                 <View style={{ ...styles.people, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
                                     <Icon name="account-multiple" size={16} color="grey" />
-                                    <Caption style={{ marginLeft: 3 }}>5</Caption>
+                                    <Caption style={{ marginLeft: 3 }}>{assignedTasksFilter.length}</Caption>
                                 </View>
                             </View>
                         </View>
@@ -178,8 +180,9 @@ const Task = props => {
                 closeButton={closeModal}
                 roadmapId={props.roadmapId}
                 name={props.name}
-                assignedTasks={props.assignedTasks}
+                assignedTasks={assignedTasksFilter}
                 committees={props.committees}
+                divisions={props.divisions}
                 createdBy={props.createdBy}
                 createdAt={props.createdAt}
                 completed={props.completed}

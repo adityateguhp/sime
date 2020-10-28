@@ -11,20 +11,14 @@ const DivisionCard = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-    const [expanded, setExpanded] = useState(true);
-
-    const handlePress = () => setExpanded(!expanded);
-
-    const label = props.name.substring(0, 2).toUpperCase();
 
     return (
-        <View style={styles.container}>
-                <List.Accordion
+        <TouchableCmp onLongPress={props.name === "Core Committee" ? null : props.onLongPress}>
+            <View style={styles.container}>
+                <List.Section
                     style={styles.accordion}
-                    titleStyle={{ fontWeight: 'bold' }}
+                    titleStyle={{ color:'black', fontSize: 16 }}
                     title={props.name}
-                    expanded={true}
-                    onPress={props.name === "Core Committee"? null : props.onLongPress}
                 >
                     <CommitteeListContainer
                         division_id={props.division_id}
@@ -36,8 +30,9 @@ const DivisionCard = props => {
                         deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
                         updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                     />
-                </List.Accordion>
-        </View >
+                </List.Section>
+            </View >
+        </TouchableCmp>
     );
 };
 

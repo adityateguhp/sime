@@ -14,6 +14,7 @@ import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION } from '../../util/graphql';
 import { theme } from '../../constants/Theme';
 import Colors from '../../constants/Colors';
 import CommitteeChipContainer from './CommitteeChipContainer'
+import AssignedToModal from './AssignedToModal'
 
 const TaskModal = props => {
     let TouchableCmp = TouchableOpacity;
@@ -21,6 +22,8 @@ const TaskModal = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+
+    const [visible, setVisible] = useState(false);
 
     const [errors, setErrors] = useState({
         task_name_error: '',
@@ -123,6 +126,14 @@ const TaskModal = props => {
         props.closeButton();
     }
 
+    const closeModal = () => {
+        setVisible(false);
+    }
+
+    const openModal = () => {
+        setVisible(true);
+    }
+
     const due_date = moment(values.due_date).format('ddd, MMM D YYYY h:mm a');
 
     return (
@@ -145,10 +156,10 @@ const TaskModal = props => {
                                             values.priority === "low" ? "#ffc916" : "#e2e2e2",
                             }
                         }}>
-                            <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={() => onCheck()} />
+                            <Appbar.Action icon="window-close" onPress={onCloseButton} />
                             <Appbar.Content />
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
-                            <Appbar.Action icon="window-close" onPress={onCloseButton} />
+                            <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={() => onCheck()} />
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
@@ -309,7 +320,7 @@ const TaskModal = props => {
                                         <View>
                                             <Button
                                                 icon="plus"
-                                                onPress={showDateTimepicker}
+                                                onPress={openModal}
                                                 mode="outlined"
                                                 compact={true}
                                             >
@@ -326,6 +337,13 @@ const TaskModal = props => {
                                         display="default"
                                     />
                                 </Portal>
+                                <AssignedToModal
+                                    visible={visible}
+                                    closeButton={closeModal}
+                                    priority={values.priority}
+                                    committees={props.committees}
+                                    divisions={props.divisions}
+                                />
                             </ScrollView>
                         </KeyboardAvoidingView>
                     </View>
@@ -367,7 +385,7 @@ const styles = StyleSheet.create({
     formViewStyle: {
         flex: 1,
         marginHorizontal: 20,
-        marginVertical: 25,
+        marginVertical: 15,
         justifyContent: 'flex-start',
     },
     createdByView: {

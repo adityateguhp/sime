@@ -12,7 +12,7 @@ import { SimeContext } from '../../context/SimePovider';
 import Task from '../../components/event/Task';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_TASKS_QUERY, FETCH_COMMITTEES_QUERY, FETCH_ASSIGNED_TASKS_QUERY } from '../../util/graphql';
+import { FETCH_TASKS_QUERY, FETCH_COMMITTEES_QUERY, FETCH_ASSIGNED_TASKS_QUERY, FETCH_DIVISIONS_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const TaskScreen = props => {
@@ -42,6 +42,7 @@ const TaskScreen = props => {
     const [tasksValue, setTasksValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
     const [assignedTasksValue, setAssignedTasksValue] = useState([]);
+    const [divisionsValue, setDivisionsValue] = useState([]);
 
     const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
@@ -81,6 +82,15 @@ const TaskScreen = props => {
         }
     );
 
+    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions, networkStatus: networkStatusDivisions } = useQuery(
+        FETCH_DIVISIONS_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setDivisionsValue(divisions.getDivisions) }
+        }
+    );
+
     const [visibleForm, setVisibleForm] = useState(false);
 
     const closeModalForm = () => {
@@ -95,6 +105,7 @@ const TaskScreen = props => {
         refetch();
         refetchCommittees();
         refetchAssignedTasks();
+        refetchDivisions();
     };
 
     const addTasksStateUpdate = (e) => {
@@ -169,6 +180,11 @@ const TaskScreen = props => {
         console.error(errorCommittees);
         return <Text>errorCommittees</Text>;
     }
+    
+    if (errorDivisions) {
+        console.error(errorDivisions);
+        return <Text>errorDivisions</Text>;
+    }
 
     if (loadingCommittees) {
         return <CenterSpinner />;
@@ -180,6 +196,10 @@ const TaskScreen = props => {
     }
 
     if (loadingAssignedTasks) {
+        return <CenterSpinner />;
+    }
+
+    if (loadingDivisions) {
         return <CenterSpinner />;
     }
 
@@ -221,6 +241,7 @@ const TaskScreen = props => {
     if (networkStatus === NetworkStatus.refetch) console.log('Refetching tasks!');
     if (networkStatusCommittees === NetworkStatus.refetch) console.log('Refetching committees!');
     if (networkStatusAssignedTasks === NetworkStatus.refetch) console.log('Refetching assigned tasks!');
+    if (networkStatusDivisions === NetworkStatus.refetch) console.log('Refetching head divisions!');
 
     return (
         <Provider theme={theme}>
@@ -253,6 +274,7 @@ const TaskScreen = props => {
                         tasks={tasksValue}
                         committees={committeesValue}
                         assignedTasks={assignedTasksValue}
+                        divisions={divisionsValue}
                         task={itemData.item}
                         taskId={itemData.item.id}
                         roadmapId={itemData.item.roadmap_id}
