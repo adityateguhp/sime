@@ -193,6 +193,9 @@ const TaskModal = props => {
                                         <Caption style={{ fontWeight: "bold" }}>{props.createdBy + " "}</Caption>
                                         <Caption>{"on " + moment(props.createdAt).format('MMM D YYYY h:mm a')}</Caption>
                                     </View>
+                                    <View style={styles.completedDateView}>
+                                        {values.completed ? <Caption style={{ opacity: 0.6 }}>{"Completed on " + moment(values.completed_date).format('MMM D YYYY h:mm a')}</Caption> : null}
+                                    </View>
                                     {taskDescriptionInput ?
                                         <View>
                                             <TextInput
@@ -318,13 +321,7 @@ const TaskModal = props => {
                                                 ))
                                         }
                                         <View>
-                                            <Button
-                                                icon="plus"
-                                                onPress={openModal}
-                                                mode="outlined"
-                                                compact={true}
-                                            >
-                                            </Button>
+                                            <Chip icon="plus" onPress={openModal}>ADD</Chip>
                                         </View>
                                     </View>
                                 </View>
@@ -341,8 +338,13 @@ const TaskModal = props => {
                                     visible={visible}
                                     closeButton={closeModal}
                                     priority={values.priority}
+                                    taskId={props.taskId}
+                                    roadmapId={props.roadmapId}
                                     committees={props.committees}
                                     divisions={props.divisions}
+                                    assignedTasks={props.assignedTasks}
+                                    assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                                    deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
                                 />
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -389,6 +391,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     createdByView: {
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+    },
+    completedDateView: {
         flexDirection: 'row',
         marginBottom: 20,
         flexWrap: 'wrap'

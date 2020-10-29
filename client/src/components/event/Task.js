@@ -178,6 +178,7 @@ const Task = props => {
             <TaskModal
                 visible={visible}
                 closeButton={closeModal}
+                taskId={props.taskId}
                 roadmapId={props.roadmapId}
                 name={props.name}
                 assignedTasks={assignedTasksFilter}
@@ -191,6 +192,7 @@ const Task = props => {
                 updateTasksStateUpdate={props.updateTasksStateUpdate}
                 task={props.task}
                 deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
             />
         </Provider>
     );

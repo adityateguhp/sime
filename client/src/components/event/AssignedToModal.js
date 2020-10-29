@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, TouchableOpacity, TouchableNativeFeedback, Platform, ScrollView } from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList } from 'react-native';
 import { Paragraph, Portal, Title, Appbar, Caption, Chip, Divider, Button, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from "react-native-modal";
@@ -48,25 +48,25 @@ const AssignedToModal = props => {
                         }}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="Committee" subtitle={sime.project_name} />
-                            <Appbar.Action icon="check" onPress={props.closeButton} />
                         </Appbar>
-
-                        <ScrollView>
                             <View style={styles.formViewStyle}>
-                            {
-                                            props.divisions.length === 0 ? null :
-                                                props.divisions.map((division) => (
-                                                    <View style={styles.chip}>
-                                                        <AssignedToSeparator
-                                                            name={division.name}
-                                                            divisionId={division.id}
-                                                            committees={props.committees}
-                                                        />
-                                                    </View>
-                                                ))
-                                        }
+                                <FlatList
+                                    data={props.divisions}
+                                    keyExtractor={item => item.id}
+                                    renderItem={itemData => (
+                                            <AssignedToSeparator
+                                                name={itemData.item.name}
+                                                divisionId={itemData.item.id}
+                                                committees={props.committees}
+                                                assignedTasks={props.assignedTasks}
+                                                taskId={props.taskId}
+                                                roadmapId={props.roadmapId}
+                                                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                                                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                                            />
+                                    )}
+                                />
                             </View>
-                        </ScrollView>
                     </View>
                 </View>
             </Modal>
@@ -92,78 +92,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         margin: 0
     },
-    info: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
-    subtitle: {
-        fontSize: 10
-    },
-    input: {
-        backgroundColor: 'white'
-    },
     formViewStyle: {
-        flex: 1,
         marginHorizontal: 10,
-        marginBottom: 5,
-        justifyContent: 'flex-start',
+        marginBottom: 60
+
     },
-    createdByView: {
-        flexDirection: 'row',
-        marginBottom: 20,
-        flexWrap: 'wrap'
-    },
-    descriptionView: {
-        marginBottom: 15,
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between'
-    },
-    edit: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start'
-    },
-    containerText: {
-        marginRight: 25
-    },
-    label: {
-        flexDirection: "row",
-        alignItems: "center"
-    },
-    dateInputContainer: {
-        flexDirection: "column",
-        marginTop: 35
-    },
-    button: {
-        flex: 1,
-        marginRight: 3
-    },
-    buttonContainer: {
-        flex: 1,
-        flexDirection: "row",
-        marginTop: 10
-    },
-    text: {
-        fontSize: 16,
-        marginLeft: 5,
-        opacity: 0.6
-    },
-    inputContainer: {
-        flexDirection: "column",
-        marginTop: 20
-    },
-    assignedInputContainer: {
-        flexDirection: "row",
-        flexWrap: 'wrap',
-        marginTop: 10,
-        marginRight: 3
-    },
-    assignedLabel: {
-        marginTop: 20
-    },
-    chip: {
+    divisionSeparator: {
         marginBottom: 10,
         marginRight: 10,
     }

@@ -16,7 +16,7 @@ const AssignedToCommitteeListContainer = props => {
     }
 
     const comiteeInDivision = props.committees.filter((e) => e.division_id === props.divisionId);
-
+        
     if (comiteeInDivision.length === 0) {
         return (
             <View style={styles.content}>
@@ -33,7 +33,12 @@ const AssignedToCommitteeListContainer = props => {
                          <AssignedToCommitteeList
                             committee_id = {itemData.item.id}
                             staff_id = {itemData.item.staff_id}
-                            position_id = {itemData.item.position_id}    
+                            position_id = {itemData.item.position_id} 
+                            assignedTasks={props.assignedTasks}   
+                            taskId={props.taskId}
+                            roadmapId={props.roadmapId}
+                            deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                            assignedTasksStateUpdate={props.assignedTasksStateUpdate}
                          />
                      )}
                 />

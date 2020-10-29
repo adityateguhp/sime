@@ -163,6 +163,10 @@ const TaskScreen = props => {
         setAssignedTasksValue(temp);
     }
 
+    const assignedTasksStateUpdate = (e) => {
+        setAssignedTasksValue([e, ...assignedTasksValue]);
+    }
+
     let pendingTask = tasksValue.filter((t) => t.completed === false);
 
     let completeTask = tasksValue.filter((t) => t.completed === true);
@@ -290,6 +294,7 @@ const TaskScreen = props => {
                         completed_date={itemData.item.completed_date}
                         createdAt={itemData.item.createdAt}
                         createdBy={itemData.item.createdBy}
+                        assignedTasksStateUpdate={assignedTasksStateUpdate}
                     >
                     </Task>
                 )}

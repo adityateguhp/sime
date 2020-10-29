@@ -1,14 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption, Provider, Portal, Title, Text } from 'react-native-paper';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { Avatar, List, Caption, Provider, Divider, Title, Text } from 'react-native-paper';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, DELETE_ASSIGNED_TASK, FETCH_ASSIGNED_TASKS_QUERY, ASSIGNED_TASK_MUTATION } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
+import Colors from '../../constants/Colors';
 
 const AssignedToCommitteeList = props => {
     let TouchableCmp = TouchableOpacity;
@@ -17,7 +19,16 @@ const AssignedToCommitteeList = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const sime = useContext(SimeContext);
+    let assignedCommitteeId = null;
+
+    props.assignedTasks.map((e) => {
+        if (e.committee_id === props.committee_id) {
+            assignedCommitteeId = e.id
+        }
+    }
+    );
+
+    const [selected, setSelected] = useState(false);
 
     const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
         FETCH_STAFF_QUERY,
@@ -33,7 +44,51 @@ const AssignedToCommitteeList = props => {
         }
     );
 
-    
+    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_ASSIGNED_TASKS_QUERY,
+                variables: { roadmapId: props.roadmapId }
+            });
+            data.getAssignedTasks = data.getAssignedTasks.filter((e) => e.id !== assignedCommitteeId);
+            props.deleteAssignedTasksStateUpdate(assignedCommitteeId)
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+        },
+        variables: {
+            assignedId: assignedCommitteeId
+        }
+    });
+
+    const [assignedTask] = useMutation(ASSIGNED_TASK_MUTATION, {
+        update(proxy, result) {
+            const data = proxy.readQuery({
+                query: FETCH_ASSIGNED_TASKS_QUERY,
+                variables: { roadmapId: props.roadmapId }
+            });
+            data.getAssignedTasks = [result.data.assignedTask, ...data.getAssignedTasks];
+            props.assignedTasksStateUpdate(result.data.assignedTask);
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+        },
+        variables: {
+            roadmapId: props.roadmapId,
+            taskId: props.taskId,
+            committeeId: props.committee_id
+        }
+    });
+
+    const onPressDeleteAssignedTask =  (event) => {
+        event.preventDefault();
+        deleteAssignedTask();
+        setSelected(false);
+    }
+
+    const onPressAssignedTask =  (event) => {
+        event.preventDefault();
+        assignedTask();
+        setSelected(true);
+    }
+
+
     if (errorStaff) {
         console.error(errorStaff);
         return <Text>errorStaff</Text>;
@@ -57,11 +112,14 @@ const AssignedToCommitteeList = props => {
             <TouchableCmp>
                 <View style={styles.wrap}>
                     <List.Item
+                        onPress={assignedCommitteeId || selected ? onPressDeleteAssignedTask : onPressAssignedTask}
                         style={styles.staffs}
                         title={staff.getStaff.name}
                         description={<Caption>{position.getPosition.name}</Caption>}
                         left={() => <Avatar.Image size={50} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />}
+                        right={assignedCommitteeId || selected ? () => <Icon style={{ alignSelf: "center" }} name="check" size={25} color={Colors.primaryColor} /> : null}
                     />
+                    <Divider />
                 </View>
             </TouchableCmp>
         </Provider>
@@ -73,11 +131,11 @@ const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     staffs: {
-        marginLeft: 10,
+        marginHorizontal: 10,
         marginTop: 3
     },
     wrap: {
-        marginTop: 1
+        marginTop: 1,
     },
     modalView: {
         backgroundColor: 'white',

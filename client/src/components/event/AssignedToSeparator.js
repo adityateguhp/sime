@@ -14,17 +14,21 @@ const AssignedToSeparator = props => {
 
     return (
         <View>
-                <List.Section
-                    style={styles.accordion}
-                    titleStyle={{ fontWeight: 'bold' }}
-                    title={props.name}  
-                >
-                    <AssignedToCommitteeListContainer
-                        divisionId={props.divisionId}
-                        committees={props.committees}
-                    />
-                </List.Section>
-                <Divider/>
+            <List.Section
+                style={styles.accordion}
+                titleStyle={{ color: 'black', fontSize: 16 }}
+                title={props.name}
+            >
+                <AssignedToCommitteeListContainer
+                    divisionId={props.divisionId}
+                    committees={props.committees}
+                    assignedTasks={props.assignedTasks}
+                    taskId={props.taskId}
+                    roadmapId={props.roadmapId}
+                    deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                    assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                />
+            </List.Section>
         </View >
     );
 };
