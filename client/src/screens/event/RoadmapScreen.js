@@ -237,6 +237,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <RoadmapCard
+                        roadmapId={itemData.item.id}
                         name={itemData.item.name}
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}

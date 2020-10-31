@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import Colors from '../../constants/Colors';
 import Status from '../../components/common/Status';
+import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'
 
 const EventCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -15,8 +16,6 @@ const EventCard = props => {
 
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');
-
-    let progress = 0;
 
     return (
         <View>
@@ -33,9 +32,13 @@ const EventCard = props => {
                     />
                     <Card.Content>
                         <View style={styles.task}>
-                            <Caption>{progress.toFixed(2) * 100}% Completed</Caption>
+                            <StatusProgressDays start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                            <View style={{ flexDirection: 'row' }}>
+                                <Percentage start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                                <Caption style={styles.caption}>%</Caption>
+                            </View>
                         </View>
-                        <ProgressBar progress={progress} color={Colors.primaryColor} />
+                        <StatusProgressBar start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
                     </Card.Content>
 
                     <View>

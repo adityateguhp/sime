@@ -6,6 +6,7 @@ import moment from 'moment';
 import SkeletonContent from "react-native-skeleton-content-nonexpo";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Status from '../../components/common/Status';
+import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'
 
 import Colors from '../../constants/Colors';
 
@@ -19,8 +20,6 @@ const ProjectCard = props => {
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');
 
-    let progress = 0;
-
     return (
         <View>
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
@@ -31,7 +30,7 @@ const ProjectCard = props => {
                         layout={cardCover}
                     >
                         <Card.Cover style={styles.cover}
-                           source={props.picture === null || props.picture === '' ? require('../../assets/folder.png')  : { uri: props.picture }}
+                            source={props.picture === null || props.picture === '' ? require('../../assets/folder.png') : { uri: props.picture }}
                         />
                     </SkeletonContent>
 
@@ -58,9 +57,13 @@ const ProjectCard = props => {
                     >
                         <Card.Content>
                             <View style={styles.task}>
-                                <Caption style={styles.caption}>{progress.toFixed(2) * 100}% Completed</Caption>
+                            <StatusProgressDays start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                                <View style={{flexDirection:'row'}}>
+                                    <Percentage start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                                    <Caption style={styles.caption}>%</Caption>
+                                </View>
                             </View>
-                            <ProgressBar progress={progress} color={Colors.primaryColor} />
+                            <StatusProgressBar start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
                         </Card.Content>
                     </SkeletonContent>
 

@@ -13,7 +13,7 @@ const Status = props => {
         )
     } else if (actived === true && props.cancel === false) {
         return (
-            <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="orange">ACTIVATED</Button>
+            <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="orange">ACTIVE</Button>
         )
     } else if (completed === true && props.cancel === false) {
         return (
@@ -21,7 +21,7 @@ const Status = props => {
         )
     } else if (props.cancel === true) {
         return (
-            <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="red">CANCELED</Button>
+            <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="red">CANCELLED</Button>
         )
     } else {
         return (

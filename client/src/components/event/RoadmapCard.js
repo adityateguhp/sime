@@ -3,7 +3,11 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform }
 import { Avatar, Card, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+import { useQuery } from '@apollo/react-hooks';
+
 import Colors from '../../constants/Colors';
+import { FETCH_TASKS_QUERY } from '../../util/graphql';
+import CenterSpinner from '../../components/common/CenterSpinner';
 
 const RoadmapCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -12,10 +16,43 @@ const RoadmapCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const [tasksValue, setTasksValue] = useState([]);
+
+    const { data: tasks, error: errorTasks, loading: loadingTasks, refetch, networkStatus } = useQuery(
+        FETCH_TASKS_QUERY,
+        {
+            variables: { roadmapId: props.roadmapId },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                tasks.getTasks.sort(function (x, y) {
+                    return new Date(x.createdAt) - new Date(y.createdAt);
+                }).reverse();
+                tasks.getTasks.sort(function (x, y) {
+                    return Number(x.completed) - Number(y.completed);
+                });
+                setTasksValue(tasks.getTasks)
+            }
+        }
+    );
+
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');
 
-    let progress = 0;
+    let completeTask = tasksValue.filter((t) => t.completed === true);
+
+
+    const percentage = Math.round((completeTask.length / tasksValue.length)*100);
+    const progress = completeTask.length / tasksValue.length;
+
+
+    if (errorTasks) {
+        console.error(errorTasks);
+        return <Text>errorTasks</Text>;
+    }
+
+    if (loadingTasks) {
+        return <CenterSpinner />;
+    }
 
     return (
         <View>
@@ -30,9 +67,9 @@ const RoadmapCard = props => {
                     />
                     <Card.Content>
                         <View style={styles.task}>
-                            <Caption>{progress.toFixed(2) * 100}% Completed</Caption>
+                            <Caption>{percentage? percentage : 0}% Completed</Caption>
                         </View>
-                        <ProgressBar progress={progress} color={Colors.primaryColor} />
+                        <ProgressBar progress={progress? progress : 0} color={Colors.primaryColor} />
                     </Card.Content>
                 </Card >
             </TouchableCmp>
