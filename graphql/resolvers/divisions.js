@@ -38,14 +38,6 @@ module.exports = {
         throw new UserInputError('Error', { errors });
       }
 
-      if (name.toLowerCase() === "core committee") {
-        throw new UserInputError('Core Committee is already exist', {
-          errors: {
-            division: 'Core Committee is already exist'
-          }
-        })
-      }
-
       const newDivision = new Division({
         name,
         project_id: projectId,
