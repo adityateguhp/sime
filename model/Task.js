@@ -12,7 +12,10 @@ const taskSchema = new Schema({
         ref: 'roadmaps'
     }, 	
     createdAt: String,
-    createdBy: String, 	
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'tasks'
+    }, 		
 });
 
 module.exports = model('Task', taskSchema);

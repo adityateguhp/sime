@@ -125,7 +125,7 @@ module.exports = gql`
         priority: String
         roadmap_id: ID!
         createdAt: String!
-        createdBy: String!
+        createdBy: ID!
     }
 
     type Task_assigned_to {
@@ -378,7 +378,7 @@ module.exports = gql`
             completed_date: String
             priority: String
             roadmapId: ID!
-            createdBy: String!
+            createdBy: ID!
         ): Task!
 
         updateTask(

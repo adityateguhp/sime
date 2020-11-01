@@ -5,12 +5,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from "react-native-modal";
 import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useLazyQuery, useQuery } from '@apollo/react-hooks';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import TextInput from '../common/TextInput';
 import { taskNameValidator } from '../../util/validator';
-import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION } from '../../util/graphql';
+import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION, FETCH_STAFF_QUERY, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 import { theme } from '../../constants/Theme';
 import Colors from '../../constants/Colors';
 import CommitteeChipContainer from './CommitteeChipContainer'
@@ -67,6 +67,35 @@ const TaskModal = props => {
             })
         }
     }, [props.task])
+
+    const [createdByName, setCreatedByName] = useState(null)
+
+    const [loadOrganization, { data: organization, error: errorOrganization, loading: loadingOrganization }] = useLazyQuery(
+        FETCH_ORGANIZATION_QUERY, {
+        variables: {
+            organizationId: props.createdBy
+        }
+    });
+
+    const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
+        FETCH_STAFF_QUERY, {
+        variables: {
+            staffId: props.createdBy
+        },
+        onCompleted: () => {
+            setCreatedByName(staff.getStaff.name)
+        },
+        onError: () => {
+            loadOrganization();
+        }
+    });
+
+    useEffect(() => {
+        if (organization) {
+            setCreatedByName(organization.getOrganization.name)
+        }
+      }, [organization])
+    
 
     const [updateTask, { loading }] = useMutation(UPDATE_TASK_MUTATION, {
         update(proxy, result) {
@@ -190,7 +219,7 @@ const TaskModal = props => {
                                         </View>}
                                     <View style={styles.createdByView}>
                                         <Caption>Created by </Caption>
-                                        <Caption style={{ fontWeight: "bold" }}>{props.createdBy + " "}</Caption>
+                                        <Caption style={{ fontWeight: "bold" }}>{createdByName + " "}</Caption>
                                         <Caption>{"on " + moment(props.createdAt).format('MMM D YYYY h:mm a')}</Caption>
                                     </View>
                                     <View style={styles.completedDateView}>

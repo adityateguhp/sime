@@ -1147,7 +1147,7 @@ export const ADD_TASK_MUTATION = gql`
     $completed_date: String,
     $priority: String,
     $roadmapId: ID!,
-    $createdBy: String!
+    $createdBy: ID!
   ) {
   addTask(
     name: $name,

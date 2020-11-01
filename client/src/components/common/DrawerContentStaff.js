@@ -38,7 +38,7 @@ const DrawerContentStaff = props => {
         id: '',
         name: '',
         email: '',
-        picture: ''
+        picture: '',
     })
 
     const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
