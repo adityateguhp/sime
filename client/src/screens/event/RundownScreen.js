@@ -15,7 +15,7 @@ import FormEditRundown from '../../components/event/FormEditRundown';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_RUNDOWNS_QUERY, FETCH_RUNDOWN_QUERY, DELETE_RUNDOWN } from '../../util/graphql';
+import { FETCH_RUNDOWNS_QUERY, FETCH_RUNDOWN_QUERY, DELETE_RUNDOWN, FETCH_EVENT_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const RundownScreen = props => {
@@ -59,6 +59,17 @@ const RundownScreen = props => {
     }
   });
 
+  const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent, networkStatus: networkStatusEvent } = useQuery(
+    FETCH_EVENT_QUERY, {
+    variables: {
+      eventId: sime.event_id
+    },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: () => {
+      setEventVal(event.getEvent);
+    }
+  });
+
   const [loadExistData, { called, data: rundown, error: errorRundown, loading: loadingRundown }] = useLazyQuery(
     FETCH_RUNDOWN_QUERY,
     {
@@ -69,6 +80,7 @@ const RundownScreen = props => {
   const [rundownsValTemp, setRundownsValTemp] = useState([]);
   const [rundownsVal, setRundownsVal] = useState([]);
   const [rundownVal, setRundownVal] = useState(null);
+  const [eventVal, setEventVal] = useState(null);
 
   const [visible, setVisible] = useState(false);
   const [visibleForm, setVisibleForm] = useState(false);
@@ -237,6 +249,7 @@ const RundownScreen = props => {
 
   const onRefresh = () => {
     refetch();
+    refetchEvent();
   };
 
 
@@ -246,6 +259,15 @@ const RundownScreen = props => {
   }
 
   if (loadingRundowns) {
+    return <CenterSpinner />;
+  }
+
+  if (errorEvent) {
+    console.error(errorEvent);
+    return <Text>errorEvent</Text>;
+  }
+
+  if (loadingEvent) {
     return <CenterSpinner />;
   }
 
@@ -275,6 +297,7 @@ const RundownScreen = props => {
           visibleForm={visibleForm}
           closeButton={closeModalForm}
           addRundownsStateUpdate={addRundownsStateUpdate}
+          event={eventVal}
         />
         <Snackbar
           visible={visibleAdd}
@@ -293,6 +316,7 @@ const RundownScreen = props => {
   }
 
   if (networkStatus === NetworkStatus.refetch) console.log('Refetching rundowns!');
+  if (networkStatusEvent === NetworkStatus.refetch) console.log('Refetching event!');
 
   return (
     <Provider theme={theme}>
@@ -354,6 +378,7 @@ const RundownScreen = props => {
         visibleForm={visibleForm}
         closeButton={closeModalForm}
         addRundownsStateUpdate={addRundownsStateUpdate}
+        event={eventVal}
       />
       <FormEditRundown
         closeModalForm={closeModalFormEdit}
@@ -363,6 +388,7 @@ const RundownScreen = props => {
         rundown={rundownVal}
         updateRundownStateUpdate={updateRundownStateUpdate}
         updateRundownsStateUpdate={updateRundownsStateUpdate}
+        event={eventVal}
       />
       <Snackbar
         visible={visibleAdd}

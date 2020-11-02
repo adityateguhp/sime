@@ -13,7 +13,7 @@ import EventCard from '../../components/event/EventCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_EVENTS_QUERY, FETCH_EVENT_QUERY, DELETE_EVENT, CANCEL_EVENT_MUTATION } from '../../util/graphql';
+import { FETCH_EVENTS_QUERY, FETCH_EVENT_QUERY, DELETE_EVENT, CANCEL_EVENT_MUTATION, FETCH_PROJECT_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const EventListScreen = ({ route, navigation }) => {
@@ -61,6 +61,7 @@ const EventListScreen = ({ route, navigation }) => {
 
 
     const [eventsValue, setEventsValue] = useState([]);
+    const [projectValue, setProjectValue] = useState(null);
 
     const selectItemHandler = (_id, event_name) => {
         navigation.navigate('Event Detail');
@@ -78,6 +79,16 @@ const EventListScreen = ({ route, navigation }) => {
             }
         }
     );
+
+    const { data: project, error: error3, loading: loading3,  refetch: refetchProject, networkStatus: networkStatusProject } = useQuery(
+        FETCH_PROJECT_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setProjectValue(project.getProject)
+            }
+        });
 
     const [loadExistData, { called, data: event, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_EVENT_QUERY,
@@ -219,6 +230,7 @@ const EventListScreen = ({ route, navigation }) => {
 
     const onRefresh = () => {
         refetch();
+        refetchProject();
     };
 
     if (error1) {
@@ -227,6 +239,15 @@ const EventListScreen = ({ route, navigation }) => {
     }
 
     if (loading1) {
+        return <CenterSpinner />;
+    }
+
+    if (error3) {
+        console.error(error3);
+        return <Text>Error</Text>;
+    }
+
+    if (loading3) {
         return <CenterSpinner />;
     }
 
@@ -250,12 +271,16 @@ const EventListScreen = ({ route, navigation }) => {
                 }
             >
                 <Text>No events found, let's add events!</Text>
-                <FABbutton Icon="plus" label="event" onPress={openForm} />
+                { sime.user_type === "Organization" || sime.order === '1' ?
+                    <FABbutton Icon="plus" label="event" onPress={openForm} />
+                        : null
+                }
                 <FormEvent
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
                     addEventsStateUpdate={addEventsStateUpdate}
+                    project={projectValue}
                 />
                 <Snackbar
                     visible={visibleDelete}
@@ -274,6 +299,7 @@ const EventListScreen = ({ route, navigation }) => {
     }
 
     if (networkStatus === NetworkStatus.refetch) console.log('Refetching events!');
+    if (networkStatusProject === NetworkStatus.refetch) console.log('Refetching project!');
 
     return (
         <Provider theme={theme}>
@@ -301,6 +327,7 @@ const EventListScreen = ({ route, navigation }) => {
                     </EventCard>
                 )}
             />
+            { sime.user_type === "Organization" || sime.order === '1' ?
             <Portal>
                 <Modal
                     useNativeDriver={true}
@@ -338,53 +365,56 @@ const EventListScreen = ({ route, navigation }) => {
                         </TouchableCmp>
                     </View>
                 </Modal>
-            </Portal>
-            <FABbutton Icon="plus" label="event" onPress={openForm} />
-            <FormEvent
-                closeModalForm={closeModalForm}
-                visibleForm={visibleForm}
-                closeButton={closeModalForm}
-                addEventsStateUpdate={addEventsStateUpdate}
-            />
-            <FormEditEvent
-                closeModalForm={closeModalFormEdit}
-                visibleForm={visibleFormEdit}
-                deleteButton={deleteHandler}
-                closeButton={closeModalFormEdit}
-                event={eventVal}
-                updateEventsStateUpdate={updateEventsStateUpdate}
-                updateEventStateUpdate={updateEventStateUpdate}
-            />
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-            >
-                Event deleted!
+
+                <FABbutton Icon="plus" label="event" onPress={openForm} />
+                <FormEvent
+                    closeModalForm={closeModalForm}
+                    visibleForm={visibleForm}
+                    closeButton={closeModalForm}
+                    addEventsStateUpdate={addEventsStateUpdate}
+                    project={projectValue}
+                />
+                <FormEditEvent
+                    closeModalForm={closeModalFormEdit}
+                    visibleForm={visibleFormEdit}
+                    deleteButton={deleteHandler}
+                    closeButton={closeModalFormEdit}
+                    event={eventVal}
+                    updateEventsStateUpdate={updateEventsStateUpdate}
+                    updateEventStateUpdate={updateEventStateUpdate}
+                    project={projectValue}
+                />
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Event deleted!
             </Snackbar>
-            <Snackbar
-                visible={visibleCancel}
-                onDismiss={onDismissSnackBarCancel}
-            >
-                Event canceled!
+                <Snackbar
+                    visible={visibleCancel}
+                    onDismiss={onDismissSnackBarCancel}
+                >
+                    Event canceled!
             </Snackbar>
-            <Snackbar
-                visible={visibleActivate}
-                onDismiss={onDismissSnackBarActivate}
-            >
-                Event activated!
+                <Snackbar
+                    visible={visibleActivate}
+                    onDismiss={onDismissSnackBarActivate}
+                >
+                    Event activated!
             </Snackbar>
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-            >
-                Event added!
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Event added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-            >
-                Event updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                >
+                    Event updated!
             </Snackbar>
+            </Portal> : null}
         </Provider>
     );
 }

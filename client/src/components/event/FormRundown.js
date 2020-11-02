@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -34,6 +34,11 @@ const FormRundown = props => {
         start_time: '',
         end_time: '',
         details: ''
+    });
+
+    const [eventDate, setEventDate] = useState({
+        start_date: '',
+        end_date: ''
     });
 
     const [showStartTime, setShowStartTime] = useState(false);
@@ -97,6 +102,15 @@ const FormRundown = props => {
         setErrors({ ...errors, [err]: '' });
         closeDatepicker();
     };
+
+    useEffect(() => {
+        if (props.event) {
+            setEventDate({
+                start_date: props.event.start_date,
+                end_date: props.event.end_date,
+            })
+        }
+    }, [props.event])
 
     const [addRundown, { loading }] = useMutation(ADD_RUNDOWN_MUTATION, {
         update(proxy, result) {
@@ -263,6 +277,8 @@ const FormRundown = props => {
                                         onCancel={closeDatepicker}
                                         mode="date"
                                         display="default"
+                                        minimumDate={new Date(eventDate.start_date)}
+                                        maximumDate={new Date(eventDate.end_date)}
                                     />
                                 </Portal>
                             </ScrollView>

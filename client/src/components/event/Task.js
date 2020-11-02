@@ -184,6 +184,7 @@ const Task = props => {
                 assignedTasks={assignedTasksFilter}
                 committees={props.committees}
                 divisions={props.divisions}
+                roadmap={props.roadmap}
                 createdBy={props.createdBy}
                 createdAt={props.createdAt}
                 completed={props.completed}

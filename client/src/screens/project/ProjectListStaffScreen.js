@@ -131,10 +131,10 @@ const ProjectListStaffScreen = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: { organizationId: sime.user.id },
+                variables: { organizationId: sime.user.organization_id },
             });
             cancelProjectsStateUpdate(result.data.cancelProject);
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             closeModal();
         },
         onError(err) {

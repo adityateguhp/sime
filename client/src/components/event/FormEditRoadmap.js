@@ -41,6 +41,11 @@ const FormEditRoadmap = props => {
         end_date: '',
     });
 
+    const [eventDate, setEventDate] = useState({
+        start_date: '',
+        end_date: ''
+    });
+
     const [showStartDate, setShowStartDate] = useState(false);
     const [showEndDate, setShowEndDate] = useState(false);
 
@@ -87,6 +92,15 @@ const FormEditRoadmap = props => {
             })
         }
     }, [props.roadmap])
+
+    useEffect(() => {
+        if (props.event) {
+            setEventDate({
+                start_date: props.event.start_date,
+                end_date: props.event.end_date,
+            })
+        }
+    }, [props.event])
 
     const [updateRoadmap, { loading }] = useMutation(UPDATE_ROADMAP_MUTATION, {
         update(proxy, result) {
@@ -203,7 +217,7 @@ const FormEditRoadmap = props => {
                                         onCancel={closeStartDatepicker}
                                         mode="date"
                                         display="default"
-                                        maximumDate={values.end_date ? new Date(values.end_date) : null}
+                                        maximumDate={values.end_date ? new Date(values.end_date) : new Date(eventDate.end_date)}
                                     />
                                     <DateTimePicker
                                         isVisible={showEndDate}
@@ -212,6 +226,7 @@ const FormEditRoadmap = props => {
                                         mode="date"
                                         display="default"
                                         minimumDate={values.start_date ? new Date(values.start_date) : null}
+                                        maximumDate={new Date(eventDate.end_date)}
                                     />
                                 </Portal>
                             </ScrollView>

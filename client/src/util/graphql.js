@@ -787,7 +787,7 @@ export const ADD_COMMITTEE_MUTATION = gql`
 `;
 
 export const UPDATE_COMMITTEE_MUTATION = gql`
-  mutation updateCommittee($committeeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!, $order: String) {
+  mutation updateCommittee($committeeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!, $order: String!) {
     updateCommittee(committeeId: $committeeId, staffId: $staffId, positionId: $positionId, divisionId: $divisionId, order:$order) {
       id
       staff_id

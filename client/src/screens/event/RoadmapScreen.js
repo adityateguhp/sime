@@ -13,7 +13,7 @@ import RoadmapCard from '../../components/event/RoadmapCard';;
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_ROADMAPS_QUERY, FETCH_ROADMAP_QUERY, DELETE_ROADMAP } from '../../util/graphql';
+import { FETCH_ROADMAPS_QUERY, FETCH_ROADMAP_QUERY, DELETE_ROADMAP, FETCH_EVENT_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const RoadmapScreen = ({ route, navigation }) => {
@@ -47,6 +47,7 @@ const RoadmapScreen = ({ route, navigation }) => {
 
 
     const [roadmapsValue, setRoadmapsValue] = useState([]);
+    const [eventVal, setEventVal] = useState(null);
 
     const { data: roadmaps, error: errorRoadmaps, loading: loadingRoadmaps, refetch, networkStatus } = useQuery(
         FETCH_ROADMAPS_QUERY,
@@ -56,6 +57,17 @@ const RoadmapScreen = ({ route, navigation }) => {
             onCompleted: () => { setRoadmapsValue(roadmaps.getRoadmaps) }
         }
     );
+
+    const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent, networkStatus: networkStatusEvent } = useQuery(
+        FETCH_EVENT_QUERY, {
+        variables: {
+            eventId: sime.event_id
+        },
+        notifyOnNetworkStatusChange: true,
+        onCompleted: () => {
+            setEventVal(event.getEvent);
+        }
+    });
 
     const [loadExistData, { called, data: roadmap, error: errorRoadmap, loading: loadingRoadmap }] = useLazyQuery(
         FETCH_ROADMAP_QUERY,
@@ -178,6 +190,15 @@ const RoadmapScreen = ({ route, navigation }) => {
         return <CenterSpinner />;
     }
 
+    if (errorEvent) {
+        console.error(errorEvent);
+        return <Text>errorEvent</Text>;
+    }
+
+    if (loadingEvent) {
+        return <CenterSpinner />;
+    }
+
     if (called & errorRoadmap) {
         console.error(errorRoadmap);
         return <Text>errorRoadmap</Text>;
@@ -205,6 +226,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
                     addRoadmapsStateUpdate={addRoadmapsStateUpdate}
+                    event={eventVal}
                 />
                 <Snackbar
                     visible={visibleAdd}
@@ -223,6 +245,7 @@ const RoadmapScreen = ({ route, navigation }) => {
     }
 
     if (networkStatus === NetworkStatus.refetch) console.log('Refetching roadmaps!');
+    if (networkStatusEvent === NetworkStatus.refetch) console.log('Refetching event!');
 
     return (
         <Provider theme={theme}>
@@ -276,6 +299,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
                 addRoadmapsStateUpdate={addRoadmapsStateUpdate}
+                event={eventVal}
             />
             <FormEditRoadmap
                 closeModalForm={closeModalFormEdit}
@@ -285,6 +309,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 roadmap={roadmapVal}
                 updateRoadmapsStateUpdate={updateRoadmapsStateUpdate}
                 updateRoadmapStateUpdate={updateRoadmapStateUpdate}
+                event={eventVal}
             />
             <Snackbar
                 visible={visibleAdd}

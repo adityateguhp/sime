@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
 import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -42,6 +42,11 @@ const FormEvent = props => {
         end_date: '',
         project_id: sime.project_id,
         picture: null,
+    });
+
+    const [projectDate, setProjectDate] = useState({
+        start_date: '',
+        end_date: ''
     });
 
     const [showStartDate, setShowStartDate] = useState(false);
@@ -115,6 +120,15 @@ const FormEvent = props => {
         setErrors({ ...errors, [err]: '' });
         closeEndDatepicker();
     };
+
+    useEffect(() => {
+        if (props.project) {
+            setProjectDate({
+                start_date: props.project.start_date,
+                end_date: props.project.end_date,
+            })
+        }
+    }, [props.project])
 
     const [addEvent, { loading }] = useMutation(ADD_EVENT_MUTATION, {
         update(proxy, result) {
@@ -273,7 +287,8 @@ const FormEvent = props => {
                                         onCancel={closeStartDatepicker}
                                         mode="date"
                                         display="default"
-                                        maximumDate={values.end_date ? new Date(values.end_date) : null}
+                                        minimumDate={new Date(projectDate.start_date)}
+                                        maximumDate={values.end_date ? new Date(values.end_date) : new Date(projectDate.end_date)}
                                     />
                                     <DateTimePicker
                                         isVisible={showEndDate}
@@ -281,7 +296,8 @@ const FormEvent = props => {
                                         onCancel={closeEndDatepicker}
                                         mode="date"
                                         display="default"
-                                        minimumDate={values.start_date ? new Date(values.start_date) : null}
+                                        minimumDate={values.start_date ? new Date(values.start_date) : new Date(projectDate.start_date)}
+                                        maximumDate={new Date(projectDate.end_date)}
                                     />
                                 </Portal>
                             </ScrollView>

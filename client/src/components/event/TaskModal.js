@@ -39,6 +39,11 @@ const TaskModal = props => {
         priority: ''
     });
 
+    const [roadmapDate, setRoadmapDate] = useState({
+        start_date: '',
+        end_date: ''
+    });
+
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
         setErrors({ ...errors, [err]: '' });
@@ -67,6 +72,15 @@ const TaskModal = props => {
             })
         }
     }, [props.task])
+
+    useEffect(() => {
+        if (props.roadmap) {
+            setRoadmapDate({
+                start_date: props.roadmap.start_date,
+                end_date: props.roadmap.end_date,
+            })
+        }
+    }, [props.roadmap])
 
     const [createdByName, setCreatedByName] = useState(null)
 
@@ -361,6 +375,8 @@ const TaskModal = props => {
                                         onCancel={closeDateTimepicker}
                                         mode="datetime"
                                         display="default"
+                                        minimumDate={new Date(roadmapDate.start_date)}
+                                        maximumDate={new Date(roadmapDate.end_date)}
                                     />
                                 </Portal>
                                 <AssignedToModal

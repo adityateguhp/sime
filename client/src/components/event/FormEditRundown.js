@@ -37,6 +37,11 @@ const FormRundown = props => {
         details: ''
     });
 
+    const [eventDate, setEventDate] = useState({
+        start_date: '',
+        end_date: ''
+    });
+
     const [showStartTime, setShowStartTime] = useState(false);
     const [showEndTime, setShowEndTime] = useState(false);
     const [showDate, setShowDate] = useState(false)
@@ -111,6 +116,15 @@ const FormRundown = props => {
             })
         }
     }, [props.rundown])
+
+    useEffect(() => {
+        if (props.event) {
+            setEventDate({
+                start_date: props.event.start_date,
+                end_date: props.event.end_date,
+            })
+        }
+    }, [props.event])
 
     const [updateRundown, { loading }] = useMutation(UPDATE_RUNDOWN_MUTATION, {
         update(proxy, result) {
@@ -279,6 +293,8 @@ const FormRundown = props => {
                                         onCancel={closeDatepicker}
                                         mode="date"
                                         display="default"
+                                        minimumDate={new Date(eventDate.start_date)}
+                                        maximumDate={new Date(eventDate.end_date)}
                                     />
                                 </Portal>
                             </ScrollView>

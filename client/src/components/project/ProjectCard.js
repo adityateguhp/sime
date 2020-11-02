@@ -45,10 +45,9 @@ const ProjectCard = props => {
 
     return (
         <View>
-            <TouchableCmp onPress={props.onSelect}
-                onLongPress={sime.user_type === 'Organization' ? props.onLongPress
-                    : headProject === sime.user.id ? props.onLongPress
-                        : null} useForeground>
+            <TouchableCmp
+                onPress={props.onSelect}
+                onLongPress={sime.user_type === 'Organization' || headProject === sime.user.id ? props.onLongPress : null} useForeground>
                 <Card style={styles.project}>
                     <SkeletonContent
                         isLoading={props.loading}

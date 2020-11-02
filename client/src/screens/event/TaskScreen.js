@@ -12,7 +12,7 @@ import { SimeContext } from '../../context/SimePovider';
 import Task from '../../components/event/Task';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_TASKS_QUERY, FETCH_COMMITTEES_QUERY, FETCH_ASSIGNED_TASKS_QUERY, FETCH_DIVISIONS_QUERY } from '../../util/graphql';
+import { FETCH_TASKS_QUERY, FETCH_COMMITTEES_QUERY, FETCH_ASSIGNED_TASKS_QUERY, FETCH_DIVISIONS_QUERY, FETCH_ROADMAP_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const TaskScreen = props => {
@@ -43,6 +43,7 @@ const TaskScreen = props => {
     const [committeesValue, setCommitteesValue] = useState([]);
     const [assignedTasksValue, setAssignedTasksValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);
+    const [roadmapValue, setRoadmapValue] = useState(null);
 
     const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
@@ -78,6 +79,15 @@ const TaskScreen = props => {
         }
     );
 
+    const {data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap, networkStatus: networkStatusRoadmap } = useQuery(
+        FETCH_ROADMAP_QUERY,
+        {
+            variables: { roadmapId: sime.roadmap_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setRoadmapValue(roadmap.getRoadmap)
+            }
+        });
 
     const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch: refetchAssignedTasks, networkStatus: networkStatusAssignedTasks } = useQuery(
         FETCH_ASSIGNED_TASKS_QUERY,
@@ -112,6 +122,7 @@ const TaskScreen = props => {
         refetchCommittees();
         refetchAssignedTasks();
         refetchDivisions();
+        refetchRoadmap();
     };
 
     const addTasksStateUpdate = (e) => {
@@ -186,19 +197,15 @@ const TaskScreen = props => {
         return <CenterSpinner />;
     }
 
+    if (loadingCommittees) {
+        return <CenterSpinner />;
+    }
+
     if (errorCommittees) {
         console.error(errorCommittees);
         return <Text>errorCommittees</Text>;
     }
     
-    if (errorDivisions) {
-        console.error(errorDivisions);
-        return <Text>errorDivisions</Text>;
-    }
-
-    if (loadingCommittees) {
-        return <CenterSpinner />;
-    }
 
     if (errorAssignedTasks) {
         console.error(errorAssignedTasks);
@@ -209,8 +216,22 @@ const TaskScreen = props => {
         return <CenterSpinner />;
     }
 
+    if (errorRoadmap) {
+        console.error(errorRoadmap);
+        return <Text>errorRoadmap</Text>;
+    }
+
+    if (loadingRoadmap) {
+        return <CenterSpinner />;
+    }
+
     if (loadingDivisions) {
         return <CenterSpinner />;
+    }
+
+    if (errorDivisions) {
+        console.error(errorDivisions);
+        return <Text>errorDivisions</Text>;
     }
 
 
@@ -252,6 +273,7 @@ const TaskScreen = props => {
     if (networkStatusCommittees === NetworkStatus.refetch) console.log('Refetching committees!');
     if (networkStatusAssignedTasks === NetworkStatus.refetch) console.log('Refetching assigned tasks!');
     if (networkStatusDivisions === NetworkStatus.refetch) console.log('Refetching head divisions!');
+    if (networkStatusRoadmap === NetworkStatus.refetch) console.log('Refetching head roadmap!');
 
     return (
         <Provider theme={theme}>
@@ -301,6 +323,7 @@ const TaskScreen = props => {
                         createdAt={itemData.item.createdAt}
                         createdBy={itemData.item.createdBy}
                         assignedTasksStateUpdate={assignedTasksStateUpdate}
+                        roadmap={roadmapValue}
                     >
                     </Task>
                 )}
