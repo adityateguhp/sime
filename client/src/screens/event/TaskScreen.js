@@ -50,6 +50,12 @@ const TaskScreen = props => {
             variables: { projectId: sime.project_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
+                committees.getCommittees.sort(function (a, b) {
+                    var textA = a.order;
+                    var textB = b.order;
+        
+                    return textA.localeCompare(textB)
+                });
                 setCommitteesValue(committees.getCommittees)
             }
         }
@@ -261,7 +267,7 @@ const TaskScreen = props => {
                 ListHeaderComponent={
                     <View style={styles.taskStatusContainer}>
                         <View style={styles.pending}>
-                            <Text style={styles.textStatus}>Pending: {pendingTask.length} Task</Text>
+                            <Text style={styles.textStatus}>Pending: {pendingTask.length} Tasks</Text>
                         </View>
                         <Divider style={[styles.dividerStatus, {
                             transform: [
@@ -269,7 +275,7 @@ const TaskScreen = props => {
                             ]
                         }]} />
                         <View style={styles.completed}>
-                            <Text style={styles.textStatus}>Completed: {completeTask.length} Task</Text>
+                            <Text style={styles.textStatus}>Completed: {completeTask.length} Tasks</Text>
                         </View>
                     </View>
                 }

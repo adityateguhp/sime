@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Dimensions } from 'react-native';
 import { Card, Caption, ProgressBar, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,8 +7,11 @@ import SkeletonContent from "react-native-skeleton-content-nonexpo";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Status from '../../components/common/Status';
 import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'
+import { useQuery } from '@apollo/react-hooks';
 
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider';
+import { FETCH_HEADPROJECT_QUERY } from '../../util/graphql';
 
 const ProjectCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -17,12 +20,35 @@ const ProjectCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const [headProject, setHeadProject] = useState(null);
+
+    const { data: headProjectData, error: error2, loading: loading2, refetch: refetchHeadProject, networkStatus: networkStatusHeadProject } = useQuery(
+        FETCH_HEADPROJECT_QUERY, {
+        variables: {
+            projectId: props.projectId,
+            order: '1'
+        },
+        notifyOnNetworkStatusChange: true,
+        onCompleted: () => {
+            if (headProjectData.getHeadProject === null) {
+                return;
+            } else {
+                setHeadProject(headProjectData.getHeadProject.staff_id);
+            }
+        }
+    });
+
+    const sime = useContext(SimeContext);
+
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');
 
     return (
         <View>
-            <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
+            <TouchableCmp onPress={props.onSelect}
+                onLongPress={sime.user_type === 'Organization' ? props.onLongPress
+                    : headProject === sime.user.id ? props.onLongPress
+                        : null} useForeground>
                 <Card style={styles.project}>
                     <SkeletonContent
                         isLoading={props.loading}
@@ -57,8 +83,8 @@ const ProjectCard = props => {
                     >
                         <Card.Content>
                             <View style={styles.task}>
-                            <StatusProgressDays start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
-                                <View style={{flexDirection:'row'}}>
+                                <StatusProgressDays start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                                <View style={{ flexDirection: 'row' }}>
                                     <Percentage start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
                                     <Caption style={styles.caption}>%</Caption>
                                 </View>

@@ -4,6 +4,8 @@ import { Avatar, Card, Caption, IconButton, ProgressBar, Menu, Button, Divider }
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { useQuery } from '@apollo/react-hooks';
+import SkeletonContent from "react-native-skeleton-content-nonexpo";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import Colors from '../../constants/Colors';
 import { FETCH_TASKS_QUERY } from '../../util/graphql';
@@ -41,7 +43,7 @@ const RoadmapCard = props => {
     let completeTask = tasksValue.filter((t) => t.completed === true);
 
 
-    const percentage = Math.round((completeTask.length / tasksValue.length)*100);
+    const percentage = Math.round((completeTask.length / tasksValue.length) * 100);
     const progress = completeTask.length / tasksValue.length;
 
 
@@ -50,32 +52,67 @@ const RoadmapCard = props => {
         return <Text>errorTasks</Text>;
     }
 
-    if (loadingTasks) {
-        return <CenterSpinner />;
-    }
-
     return (
         <View>
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
                 <Card style={styles.event}>
-                    <Card.Title
-                        title={props.name}
-                        subtitle={
-                            <Caption>
-                                <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}
-                            </Caption>}
-                    />
-                    <Card.Content>
-                        <View style={styles.task}>
-                            <Caption>{percentage? percentage : 0}% Completed</Caption>
-                        </View>
-                        <ProgressBar progress={progress? progress : 0} color={Colors.primaryColor} />
-                    </Card.Content>
+                    <SkeletonContent
+                        isLoading={loadingTasks}
+                        containerStyle={styles.SkletonContainer}
+                        layout={cardTitle}
+                    >
+                        <Card.Title
+                            title={props.name}
+                            subtitle={
+                                <Caption>
+                                    <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}
+                                </Caption>}
+                        />
+                    </SkeletonContent>
+
+                    <SkeletonContent
+                        isLoading={loadingTasks}
+                        containerStyle={styles.SkletonContainer}
+                        layout={cardContent}
+                    >
+                        <Card.Content style={{marginBottom: 16}}>
+                            <View style={styles.task}>
+                                <Caption>{percentage ? percentage : 0}% Completed</Caption>
+                                <Caption>{completeTask.length}/{tasksValue.length} Tasks</Caption>
+                            </View>
+                            <ProgressBar progress={progress ? progress : 0} color={Colors.primaryColor} />
+                        </Card.Content>
+                    </SkeletonContent>
                 </Card >
             </TouchableCmp>
         </View>
     );
 };
+
+const cardWidth = wp(100);
+
+const cardTitle = [
+    {
+        width: cardWidth * 0.85,
+        height: wp(5),
+        marginTop: 20,
+        marginHorizontal: 16,
+        marginBottom: 10
+    },
+    {
+        width: cardWidth * 0.4,
+        height: wp(3),
+        marginHorizontal: 16
+    },
+];
+const cardContent = [
+    {
+        width: cardWidth * 0.85,
+        height: wp(5),
+        marginHorizontal: 16,
+        marginVertical: 20
+    },
+];
 
 const styles = StyleSheet.create({
     event: {
@@ -86,13 +123,16 @@ const styles = StyleSheet.create({
     task: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
     },
     cardAction: {
         flexDirection: "row",
         margin: 8
 
-    }
+    },
+    SkletonContainer: {
+        width: '100%',
+    },
 });
 
 

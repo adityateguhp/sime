@@ -14,9 +14,9 @@ import DivisionCard from '../../components/project/DivisionCard';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY, FETCH_COMMITTEES_IN_DIVISION_QUERY, DELETE_COMMITTEE } from '../../util/graphql';
+import { FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY, FETCH_COMMITTEES_IN_DIVISION_QUERY, DELETE_COMMITTEE, FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY } from '../../util/graphql';
 
-const CommitteeListScreen = ({ navigation }) => {
+const CommitteeListStaffScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -75,7 +75,7 @@ const CommitteeListScreen = ({ navigation }) => {
     const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
-            variables: { organizationId: sime.user.id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setStaffsValue(staffs.getStaffs) }
         }
@@ -107,13 +107,23 @@ const CommitteeListScreen = ({ navigation }) => {
                 committees.getCommittees.sort(function (a, b) {
                     var textA = a.order;
                     var textB = b.order;
-        
+
                     return textA.localeCompare(textB)
                 });
                 setCommitteesValue(committees.getCommittees)
             }
         }
     );
+
+    const { data: committeeStaff, error: error1, loading: loading1, refetch: refetchCommitteeStaff, networkStatus: networkStatusCommitteeStaff} = useQuery(
+        FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY,
+        {
+            variables: { staffId: sime.user.id, projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                sime.setOrder(committeeStaff.getCommitteesByStaffProject.order)
+            }
+        });
 
     const [loadExistData, { called, data: division, error: error2, loading: loading2 }] = useLazyQuery(
         FETCH_DIVISION_QUERY,
@@ -309,6 +319,7 @@ const CommitteeListScreen = ({ navigation }) => {
         refetchDivisions();
         refetchPositions();
         refetchStaffs();
+        refetchCommitteeStaff();
     };
 
     const deleteHandler = () => {
@@ -355,6 +366,11 @@ const CommitteeListScreen = ({ navigation }) => {
         return <Text>errorCommittees</Text>;
     }
 
+    if (error1) {
+        console.error(error1);
+        return <Text>error1</Text>;
+    }
+
     if (loadingStaffs) {
         return <CenterSpinner />;
     }
@@ -368,6 +384,10 @@ const CommitteeListScreen = ({ navigation }) => {
     }
 
     if (loadingCommittees) {
+        return <CenterSpinner />;
+    }
+
+    if (loading1) {
         return <CenterSpinner />;
     }
 
@@ -428,6 +448,7 @@ const CommitteeListScreen = ({ navigation }) => {
                     />
                 )}
             />
+            { sime.order === '1'?
             <Portal>
                 <Modal
                     useNativeDriver={true}
@@ -451,85 +472,87 @@ const CommitteeListScreen = ({ navigation }) => {
                         </TouchableCmp>
                     </View>
                 </Modal>
-            </Portal>
-            <FAB.Group
-                open={open}
-                icon={open ? 'account-multiple-plus' : 'plus'}
-                actions={[
-                    {
-                        icon: 'account',
-                        label: 'Committee',
-                        onPress: openForm
-                    },
-                    {
-                        icon: 'account-multiple',
-                        label: 'Division',
-                        onPress: openFormDivision
-                    },
-                ]}
-                onStateChange={onStateChange}
-            />
-            <FormCommittee
-                closeModalForm={closeModalForm}
-                visibleForm={visibleForm}
-                closeButton={closeModalForm}
-                staffs={staffsValue}
-                divisions={divisionsValue}
-                positions={positionsValue}
-                committees={committeesValue}
-                addCommitteesStateUpdate={addCommitteesStateUpdate}
-            />
-            <FormDivision
-                closeModalForm={closeModalFormDivision}
-                visibleForm={visibleFormDivision}
-                closeButton={closeModalFormDivision}
-                addDivisionsStateUpdate={addDivisionsStateUpdate}
-            />
-            <FormEditDivision
-                closeModalForm={closeModalFormEditDivision}
-                visibleForm={visibleFormEditDivision}
-                division={divisionVal}
-                deleteButton={deleteHandler}
-                closeButton={closeModalFormEditDivision}
-                updateDivisionStateUpdate={updateDivisionStateUpdate}
-                updateDivisionsStateUpdate={updateDivisionsStateUpdate}
-            />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-            >
-                Committee added!
+
+                <FAB.Group
+                    open={open}
+                    icon={open ? 'account-multiple-plus' : 'plus'}
+                    actions={[
+                        {
+                            icon: 'account',
+                            label: 'Committee',
+                            onPress: openForm
+                        },
+                        {
+                            icon: 'account-multiple',
+                            label: 'Division',
+                            onPress: openFormDivision
+                        },
+                    ]}
+                    onStateChange={onStateChange}
+                />
+
+                <FormCommittee
+                    closeModalForm={closeModalForm}
+                    visibleForm={visibleForm}
+                    closeButton={closeModalForm}
+                    staffs={staffsValue}
+                    divisions={divisionsValue}
+                    positions={positionsValue}
+                    committees={committeesValue}
+                    addCommitteesStateUpdate={addCommitteesStateUpdate}
+                />
+                <FormDivision
+                    closeModalForm={closeModalFormDivision}
+                    visibleForm={visibleFormDivision}
+                    closeButton={closeModalFormDivision}
+                    addDivisionsStateUpdate={addDivisionsStateUpdate}
+                />
+                <FormEditDivision
+                    closeModalForm={closeModalFormEditDivision}
+                    visibleForm={visibleFormEditDivision}
+                    division={divisionVal}
+                    deleteButton={deleteHandler}
+                    closeButton={closeModalFormEditDivision}
+                    updateDivisionStateUpdate={updateDivisionStateUpdate}
+                    updateDivisionsStateUpdate={updateDivisionsStateUpdate}
+                />
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                >
+                    Committee added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-            >
-                Committee updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                >
+                    Committee updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-            >
-                Committee deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                >
+                    Committee deleted!
             </Snackbar>
-            <Snackbar
-                visible={visibleAddDivision}
-                onDismiss={onDismissSnackBarAddDivision}
-            >
-                Division added!
+                <Snackbar
+                    visible={visibleAddDivision}
+                    onDismiss={onDismissSnackBarAddDivision}
+                >
+                    Division added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdateDivision}
-                onDismiss={onDismissSnackBarUpdateDivision}
-            >
-                Division updated!
+                <Snackbar
+                    visible={visibleUpdateDivision}
+                    onDismiss={onDismissSnackBarUpdateDivision}
+                >
+                    Division updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDeleteDivision}
-                onDismiss={onDismissSnackBarDeleteDivision}
-            >
-                Division deleted!
+                <Snackbar
+                    visible={visibleDeleteDivision}
+                    onDismiss={onDismissSnackBarDeleteDivision}
+                >
+                    Division deleted!
             </Snackbar>
+            </Portal> : null}
         </Provider>
     );
 }
@@ -568,4 +591,4 @@ const styles = StyleSheet.create({
 
 
 
-export default CommitteeListScreen;
+export default CommitteeListStaffScreen;

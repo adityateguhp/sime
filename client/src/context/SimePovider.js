@@ -26,6 +26,7 @@ const SimeProvider = (props) => {
   const [rundown_id, setRundown_id] = useState('');
   const [rundown_agenda, setRundown_agenda] = useState('');
   const [committee_id, setCommittee_id] = useState('');
+  const [order, setOrder] = useState('');
 
   return (
     <SimeContext.Provider
@@ -53,6 +54,7 @@ const SimeProvider = (props) => {
         rundown_id,
         rundown_agenda,
         committee_id,
+        order,
         setUser,
         setUser_type,
         setDepartment_id,
@@ -76,6 +78,7 @@ const SimeProvider = (props) => {
         setRundown_id,
         setRundown_agenda,
         setCommittee_id,
+        setOrder
       }}
     >
       {props.children}

@@ -30,6 +30,18 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async getCommitteesByStaffProject(_, { staffId, projectId }, context) {
+            try {
+                const committees = await Committee.findOne({ staff_id: staffId, project_id: projectId });
+                if (committees) {
+                    return committees;
+                } else {
+                    throw new Error('Committees not found');
+                }
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
         async getCommittee(_, { committeeId }) {
             try {
                 const committee = await Committee.findById(committeeId);

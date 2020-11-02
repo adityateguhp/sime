@@ -292,6 +292,7 @@ const ProjectListScreen = props => {
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <ProjectCard
+                        projectId={itemData.item.id}
                         name={itemData.item.name}
                         cancel={itemData.item.cancel}
                         start_date={itemData.item.start_date}

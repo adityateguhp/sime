@@ -716,6 +716,20 @@ export const FETCH_COMMITTEES_BYSTAFF_QUERY = gql`
   }
 `;
 
+export const FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY = gql`
+  query($staffId: ID!, $projectId: ID!){
+    getCommitteesByStaffProject(staffId: $staffId, projectId: $projectId){
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      order
+      createdAt
+  }
+  }
+`;
+
 
 export const FETCH_COMMITTEE_QUERY = gql`
    query($committeeId: ID!) {

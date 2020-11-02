@@ -197,7 +197,7 @@ const FormEditProject = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="Edit Project" />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
+                            { sime.user_type === 'Organization' ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView

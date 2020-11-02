@@ -59,7 +59,7 @@ const ProjectListStaffScreen = props => {
 
     const [commiteesStaff, setCommitteesStaff] = useState([]);
 
-    const { data: committeesByStaff, error: error1, loading: loading1 } = useQuery(
+    const { data: committeesByStaff, error: error1, loading: loading1, refetch: refetchCommitteeStaff, networkStatus: networkStatusCommitteeStaff } = useQuery(
         FETCH_COMMITTEES_BYSTAFF_QUERY,
         {
             variables: { staffId: sime.user.id },
@@ -79,14 +79,14 @@ const ProjectListStaffScreen = props => {
 
     let projectsStaff = []
     commiteesStaff.map((committee) =>
-    projectsValue.map((project) => {
-        if (project.id === committee.project_id) {
-            projectsStaff.push(project);
-        } else {
-            return null
-        }
-        return null;
-    }))
+        projectsValue.map((project) => {
+            if (project.id === committee.project_id) {
+                projectsStaff.push(project);
+            } else {
+                return null
+            }
+            return null;
+        }))
 
     const [loadExistData, { called2, data: project, error: error3, loading: loading3 }] = useLazyQuery(
         FETCH_PROJECT_QUERY,
@@ -174,6 +174,7 @@ const ProjectListStaffScreen = props => {
 
     const onRefresh = () => {
         refetch();
+        refetchCommitteeStaff();
     };
 
     const numColumns = 2;
@@ -184,6 +185,15 @@ const ProjectListStaffScreen = props => {
     }
 
     if (loading1) {
+        return <CenterSpinner />;
+    }
+
+    if (error2) {
+        console.error(error2);
+        return <Text>Error</Text>;
+    }
+
+    if (loading2) {
         return <CenterSpinner />;
     }
 
@@ -212,8 +222,10 @@ const ProjectListStaffScreen = props => {
     }
 
     if (networkStatus === NetworkStatus.refetch) console.log('Refetching projects!');
+    if (networkStatusCommitteeStaff === NetworkStatus.refetch) console.log('Refetching committees!');
 
     return (
+        <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
                 contentContainerStyle={styles.container}
@@ -226,23 +238,85 @@ const ProjectListStaffScreen = props => {
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <ProjectCard
+                        projectId={itemData.item.id}
                         name={itemData.item.name}
                         cancel={itemData.item.cancel}
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
                         onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}
+                        onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
                         loading={loading1}
                     >
                     </ProjectCard>
                 )}
                 numColumns={numColumns}
             />
+            <Portal>
+                <Modal
+                    useNativeDriver={true}
+                    isVisible={visible}
+                    animationIn="zoomIn"
+                    animationOut="zoomOut"
+                    onBackButtonPress={closeModal}
+                    onBackdropPress={closeModal}
+                    statusBarTranslucent>
+                    <View style={styles.modalView}>
+                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.project_name}</Title>
+                        <TouchableCmp onPress={openFormEdit}>
+                            <View style={styles.textView}>
+                                <Text style={styles.text}>Edit</Text>
+                            </View>
+                        </TouchableCmp>
+                        {
+                            cancelValue.cancel === true ?
+                                <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
+                                    <View style={styles.textView}>
+                                        <Text style={styles.text}>Activate project</Text>
+                                    </View>
+                                </TouchableCmp>
+                                :
+                                <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
+                                    <View style={styles.textView}>
+                                        <Text style={styles.text}>Cancel project</Text>
+                                    </View>
+                                </TouchableCmp>
+                        }
+                    </View>
+                </Modal>
+            </Portal>
+            <FormEditProject
+                closeModalForm={closeModalFormEdit}
+                visibleForm={visibleFormEdit}
+                closeButton={closeModalFormEdit}
+                project={projectVal}
+                updateProjectsStateUpdate={updateProjectsStateUpdate}
+                updateProjectStateUpdate={updateProjectStateUpdate}
+            />
+            <Snackbar
+                visible={visibleCancel}
+                onDismiss={onDismissSnackBarCancel}
+            >
+                Project canceled!
+        </Snackbar>
+            <Snackbar
+                visible={visibleActivate}
+                onDismiss={onDismissSnackBarActivate}
+            >
+                Project activated!
+        </Snackbar>
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+            >
+                Project updated!
+        </Snackbar>
+        </Provider>
     );
 }
 
 const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(46.5);
+const modalMenuHeight = wp(35);
 
 
 const styles = StyleSheet.create({

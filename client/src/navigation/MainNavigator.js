@@ -27,6 +27,7 @@ import ProjectListScreen from '../screens/project/ProjectListScreen';
 import ProjectListStaffScreen from '../screens/project/ProjectListStaffScreen';
 import ProjectOverviewScreen from '../screens/project/ProjectOverviewScreen';
 import CommitteeListScreen from '../screens/project/CommitteeListScreen';
+import CommitteeListStaffScreen from '../screens/project/CommitteeListStaffScreen';
 import EventListScreen from '../screens/project/EventListScreen';
 import EventOverviewScreen from '../screens/event/EventOverviewScreen';
 import EditEventScreen from '../screens/event/EditEventScreen';
@@ -342,7 +343,7 @@ function ProjectStackStaffSceen({ route, navigation }) {
           ),
         }}
       />
-      <ProjectsStackStaff.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
+      <ProjectsStackStaff.Screen name="Project Menu" component={TopTabProjectsStaff} options={({ route }) => ({ title: route.params?.projectName })} />
       <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
@@ -399,6 +400,28 @@ function TopTabProjects() {
       <TopTabProject.Screen name="Committee" component={CommitteeListScreen} />
       <TopTabProject.Screen name="Project Overview" component={ProjectOverviewScreen} />
     </TopTabProject.Navigator>
+  );
+}
+
+const TopTabProjectStaff = createMaterialTopTabNavigator();
+
+function TopTabProjectsStaff() {
+  return (
+    <TopTabProjectStaff.Navigator
+      initialRouteName="Event List"
+      backBehavior="none"
+      tabBarOptions={{
+        activeTintColor: Colors.secondaryColor,
+        inactiveTintColor: 'white',
+        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        indicatorStyle: { backgroundColor: Colors.secondaryColor },
+        style: { backgroundColor: Colors.primaryColor }
+      }}
+    >
+      <TopTabProjectStaff.Screen name="Event List" component={EventListScreen} />
+      <TopTabProjectStaff.Screen name="Committee" component={CommitteeListStaffScreen} />
+      <TopTabProjectStaff.Screen name="Project Overview" component={ProjectOverviewScreen} />
+    </TopTabProjectStaff.Navigator>
   );
 }
 

@@ -46,9 +46,9 @@ const CommitteeList = props => {
     const [visibleModalProfile, setVisibleModalProfile] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
-    useEffect(()=>{
-        if(committee) setCommitteeVal(committee.getCommittee);
-    },[committee])
+    useEffect(() => {
+        if (committee) setCommitteeVal(committee.getCommittee);
+    }, [committee])
 
     const closeModal = () => {
         setVisible(false);
@@ -141,6 +141,7 @@ const CommitteeList = props => {
                     />
                 </View>
             </TouchableCmp>
+            { sime.order === '1' || sime.user_type === "Organization"?
             <Portal>
                 <Modal
                     useNativeDriver={true}
@@ -164,33 +165,34 @@ const CommitteeList = props => {
                         </TouchableCmp>
                     </View>
                 </Modal>
-            </Portal>
-            <FormEditCommittee
-                closeModalForm={closeModalFormEdit}
-                visibleForm={visibleFormEdit}
-                deleteButton={deleteHandler}
-                closeButton={closeModalFormEdit}
-                committee={committeeVal}
-                staffs={props.staffs}
-                divisions={props.divisions}
-                positions={props.positions}
-                committees={props.committees}
-                updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
-                updateCommitteeStateUpdate={updateCommitteeStateUpdate}
-            />
-            <ModalProfile
-                visible={visibleModalProfile}
-                onBackButtonPress={closeModalProfile}
-                onBackdropPress={closeModalProfile}
-                name={staff.getStaff.name}
-                position_name={position.getPosition.name}
-                email={staff.getStaff.email}
-                phone_number={staff.getStaff.phone_number}
-                picture={staff.getStaff.picture}
-                positionName={true}
-                onPressInfo={props.onSelect}
-                onPressIn={closeModalProfile}
-            />
+
+                <FormEditCommittee
+                    closeModalForm={closeModalFormEdit}
+                    visibleForm={visibleFormEdit}
+                    deleteButton={deleteHandler}
+                    closeButton={closeModalFormEdit}
+                    committee={committeeVal}
+                    staffs={props.staffs}
+                    divisions={props.divisions}
+                    positions={props.positions}
+                    committees={props.committees}
+                    updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
+                    updateCommitteeStateUpdate={updateCommitteeStateUpdate}
+                />
+                <ModalProfile
+                    visible={visibleModalProfile}
+                    onBackButtonPress={closeModalProfile}
+                    onBackdropPress={closeModalProfile}
+                    name={staff.getStaff.name}
+                    position_name={position.getPosition.name}
+                    email={staff.getStaff.email}
+                    phone_number={staff.getStaff.phone_number}
+                    picture={staff.getStaff.picture}
+                    positionName={true}
+                    onPressInfo={props.onSelect}
+                    onPressIn={closeModalProfile}
+                />
+            </Portal> : null}
         </Provider>
     );
 };
