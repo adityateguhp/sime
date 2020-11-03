@@ -49,7 +49,7 @@ const CommitteeChip = props => {
     }
 
     return (
-        <Chip avatar={<Image source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />} onPress={() => console.log('Pressed')} onClose={() => {deleteAssignedTask()}}>{staff.getStaff.name}</Chip>
+        <Chip avatar={<Image source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />} onClose={() => {deleteAssignedTask()}}>{staff.getStaff.name}</Chip>
     );
 };
 

@@ -71,7 +71,7 @@ const TaskModal = props => {
                 priority: props.task.priority
             })
         }
-    }, [props.task])
+    }, [props.task, props.closeButton])
 
     useEffect(() => {
         if (props.roadmap) {
@@ -118,6 +118,7 @@ const TaskModal = props => {
                 variables: { roadmapId: props.task.roadmap_id }
             });
             props.updateTasksStateUpdate(result.data.updateTask);
+            props.closeButton();
             proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
         },
         onError(err) {
@@ -163,10 +164,9 @@ const TaskModal = props => {
         setShowDateTime(false);
     };
 
-    const onCloseButton = (event) => {
+    const onSubmit = (event) => {
         event.preventDefault();
         updateTask();
-        props.closeButton();
     }
 
     const closeModal = () => {
@@ -199,10 +199,11 @@ const TaskModal = props => {
                                             values.priority === "low" ? "#ffc916" : "#e2e2e2",
                             }
                         }}>
-                            <Appbar.Action icon="window-close" onPress={onCloseButton} />
+                            <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content />
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={() => onCheck()} />
+                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}

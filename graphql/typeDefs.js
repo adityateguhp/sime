@@ -231,6 +231,10 @@ module.exports = gql`
             newPassword: String!,
             confirmNewPassword: String!
         ): Staff!
+
+        resetPasswordStaff( 
+            staffId: ID!
+        ): Staff!
         
         deleteStaff(staffId: ID!): String!
 

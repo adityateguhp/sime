@@ -251,33 +251,33 @@ function ProjectStackSceen({ route, navigation }) {
       <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Organization Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Profile Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Committee Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}  numberOfLines={1} ellipsizeMode='tail'>Committee Profile Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Event Detail" component={TopTabEvents} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.event_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.project_name}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.project_name}</Text>
           </View>
       }} />
       <ProjectsStack.Screen name="External List" component={ExternalListScreen} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.external_type_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.event_name}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.external_type_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
           </View>
       }} />
       <ProjectsStack.Screen name="External Profile" component={ExternalProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>External Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Profile Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
@@ -347,33 +347,33 @@ function ProjectStackStaffSceen({ route, navigation }) {
       <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Organization Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Profile Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Committee Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Committee Profile Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Event Detail" component={TopTabEvents} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.event_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.project_name}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.project_name}</Text>
           </View>
       }} />
       <ProjectsStackStaff.Screen name="External List" component={ExternalListScreen} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{sime.external_type_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }}>{sime.event_name}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.external_type_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
           </View>
       }} />
       <ProjectsStackStaff.Screen name="External Profile" component={ExternalProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>External Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Profile Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
@@ -485,7 +485,7 @@ function UsersManagementStackScreen({ route, navigation }) {
       <UsersManagementStack.Screen name="Staff Profile" component={StaffProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Staff Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Staff Profile Information</Text>
           </View>),
       }} />
     </UsersManagementStack.Navigator>
@@ -531,7 +531,7 @@ function OrganizationProfileStackScreen({ route, navigation }) {
       <OrganizationProfileStack.Screen name="Organization Profile" component={OrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Profile Information</Text>
           </View>),
         headerLeft: () => (
           <HeaderButtons HeaderButtonComponent={HeaderButton}>
@@ -565,7 +565,7 @@ function StaffIndividualProfileStackScreen({ route, navigation }) {
       <StaffIndividualProfileStack.Screen name="Staff Profile" component={StaffIndividualProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Profile Information</Text>
           </View>),
         headerLeft: () => (
           <HeaderButtons HeaderButtonComponent={HeaderButton}>

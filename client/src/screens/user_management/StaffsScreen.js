@@ -15,7 +15,7 @@ import StaffList from '../../components/user_management/StaffList';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY, DELETE_COMMITTEE, FETCH_COMMITTEES_BYSTAFF_QUERY } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY, DELETE_COMMITTEE, FETCH_COMMITTEES_BYSTAFF_QUERY, RESET_PASSWORD_STAFF_MUTATION } from '../../util/graphql';
 
 const StaffsScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -45,6 +45,14 @@ const StaffsScreen = ({ route, navigation }) => {
     const onToggleSnackBarUpdate = () => setVisibleUpdate(!visibleUpdate);
 
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
+
+
+    const [visibleResetPassword, setVisibleResetPassword] = useState(false);
+
+    const onToggleSnackBarResetPassword = () => setVisibleResetPassword(!visibleResetPassword);
+
+    const onDismissSnackBarResetPassword = () => setVisibleResetPassword(false);
+
 
     const [staffsValue, setStaffsValue] = useState([]);
     const [departmentsValue, setDepartmentsValue] = useState([]);
@@ -165,6 +173,20 @@ const StaffsScreen = ({ route, navigation }) => {
         }
     });
 
+    const [resetPassword] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_STAFFS_QUERY,
+                variables: { organizationId: sime.user.id }
+            });
+            onToggleSnackBarResetPassword();
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
+        },
+        variables: {
+            staffId
+        }
+    });
+
     const deleteHandler = () => {
         closeModal();
         closeModalFormEdit();
@@ -174,6 +196,18 @@ const StaffsScreen = ({ route, navigation }) => {
                 text: 'Yes',
                 style: 'destructive',
                 onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const resetPasswordHandler = () => {
+        closeModal();
+        Alert.alert('Are you sure?', 'Do you really want to reset password this staff account?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: resetPassword
             }
         ]);
     };
@@ -350,6 +384,11 @@ const StaffsScreen = ({ route, navigation }) => {
                                 <Text style={styles.text}>Edit</Text>
                             </View>
                         </TouchableCmp>
+                        <TouchableCmp onPress={resetPasswordHandler}>
+                            <View style={styles.textView}>
+                                <Text style={styles.text}>Reset password</Text>
+                            </View>
+                        </TouchableCmp>
                         <TouchableCmp onPress={deleteHandler}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Delete</Text>
@@ -395,12 +434,18 @@ const StaffsScreen = ({ route, navigation }) => {
             >
                 Staff deleted!
             </Snackbar>
+            <Snackbar
+                visible={visibleResetPassword}
+                onDismiss={onDismissSnackBarResetPassword}
+            >
+                Staff account password has been reset!
+            </Snackbar>
         </Provider>
     );
 }
 
 const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
+const modalMenuHeight = wp(46.5);
 
 const styles = StyleSheet.create({
     screen: {

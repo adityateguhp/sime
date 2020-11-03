@@ -315,6 +315,27 @@ export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
   } 
 `;
 
+export const RESET_PASSWORD_STAFF_MUTATION = gql`
+  mutation 
+  resetPasswordStaff(
+    $staffId: ID!
+  ) {
+    resetPasswordStaff(
+    staffId: $staffId
+  ) {
+    id
+    name
+    position_name
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
 export const DELETE_STAFF = gql`
   mutation deleteStaff($staffId: ID!) {
     deleteStaff(staffId: $staffId)

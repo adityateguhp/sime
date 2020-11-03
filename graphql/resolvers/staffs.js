@@ -226,6 +226,24 @@ module.exports = {
         throw new Error(err);
       }
     },
+    async resetPasswordStaff(_, {
+      staffId
+    }, context) {
+      try {
+        const newPassword = await bcrypt.hash("12345678", 12);
+
+        const resetPasswordStaff = await Staff.findByIdAndUpdate(
+          { _id: staffId },
+          {
+            password: newPassword
+          },
+          { new: true });
+
+        return resetPasswordStaff;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
     async deleteStaff(_, { staffId }, context) {
       try {
         const staff = await Staff.findById(staffId);
