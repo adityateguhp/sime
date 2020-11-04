@@ -46,9 +46,10 @@ const ProjectListStaffScreen = props => {
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
 
-    const selectItemHandler = (id, name) => {
+    const selectItemHandler = (id, name, picture) => {
         props.navigation.navigate('Project Menu', {
-            projectName: name
+            projectName: name,
+            projectCoverImage: picture
         }
         );
         sime.setProject_id(id);
@@ -244,7 +245,7 @@ const ProjectListStaffScreen = props => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.picture ) }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
                         loading={loading1}
                     >

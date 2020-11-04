@@ -130,7 +130,9 @@ const CommitteeList = props => {
         <Provider theme={theme}>
             <TouchableCmp
                 onPress={() => { selectItemHandler() }}
-                onLongPress={() => { longPressHandler(props.committee_id, props.staff_id, staff.getStaff.name) }}
+                onLongPress={sime.order === '1' && sime.userCommitteeId !== props.committee_id ||
+                    sime.order === '2' && sime.userCommitteeId !== props.committee_id && props.order !== '1' ||
+                    sime.user_type === "Organization" ? () => { longPressHandler(props.committee_id, props.staff_id, staff.getStaff.name) } : null}
                 useForeground>
                 <View style={styles.wrap}>
                     <List.Item
@@ -141,58 +143,59 @@ const CommitteeList = props => {
                     />
                 </View>
             </TouchableCmp>
-            { sime.order === '1' || sime.user_type === "Organization"?
-            <Portal>
-                <Modal
-                    useNativeDriver={true}
-                    isVisible={visible}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    onBackButtonPress={closeModal}
-                    onBackdropPress={closeModal}
-                    statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.staff_name}</Title>
-                        <TouchableCmp onPress={openFormEdit}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
-                </Modal>
-
-                <FormEditCommittee
-                    closeModalForm={closeModalFormEdit}
-                    visibleForm={visibleFormEdit}
-                    deleteButton={deleteHandler}
-                    closeButton={closeModalFormEdit}
-                    committee={committeeVal}
-                    staffs={props.staffs}
-                    divisions={props.divisions}
-                    positions={props.positions}
-                    committees={props.committees}
-                    updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
-                    updateCommitteeStateUpdate={updateCommitteeStateUpdate}
-                />
-                <ModalProfile
-                    visible={visibleModalProfile}
-                    onBackButtonPress={closeModalProfile}
-                    onBackdropPress={closeModalProfile}
-                    name={staff.getStaff.name}
-                    position_name={position.getPosition.name}
-                    email={staff.getStaff.email}
-                    phone_number={staff.getStaff.phone_number}
-                    picture={staff.getStaff.picture}
-                    positionName={true}
-                    onPressInfo={props.onSelect}
-                    onPressIn={closeModalProfile}
-                />
-            </Portal> : null}
+            {sime.order === '1' && sime.userCommitteeId !== props.committee_id ||
+                sime.order === '2' && sime.userCommitteeId !== props.committee_id && props.order !== '1' ||
+                sime.user_type === "Organization" ?
+                <Portal>
+                    <Modal
+                        useNativeDriver={true}
+                        isVisible={visible}
+                        animationIn="zoomIn"
+                        animationOut="zoomOut"
+                        onBackButtonPress={closeModal}
+                        onBackdropPress={closeModal}
+                        statusBarTranslucent>
+                        <View style={styles.modalView}>
+                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.staff_name}</Title>
+                            <TouchableCmp onPress={openFormEdit}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Edit</Text>
+                                </View>
+                            </TouchableCmp>
+                            <TouchableCmp onPress={deleteHandler}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Delete</Text>
+                                </View>
+                            </TouchableCmp>
+                        </View>
+                    </Modal>
+                    <FormEditCommittee
+                        closeModalForm={closeModalFormEdit}
+                        visibleForm={visibleFormEdit}
+                        deleteButton={deleteHandler}
+                        closeButton={closeModalFormEdit}
+                        committee={committeeVal}
+                        staffs={props.staffs}
+                        divisions={props.divisions}
+                        positions={props.positions}
+                        committees={props.committees}
+                        updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
+                        updateCommitteeStateUpdate={updateCommitteeStateUpdate}
+                    />
+                </Portal> : null}
+            <ModalProfile
+                visible={visibleModalProfile}
+                onBackButtonPress={closeModalProfile}
+                onBackdropPress={closeModalProfile}
+                name={staff.getStaff.name}
+                position_name={position.getPosition.name}
+                email={staff.getStaff.email}
+                phone_number={staff.getStaff.phone_number}
+                picture={staff.getStaff.picture}
+                positionName={true}
+                onPressInfo={props.onSelect}
+                onPressIn={closeModalProfile}
+            />
         </Provider>
     );
 };

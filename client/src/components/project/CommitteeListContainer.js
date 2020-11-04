@@ -53,6 +53,7 @@ const CommitteeListContainer = props => {
                             committee_id = {itemData.item.id}
                             staff_id = {itemData.item.staff_id}
                             position_id = {itemData.item.position_id}
+                            order = {itemData.item.order}
                             staffs={props.staffs}
                             divisions={props.divisions}
                             positions={props.positions}

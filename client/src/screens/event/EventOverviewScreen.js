@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl, FlatList } from 'react-native';
+import { StyleSheet, View, ScrollView, RefreshControl, Image } from 'react-native';
 import { Text, List, Avatar, Subheading, Paragraph, Divider, Provider, Title, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -26,7 +26,8 @@ const EventOverviewScreen = props => {
     start_date: '',
     end_date: '',
     cancel: false,
-    location: ''
+    location: '',
+    picture:''
   });
 
   const [external, setExternal] = useState({
@@ -76,7 +77,8 @@ const EventOverviewScreen = props => {
         start_date: eventData.getEvent.start_date,
         end_date: eventData.getEvent.end_date,
         cancel: eventData.getEvent.cancel,
-        location: eventData.getEvent.location
+        location: eventData.getEvent.location,
+        picture: eventData.getEvent.picture
       })
     }
   });
@@ -209,10 +211,16 @@ const EventOverviewScreen = props => {
         }
       >
         <View style={styles.overview}>
+        <View  style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={event.picture === null || event.picture === '' ? require('../../assets/calendar.png') : { uri: event.picture }}
+            />
+          </View>
           <Subheading style={{ fontWeight: 'bold' }}>Guests</Subheading>
           {
-            guestData.getExternalByType.length === 0 ? <Text>-</Text> :
-              guestData.getExternalByType.map((Guest) => (
+           guest.length === 0 ? <Text>-</Text> :
+             guest.map((Guest) => (
                 <ExternalList
                   key={Guest.id}
                   name={Guest.name}
@@ -225,8 +233,8 @@ const EventOverviewScreen = props => {
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Sponsors</Subheading>
           {
-            sponsorData.getExternalByType.length === 0 ? <Text>-</Text> :
-              sponsorData.getExternalByType.map((Sponsor) => (
+            sponsor.length === 0 ? <Text>-</Text> :
+              sponsor.map((Sponsor) => (
                 <ExternalList
                   key={Sponsor.id}
                   name={Sponsor.name}
@@ -239,8 +247,8 @@ const EventOverviewScreen = props => {
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Media Partners</Subheading>
           {
-            mediaPartnerData.getExternalByType.length === 0 ? <Text>-</Text> :
-              mediaPartnerData.getExternalByType.map((Media) => (
+            media.length === 0 ? <Text>-</Text> :
+              media.map((Media) => (
                 <ExternalList
                   key={Media.id}
                   name={Media.name}
@@ -321,7 +329,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   overview: {
-    marginVertical: 10,
+    marginBottom: 10,
     marginHorizontal: 20
   },
   overviewDivider: {
@@ -348,6 +356,16 @@ const styles = StyleSheet.create({
   status: {
     fontSize: wp(3),
   },
+  imageContainer:{
+    alignSelf: 'center',
+    marginBottom: 15,
+    backgroundColor: Colors.primaryColor,
+    elevation: 5
+  },
+  image: {
+    height: wp(50),
+    width: wp(100),
+  }
 });
 
 export default EventOverviewScreen;

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, View, ScrollView, RefreshControl, Image } from 'react-native';
 import { Text, List, Avatar, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -23,7 +23,8 @@ const ProjectOverviewScreen = props => {
     end_date: '',
     description: '',
     cancel: false,
-    organization_id: ''
+    organization_id: '',
+    picture: ''
   });
 
   const [headProject, setHeadProject] = useState({
@@ -83,7 +84,8 @@ const ProjectOverviewScreen = props => {
           end_date: projectData.getProject.end_date,
           description: projectData.getProject.description,
           cancel: projectData.getProject.cancel,
-          organization_id: projectData.getProject.organization_id
+          organization_id: projectData.getProject.organization_id,
+          picture: projectData.getProject.picture
         });
         loadOrganizationData();
       }
@@ -261,11 +263,17 @@ const ProjectOverviewScreen = props => {
         }
       >
         <View style={styles.overview}>
+          <View  style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={project.picture === null || project.picture === '' ? require('../../assets/folder.png') : { uri: project.picture }}
+            />
+          </View>
           <Subheading style={{ fontWeight: 'bold' }}>Organization</Subheading>
           <List.Item
             title={organization.name === null || organization.name === '' ? "-" : organization.name}
             left={() => <Avatar.Image size={35} source={organization.picture === null || organization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.picture }} />}
-            onPress={()=>{selectOrganizationHandler(project.organization_id)}}
+            onPress={() => { selectOrganizationHandler(project.organization_id) }}
           />
           <Subheading style={{ fontWeight: 'bold' }}>Head of Project</Subheading>
           <List.Item
@@ -335,11 +343,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   overview: {
-    marginVertical: 10,
+    marginBottom: 10,
     marginHorizontal: 20
   },
   overviewDivider: {
     marginVertical: 5
+  },
+  imageContainer:{
+    alignSelf: 'center',
+    marginBottom: 15,
+    backgroundColor: Colors.primaryColor,
+    elevation: 5
+  },
+  image: {
+    height: wp(50),
+    width: wp(100),
   }
 });
 

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, Card, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+
 import Colors from '../../constants/Colors';
 import Status from '../../components/common/Status';
 import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'
+import { SimeContext } from '../../context/SimePovider';
 
 const EventCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -14,12 +16,14 @@ const EventCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const sime = useContext(SimeContext);
+
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');
 
     return (
         <View>
-            <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
+            <TouchableCmp onPress={props.onSelect} onLongPress={sime.user_type === "Organization" || sime.order === '1' ||  sime.order === '2' ? props.onLongPress : null} useForeground>
                 <Card style={styles.event}>
                     <Card.Title
                         title={props.name}

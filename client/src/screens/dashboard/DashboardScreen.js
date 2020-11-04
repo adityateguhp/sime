@@ -11,7 +11,6 @@ import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 const DashboardScreen = props => {
   const sime = useContext(SimeContext);
 
-
   return (
     <View style={styles.screen}>
       <Text>Dashboard Screen</Text>

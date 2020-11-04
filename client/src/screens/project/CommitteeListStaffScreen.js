@@ -115,13 +115,14 @@ const CommitteeListStaffScreen = ({ navigation }) => {
         }
     );
 
-    const { data: committeeStaff, error: error1, loading: loading1, refetch: refetchCommitteeStaff, networkStatus: networkStatusCommitteeStaff} = useQuery(
+    const { data: committeeStaff, error: error1, loading: loading1, refetch: refetchCommitteeStaff, networkStatus: networkStatusCommitteeStaff } = useQuery(
         FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY,
         {
             variables: { staffId: sime.user.id, projectId: sime.project_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 sime.setOrder(committeeStaff.getCommitteesByStaffProject.order)
+                sime.setUserCommitteeId(committeeStaff.getCommitteesByStaffProject.id)
             }
         });
 
@@ -448,111 +449,109 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                     />
                 )}
             />
-            { sime.order === '1'?
-            <Portal>
-                <Modal
-                    useNativeDriver={true}
-                    isVisible={visible}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    onBackButtonPress={closeModal}
-                    onBackdropPress={closeModal}
-                    statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.division_name}</Title>
-                        <TouchableCmp onPress={openFormEditDivision}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete division</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
-                </Modal>
-
-                <FAB.Group
-                    open={open}
-                    icon={open ? 'account-multiple-plus' : 'plus'}
-                    actions={[
-                        {
-                            icon: 'account',
-                            label: 'Committee',
-                            onPress: openForm
-                        },
-                        {
-                            icon: 'account-multiple',
-                            label: 'Division',
-                            onPress: openFormDivision
-                        },
-                    ]}
-                    onStateChange={onStateChange}
-                />
-
-                <FormCommittee
-                    closeModalForm={closeModalForm}
-                    visibleForm={visibleForm}
-                    closeButton={closeModalForm}
-                    staffs={staffsValue}
-                    divisions={divisionsValue}
-                    positions={positionsValue}
-                    committees={committeesValue}
-                    addCommitteesStateUpdate={addCommitteesStateUpdate}
-                />
-                <FormDivision
-                    closeModalForm={closeModalFormDivision}
-                    visibleForm={visibleFormDivision}
-                    closeButton={closeModalFormDivision}
-                    addDivisionsStateUpdate={addDivisionsStateUpdate}
-                />
-                <FormEditDivision
-                    closeModalForm={closeModalFormEditDivision}
-                    visibleForm={visibleFormEditDivision}
-                    division={divisionVal}
-                    deleteButton={deleteHandler}
-                    closeButton={closeModalFormEditDivision}
-                    updateDivisionStateUpdate={updateDivisionStateUpdate}
-                    updateDivisionsStateUpdate={updateDivisionsStateUpdate}
-                />
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                >
-                    Committee added!
+            { sime.order === '1' || sime.order === '2' ?
+                <Portal>
+                    <Modal
+                        useNativeDriver={true}
+                        isVisible={visible}
+                        animationIn="zoomIn"
+                        animationOut="zoomOut"
+                        onBackButtonPress={closeModal}
+                        onBackdropPress={closeModal}
+                        statusBarTranslucent>
+                        <View style={styles.modalView}>
+                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.division_name}</Title>
+                            <TouchableCmp onPress={openFormEditDivision}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Edit</Text>
+                                </View>
+                            </TouchableCmp>
+                            <TouchableCmp onPress={deleteHandler}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Delete division</Text>
+                                </View>
+                            </TouchableCmp>
+                        </View>
+                    </Modal>
+                    <FAB.Group
+                        open={open}
+                        icon={open ? 'account-multiple-plus' : 'plus'}
+                        actions={[
+                            {
+                                icon: 'account',
+                                label: 'Committee',
+                                onPress: openForm
+                            },
+                            {
+                                icon: 'account-multiple',
+                                label: 'Division',
+                                onPress: openFormDivision
+                            },
+                        ]}
+                        onStateChange={onStateChange}
+                    />
+                    <FormCommittee
+                        closeModalForm={closeModalForm}
+                        visibleForm={visibleForm}
+                        closeButton={closeModalForm}
+                        staffs={staffsValue}
+                        divisions={divisionsValue}
+                        positions={positionsValue}
+                        committees={committeesValue}
+                        addCommitteesStateUpdate={addCommitteesStateUpdate}
+                    />
+                    <FormDivision
+                        closeModalForm={closeModalFormDivision}
+                        visibleForm={visibleFormDivision}
+                        closeButton={closeModalFormDivision}
+                        addDivisionsStateUpdate={addDivisionsStateUpdate}
+                    />
+                    <FormEditDivision
+                        closeModalForm={closeModalFormEditDivision}
+                        visibleForm={visibleFormEditDivision}
+                        division={divisionVal}
+                        deleteButton={deleteHandler}
+                        closeButton={closeModalFormEditDivision}
+                        updateDivisionStateUpdate={updateDivisionStateUpdate}
+                        updateDivisionsStateUpdate={updateDivisionsStateUpdate}
+                    />
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                    >
+                        Committee added!
             </Snackbar>
-                <Snackbar
-                    visible={visibleUpdate}
-                    onDismiss={onDismissSnackBarUpdate}
-                >
-                    Committee updated!
+                    <Snackbar
+                        visible={visibleUpdate}
+                        onDismiss={onDismissSnackBarUpdate}
+                    >
+                        Committee updated!
             </Snackbar>
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                >
-                    Committee deleted!
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                    >
+                        Committee deleted!
             </Snackbar>
-                <Snackbar
-                    visible={visibleAddDivision}
-                    onDismiss={onDismissSnackBarAddDivision}
-                >
-                    Division added!
+                    <Snackbar
+                        visible={visibleAddDivision}
+                        onDismiss={onDismissSnackBarAddDivision}
+                    >
+                        Division added!
             </Snackbar>
-                <Snackbar
-                    visible={visibleUpdateDivision}
-                    onDismiss={onDismissSnackBarUpdateDivision}
-                >
-                    Division updated!
+                    <Snackbar
+                        visible={visibleUpdateDivision}
+                        onDismiss={onDismissSnackBarUpdateDivision}
+                    >
+                        Division updated!
             </Snackbar>
-                <Snackbar
-                    visible={visibleDeleteDivision}
-                    onDismiss={onDismissSnackBarDeleteDivision}
-                >
-                    Division deleted!
+                    <Snackbar
+                        visible={visibleDeleteDivision}
+                        onDismiss={onDismissSnackBarDeleteDivision}
+                    >
+                        Division deleted!
             </Snackbar>
-            </Portal> : null}
+                </Portal> : null}
         </Provider>
     );
 }

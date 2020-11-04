@@ -170,7 +170,8 @@ const styles = StyleSheet.create({
     },
     cover: {
         height: wp(20),
-        borderRadius: 5
+        borderRadius: 5,
+        backgroundColor: Colors.primaryColor
     },
     titleStyle: {
         fontSize: wp(3.5),

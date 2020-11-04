@@ -327,7 +327,7 @@ const EventListScreen = ({ route, navigation }) => {
                     </EventCard>
                 )}
             />
-            { sime.user_type === "Organization" || sime.order === '1' ?
+            { sime.user_type === "Organization" || sime.order === '1' ||  sime.order === '2' ? 
             <Portal>
                 <Modal
                     useNativeDriver={true}
@@ -365,7 +365,6 @@ const EventListScreen = ({ route, navigation }) => {
                         </TouchableCmp>
                     </View>
                 </Modal>
-
                 <FABbutton Icon="plus" label="event" onPress={openForm} />
                 <FormEvent
                     closeModalForm={closeModalForm}

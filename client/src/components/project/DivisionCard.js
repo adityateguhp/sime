@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
 
 import CommitteeListContainer from '../../components/project/CommitteeListContainer';
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider';
 
 const DivisionCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -12,8 +13,10 @@ const DivisionCard = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const sime = useContext(SimeContext);
+
     return (
-        <TouchableCmp onLongPress={props.name === "Core Committee" ? null : props.onLongPress}>
+        <TouchableCmp onLongPress={props.name === "Core Committee" || sime.order !== '1' || sime.order !=='2' || sime.user_type !== "Organization"? null : props.onLongPress}>
             <View style={styles.container}>
                 <List.Section
                     style={styles.accordion}
