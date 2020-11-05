@@ -38,6 +38,17 @@ const CommitteeChip = props => {
         }
     });
 
+    const deleteHandler = () => {
+        Alert.alert('Are you sure?', 'Do you really want to delete this?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: deleteAssignedTask
+            }
+        ]);
+    };
+
     if (errorStaff) {
         console.error(errorStaff);
         return <Text>errorStaff</Text>;
@@ -49,7 +60,7 @@ const CommitteeChip = props => {
     }
 
     return (
-        <Chip avatar={<Image source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />} onClose={() => {deleteAssignedTask()}}>{staff.getStaff.name}</Chip>
+        <Chip avatar={<Image source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />} onClose={deleteHandler}>{staff.getStaff.name}</Chip>
     );
 };
 

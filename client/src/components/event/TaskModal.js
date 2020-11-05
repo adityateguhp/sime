@@ -167,6 +167,7 @@ const TaskModal = props => {
     const onSubmit = (event) => {
         event.preventDefault();
         updateTask();
+        props.closeButton();
     }
 
     const closeModal = () => {
@@ -199,11 +200,10 @@ const TaskModal = props => {
                                             values.priority === "low" ? "#ffc916" : "#e2e2e2",
                             }
                         }}>
-                            <Appbar.Action icon="window-close" onPress={props.closeButton} />
+                            <Appbar.Action icon="window-close" onPress={onSubmit} />
                             <Appbar.Content />
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={() => onCheck()} />
-                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}

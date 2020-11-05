@@ -76,8 +76,7 @@ const AssignedToCommitteeList = props => {
         }
     });
 
-    const onPressDeleteAssignedTask =  (event) => {
-        event.preventDefault();
+    const onPressDeleteAssignedTask =  () => {
         deleteAssignedTask();
         setSelected(false);
     }
@@ -88,6 +87,16 @@ const AssignedToCommitteeList = props => {
         setSelected(true);
     }
 
+    const deleteHandler = () => {
+        Alert.alert('Are you sure?', 'Do you really want to delete this?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: onPressDeleteAssignedTask
+            }
+        ]);
+    };
 
     if (errorStaff) {
         console.error(errorStaff);
@@ -112,7 +121,7 @@ const AssignedToCommitteeList = props => {
             <TouchableCmp>
                 <View style={styles.wrap}>
                     <List.Item
-                        onPress={assignedCommitteeId || selected ? onPressDeleteAssignedTask : onPressAssignedTask}
+                        onPress={assignedCommitteeId || selected ? deleteHandler : onPressAssignedTask}
                         style={styles.staffs}
                         title={staff.getStaff.name}
                         description={<Caption>{position.getPosition.name}</Caption>}
