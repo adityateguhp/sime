@@ -1,21 +1,23 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl, ScrollView } from 'react-native';
-import { Divider, Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from '@apollo/client';
+import { Divider, Provider, Text, Snackbar } from 'react-native-paper';
+import { useQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormTask from '../../components/event/FormTask';
 import { SimeContext } from '../../context/SimePovider';
 import Task from '../../components/event/Task';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_TASKS_QUERY, FETCH_COMMITTEES_QUERY, FETCH_ASSIGNED_TASKS_QUERY, FETCH_DIVISIONS_QUERY, FETCH_ROADMAP_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
+import {
+    FETCH_TASKS_QUERY,
+    FETCH_COMMITTEES_QUERY,
+    FETCH_ASSIGNED_TASKS_QUERY,
+    FETCH_DIVISIONS_QUERY,
+    FETCH_ROADMAP_QUERY
+} from '../../util/graphql';
 
-const TaskScreen = props => {
+
+const TaskScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
 
     const [visibleAdd, setVisibleAdd] = useState(false);
@@ -54,7 +56,7 @@ const TaskScreen = props => {
                 committees.getCommittees.sort(function (a, b) {
                     var textA = a.order;
                     var textB = b.order;
-        
+
                     return textA.localeCompare(textB)
                 });
                 setCommitteesValue(committees.getCommittees)
@@ -79,7 +81,7 @@ const TaskScreen = props => {
         }
     );
 
-    const {data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap, networkStatus: networkStatusRoadmap } = useQuery(
+    const { data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap, networkStatus: networkStatusRoadmap } = useQuery(
         FETCH_ROADMAP_QUERY,
         {
             variables: { roadmapId: sime.roadmap_id },
@@ -124,6 +126,15 @@ const TaskScreen = props => {
         refetchDivisions();
         refetchRoadmap();
     };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     const addTasksStateUpdate = (e) => {
         setTasksValue([e, ...tasksValue]);
@@ -193,40 +204,20 @@ const TaskScreen = props => {
         return <Text>errorTasks</Text>;
     }
 
-    if (loadingTasks) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingCommittees) {
-        return <CenterSpinner />;
-    }
-
     if (errorCommittees) {
         console.error(errorCommittees);
         return <Text>errorCommittees</Text>;
     }
-    
+
 
     if (errorAssignedTasks) {
         console.error(errorAssignedTasks);
         return <Text>errorAssignedTasks</Text>;
     }
 
-    if (loadingAssignedTasks) {
-        return <CenterSpinner />;
-    }
-
     if (errorRoadmap) {
         console.error(errorRoadmap);
         return <Text>errorRoadmap</Text>;
-    }
-
-    if (loadingRoadmap) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingDivisions) {
-        return <CenterSpinner />;
     }
 
     if (errorDivisions) {
@@ -241,7 +232,7 @@ const TaskScreen = props => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks}
+                        refreshing={loadingTasks && loadingAssignedTasks && loadingCommittees && loadingRoadmap && loadingDivisions}
                         onRefresh={onRefresh} />
                 }
             >
@@ -269,18 +260,12 @@ const TaskScreen = props => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching tasks!');
-    if (networkStatusCommittees === NetworkStatus.refetch) console.log('Refetching committees!');
-    if (networkStatusAssignedTasks === NetworkStatus.refetch) console.log('Refetching assigned tasks!');
-    if (networkStatusDivisions === NetworkStatus.refetch) console.log('Refetching head divisions!');
-    if (networkStatusRoadmap === NetworkStatus.refetch) console.log('Refetching head roadmap!');
-
     return (
         <Provider theme={theme}>
             <FlatList
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks}
+                        refreshing={loadingTasks && loadingAssignedTasks && loadingCommittees && loadingRoadmap && loadingDivisions}
                         onRefresh={onRefresh} />
                 }
                 ListHeaderComponentStyle={styles.screen}

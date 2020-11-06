@@ -4,20 +4,24 @@ import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFee
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
-import CenterSpinner from '../../components/common/CenterSpinner';
 import FormStaff from '../../components/user_management/FormStaff';
 import FormEditStaff from '../../components/user_management/FormEditStaff';
-import { STAFFS } from '../../data/dummy-data';
 import StaffList from '../../components/user_management/StaffList';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_STAFFS_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY, DELETE_COMMITTEE, FETCH_COMMITTEES_BYSTAFF_QUERY, RESET_PASSWORD_STAFF_MUTATION } from '../../util/graphql';
+import {
+    FETCH_STAFFS_QUERY,
+    DELETE_STAFF,
+    FETCH_STAFF_QUERY,
+    FETCH_DEPARTMENTS_QUERY,
+    DELETE_COMMITTEE,
+    FETCH_COMMITTEES_BYSTAFF_QUERY,
+    RESET_PASSWORD_STAFF_MUTATION
+} from '../../util/graphql';
 
-const StaffsScreen = ({ route, navigation }) => {
+const StaffsScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -59,7 +63,7 @@ const StaffsScreen = ({ route, navigation }) => {
     const [staffVal, setStaffVal] = useState(null);
     const [commiteesVal, setCommitteesVal] = useState([])
 
-    const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
+    const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
             variables: { organizationId: sime.user.id },
@@ -70,7 +74,7 @@ const StaffsScreen = ({ route, navigation }) => {
         }
     );
 
-    const { data: departments, error: error3, loading: loading3, refetch: refetchDepartment, networkStatus: networkStatusDepartments } = useQuery(
+    const { data: departments, error: error3, loading: loading3, refetch: refetchDepartments } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
             variables: { organizationId: sime.user.id },
@@ -81,13 +85,13 @@ const StaffsScreen = ({ route, navigation }) => {
         }
     );
 
-    const [loadExistData, { called, data: staff, error: error2, loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: staff, error: error2 }] = useLazyQuery(
         FETCH_STAFF_QUERY,
         {
             variables: { staffId: sime.staff_id },
         });
 
-    const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4, loading: loading4 }] = useLazyQuery(
+    const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4}] = useLazyQuery(
         FETCH_COMMITTEES_BYSTAFF_QUERY,
         {
             variables: { staffId: sime.staff_id },
@@ -267,17 +271,21 @@ const StaffsScreen = ({ route, navigation }) => {
 
     const onRefresh = () => {
         refetchStaffs();
-        refetchDepartment();
+        refetchDepartments();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     if (error1) {
         console.error(error1);
         return <Text>Error</Text>;
-    }
-
-    if (loading1) {
-        return <CenterSpinner />;
     }
 
     if (called & error2) {
@@ -290,21 +298,9 @@ const StaffsScreen = ({ route, navigation }) => {
         return <Text>Error</Text>;
     }
 
-    if (loading2) {
-
-    }
-
-    if (loading4) {
-
-    }
-
     if (error3) {
         console.error(error3);
         return <Text>Error</Text>;
-    }
-
-    if (loading3) {
-        return <CenterSpinner />;
     }
 
     if (staffsValue.length === 0) {
@@ -313,7 +309,7 @@ const StaffsScreen = ({ route, navigation }) => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1}
+                        refreshing={loading1 && loading3}
                         onRefresh={onRefresh} />
                 }
             >
@@ -342,16 +338,13 @@ const StaffsScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatusStaffs === NetworkStatus.refetch) console.log('Refetching staffs!');
-    if (networkStatusDepartments === NetworkStatus.refetch) console.log('Refetching departments!');
-
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1}
+                        refreshing={loading1 && loading3}
                         onRefresh={onRefresh} />
                 }
                 data={staffsValue}

@@ -4,20 +4,16 @@ import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFee
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
-import CenterSpinner from '../../components/common/CenterSpinner';
 import FormStaffDepartment from '../../components/user_management/FormStaffDepartment';
 import FormEditStaffDepartment from '../../components/user_management/FormEditStaffDepartment';
-import { STAFFS } from '../../data/dummy-data';
 import StaffList from '../../components/user_management/StaffList';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 import { FETCH_STAFFSBYDEPARTMENT_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY } from '../../util/graphql';
 
-const StaffsinDepartmentScreen = ({ route, navigation }) => {
+const StaffsinDepartmentScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -48,7 +44,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
 
     const [staffsValue, setStaffsValue] = useState([]);
 
-    const { data: staffs, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
+    const { data: staffs, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_STAFFSBYDEPARTMENT_QUERY, {
         variables: {
             departmentId: sime.department_id,
@@ -59,7 +55,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         },
     });
 
-    const [loadExistData, { called, data: staff, error: error2, loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: staff, error: error2 }] = useLazyQuery(
         FETCH_STAFF_QUERY,
         {
             variables: { staffId: sime.staff_id },
@@ -187,22 +183,23 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         refetch();
     };
 
+      useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          onRefresh();
+        });
+    
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+      }, [navigation]);
+
     if (error1) {
         console.error(error1);
         return <Text>Error</Text>;
     }
 
-    if (loading1) {
-        return <CenterSpinner />;
-    }
-
     if (called & error2) {
         console.error(error2);
         return <Text>Error</Text>;
-    }
-
-    if (loading2) {
-
     }
 
     if (staffsValue.length === 0) {
@@ -238,8 +235,6 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             </ScrollView>
         );
     }
-
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching staffs!');
 
     return (
         <Provider theme={theme}>

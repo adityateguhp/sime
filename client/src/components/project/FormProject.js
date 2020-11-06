@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
-import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
+import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,7 +14,6 @@ import { projectNameValidator, dateValidator } from '../../util/validator';
 import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION, ADD_DIVISION_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
-import { forEach } from 'lodash';
 import { SimeContext } from '../../context/SimePovider';
 
 const FormProject = props => {

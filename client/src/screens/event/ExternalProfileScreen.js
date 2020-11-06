@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
+import React from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Portal } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
-import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
-import { FETCH_EXTERNAL_QUERY, FETCH_STAFF_QUERY } from '../../util/graphql';
+import { FETCH_EXTERNAL_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import { SimeContext } from '../../context/SimePovider';
-import { theme } from '../../constants/Theme';
-import HeaderButton from '../../components/common/HeaderButton';
 
 const ExternalProfileScreen = ({ route }) => {
     const exId = route.params?.externalId;

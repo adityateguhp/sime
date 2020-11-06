@@ -1,24 +1,20 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl, Image } from 'react-native';
-import { Text, List, Avatar, Subheading, Paragraph, Divider, Provider, Title, Button } from 'react-native-paper';
+import { Text, List, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from '@apollo/client';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
-import { EVENTS, EXTERNALS } from '../../data/dummy-data';
 import { SimeContext } from '../../context/SimePovider';
 import ExternalList from '../../components/event/ExternalList';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import CenterSpinner from '../../components/common/CenterSpinner';
 import { FETCH_EVENT_QUERY, FETCH_EXBYTYPE_QUERY, FETCH_EXTERNAL_QUERY } from '../../util/graphql';
 
-const EventOverviewScreen = props => {
+const EventOverviewScreen = ({ navigation }) => {
   const sime = useContext(SimeContext);
 
   const [event, setEvent] = useState({
@@ -27,7 +23,7 @@ const EventOverviewScreen = props => {
     end_date: '',
     cancel: false,
     location: '',
-    picture:''
+    picture: ''
   });
 
   const [external, setExternal] = useState({
@@ -47,7 +43,7 @@ const EventOverviewScreen = props => {
   const [visible, setVisible] = useState(false);
 
   const selectInfoHandler = (id) => {
-    props.navigation.navigate('External Profile', {
+    navigation.navigate('External Profile', {
       externalId: id
     });
     setVisible(false);
@@ -65,7 +61,7 @@ const EventOverviewScreen = props => {
     setVisible(false);
   }
 
-  const { data: eventData, error: errorEventData, loading: loadingEventData, refetch: refetchEvent, networkStatus: networkStatusEvent } = useQuery(
+  const { data: eventData, error: errorEventData, loading: loadingEventData, refetch: refetchEvent } = useQuery(
     FETCH_EVENT_QUERY, {
     variables: {
       eventId: sime.event_id
@@ -83,7 +79,7 @@ const EventOverviewScreen = props => {
     }
   });
 
-  const { data: guestData, error: errorGuestData, loading: loadingGuestData, refetch: refetchGuest, networkStatus: networkStatusGuest } = useQuery(
+  const { data: guestData, error: errorGuestData, loading: loadingGuestData, refetch: refetchGuest } = useQuery(
     FETCH_EXBYTYPE_QUERY, {
     variables: {
       eventId: sime.event_id,
@@ -95,7 +91,7 @@ const EventOverviewScreen = props => {
     }
   });
 
-  const { data: sponsorData, error: errorSponsorData, loading: loadingSponsorData, refetch: refetchSponsor, networkStatus: networkStatusSponsor } = useQuery(
+  const { data: sponsorData, error: errorSponsorData, loading: loadingSponsorData, refetch: refetchSponsor } = useQuery(
     FETCH_EXBYTYPE_QUERY, {
     variables: {
       eventId: sime.event_id,
@@ -107,7 +103,7 @@ const EventOverviewScreen = props => {
     }
   });
 
-  const { data: mediaPartnerData, error: errorMediaPartnerData, loading: loadingMediaPartnerData, refetch: refetchMedia, networkStatus: networkStatusMedia } = useQuery(
+  const { data: mediaPartnerData, error: errorMediaPartnerData, loading: loadingMediaPartnerData, refetch: refetchMedia } = useQuery(
     FETCH_EXBYTYPE_QUERY, {
     variables: {
       eventId: sime.event_id,
@@ -146,6 +142,15 @@ const EventOverviewScreen = props => {
     refetchSponsor();
   };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onRefresh();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
   if (errorEventData) {
     console.error(errorEventData);
     return <Text>errorEventData</Text>;
@@ -171,31 +176,6 @@ const EventOverviewScreen = props => {
     return <Text>errorExternalData</Text>;
   }
 
-  if (loadingEventData) {
-    return <CenterSpinner />;
-  }
-
-  if (loadingGuestData) {
-    return <CenterSpinner />;
-  }
-
-  if (loadingMediaPartnerData) {
-    return <CenterSpinner />;
-  }
-
-  if (loadingSponsorData) {
-    return <CenterSpinner />;
-  }
-
-  if (loadingExternalData) {
-
-  }
-
-  if (networkStatusEvent === NetworkStatus.refetch) console.log('Refetching event!');
-  if (networkStatusGuest === NetworkStatus.refetch) console.log('Refetching guest!');
-  if (networkStatusMedia === NetworkStatus.refetch) console.log('Refetching media!');
-  if (networkStatusSponsor === NetworkStatus.refetch) console.log('Refetching sponsor!');
-
 
   const startDate = moment(event.start_date).format('ddd, MMM D YYYY');
   const endDate = moment(event.end_date).format('ddd, MMM D YYYY');
@@ -206,12 +186,12 @@ const EventOverviewScreen = props => {
         style={styles.overviewContainer}
         refreshControl={
           <RefreshControl
-            refreshing={loadingGuestData}
+            refreshing={loadingGuestData && loadingEventData && loadingMediaPartnerData && loadingSponsorData}
             onRefresh={onRefresh} />
         }
       >
         <View style={styles.overview}>
-        <View  style={styles.imageContainer}>
+          <View style={styles.imageContainer}>
             <Image
               style={styles.image}
               source={event.picture === null || event.picture === '' ? require('../../assets/calendar.png') : { uri: event.picture }}
@@ -219,8 +199,8 @@ const EventOverviewScreen = props => {
           </View>
           <Subheading style={{ fontWeight: 'bold' }}>Guests</Subheading>
           {
-           guest.length === 0 ? <Text>-</Text> :
-             guest.map((Guest) => (
+            guest.length === 0 ? <Text>-</Text> :
+              guest.map((Guest) => (
                 <ExternalList
                   key={Guest.id}
                   name={Guest.name}
@@ -356,7 +336,7 @@ const styles = StyleSheet.create({
   status: {
     fontSize: wp(3),
   },
-  imageContainer:{
+  imageContainer: {
     alignSelf: 'center',
     marginBottom: 15,
     backgroundColor: Colors.primaryColor,

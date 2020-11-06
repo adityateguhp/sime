@@ -1,21 +1,25 @@
-import React, { useState, useContext, useCallback, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl, Image } from 'react-native';
 import { Text, List, Avatar, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from '@apollo/client';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
 import ModalProfile from '../../components/common/ModalProfile';
-import { FETCH_STAFF_QUERY, FETCH_PROJECT_QUERY, FETCH_POSITION_QUERY, FETCH_HEADPROJECT_QUERY, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import {
+  FETCH_STAFF_QUERY,
+  FETCH_PROJECT_QUERY,
+  FETCH_POSITION_QUERY,
+  FETCH_HEADPROJECT_QUERY,
+  FETCH_ORGANIZATION_QUERY
+} from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import CenterSpinner from '../../components/common/CenterSpinner';
 
-const ProjectOverviewScreen = props => {
+const ProjectOverviewScreen = ({ navigation }) => {
   const sime = useContext(SimeContext);
 
   const [project, setProject] = useState({
@@ -51,14 +55,14 @@ const ProjectOverviewScreen = props => {
   });
 
   const selectInfoHandler = (id) => {
-    props.navigation.navigate('Committee Profile', {
+    navigation.navigate('Committee Profile', {
       committeeId: id
     });
     setVisible(false);
   };
 
   const selectOrganizationHandler = (organization_id) => {
-    props.navigation.navigate('Staff Organization Profile', {
+    navigation.navigate('Staff Organization Profile', {
       organizationId: organization_id,
     })
   };
@@ -73,7 +77,7 @@ const ProjectOverviewScreen = props => {
     setVisible(false);
   }
 
-  const { data: projectData, error: error1, loading: loading1, refetch: refetchProject, networkStatus: networkStatusProject } = useQuery(
+  const { data: projectData, error: error1, loading: loading1, refetch: refetchProject } = useQuery(
     FETCH_PROJECT_QUERY,
     {
       variables: { projectId: sime.project_id },
@@ -91,7 +95,7 @@ const ProjectOverviewScreen = props => {
       }
     });
 
-  const { data: headProjectData, error: error2, loading: loading2, refetch: refetchHeadProject, networkStatus: networkStatusHeadProject } = useQuery(
+  const { data: headProjectData, error: error2, loading: loading2, refetch: refetchHeadProject } = useQuery(
     FETCH_HEADPROJECT_QUERY, {
     variables: {
       projectId: sime.project_id,
@@ -100,7 +104,19 @@ const ProjectOverviewScreen = props => {
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       if (headProjectData.getHeadProject === null) {
-        return;
+        setStaff(
+          {
+            name: '',
+            email: '',
+            phone_number: '',
+            picture: ''
+          }
+        );
+        setPosition(
+          {
+            name: ''
+          }
+        )
       } else {
         setHeadProject({
           id: headProjectData.getHeadProject.id,
@@ -109,11 +125,24 @@ const ProjectOverviewScreen = props => {
         });
         loadStaffData();
         loadPositionData();
+        if (staffData) {
+          setStaff({
+            name: staffData.getStaff.name,
+            email: staffData.getStaff.email,
+            phone_number: staffData.getStaff.phone_number,
+            picture: staffData.getStaff.picture
+          })
+        }
+        if (positionData) {
+          setPosition({
+            name: positionData.getPosition.name
+          })
+        }
       }
     }
   });
 
-  const [loadStaffData, { called: called1, data: staffData, error: error3, loading: loading3, refetch: refetchStaff, networkStatus: networkStatusStaff }] = useLazyQuery(
+  const [loadStaffData, { called: called1, data: staffData, error: error3 }] = useLazyQuery(
     FETCH_STAFF_QUERY, {
     variables: {
       staffId: headProject.staff_id
@@ -121,7 +150,7 @@ const ProjectOverviewScreen = props => {
     notifyOnNetworkStatusChange: true
   });
 
-  const [loadPositionData, { called: called2, data: positionData, error: error4, loading: loading4, refetch: refecthPositions, networkStatus: networkStatusPosition }] = useLazyQuery(
+  const [loadPositionData, { called: called2, data: positionData, error: error4 }] = useLazyQuery(
     FETCH_POSITION_QUERY, {
     variables: {
       positionId: headProject.position_id
@@ -129,7 +158,7 @@ const ProjectOverviewScreen = props => {
     notifyOnNetworkStatusChange: true
   });
 
-  const [loadOrganizationData, { called: called3, data: organizationData, error: error5, loading: loading5, refetch: refetchOrganization, networkStatus: networkStatusOrganization }] = useLazyQuery(
+  const [loadOrganizationData, { called: called3, data: organizationData, error: error5 }] = useLazyQuery(
     FETCH_ORGANIZATION_QUERY,
     {
       variables: { organizationId: project.organization_id },
@@ -167,36 +196,17 @@ const ProjectOverviewScreen = props => {
 
   const onRefresh = () => {
     refetchProject();
-    refetchOrganization();
     refetchHeadProject();
-    if (headProjectData.getHeadProject === null) {
-      setStaff(
-        {
-          name: '',
-          email: '',
-          phone_number: '',
-          picture: ''
-        }
-      );
-      setPosition(
-        {
-          name: ''
-        }
-      )
-    } else {
-      refetchStaff();
-      refecthPositions();
-      setStaff({
-        name: staffData.getStaff.name,
-        email: staffData.getStaff.email,
-        phone_number: staffData.getStaff.phone_number,
-        picture: staffData.getStaff.picture
-      })
-      setPosition({
-        name: positionData.getPosition.name
-      })
-    }
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onRefresh();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
 
   if (error1) {
     console.error(error1);
@@ -223,32 +233,6 @@ const ProjectOverviewScreen = props => {
     return <Text>Error 5</Text>;
   }
 
-  if (loading1) {
-    return <CenterSpinner />;
-  }
-
-  if (loading2) {
-    return <CenterSpinner />;
-  }
-
-  if (loading3) {
-    return <CenterSpinner />;
-  }
-
-  if (loading4) {
-    return <CenterSpinner />;
-  }
-
-  if (loading5) {
-    return <CenterSpinner />;
-  }
-
-  if (networkStatusProject === NetworkStatus.refetch) console.log('Refetching project!');
-  if (networkStatusHeadProject === NetworkStatus.refetch) console.log('Refetching head project!');
-  if (networkStatusPosition === NetworkStatus.refetch) console.log('Refetching position!');
-  if (networkStatusStaff === NetworkStatus.refetch) console.log('Refetching staff!');
-  if (networkStatusOrganization === NetworkStatus.refetch) console.log('Refetching organization!');
-
   const startDate = moment(project.start_date).format('ddd, MMM D YYYY');
   const endDate = moment(project.end_date).format('ddd, MMM D YYYY');
 
@@ -258,12 +242,12 @@ const ProjectOverviewScreen = props => {
         style={styles.overviewContainer}
         refreshControl={
           <RefreshControl
-            refreshing={loading4}
+            refreshing={loading1 && loading2}
             onRefresh={onRefresh} />
         }
       >
         <View style={styles.overview}>
-          <View  style={styles.imageContainer}>
+          <View style={styles.imageContainer}>
             <Image
               style={styles.image}
               source={project.picture === null || project.picture === '' ? require('../../assets/folder.png') : { uri: project.picture }}
@@ -349,7 +333,7 @@ const styles = StyleSheet.create({
   overviewDivider: {
     marginVertical: 5
   },
-  imageContainer:{
+  imageContainer: {
     alignSelf: 'center',
     marginBottom: 15,
     backgroundColor: Colors.primaryColor,

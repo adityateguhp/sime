@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider } from 'react-native-paper';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import CenterSpinner from '../../components/common/CenterSpinner';
-import { FETCH_COMMITTEE_QUERY, FETCH_STAFF_QUERY, FETCH_DEPARTMENT_QUERY, FETCH_POSITION_QUERY, FETCH_DIVISION_QUERY } from '../../util/graphql';
+import { 
+    FETCH_COMMITTEE_QUERY, 
+    FETCH_STAFF_QUERY, 
+    FETCH_DEPARTMENT_QUERY, 
+    FETCH_POSITION_QUERY, 
+    FETCH_DIVISION_QUERY 
+} from '../../util/graphql';
 
 const CommitteeProfileScreen = ({ route }) => {
 

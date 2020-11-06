@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Snackbar } from 'react-native-paper';
+import { Appbar, Portal } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -10,7 +10,6 @@ import { useMutation } from '@apollo/react-hooks';
 import { divisionNameValidator } from '../../util/validator';
 import { FETCH_DIVISIONS_QUERY, UPDATE_DIVISION_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
-import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider';
 
 const FormEditDivision = props => {

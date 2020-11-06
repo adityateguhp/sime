@@ -1,20 +1,23 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormRoadmap from '../../components/event/FormRoadmap';
 import FormEditRoadmap from '../../components/event/FormEditRoadmap';
 import RoadmapCard from '../../components/event/RoadmapCard';;
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_ROADMAPS_QUERY, FETCH_ROADMAP_QUERY, DELETE_ROADMAP, FETCH_EVENT_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
+import {
+    FETCH_ROADMAPS_QUERY,
+    FETCH_ROADMAP_QUERY,
+    DELETE_ROADMAP,
+    FETCH_EVENT_QUERY
+} from '../../util/graphql';
+
 
 const RoadmapScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -49,7 +52,7 @@ const RoadmapScreen = ({ route, navigation }) => {
     const [roadmapsValue, setRoadmapsValue] = useState([]);
     const [eventVal, setEventVal] = useState(null);
 
-    const { data: roadmaps, error: errorRoadmaps, loading: loadingRoadmaps, refetch, networkStatus } = useQuery(
+    const { data: roadmaps, error: errorRoadmaps, loading: loadingRoadmaps, refetch } = useQuery(
         FETCH_ROADMAPS_QUERY,
         {
             variables: { eventId: sime.event_id },
@@ -58,7 +61,7 @@ const RoadmapScreen = ({ route, navigation }) => {
         }
     );
 
-    const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent, networkStatus: networkStatusEvent } = useQuery(
+    const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent } = useQuery(
         FETCH_EVENT_QUERY, {
         variables: {
             eventId: sime.event_id
@@ -69,7 +72,7 @@ const RoadmapScreen = ({ route, navigation }) => {
         }
     });
 
-    const [loadExistData, { called, data: roadmap, error: errorRoadmap, loading: loadingRoadmap }] = useLazyQuery(
+    const [loadExistData, { called, data: roadmap, error: errorRoadmap }] = useLazyQuery(
         FETCH_ROADMAP_QUERY,
         {
             variables: { roadmapId: sime.roadmap_id }
@@ -167,7 +170,17 @@ const RoadmapScreen = ({ route, navigation }) => {
 
     const onRefresh = () => {
         refetch();
+        refetchEvent();
     };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     const deleteHandler = () => {
         setVisible(false);
@@ -186,17 +199,9 @@ const RoadmapScreen = ({ route, navigation }) => {
         return <Text>errorRoadmaps</Text>;
     }
 
-    if (loadingRoadmaps) {
-        return <CenterSpinner />;
-    }
-
     if (errorEvent) {
         console.error(errorEvent);
         return <Text>errorEvent</Text>;
-    }
-
-    if (loadingEvent) {
-        return <CenterSpinner />;
     }
 
     if (called & errorRoadmap) {
@@ -204,18 +209,13 @@ const RoadmapScreen = ({ route, navigation }) => {
         return <Text>errorRoadmap</Text>;
     }
 
-    if (loadingRoadmap) {
-
-    }
-
-
-    if (roadmaps.getRoadmaps.length === 0) {
+    if (roadmapsValue.length === 0) {
         return (
             <ScrollView
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingRoadmaps}
+                        refreshing={loadingRoadmaps && loadingEvent}
                         onRefresh={onRefresh} />
                 }
             >
@@ -244,22 +244,20 @@ const RoadmapScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching roadmaps!');
-    if (networkStatusEvent === NetworkStatus.refetch) console.log('Refetching event!');
-
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingRoadmaps}
+                        refreshing={loadingRoadmaps && loadingEvent}
                         onRefresh={onRefresh} />
                 }
                 data={roadmapsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <RoadmapCard
+                        navigation={navigation}
                         roadmapId={itemData.item.id}
                         name={itemData.item.name}
                         start_date={itemData.item.start_date}

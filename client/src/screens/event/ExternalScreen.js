@@ -5,9 +5,7 @@ import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { SimeContext } from '../../context/SimePovider';
 import ExternalCard from '../../components/event/ExternalCard';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import { theme } from '../../constants/Theme';
 import { FETCH_EXTERNALTYPES_QUERY} from '../../util/graphql';
-
 
 const ExternalScreen = props => {
 

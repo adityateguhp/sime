@@ -1,20 +1,26 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
 import { Provider, Portal, Title, Text, Snackbar, FAB } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { NetworkStatus } from '@apollo/client';
 
-import CenterSpinner from '../../components/common/CenterSpinner';
 import FormCommittee from '../../components/project/FormCommittee';
 import FormEditDivision from '../../components/project/FormEditDivision';
 import FormDivision from '../../components/project/FormDivision';
 import DivisionCard from '../../components/project/DivisionCard';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_DIVISIONS_QUERY, FETCH_STAFFS_QUERY, FETCH_POSITIONS_QUERY, FETCH_COMMITTEES_QUERY, DELETE_DIVISION, FETCH_DIVISION_QUERY, FETCH_COMMITTEES_IN_DIVISION_QUERY, DELETE_COMMITTEE } from '../../util/graphql';
+import {
+    FETCH_DIVISIONS_QUERY,
+    FETCH_STAFFS_QUERY,
+    FETCH_POSITIONS_QUERY,
+    FETCH_COMMITTEES_QUERY,
+    DELETE_DIVISION,
+    FETCH_DIVISION_QUERY,
+    FETCH_COMMITTEES_IN_DIVISION_QUERY,
+    DELETE_COMMITTEE
+} from '../../util/graphql';
 
 const CommitteeListScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -72,7 +78,7 @@ const CommitteeListScreen = ({ navigation }) => {
     const [committeesValue, setCommitteesValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);
 
-    const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs, networkStatus: networkStatusStaffs } = useQuery(
+    const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
             variables: { organizationId: sime.user.id },
@@ -81,7 +87,7 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
-    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions, networkStatus: networkStatusDivisions } = useQuery(
+    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions } = useQuery(
         FETCH_DIVISIONS_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -90,7 +96,7 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
-    const { data: positions, error: errorPositions, loading: loadingPositions, refetch: refetchPositions, networkStatus: networkStatusPositions } = useQuery(
+    const { data: positions, error: errorPositions, loading: loadingPositions, refetch: refetchPositions } = useQuery(
         FETCH_POSITIONS_QUERY,
         {
             notifyOnNetworkStatusChange: true,
@@ -98,7 +104,7 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
-    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
+    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -107,7 +113,7 @@ const CommitteeListScreen = ({ navigation }) => {
                 committees.getCommittees.sort(function (a, b) {
                     var textA = a.order;
                     var textB = b.order;
-        
+
                     return textA.localeCompare(textB)
                 });
                 setCommitteesValue(committees.getCommittees)
@@ -115,13 +121,13 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
-    const [loadExistData, { called, data: division, error: error2, loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: division, error: error2}] = useLazyQuery(
         FETCH_DIVISION_QUERY,
         {
             variables: { divisionId: sime.division_id }
         });
 
-    const [loadCommiteeData, { called: called2, data: commiteeInDiv, error: error3, loading: loading3 }] = useLazyQuery(
+    const [loadCommiteeData, { called: called2, data: commiteeInDiv, error: error3}] = useLazyQuery(
         FETCH_COMMITTEES_IN_DIVISION_QUERY,
         {
             variables: { divisionId: sime.division_id }
@@ -311,6 +317,15 @@ const CommitteeListScreen = ({ navigation }) => {
         refetchStaffs();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     const deleteHandler = () => {
         closeModal();
         closeModalFormEditDivision();
@@ -355,22 +370,6 @@ const CommitteeListScreen = ({ navigation }) => {
         return <Text>errorCommittees</Text>;
     }
 
-    if (loadingStaffs) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingDivisions) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingPositions) {
-        return <CenterSpinner />;
-    }
-
-    if (loadingCommittees) {
-        return <CenterSpinner />;
-    }
-
     if (called & error2) {
         console.error(error2);
         return <Text>Error</Text>;
@@ -381,14 +380,6 @@ const CommitteeListScreen = ({ navigation }) => {
         return <Text>Error3</Text>;
     }
 
-    if (loading2) {
-
-    }
-
-    if (loading3) {
-
-    }
-
     if (divisionsValue.length === 0) {
         return (
             <View style={styles.content}>
@@ -397,18 +388,13 @@ const CommitteeListScreen = ({ navigation }) => {
         );
     }
 
-    if (networkStatusCommittees === NetworkStatus.refetch) console.log('Refetching committees!');
-    if (networkStatusDivisions === NetworkStatus.refetch) console.log('Refetching head divisions!');
-    if (networkStatusStaffs === NetworkStatus.refetch) console.log('Refetching staffs!');
-    if (networkStatusPositions === NetworkStatus.refetch) console.log('Refetching positions!');
-
     return (
         <Provider theme={theme}>
             <FlatList
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingCommittees}
+                        refreshing={loadingStaffs && loadingPositions && loadingDivisions && loadingCommittees}
                         onRefresh={onRefresh} />
                 }
                 data={divisionsValue}

@@ -1,19 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList } from 'react-native';
-import { Paragraph, Portal, Title, Appbar, Caption, Chip, Divider, Button, Text } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React, { useContext } from 'react';
+import { StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList } from 'react-native';
+import { Portal, Appbar } from 'react-native-paper';
 import Modal from "react-native-modal";
-import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useMutation } from '@apollo/react-hooks';
-import DateTimePicker from 'react-native-modal-datetime-picker';
 
-import TextInput from '../common/TextInput';
-import { taskNameValidator } from '../../util/validator';
-import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION } from '../../util/graphql';
-import { theme } from '../../constants/Theme';
-import Colors from '../../constants/Colors';
-import CommitteeChipContainer from './CommitteeChipContainer'
 import { SimeContext } from '../../context/SimePovider';
 import AssignedToSeparator from './AssignedToSeparator';
 

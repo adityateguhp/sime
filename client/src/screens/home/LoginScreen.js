@@ -1,12 +1,9 @@
 import React, { memo, useState, useContext } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
-import { ActivityIndicator, List } from 'react-native-paper';
-import { CommonActions } from "@react-navigation/native";
+import { List } from 'react-native-paper';
 
-import Header from '../../components/common/Header';
 import Paragraph from '../../components/common/Paragraph';
 import Background from '../../components/common/Background';
 import Logo from '../../components/common/Logo';
@@ -14,7 +11,6 @@ import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
-import { SimeContext } from '../../context/SimePovider';
 import { LOGIN_ORGANIZATION, LOGIN_STAFF } from '../../util/graphql';
 
 const LoginScreen = ({ navigation }) => {
@@ -96,7 +92,6 @@ const LoginScreen = ({ navigation }) => {
           {Object.keys(errors).length > 0 && (
             <View style={styles.errorContainer}>
               <List.Section style={styles.errorSection}>
-                <Text style={styles.errorHeader}>Error</Text>
                 {Object.values(errors).map((value) => (
                   <List.Item
                     key={value}

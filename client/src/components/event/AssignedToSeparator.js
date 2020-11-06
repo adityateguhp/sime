@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { List, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
+import { List } from 'react-native-paper';
 
 import AssignedToCommitteeListContainer from './AssignedToCommitteeListContainer';
-import Colors from '../../constants/Colors';
 
 const AssignedToSeparator = props => {
     let TouchableCmp = TouchableOpacity;

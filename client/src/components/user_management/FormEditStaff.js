@@ -1,22 +1,17 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
-import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
-import CenterSpinner from '../common/CenterSpinner';
-import { theme } from '../../constants/Theme';
 
 const FormEditStaff = props => {
     let TouchableCmp = TouchableOpacity;

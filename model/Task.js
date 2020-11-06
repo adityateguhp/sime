@@ -13,8 +13,7 @@ const taskSchema = new Schema({
     }, 	
     createdAt: String,
     createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'tasks'
+        type: Schema.Types.ObjectId
     }, 		
 });
 

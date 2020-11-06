@@ -1,12 +1,10 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
-import { Avatar, List, Caption } from 'react-native-paper';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Text } from 'react-native';
+import { useQuery } from '@apollo/react-hooks';
 
 import { FETCH_COMMITTEE_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import CommitteeChip from './CommitteeChip';
-import { SimeContext } from '../../context/SimePovider';
 
 const CommitteeChipContainer = props => {
     let TouchableCmp = TouchableOpacity;

@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, Card, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
+import { Avatar, Card, Caption } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
-import Colors from '../../constants/Colors';
 import Status from '../../components/common/Status';
 import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'
 import { SimeContext } from '../../context/SimePovider';

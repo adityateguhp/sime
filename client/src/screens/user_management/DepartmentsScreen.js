@@ -4,15 +4,12 @@ import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFee
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
-import CenterSpinner from '../../components/common/CenterSpinner';
 import FormDepartment from '../../components/user_management/FormDepartment';
 import FormEditDepartment from '../../components/user_management/FormEditDepartment';
 import DepartmentCard from '../../components/user_management/DepartmentCard';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
 
@@ -41,7 +38,7 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const [departmentsValue, setDepartmentsValue] = useState([]);
 
-    const { data: departments, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
+    const { data: departments, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
             variables: { organizationId: sime.user.id },
@@ -52,7 +49,7 @@ const DepartmentsScreen = ({ navigation }) => {
         }
     );
 
-    const [loadExistData, { called, data: department, error: error2, loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: department, error: error2 }] = useLazyQuery(
         FETCH_DEPARTMENT_QUERY,
         {
             variables: { departmentId: sime.department_id },
@@ -189,23 +186,24 @@ const DepartmentsScreen = ({ navigation }) => {
         refetch();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          onRefresh();
+        });
+    
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+      }, [navigation]);
+
 
     if (error1) {
         console.error(error1);
         return <Text>Error</Text>;
     }
 
-    if (loading1) {
-        return <CenterSpinner />;
-    }
-
     if (called & error2) {
         console.error(error2);
         return <Text>Error</Text>;
-    }
-
-    if (loading2) {
-
     }
 
     if (departmentsValue.length === 0) {
@@ -243,8 +241,6 @@ const DepartmentsScreen = ({ navigation }) => {
             </Provider>
         );
     }
-
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching departments!');
 
     return (
         <Provider theme={theme}>

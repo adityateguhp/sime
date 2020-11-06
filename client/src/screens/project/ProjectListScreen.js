@@ -4,19 +4,16 @@ import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import ProjectCard from '../../components/project/ProjectCard';
-import CenterSpinner from '../../components/common/CenterSpinner';
 import FormProject from '../../components/project/FormProject';
 import FormEditProject from '../../components/project/FormEditProject';
 import { theme } from '../../constants/Theme';
-import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_PROJECTS_QUERY, FETCH_PROJECT_QUERY, DELETE_PROJECT, CANCEL_PROJECT_MUTATION } from '../../util/graphql';
 
-const ProjectListScreen = props => {
+const ProjectListScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -63,7 +60,7 @@ const ProjectListScreen = props => {
     const [projectsValue, setProjectsValue] = useState([]);
 
     const selectItemHandler = (id, name, picture) => {
-        props.navigation.navigate('Project Menu', {
+        navigation.navigate('Project Menu', {
             projectName: name,
             projectCoverImage: picture
         }
@@ -72,7 +69,7 @@ const ProjectListScreen = props => {
         sime.setProject_name(name);
     };
 
-    const { data: projects, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
+    const { data: projects, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_PROJECTS_QUERY,
         {
             variables: { organizationId: sime.user.id },
@@ -81,7 +78,7 @@ const ProjectListScreen = props => {
         }
     );
 
-    const [loadExistData, { called, data: project, error: error2, loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: project, error: error2 }] = useLazyQuery(
         FETCH_PROJECT_QUERY,
         {
             variables: { projectId: sime.project_id }
@@ -210,6 +207,15 @@ const ProjectListScreen = props => {
         refetch();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     const deleteHandler = () => {
         closeModal();
         closeModalFormEdit();
@@ -230,17 +236,9 @@ const ProjectListScreen = props => {
         return <Text>Error</Text>;
     }
 
-    if (loading1) {
-        return <CenterSpinner />;
-    }
-
     if (called & error2) {
         console.error(error2);
         return <Text>Error</Text>;
-    }
-
-    if (loading2) {
-
     }
 
     if (projectsValue.length === 0) {
@@ -276,8 +274,6 @@ const ProjectListScreen = props => {
             </ScrollView>
         );
     }
-
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching projects!');
 
     return (
         <Provider theme={theme}>

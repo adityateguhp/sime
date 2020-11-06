@@ -5,7 +5,6 @@ import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import RundownContainer from '../../components/event/RundownContainer';
@@ -13,12 +12,16 @@ import RundownTime from '../../components/event/RundownTime';
 import FormRundown from '../../components/event/FormRundown';
 import FormEditRundown from '../../components/event/FormEditRundown';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_RUNDOWNS_QUERY, FETCH_RUNDOWN_QUERY, DELETE_RUNDOWN, FETCH_EVENT_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
+import {
+  FETCH_RUNDOWNS_QUERY,
+  FETCH_RUNDOWN_QUERY,
+  DELETE_RUNDOWN,
+  FETCH_EVENT_QUERY
+} from '../../util/graphql';
 
-const RundownScreen = props => {
+
+const RundownScreen = ({ navigation }) => {
 
   const sime = useContext(SimeContext);
 
@@ -48,7 +51,7 @@ const RundownScreen = props => {
 
   const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
-  const { data: rundowns, error: errorRundowns, loading: loadingRundowns, refetch, networkStatus } = useQuery(
+  const { data: rundowns, error: errorRundowns, loading: loadingRundowns, refetch } = useQuery(
     FETCH_RUNDOWNS_QUERY, {
     variables: {
       eventId: sime.event_id
@@ -59,7 +62,7 @@ const RundownScreen = props => {
     }
   });
 
-  const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent, networkStatus: networkStatusEvent } = useQuery(
+  const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent } = useQuery(
     FETCH_EVENT_QUERY, {
     variables: {
       eventId: sime.event_id
@@ -70,7 +73,7 @@ const RundownScreen = props => {
     }
   });
 
-  const [loadExistData, { called, data: rundown, error: errorRundown, loading: loadingRundown }] = useLazyQuery(
+  const [loadExistData, { called, data: rundown, error: errorRundown }] = useLazyQuery(
     FETCH_RUNDOWN_QUERY,
     {
       variables: { rundownId: sime.rundown_id },
@@ -252,14 +255,19 @@ const RundownScreen = props => {
     refetchEvent();
   };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onRefresh();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
 
   if (errorRundowns) {
     console.error(errorRundowns);
     return <Text>errorRundowns</Text>;
-  }
-
-  if (loadingRundowns) {
-    return <CenterSpinner />;
   }
 
   if (errorEvent) {
@@ -267,17 +275,9 @@ const RundownScreen = props => {
     return <Text>errorEvent</Text>;
   }
 
-  if (loadingEvent) {
-    return <CenterSpinner />;
-  }
-
   if (called & errorRundown) {
     console.error(errorRundown);
     return <Text>errorRundown</Text>;
-  }
-
-  if (loadingRundown) {
-
   }
 
   if (rundownsVal.length === 0) {
@@ -286,7 +286,7 @@ const RundownScreen = props => {
         contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
-            refreshing={loadingRundowns}
+            refreshing={loadingRundowns && loadingEvent}
             onRefresh={onRefresh} />
         }
       >
@@ -315,16 +315,13 @@ const RundownScreen = props => {
     );
   }
 
-  if (networkStatus === NetworkStatus.refetch) console.log('Refetching rundowns!');
-  if (networkStatusEvent === NetworkStatus.refetch) console.log('Refetching event!');
-
   return (
     <Provider theme={theme}>
       <View style={styles.container}>
         <SectionList
           refreshControl={
             <RefreshControl
-              refreshing={loadingRundowns}
+              refreshing={loadingRundowns && loadingEvent}
               onRefresh={onRefresh} />
           }
           sections={rundownsVal}

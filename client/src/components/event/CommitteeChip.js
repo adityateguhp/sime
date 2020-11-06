@@ -1,13 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
-import { Chip, List, Caption, Provider, Portal, Title, Text } from 'react-native-paper';
+import React from 'react';
+import { Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
+import { Chip, Text } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import { FETCH_STAFF_QUERY, DELETE_ASSIGNED_TASK, FETCH_ASSIGNED_TASKS_QUERY } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
-import { theme } from '../../constants/Theme';
 
 const CommitteeChip = props => {
     let TouchableCmp = TouchableOpacity;

@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Subheading, Divider } from 'react-native-paper';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '../../constants/Colors';

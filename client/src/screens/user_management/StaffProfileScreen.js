@@ -1,18 +1,13 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
-import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Portal } from 'react-native-paper';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
-import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider } from 'react-native-paper';
+import { useQuery } from '@apollo/react-hooks';
 
 import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
-import FormEditStaff from '../../components/user_management/FormEditStaff';
-import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
-import HeaderButton from '../../components/common/HeaderButton';
 
-const StaffProfileScreen = ({ route, navigation }) => {
-    const sime = useContext(SimeContext);
+const StaffProfileScreen = ({ route }) => {
 
     const sId = route.params?.staffId;
     const dId = route.params?.departmentId;

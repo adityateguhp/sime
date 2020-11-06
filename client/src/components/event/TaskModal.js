@@ -11,7 +11,6 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import TextInput from '../common/TextInput';
 import { taskNameValidator } from '../../util/validator';
 import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION, FETCH_STAFF_QUERY, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
-import { theme } from '../../constants/Theme';
 import Colors from '../../constants/Colors';
 import CommitteeChipContainer from './CommitteeChipContainer'
 import AssignedToModal from './AssignedToModal'

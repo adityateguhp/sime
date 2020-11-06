@@ -1,15 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, Card, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { useQuery } from '@apollo/react-hooks';
-import SkeletonContent from "react-native-skeleton-content-nonexpo";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import Colors from '../../constants/Colors';
 import { FETCH_TASKS_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
 
 const RoadmapCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -37,6 +34,15 @@ const RoadmapCard = props => {
         }
     );
 
+    useEffect(() => {
+        const unsubscribe = props.navigation.addListener('focus', () => {
+            refetch();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [props.navigation]);
+
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');
 
@@ -56,63 +62,25 @@ const RoadmapCard = props => {
         <View>
             <TouchableCmp onPress={props.onSelect} onLongPress={props.onLongPress} useForeground>
                 <Card style={styles.event}>
-                    <SkeletonContent
-                        isLoading={loadingTasks}
-                        containerStyle={styles.SkletonContainer}
-                        layout={cardTitle}
-                    >
-                        <Card.Title
-                            title={props.name}
-                            subtitle={
-                                <Caption>
-                                    <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}
-                                </Caption>}
-                        />
-                    </SkeletonContent>
-
-                    <SkeletonContent
-                        isLoading={loadingTasks}
-                        containerStyle={styles.SkletonContainer}
-                        layout={cardContent}
-                    >
-                        <Card.Content style={{marginBottom: 16}}>
-                            <View style={styles.task}>
-                                <Caption>{percentage ? percentage : 0}% Completed</Caption>
-                                <Caption>{completeTask.length}/{tasksValue.length} Tasks</Caption>
-                            </View>
-                            <ProgressBar progress={progress ? progress : 0} color={Colors.primaryColor} />
-                        </Card.Content>
-                    </SkeletonContent>
+                    <Card.Title
+                        title={props.name}
+                        subtitle={
+                            <Caption>
+                                <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}
+                            </Caption>}
+                    />
+                    <Card.Content style={{ marginBottom: 16 }}>
+                        <View style={styles.task}>
+                            <Caption>{percentage ? percentage : 0}% Completed</Caption>
+                            <Caption>{completeTask.length}/{tasksValue.length} Tasks</Caption>
+                        </View>
+                        <ProgressBar progress={progress ? progress : 0} color={Colors.primaryColor} />
+                    </Card.Content>
                 </Card >
             </TouchableCmp>
         </View>
     );
 };
-
-const cardWidth = wp(100);
-
-const cardTitle = [
-    {
-        width: cardWidth * 0.85,
-        height: wp(5),
-        marginTop: 20,
-        marginHorizontal: 16,
-        marginBottom: 10
-    },
-    {
-        width: cardWidth * 0.4,
-        height: wp(3),
-        marginHorizontal: 16
-    },
-];
-const cardContent = [
-    {
-        width: cardWidth * 0.85,
-        height: wp(5),
-        marginHorizontal: 16,
-        marginVertical: 20
-    },
-];
 
 const styles = StyleSheet.create({
     event: {

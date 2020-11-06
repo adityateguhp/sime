@@ -1,22 +1,22 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { FlatList, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { NetworkStatus } from '@apollo/client';
 
-import FABbutton from '../../components/common/FABbutton';
 import ProjectCard from '../../components/project/ProjectCard';
-import CenterSpinner from '../../components/common/CenterSpinner';
-import FormProject from '../../components/project/FormProject';
 import FormEditProject from '../../components/project/FormEditProject';
 import { theme } from '../../constants/Theme';
-import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_PROJECTS_QUERY, FETCH_PROJECT_QUERY, FETCH_COMMITTEES_BYSTAFF_QUERY, CANCEL_PROJECT_MUTATION } from '../../util/graphql';
+import {
+    FETCH_PROJECTS_QUERY,
+    FETCH_PROJECT_QUERY,
+    FETCH_COMMITTEES_BYSTAFF_QUERY,
+    CANCEL_PROJECT_MUTATION
+} from '../../util/graphql';
 
-const ProjectListStaffScreen = props => {
+const ProjectListStaffScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -47,7 +47,7 @@ const ProjectListStaffScreen = props => {
 
 
     const selectItemHandler = (id, name, picture) => {
-        props.navigation.navigate('Project Menu', {
+        navigation.navigate('Project Menu', {
             projectName: name,
             projectCoverImage: picture
         }
@@ -60,7 +60,7 @@ const ProjectListStaffScreen = props => {
 
     const [commiteesStaff, setCommitteesStaff] = useState([]);
 
-    const { data: committeesByStaff, error: error1, loading: loading1, refetch: refetchCommitteeStaff, networkStatus: networkStatusCommitteeStaff } = useQuery(
+    const { data: committeesByStaff, error: error1, loading: loading1, refetch: refetchCommitteeStaff } = useQuery(
         FETCH_COMMITTEES_BYSTAFF_QUERY,
         {
             variables: { staffId: sime.user.id },
@@ -69,7 +69,7 @@ const ProjectListStaffScreen = props => {
             }
         });
 
-    const { data: projects, error: error2, loading: loading2, refetch, networkStatus } = useQuery(
+    const { data: projects, error: error2, loading: loading2, refetch } = useQuery(
         FETCH_PROJECTS_QUERY,
         {
             variables: { organizationId: sime.user.organization_id },
@@ -89,7 +89,7 @@ const ProjectListStaffScreen = props => {
             return null;
         }))
 
-    const [loadExistData, { called2, data: project, error: error3, loading: loading3 }] = useLazyQuery(
+    const [loadExistData, { called2, data: project, error: error3 }] = useLazyQuery(
         FETCH_PROJECT_QUERY,
         {
             variables: { projectId: sime.project_id }
@@ -178,6 +178,15 @@ const ProjectListStaffScreen = props => {
         refetchCommitteeStaff();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     const numColumns = 2;
 
     if (error1) {
@@ -185,17 +194,9 @@ const ProjectListStaffScreen = props => {
         return <Text>Error</Text>;
     }
 
-    if (loading1) {
-        return <CenterSpinner />;
-    }
-
     if (error2) {
         console.error(error2);
         return <Text>Error</Text>;
-    }
-
-    if (loading2) {
-        return <CenterSpinner />;
     }
 
     if (called2 & error3) {
@@ -203,9 +204,6 @@ const ProjectListStaffScreen = props => {
         return <Text>Error</Text>;
     }
 
-    if (loading3) {
-
-    }
 
     if (projectsStaff.length === 0) {
         return (
@@ -213,7 +211,7 @@ const ProjectListStaffScreen = props => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1}
+                        refreshing={loading1 && loading2}
                         onRefresh={onRefresh} />
                 }
             >
@@ -222,9 +220,6 @@ const ProjectListStaffScreen = props => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching projects!');
-    if (networkStatusCommitteeStaff === NetworkStatus.refetch) console.log('Refetching committees!');
-
     return (
         <Provider theme={theme}>
             <FlatList
@@ -232,7 +227,7 @@ const ProjectListStaffScreen = props => {
                 contentContainerStyle={styles.container}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1}
+                        refreshing={loading1 && loading2}
                         onRefresh={onRefresh} />
                 }
                 data={projectsStaff}
@@ -245,7 +240,7 @@ const ProjectListStaffScreen = props => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.picture ) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.picture) }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
                         loading={loading1}
                     >

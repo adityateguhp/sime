@@ -4,19 +4,17 @@ import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormExternal from '../../components/event/FormExternal';
 import FormEditExternal from '../../components/event/FormEditExternal';
 import ExternalList from '../../components/event/ExternalList';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 import { FETCH_EXBYTYPE_QUERY, DELETE_EXTERNAL, FETCH_EXTERNAL_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
 
-const ExternalListScreen = props => {
+
+const ExternalListScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
 
     let TouchableCmp = TouchableOpacity;
@@ -47,7 +45,7 @@ const ExternalListScreen = props => {
 
     const [externalsValue, setExternalsValue] = useState([]);
 
-    const { data: externals, error: errorExternals, loading: loadingExternals, refetch, networkStatus } = useQuery(
+    const { data: externals, error: errorExternals, loading: loadingExternals, refetch } = useQuery(
         FETCH_EXBYTYPE_QUERY, {
         variables: {
             eventId: sime.event_id,
@@ -59,7 +57,7 @@ const ExternalListScreen = props => {
         }
     });
 
-    const [loadExistData, { called, data: external, error: errorExternal, loading: loadingExternal }] = useLazyQuery(
+    const [loadExistData, { called, data: external, error: errorExternal }] = useLazyQuery(
         FETCH_EXTERNAL_QUERY,
         {
             variables: { externalId: sime.external_id },
@@ -68,7 +66,7 @@ const ExternalListScreen = props => {
     const [externalVal, setExternalVal] = useState(null);
 
     const selectItemHandler = (id) => {
-        props.navigation.navigate('External Profile', {
+        navigation.navigate('External Profile', {
             externalId: id
         });
     };
@@ -189,22 +187,23 @@ const ExternalListScreen = props => {
         refetch();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     if (errorExternals) {
         console.error(errorExternals);
         return <Text>errorExternals</Text>;
     }
 
-    if (loadingExternals) {
-        return <CenterSpinner />;
-    }
-
     if (called & errorExternal) {
         console.error(errorExternal);
         return <Text>errorExternal</Text>;
-    }
-
-    if (loadingExternal) {
-
     }
 
     if (externalsValue.length === 0) {
@@ -240,8 +239,6 @@ const ExternalListScreen = props => {
             </ScrollView>
         );
     }
-
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching externals!');
 
     return (
         <Provider theme={theme}>

@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption, IconButton, ProgressBar, Menu, Button, Divider } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import Colors from '../../constants/Colors';
+import { Avatar, List } from 'react-native-paper';
 
 const StaffList = props => {
     let TouchableCmp = TouchableOpacity;

@@ -1,9 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
+import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
 import { useMutation } from '@apollo/react-hooks';
 
@@ -12,7 +11,6 @@ import { SimeContext } from '../../context/SimePovider';
 import { emailValidator, phoneNumberValidator, externalNameValidator } from '../../util/validator';
 import { FETCH_EXBYTYPE_QUERY, UPDATE_EXTERNAL_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
-import { theme } from '../../constants/Theme';
 
 const FormEditExternal = props => {
     let TouchableCmp = TouchableOpacity;

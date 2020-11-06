@@ -1,22 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
-import { Button, Appbar, Portal, Text, Avatar, Snackbar } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import React, { useState, useContext } from 'react';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { Appbar, Portal } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ImagePicker from 'react-native-image-picker';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import { Dropdown } from 'react-native-material-dropdown-v2';
+import { useMutation } from '@apollo/react-hooks';
 
-import Colors from '../../constants/Colors';
 import { singlePasswordValidator, confirmPasswordValidator } from '../../util/validator';
 import { UPDATE_PASSWORD_STAFF_MUTATION, FETCH_STAFF_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
-import CenterSpinner from '../common/CenterSpinner';
-
 
 const FormChangePasswordStaff = props => {
     let TouchableCmp = TouchableOpacity;

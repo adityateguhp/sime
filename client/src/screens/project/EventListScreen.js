@@ -1,20 +1,23 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, Dimensions, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
 import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from '@apollo/client';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormEvent from '../../components/event/FormEvent';
 import FormEditEvent from '../../components/event/FormEditEvent';
 import EventCard from '../../components/event/EventCard';
 import { SimeContext } from '../../context/SimePovider';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_EVENTS_QUERY, FETCH_EVENT_QUERY, DELETE_EVENT, CANCEL_EVENT_MUTATION, FETCH_PROJECT_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
+import {
+    FETCH_EVENTS_QUERY,
+    FETCH_EVENT_QUERY,
+    DELETE_EVENT,
+    CANCEL_EVENT_MUTATION,
+    FETCH_PROJECT_QUERY
+} from '../../util/graphql';
 
 const EventListScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -69,7 +72,7 @@ const EventListScreen = ({ route, navigation }) => {
         sime.setEvent_name(event_name);
     };
 
-    const { data: events, error: error1, loading: loading1, refetch, networkStatus } = useQuery(
+    const { data: events, error: error1, loading: loading1, refetch,  } = useQuery(
         FETCH_EVENTS_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -80,7 +83,7 @@ const EventListScreen = ({ route, navigation }) => {
         }
     );
 
-    const { data: project, error: error3, loading: loading3,  refetch: refetchProject, networkStatus: networkStatusProject } = useQuery(
+    const { data: project, error: error3, loading: loading3, refetch: refetchProject } = useQuery(
         FETCH_PROJECT_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -90,7 +93,7 @@ const EventListScreen = ({ route, navigation }) => {
             }
         });
 
-    const [loadExistData, { called, data: event, error: error2, loading: loading2 }] = useLazyQuery(
+    const [loadExistData, { called, data: event, error: error2 }] = useLazyQuery(
         FETCH_EVENT_QUERY,
         {
             variables: { eventId: sime.event_id }
@@ -233,13 +236,18 @@ const EventListScreen = ({ route, navigation }) => {
         refetchProject();
     };
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     if (error1) {
         console.error(error1);
         return <Text>Error</Text>;
-    }
-
-    if (loading1) {
-        return <CenterSpinner />;
     }
 
     if (error3) {
@@ -247,17 +255,9 @@ const EventListScreen = ({ route, navigation }) => {
         return <Text>Error</Text>;
     }
 
-    if (loading3) {
-        return <CenterSpinner />;
-    }
-
     if (called & error2) {
         console.error(error2);
         return <Text>Error</Text>;
-    }
-
-    if (loading2) {
-
     }
 
     if (eventsValue.length === 0) {
@@ -266,14 +266,14 @@ const EventListScreen = ({ route, navigation }) => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1}
+                        refreshing={loading1 && loading3}
                         onRefresh={onRefresh} />
                 }
             >
                 <Text>No events found, let's add events!</Text>
                 { sime.user_type === "Organization" || sime.order === '1' ?
                     <FABbutton Icon="plus" label="event" onPress={openForm} />
-                        : null
+                    : null
                 }
                 <FormEvent
                     closeModalForm={closeModalForm}
@@ -298,9 +298,6 @@ const EventListScreen = ({ route, navigation }) => {
         );
     }
 
-    if (networkStatus === NetworkStatus.refetch) console.log('Refetching events!');
-    if (networkStatusProject === NetworkStatus.refetch) console.log('Refetching project!');
-
     return (
         <Provider theme={theme}>
             <FlatList
@@ -308,7 +305,7 @@ const EventListScreen = ({ route, navigation }) => {
                 data={eventsValue}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1}
+                        refreshing={loading1 && loading3}
                         onRefresh={onRefresh} />
                 }
                 keyExtractor={item => item.id}
@@ -327,93 +324,93 @@ const EventListScreen = ({ route, navigation }) => {
                     </EventCard>
                 )}
             />
-            { sime.user_type === "Organization" || sime.order === '1' ||  sime.order === '2' ? 
-            <Portal>
-                <Modal
-                    useNativeDriver={true}
-                    isVisible={visible}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    onBackButtonPress={closeModal}
-                    onBackdropPress={closeModal}
-                    statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Title>
-                        <TouchableCmp onPress={openFormEdit}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        {
-                            cancelValue.cancel === true ?
-                                <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
-                                    <View style={styles.textView}>
-                                        <Text style={styles.text}>Active event</Text>
-                                    </View>
-                                </TouchableCmp>
-                                :
-                                <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
-                                    <View style={styles.textView}>
-                                        <Text style={styles.text}>Cancel event</Text>
-                                    </View>
-                                </TouchableCmp>
-                        }
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete event</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
-                </Modal>
-                <FABbutton Icon="plus" label="event" onPress={openForm} />
-                <FormEvent
-                    closeModalForm={closeModalForm}
-                    visibleForm={visibleForm}
-                    closeButton={closeModalForm}
-                    addEventsStateUpdate={addEventsStateUpdate}
-                    project={projectValue}
-                />
-                <FormEditEvent
-                    closeModalForm={closeModalFormEdit}
-                    visibleForm={visibleFormEdit}
-                    deleteButton={deleteHandler}
-                    closeButton={closeModalFormEdit}
-                    event={eventVal}
-                    updateEventsStateUpdate={updateEventsStateUpdate}
-                    updateEventStateUpdate={updateEventStateUpdate}
-                    project={projectValue}
-                />
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                >
-                    Event deleted!
+            { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' ?
+                <Portal>
+                    <Modal
+                        useNativeDriver={true}
+                        isVisible={visible}
+                        animationIn="zoomIn"
+                        animationOut="zoomOut"
+                        onBackButtonPress={closeModal}
+                        onBackdropPress={closeModal}
+                        statusBarTranslucent>
+                        <View style={styles.modalView}>
+                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Title>
+                            <TouchableCmp onPress={openFormEdit}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Edit</Text>
+                                </View>
+                            </TouchableCmp>
+                            {
+                                cancelValue.cancel === true ?
+                                    <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
+                                        <View style={styles.textView}>
+                                            <Text style={styles.text}>Active event</Text>
+                                        </View>
+                                    </TouchableCmp>
+                                    :
+                                    <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
+                                        <View style={styles.textView}>
+                                            <Text style={styles.text}>Cancel event</Text>
+                                        </View>
+                                    </TouchableCmp>
+                            }
+                            <TouchableCmp onPress={deleteHandler}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Delete event</Text>
+                                </View>
+                            </TouchableCmp>
+                        </View>
+                    </Modal>
+                    <FABbutton Icon="plus" label="event" onPress={openForm} />
+                    <FormEvent
+                        closeModalForm={closeModalForm}
+                        visibleForm={visibleForm}
+                        closeButton={closeModalForm}
+                        addEventsStateUpdate={addEventsStateUpdate}
+                        project={projectValue}
+                    />
+                    <FormEditEvent
+                        closeModalForm={closeModalFormEdit}
+                        visibleForm={visibleFormEdit}
+                        deleteButton={deleteHandler}
+                        closeButton={closeModalFormEdit}
+                        event={eventVal}
+                        updateEventsStateUpdate={updateEventsStateUpdate}
+                        updateEventStateUpdate={updateEventStateUpdate}
+                        project={projectValue}
+                    />
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                    >
+                        Event deleted!
             </Snackbar>
-                <Snackbar
-                    visible={visibleCancel}
-                    onDismiss={onDismissSnackBarCancel}
-                >
-                    Event canceled!
+                    <Snackbar
+                        visible={visibleCancel}
+                        onDismiss={onDismissSnackBarCancel}
+                    >
+                        Event canceled!
             </Snackbar>
-                <Snackbar
-                    visible={visibleActivate}
-                    onDismiss={onDismissSnackBarActivate}
-                >
-                    Event activated!
+                    <Snackbar
+                        visible={visibleActivate}
+                        onDismiss={onDismissSnackBarActivate}
+                    >
+                        Event activated!
             </Snackbar>
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                >
-                    Event added!
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                    >
+                        Event added!
             </Snackbar>
-                <Snackbar
-                    visible={visibleUpdate}
-                    onDismiss={onDismissSnackBarUpdate}
-                >
-                    Event updated!
+                    <Snackbar
+                        visible={visibleUpdate}
+                        onDismiss={onDismissSnackBarUpdate}
+                    >
+                        Event updated!
             </Snackbar>
-            </Portal> : null}
+                </Portal> : null}
         </Provider>
     );
 }

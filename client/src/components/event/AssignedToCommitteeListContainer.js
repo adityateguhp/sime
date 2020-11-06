@@ -1,12 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
-import { Avatar, List, Caption } from 'react-native-paper';
-import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import {DELETE_COMMITTEE, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
-import CenterSpinner from '../common/CenterSpinner';
 import AssignedToCommitteeList from './AssignedToCommitteeList';
-import { SimeContext } from '../../context/SimePovider';
 
 const AssignedToCommitteeListContainer = props => {
     let TouchableCmp = TouchableOpacity;

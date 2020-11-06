@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
 
 const CenterSpinner = () => (

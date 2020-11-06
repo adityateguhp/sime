@@ -1,14 +1,18 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption, Provider, Divider, Title, Text } from 'react-native-paper';
+import { Avatar, List, Caption, Provider, Divider, Text } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, DELETE_ASSIGNED_TASK, FETCH_ASSIGNED_TASKS_QUERY, ASSIGNED_TASK_MUTATION } from '../../util/graphql';
+import { 
+    FETCH_STAFF_QUERY, 
+    FETCH_POSITION_QUERY, 
+    DELETE_ASSIGNED_TASK, 
+    FETCH_ASSIGNED_TASKS_QUERY, 
+    ASSIGNED_TASK_MUTATION 
+} from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
-import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import Colors from '../../constants/Colors';
 

@@ -1,11 +1,10 @@
 import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
-import { ActivityIndicator, List } from 'react-native-paper';
+import { List } from 'react-native-paper';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { CommonActions } from "@react-navigation/native";
 
-import { useForm } from '../../util/hooks';
 import Background from '../../components/common/Background';
 import Logo from '../../components/common/Logo';
 import Header from '../../components/common/Header';
@@ -99,7 +98,6 @@ const RegisterScreen = ({ navigation }) => {
                     {Object.keys(errors).length > 0 && (
                         <View style={styles.errorContainer}>
                             <List.Section style={styles.errorSection}>
-                            <Text style={styles.errorHeader}>Error</Text>
                                 {Object.values(errors).map((value) => (
                                     <List.Item 
                                     key={value} 

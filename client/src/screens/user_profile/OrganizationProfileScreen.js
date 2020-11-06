@@ -1,12 +1,10 @@
-import React, { useState, useLayoutEffect, useContext } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import React, { useState, useLayoutEffect, useContext, useEffect } from 'react';
+import { StyleSheet, ScrollView, RefreshControl, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Menu, Snackbar } from 'react-native-paper';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
-import CenterSpinner from '../../components/common/CenterSpinner';
-import FormEditStaff from '../../components/user_management/FormEditStaff';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import HeaderButton from '../../components/common/HeaderButton';
@@ -22,11 +20,12 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
     const [visibleFormPassword, setVisibleFormPassword] = useState(false);
 
-    const { data: organization, error: error1, loading: loading1 } = useQuery(
+    const { data: organization, error: error1, loading: loading1, refetch: refetchOrganization } = useQuery(
         FETCH_ORGANIZATION_QUERY, {
         variables: {
             organizationId: sime.user.id
         },
+        notifyOnNetworkStatusChange: true,
         onCompleted: () => {
             setOrganizationVal(organization.getOrganization)
         }
@@ -88,18 +87,34 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         });
     }, [navigation, visibleMenu]);
 
+    const onRefresh = () => {
+        refetchOrganization();
+    };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     if (error1) {
         console.error(error1);
         return <Text>Error 1</Text>;
     }
 
-    if (loading1) {
-        return <CenterSpinner />;
-    }
-
     return (
         <Provider theme={theme}>
-            <ScrollView style={styles.screen}>
+            <ScrollView
+                style={styles.screen}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
+            >
                 <View style={styles.profilePicture}>
                     <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture === null || organization.getOrganization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.getOrganization.picture }} />
                     <Headline>{organization.getOrganization.name}</Headline>
@@ -134,7 +149,7 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                 visibleForm={visibleFormPassword}
                 closeButton={closeModalFormPassword}
             />
-              <Snackbar
+            <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
             >

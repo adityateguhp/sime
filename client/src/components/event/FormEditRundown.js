@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { Button, Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
