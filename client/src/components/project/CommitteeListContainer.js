@@ -1,10 +1,7 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
-import { useMutation } from '@apollo/react-hooks';
 
-import {DELETE_COMMITTEE, FETCH_COMMITTEES_QUERY } from '../../util/graphql';
 import CommitteeList from './CommitteeList';
-import { SimeContext } from '../../context/SimePovider';
 
 const CommitteeListContainer = props => {
     let TouchableCmp = TouchableOpacity;
@@ -13,26 +10,7 @@ const CommitteeListContainer = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const sime = useContext(SimeContext);
-
     const comiteeInDivision = props.committees.filter((e) => e.division_id === props.division_id);
-
-    const committeeId = sime.committee_id;
-
-    const [deleteCommittee] = useMutation(DELETE_COMMITTEE, {
-        update(proxy) {
-            const data = proxy.readQuery({
-                query: FETCH_COMMITTEES_QUERY,
-                variables: {projectId: sime.project_id }
-            });
-            data.getCommittees = data.getCommittees.filter((e) => e.id !== committeeId);
-            props.deleteCommitteesStateUpdate(committeeId)
-            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
-        },
-        variables: {
-            committeeId
-        }
-    });
 
     if (comiteeInDivision.length === 0) {
         return (
@@ -56,8 +34,8 @@ const CommitteeListContainer = props => {
                             divisions={props.divisions}
                             positions={props.positions}
                             committees={props.committees}
-                            deleteFunction = {deleteCommittee}
                             onSelect={props.onSelect}
+                            deleteCommitteesStateUpdate={props.deleteCommitteesStateUpdate}
                             updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                          />
                      )}

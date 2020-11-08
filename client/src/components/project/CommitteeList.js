@@ -1,11 +1,18 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, Provider, Portal, Title, Text } from 'react-native-paper';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-import { FETCH_STAFF_QUERY, FETCH_POSITION_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
+import { 
+    FETCH_STAFF_QUERY, 
+    FETCH_POSITION_QUERY, 
+    FETCH_COMMITTEE_QUERY, 
+    FETCH_COMMITTEES_QUERY,
+    DELETE_COMMITTEE, 
+    DELETE_ASSIGNED_TASK_BYCOMMITTEE
+} from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import ModalProfile from '../common/ModalProfile';
 import FormEditCommittee from './FormEditCommittee';
@@ -35,7 +42,7 @@ const CommitteeList = props => {
         }
     );
 
-    const [loadExistData, { called, data: committee, error: errorCommittee, loading: loadingCommittee }] = useLazyQuery(
+    const [loadExistData, { called, data: committee, error: errorCommittee }] = useLazyQuery(
         FETCH_COMMITTEE_QUERY,
         {
             variables: { committeeId: sime.committee_id }
@@ -49,6 +56,24 @@ const CommitteeList = props => {
     useEffect(() => {
         if (committee) setCommitteeVal(committee.getCommittee);
     }, [committee])
+
+    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+
+    const [deleteCommittee] = useMutation(DELETE_COMMITTEE, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_COMMITTEES_QUERY,
+                variables: { projectId: sime.project_id }
+            });
+            data.getCommittees = data.getCommittees.filter((e) => e.id !== sime.committee_id);
+            props.deleteCommitteesStateUpdate(sime.committee_id);
+            deleteAssignedTask({variables: {committeeId: sime.committee_id}});
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
+        },
+        variables: {
+            committeeId: sime.committee_id
+        }
+    });
 
     const closeModal = () => {
         setVisible(false);
@@ -87,12 +112,24 @@ const CommitteeList = props => {
     const deleteHandler = () => {
         closeModal();
         closeModalFormEdit();
-        Alert.alert('Are you sure?', 'Do you really want to delete this?', [
+        Alert.alert('Are you sure?', 'Do you really want to delete this committee?', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
                 style: 'destructive',
-                onPress: props.deleteFunction
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this committee, it's also delete all related to this committee", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
+                style: 'destructive',
+                onPress: deleteCommittee
             }
         ]);
     };
@@ -120,11 +157,6 @@ const CommitteeList = props => {
     if (loadingPosition) {
         return <CenterSpinner />;
     }
-
-    if (loadingCommittee) {
-
-    }
-
 
     return (
         <Provider theme={theme}>

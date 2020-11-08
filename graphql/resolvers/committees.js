@@ -30,6 +30,18 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async getCommitteesByOrganization(_, { organizationId }, context) {
+            try {
+                const committees = await Committee.find({ organization_id: organizationId });
+                if (committees) {
+                    return committees;
+                } else {
+                    throw new Error('Committees not found');
+                }
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
         async getCommitteesByStaffProject(_, { staffId, projectId }, context) {
             try {
                 const committees = await Committee.findOne({ staff_id: staffId, project_id: projectId });
@@ -76,7 +88,7 @@ module.exports = {
         },
     },
     Mutation: {
-        async addCommittee(_, { staffId, positionId, divisionId, projectId, order }, context) {
+        async addCommittee(_, { staffId, positionId, divisionId, projectId, organizationId, order }, context) {
             const { valid, errors } = validateCommitteeInput(staffId, divisionId, positionId);
             if (!valid) {
                 throw new UserInputError('Error', { errors });
@@ -86,6 +98,7 @@ module.exports = {
                 position_id: positionId,
                 division_id: divisionId,
                 project_id: projectId,
+                organization_id: organizationId,
                 order,
                 createdAt: new Date().toISOString()
             });
@@ -112,6 +125,28 @@ module.exports = {
                 const committee = await Committee.findById(committeeId);
                 await committee.delete();
                 return 'Committee deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteCommitteeByDivision(_, { divisionId }, context) {
+            try {
+                const committee = await Committee.find({ division_id: divisionId });
+                committee.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteCommitteeByStaff(_, { staffId }, context) {
+            try {
+                const committee = await Committee.find({ staff_id: staffId });
+                committee.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
             } catch (err) {
                 throw new Error(err);
             }

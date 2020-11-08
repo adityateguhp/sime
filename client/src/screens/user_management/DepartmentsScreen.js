@@ -11,7 +11,16 @@ import FormEditDepartment from '../../components/user_management/FormEditDepartm
 import DepartmentCard from '../../components/user_management/DepartmentCard';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
-import { FETCH_DEPARTMENTS_QUERY, DELETE_DEPARTMENT, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
+import {
+    FETCH_DEPARTMENTS_QUERY,
+    DELETE_DEPARTMENT,
+    FETCH_DEPARTMENT_QUERY,
+    DELETE_STAFF_BYDEPARTMENT,
+    DELETE_COMMITTEE_BYSTAFF,
+    FETCH_STAFFSBYDEPARTMENT_QUERY,
+    FETCH_COMMITTEES_BYORGANIZATION_QUERY,
+    DELETE_ASSIGNED_TASK_BYCOMMITTEE
+} from '../../util/graphql';
 
 const DepartmentsScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
@@ -37,6 +46,9 @@ const DepartmentsScreen = ({ navigation }) => {
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
     const [departmentsValue, setDepartmentsValue] = useState([]);
+    const [departmentVal, setDepartmentVal] = useState(null);
+    const [staffsVal, setStaffsVal] = useState([]);
+    const [committeesVal, setCommitteesVal] = useState([]);
 
     const { data: departments, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
@@ -55,7 +67,17 @@ const DepartmentsScreen = ({ navigation }) => {
             variables: { departmentId: sime.department_id },
         });
 
-    const [departmentVal, setDepartmentVal] = useState(null);
+    const [loadStaffData, { called: called2, data: staffByDepartment, error: error3 }] = useLazyQuery(
+        FETCH_STAFFSBYDEPARTMENT_QUERY,
+        {
+            variables: { departmentId: sime.department_id },
+        });
+
+    const [loadCommitteeData, { called: called3, data: committeesByorganization, error: error4 }] = useLazyQuery(
+        FETCH_COMMITTEES_BYORGANIZATION_QUERY,
+        {
+            variables: { organizationId: sime.user.id },
+        });
 
     let TouchableCmp = TouchableOpacity;
 
@@ -80,6 +102,14 @@ const DepartmentsScreen = ({ navigation }) => {
         if (department) setDepartmentVal(department.getDepartment);
     }, [department])
 
+    useEffect(() => {
+        if (staffByDepartment) setStaffsVal(staffByDepartment.getStaffsByDepartment);
+    }, [staffByDepartment])
+
+    useEffect(() => {
+        if (committeesByorganization) setCommitteesVal(committeesByorganization.getCommitteesByOrganization);
+    }, [committeesByorganization])
+
     const closeModal = () => {
         setVisible(false);
     }
@@ -97,6 +127,8 @@ const DepartmentsScreen = ({ navigation }) => {
         sime.setDepartment_name(name);
         sime.setDepartment_id(id)
         loadExistData();
+        loadStaffData();
+        loadCommitteeData();
     }
 
     const openForm = () => {
@@ -111,6 +143,28 @@ const DepartmentsScreen = ({ navigation }) => {
     const departmentId = sime.department_id;
     const organizationId = sime.user.id;
 
+    const [deleteCommitteeByStaff] = useMutation(DELETE_COMMITTEE_BYSTAFF);
+
+    const deleteCommitteeByStaffHandler = () => {
+        staffsVal.map((staff) => {
+            deleteCommitteeByStaff(({
+                variables: { staffId: staff.id },
+            }))
+        })
+    };
+
+    const [deleteAssignedByCommmittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+
+    const deleteAssignedByCommmitteeHandler = () => {
+        committeesVal.map((committee) => {
+            deleteAssignedByCommmittee(({
+                variables: { committeeId: committee.id },
+            }))
+        })
+    };
+
+    const [deleteStaffByDepartment] = useMutation(DELETE_STAFF_BYDEPARTMENT);
+
     const [deleteDepartment] = useMutation(DELETE_DEPARTMENT, {
         update(proxy) {
             const data = proxy.readQuery({
@@ -118,7 +172,10 @@ const DepartmentsScreen = ({ navigation }) => {
                 variables: { organizationId }
             });
             departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
-            deleteDepartmentsStateUpdate(departmentId)
+            deleteDepartmentsStateUpdate(departmentId);
+            deleteStaffByDepartment({ variables: { departmentId } });
+            deleteCommitteeByStaffHandler();
+            deleteAssignedByCommmitteeHandler();
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId } });
         },
         variables: {
@@ -134,6 +191,17 @@ const DepartmentsScreen = ({ navigation }) => {
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
+                style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this department, it's also delete all staffs inside this department and all related to the staffs", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
                 style: 'destructive',
                 onPress: deleteDepartment
             }
@@ -188,12 +256,12 @@ const DepartmentsScreen = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-          onRefresh();
+            onRefresh();
         });
-    
+
         // Return the function to unsubscribe from the event so it gets removed on unmount
         return unsubscribe;
-      }, [navigation]);
+    }, [navigation]);
 
 
     if (error1) {
@@ -203,6 +271,16 @@ const DepartmentsScreen = ({ navigation }) => {
 
     if (called & error2) {
         console.error(error2);
+        return <Text>Error</Text>;
+    }
+
+    if (called2 & error3) {
+        console.error(error3);
+        return <Text>Error</Text>;
+    }
+    
+    if (called3 & error4) {
+        console.error(error4);
         return <Text>Error</Text>;
     }
 

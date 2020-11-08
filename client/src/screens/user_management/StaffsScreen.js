@@ -16,7 +16,8 @@ import {
     DELETE_STAFF,
     FETCH_STAFF_QUERY,
     FETCH_DEPARTMENTS_QUERY,
-    DELETE_COMMITTEE,
+    DELETE_COMMITTEE_BYSTAFF,
+    DELETE_ASSIGNED_TASK_BYCOMMITTEE,
     FETCH_COMMITTEES_BYSTAFF_QUERY,
     RESET_PASSWORD_STAFF_MUTATION
 } from '../../util/graphql';
@@ -150,15 +151,19 @@ const StaffsScreen = ({ navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const [deleteCommittee] = useMutation(DELETE_COMMITTEE);
+    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
-    const deleteAllComiteeByStaffId = () => {
-        commiteesVal.map((data) => {
-            deleteCommittee(({ variables: { committeeId: data.id } }))
+    const deleteAssignedTaskByCommittee = () => {
+        commiteesVal.map((committee) => {
+            deleteAssignedTask(({
+                variables: { committeeId: committee.id },
+            }))
         })
     };
 
     const staffId = sime.staff_id;
+
+    const [deleteCommittee] = useMutation(DELETE_COMMITTEE_BYSTAFF);
 
     const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
@@ -168,8 +173,9 @@ const StaffsScreen = ({ navigation }) => {
 
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
-            deleteStaffsStateUpdate(staffId)
-            deleteAllComiteeByStaffId();
+            deleteStaffsStateUpdate(staffId);
+            deleteCommittee({variables: {staffId}})
+            deleteAssignedTaskByCommittee();
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
         },
         variables: {

@@ -19,7 +19,8 @@ import {
     DELETE_DIVISION,
     FETCH_DIVISION_QUERY,
     FETCH_COMMITTEES_IN_DIVISION_QUERY,
-    DELETE_COMMITTEE,
+    DELETE_COMMITTEE_BYDIVISION,
+    DELETE_ASSIGNED_TASK_BYCOMMITTEE,
     FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY
 } from '../../util/graphql';
 
@@ -295,16 +296,17 @@ const CommitteeListStaffScreen = ({ navigation }) => {
 
     const divisionId = sime.division_id;
 
-    const [deleteCommittee] = useMutation(DELETE_COMMITTEE);
+    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
-    const deleteAllComiteeInDivision = () => {
+    const deleteAssignedTaskByCommittee = () => {
         committeeDivisionVal.map((committee) => {
-            deleteCommittee(({
+            deleteAssignedTask(({
                 variables: { committeeId: committee.id },
             }))
-            deleteCommitteesStateUpdate(committee.id);
         })
     };
+
+    const [deleteCommittee] = useMutation(DELETE_COMMITTEE_BYDIVISION);
 
     const [deleteDivision] = useMutation(DELETE_DIVISION, {
         update(proxy) {
@@ -314,7 +316,12 @@ const CommitteeListStaffScreen = ({ navigation }) => {
             });
             data.getDivisions = data.getDivisions.filter((d) => d.id !== divisionId);
             deleteDivisionsStateUpdate(divisionId);
-            deleteAllComiteeInDivision();
+            deleteCommittee({ 
+                update(){
+                    onRefresh();
+            },
+            variables: {divisionId}})
+            deleteAssignedTaskByCommittee();
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
@@ -353,7 +360,7 @@ const CommitteeListStaffScreen = ({ navigation }) => {
     };
 
     const confirmToDeleteAll = () => {
-        Alert.alert('Wait... are you really sure?', "By deleting this division, it's also delete all committees inside this division", [
+        Alert.alert('Wait... are you really sure?', "By deleting this division, it's also delete all committees inside this division and all related to the committees", [
             { text: 'Cancel', style: 'default' },
             {
                 text: 'Agree',

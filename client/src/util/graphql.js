@@ -342,6 +342,12 @@ export const DELETE_STAFF = gql`
   }
 `;
 
+export const DELETE_STAFF_BYDEPARTMENT = gql`
+  mutation deleteStaffByDepartment($departmentId: ID!) {
+    deleteStaffByDepartment(departmentId: $departmentId)
+  }
+`;
+
 export const FETCH_PROJECTS_QUERY = gql`
 query($organizationId: ID!){
     getProjects(organizationId: $organizationId){
@@ -717,6 +723,7 @@ export const FETCH_COMMITTEES_QUERY = gql`
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
@@ -731,6 +738,7 @@ export const FETCH_COMMITTEES_BYSTAFF_QUERY = gql`
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
@@ -745,12 +753,27 @@ export const FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY = gql`
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
   }
 `;
 
+export const FETCH_COMMITTEES_BYORGANIZATION_QUERY = gql`
+  query($organizationId: ID!){
+    getCommitteesByOrganization(organizationId: $organizationId){
+      id
+      staff_id
+      position_id
+      division_id
+      project_id
+      organization_id
+      order
+      createdAt
+  }
+  }
+`;
 
 export const FETCH_COMMITTEE_QUERY = gql`
    query($committeeId: ID!) {
@@ -760,6 +783,7 @@ export const FETCH_COMMITTEE_QUERY = gql`
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
@@ -774,6 +798,7 @@ export const FETCH_HEADPROJECT_QUERY = gql`
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
@@ -788,19 +813,22 @@ export const FETCH_COMMITTEES_IN_DIVISION_QUERY = gql`
       position_id
       division_id
       project_id
+      organization_id
+      order
       createdAt
   }
   }
 `;
 
 export const ADD_COMMITTEE_MUTATION = gql`
-  mutation addCommittee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!, $order: String!) {
-    addCommittee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId, order: $order) {
+  mutation addCommittee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!, $organizationId: ID!, $order: String!) {
+    addCommittee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId, organizationId: $organizationId, order: $order) {
       id
       staff_id
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
@@ -815,6 +843,7 @@ export const UPDATE_COMMITTEE_MUTATION = gql`
       position_id
       division_id
       project_id
+      organization_id
       order
       createdAt
   }
@@ -824,6 +853,18 @@ export const UPDATE_COMMITTEE_MUTATION = gql`
 export const DELETE_COMMITTEE = gql`
   mutation deleteCommittee($committeeId: ID!) {
     deleteCommittee(committeeId: $committeeId)
+  }
+`;
+
+export const DELETE_COMMITTEE_BYDIVISION = gql`
+  mutation deleteCommitteeByStaff($divisionId: ID!) {
+    deleteCommitteeByDivision(divisionId: $divisionId)
+  }
+`;
+
+export const DELETE_COMMITTEE_BYSTAFF = gql`
+  mutation deleteCommitteeByStaff($staffId: ID!) {
+    deleteCommitteeByStaff(staffId: $staffId)
   }
 `;
 
@@ -1295,6 +1336,19 @@ export const FETCH_ASSIGNED_TASK_QUERY = gql`
 `;
 
 
+export const FETCH_ASSIGNED_TASKS_QUERY_BYCOMMITTEE = gql`
+  query($committeeId: ID!){
+    getAssignedTasksByCommittee(committeeId: $committeeId){
+      id
+      roadmap_id
+      task_id
+      committee_id
+      createdAt
+  }
+  }
+`;
+
+
 export const ASSIGNED_TASK_MUTATION = gql`
   mutation assignedTask($roadmapId: ID!, $taskId: ID!, $committeeId: ID!) {
     assignedTask(roadmapId: $roadmapId, taskId: $taskId, committeeId: $committeeId) {
@@ -1310,5 +1364,11 @@ export const ASSIGNED_TASK_MUTATION = gql`
 export const DELETE_ASSIGNED_TASK = gql`
   mutation deleteAssignedTask($assignedId: ID!) {
     deleteAssignedTask(assignedId: $assignedId)
+  }
+`;
+
+export const DELETE_ASSIGNED_TASK_BYCOMMITTEE = gql`
+  mutation deleteAssignedTaskByCommittee($committeeId: ID!) {
+    deleteAssignedTaskByCommittee(committeeId: $committeeId)
   }
 `;

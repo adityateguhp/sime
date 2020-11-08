@@ -17,6 +17,10 @@ const committeeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'projects'
     },
+    organization_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'organizations'
+    },
     order:{
         type: Schema.Types.String,
         ref: 'position'

@@ -33,6 +33,7 @@ const FormCommittee = props => {
         positionId: '',
         divisionId: '',
         projectId: sime.project_id,
+        organizationId: sime.user_type === "Organization"? sime.user.id : sime.user.organization_id,
         order: ''
     });
 

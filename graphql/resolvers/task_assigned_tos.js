@@ -28,10 +28,22 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async getAssignedTasksByCommittee(_, { committeeId }) {
+            try {
+                const assignedTask = await Task_assigned_to.find({ committee_id: committeeId });
+                if (assignedTask) {
+                    return assignedTask;
+                } else {
+                    throw new Error('Not found');
+                }
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
     },
     Mutation: {
         async assignedTask(_, { roadmapId, taskId, committeeId }, context) {
-          
+
             const newAssign = new Task_assigned_to({
                 roadmap_id: roadmapId,
                 task_id: taskId,
@@ -47,6 +59,17 @@ module.exports = {
             try {
                 const assign = await Task_assigned_to.findById(assignedId);
                 await assign.delete();
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteAssignedTaskByCommittee(_, { committeeId }, context) {
+            try {
+                const committee = await Task_assigned_to.find({ committee_id: committeeId });
+                committee.map((data) => {
+                    data.deleteOne()
+                })
                 return 'Deleted successfully';
             } catch (err) {
                 throw new Error(err);
