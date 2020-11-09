@@ -31,10 +31,12 @@ const FormStaffDepartment = props => {
         phone_number_error: '',
     });
 
+    const departmentId = props.departmentId;
+
     const [values, setValues] = useState({
         name: '',
         position_name: '',
-        department_id: sime.department_id,
+        department_id: departmentId,
         email: '',
         phone_number: '',
         password: '12345678',
@@ -102,17 +104,16 @@ const FormStaffDepartment = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFSBYDEPARTMENT_QUERY,
-                variables: { departmentId: sime.department_id }
+                variables: { departmentId }
             });
             data.getStaffsByDepartment = [result.data.addStaff, ...data.getStaffsByDepartment];
             props.addStaffsStateUpdate(result.data.addStaff)
-            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId: sime.department_id } });
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId } });
             values.name = '';
             values.position_name = '';
             values.email = '';
             values.phone_number = '';
             values.picture = '';
-            values.department_id = '';
             props.closeModalForm();
         },
         onError(err) {

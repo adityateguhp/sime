@@ -4,7 +4,7 @@ import { Chip, Text } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
 import { FETCH_STAFF_QUERY, DELETE_ASSIGNED_TASK, FETCH_ASSIGNED_TASKS_QUERY } from '../../util/graphql';
-import CenterSpinner from '../common/CenterSpinner';
+import CenterSpinnerSmall from '../common/CenterSpinnerSmall';
 
 const CommitteeChip = props => {
     let TouchableCmp = TouchableOpacity;
@@ -53,7 +53,7 @@ const CommitteeChip = props => {
 
 
     if (loadingStaff) {
-        return <CenterSpinner />;
+        return <CenterSpinnerSmall />;
     }
 
     return (

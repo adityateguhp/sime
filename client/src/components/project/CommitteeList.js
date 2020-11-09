@@ -13,7 +13,7 @@ import {
     DELETE_COMMITTEE, 
     DELETE_ASSIGNED_TASK_BYCOMMITTEE
 } from '../../util/graphql';
-import CenterSpinner from '../common/CenterSpinner';
+import CenterSpinnerSmall from '../common/CenterSpinnerSmall';
 import ModalProfile from '../common/ModalProfile';
 import FormEditCommittee from './FormEditCommittee';
 import { SimeContext } from '../../context/SimePovider';
@@ -151,11 +151,11 @@ const CommitteeList = props => {
     }
 
     if (loadingStaff) {
-        return <CenterSpinner />;
+        return <CenterSpinnerSmall />;
     }
 
     if (loadingPosition) {
-        return <CenterSpinner />;
+        return <CenterSpinnerSmall />;
     }
 
     return (

@@ -4,15 +4,14 @@ import { Text, List, Subheading, Divider, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
-import ModalProfile from '../../components/common/ModalProfile';
 import { SimeContext } from '../../context/SimePovider';
 import ExternalList from '../../components/event/ExternalList';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
-import { FETCH_EVENT_QUERY, FETCH_EXBYTYPE_QUERY, FETCH_EXTERNAL_QUERY } from '../../util/graphql';
+import { FETCH_EVENT_QUERY, FETCH_EXBYTYPE_QUERY } from '../../util/graphql';
 
 const EventOverviewScreen = ({ navigation }) => {
   const sime = useContext(SimeContext);
@@ -26,40 +25,11 @@ const EventOverviewScreen = ({ navigation }) => {
     picture: ''
   });
 
-  const [external, setExternal] = useState({
-    id: '',
-    name: '',
-    email: '',
-    phone_number: '',
-    picture: ''
-  });
-
   const [guest, setGuest] = useState([])
 
   const [sponsor, setSponsor] = useState([])
 
   const [media, setMedia] = useState([])
-
-  const [visible, setVisible] = useState(false);
-
-  const selectInfoHandler = (id) => {
-    navigation.navigate('External Profile', {
-      externalId: id
-    });
-    setVisible(false);
-  };
-
-  const openModal = (id) => {
-    sime.setExternal_id(id);
-    loadExternalData();
-    if (loadingExternalData === false || externalData) {
-      setVisible(true);
-    }
-  }
-
-  const closeModal = () => {
-    setVisible(false);
-  }
 
   const { data: eventData, error: errorEventData, loading: loadingEventData, refetch: refetchEvent } = useQuery(
     FETCH_EVENT_QUERY, {
@@ -115,26 +85,6 @@ const EventOverviewScreen = ({ navigation }) => {
     }
   });
 
-  const [loadExternalData, { called: calledExternalData, data: externalData, error: errorExternalData, loading: loadingExternalData }] = useLazyQuery(
-    FETCH_EXTERNAL_QUERY, {
-    variables: {
-      externalId: sime.external_id
-    },
-    notifyOnNetworkStatusChange: true,
-  });
-
-  useEffect(() => {
-    if (externalData) {
-      setExternal({
-        id: externalData.getExternal.id,
-        name: externalData.getExternal.name,
-        picture: externalData.getExternal.picture,
-        phone_number: externalData.getExternal.phone_number,
-        email: externalData.getExternal.email
-      })
-    }
-  }, [externalData])
-
   const onRefresh = () => {
     refetchEvent();
     refetchGuest();
@@ -171,12 +121,6 @@ const EventOverviewScreen = ({ navigation }) => {
     return <Text>errorMediaPartnerData</Text>;
   }
 
-  if (calledExternalData && errorExternalData) {
-    console.error(errorExternalData);
-    return <Text>errorExternalData</Text>;
-  }
-
-
   const startDate = moment(event.start_date).format('ddd, MMM D YYYY');
   const endDate = moment(event.end_date).format('ddd, MMM D YYYY');
 
@@ -202,11 +146,11 @@ const EventOverviewScreen = ({ navigation }) => {
             guest.length === 0 ? <Text>-</Text> :
               guest.map((Guest) => (
                 <ExternalList
-                  key={Guest.id}
+                  id={Guest.id}
                   name={Guest.name}
                   picture={Guest.picture}
                   size={35}
-                  onSelect={() => { openModal(Guest.id) }}
+                  navigation={navigation}
                 />
               ))
           }
@@ -216,11 +160,11 @@ const EventOverviewScreen = ({ navigation }) => {
             sponsor.length === 0 ? <Text>-</Text> :
               sponsor.map((Sponsor) => (
                 <ExternalList
-                  key={Sponsor.id}
+                  id={Sponsor.id}
                   name={Sponsor.name}
                   picture={Sponsor.picture}
                   size={35}
-                  onSelect={() => { openModal(Sponsor.id) }}
+                  navigation={navigation}
                 />
               ))
           }
@@ -230,11 +174,11 @@ const EventOverviewScreen = ({ navigation }) => {
             media.length === 0 ? <Text>-</Text> :
               media.map((Media) => (
                 <ExternalList
-                  key={Media.id}
+                  id={Media.id}
                   name={Media.name}
                   picture={Media.picture}
                   size={35}
-                  onSelect={() => { openModal(Media.id) }}
+                  navigation={navigation}
                 />
               ))
           }
@@ -276,18 +220,6 @@ const EventOverviewScreen = ({ navigation }) => {
           />
         </View>
       </ScrollView>
-      <ModalProfile
-        visible={visible}
-        onBackButtonPress={closeModal}
-        onBackdropPress={closeModal}
-        name={external.name}
-        email={external.email}
-        phone_number={external.phone_number}
-        picture={external.picture}
-        positionName={false}
-        onPressInfo={() => { selectInfoHandler(external.id) }}
-        onPressIn={closeModal}
-      />
     </Provider>
   );
 }

@@ -157,9 +157,13 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const deleteAssignedByCommmitteeHandler = () => {
         committeesVal.map((committee) => {
-            deleteAssignedByCommmittee(({
-                variables: { committeeId: committee.id },
-            }))
+            staffsVal.map((staff) => {
+                if (committee.staff_id === staff.id) {
+                    deleteAssignedByCommmittee(({
+                        variables: { committeeId: committee.id },
+                    }))
+                }
+            })
         })
     };
 
@@ -278,7 +282,7 @@ const DepartmentsScreen = ({ navigation }) => {
         console.error(error3);
         return <Text>Error</Text>;
     }
-    
+
     if (called3 & error4) {
         console.error(error4);
         return <Text>Error</Text>;

@@ -21,7 +21,7 @@ import {
     RESET_PASSWORD_STAFF_MUTATION
 } from '../../util/graphql';
 
-const StaffsinDepartmentScreen = ({ navigation }) => {
+const StaffsinDepartmentScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -62,10 +62,13 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
     const [staffVal, setStaffVal] = useState(null);
     const [commiteesVal, setCommitteesVal] = useState([])
 
+    const departmentId = route.params?.departmentId;
+    const staffId = sime.staff_id;
+
     const { data: staffs, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_STAFFSBYDEPARTMENT_QUERY, {
         variables: {
-            departmentId: sime.department_id,
+            departmentId
         },
         notifyOnNetworkStatusChange: true,
         onCompleted: () => {
@@ -133,9 +136,6 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const staffId = sime.staff_id;
-    const departmentId = sime.department_id;
-
     const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
     const deleteAssignedTaskByCommitteeHandler = () => {
@@ -152,13 +152,13 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFSBYDEPARTMENT_QUERY,
-                variables: { departmentId: departmentId }
+                variables: { departmentId }
             });
             staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
             deleteCommitteeByDepartment({variables: {staffId}})
             deleteAssignedTaskByCommitteeHandler();
-            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId: departmentId } });
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId } });
         },
         variables: {
             staffId
@@ -373,6 +373,7 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
             </Portal>
             <FABbutton Icon="plus" label="staff" onPress={openForm} />
             <FormStaffDepartment
+                departmentId={departmentId}
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
