@@ -10,6 +10,7 @@ import FormChangePasswordStaff from '../../components/user_profile/FormChangePas
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import HeaderButton from '../../components/common/HeaderButton';
+import CenterSpinner from '../../components/common/CenterSpinner';
 
 const StaffIndividualProfileScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
@@ -119,18 +120,26 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
         return <Text>Error 2</Text>;
     }
 
+    if (loading1) {
+        return <CenterSpinner />;
+    }
+
+    if (loading2) {
+        return <CenterSpinner />;
+    }
+
     return (
         <Provider theme={theme}>
-            <ScrollView 
-            style={styles.screen}
-            refreshControl={
-              <RefreshControl
-                refreshing={loading1 && loading2}
-                onRefresh={onRefresh} />
-            }
+            <ScrollView
+                style={styles.screen}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1 && loading2}
+                        onRefresh={onRefresh} />
+                }
             >
                 <View style={styles.profilePicture}>
-                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />
+                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />
                     <Headline>{staff.getStaff.name}</Headline>
                 </View>
                 <Divider />

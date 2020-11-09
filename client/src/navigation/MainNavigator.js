@@ -117,7 +117,7 @@ function DashboardStackScreen({ route, navigation }) {
             >
               <Avatar.Image
                 size={40}
-                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
+                source={userPict ? { uri: userPict } : require('../assets/avatar.png')}
               />
             </TouchableOpacity>
           ),
@@ -176,7 +176,7 @@ function DashboardStackStaffScreen({ route, navigation }) {
             >
               <Avatar.Image
                 size={40}
-                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
+                source={userPict ? { uri: userPict } : require('../assets/avatar.png')}
               />
             </TouchableOpacity>
           ),
@@ -237,23 +237,23 @@ function ProjectStackSceen({ route, navigation }) {
             >
               <Avatar.Image
                 size={40}
-                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
+                source={userPict ? { uri: userPict } : require('../assets/avatar.png')}
               />
             </TouchableOpacity>
           ),
         }}
       />
       <ProjectsStack.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />
-      <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
+      <ProjectsStack.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}  numberOfLines={1} ellipsizeMode='tail'>Committee Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Committee Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Event Detail" component={TopTabEvents} options={{
@@ -273,7 +273,7 @@ function ProjectStackSceen({ route, navigation }) {
       <ProjectsStack.Screen name="External Profile" component={ExternalProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Information</Text>
           </View>),
       }} />
       <ProjectsStack.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
@@ -333,7 +333,7 @@ function ProjectStackStaffSceen({ route, navigation }) {
             >
               <Avatar.Image
                 size={40}
-                source={userPict === null || userPict === '' ? require('../assets/avatar.png') : { uri: userPict }}
+                source={userPict ? { uri: userPict } : require('../assets/avatar.png')}
               />
             </TouchableOpacity>
           ),
@@ -343,13 +343,13 @@ function ProjectStackStaffSceen({ route, navigation }) {
       <ProjectsStackStaff.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Committee Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Committee Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Event Detail" component={TopTabEvents} options={{
@@ -369,7 +369,7 @@ function ProjectStackStaffSceen({ route, navigation }) {
       <ProjectsStackStaff.Screen name="External Profile" component={ExternalProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
@@ -481,7 +481,7 @@ function UsersManagementStackScreen({ route, navigation }) {
       <UsersManagementStack.Screen name="Staff Profile" component={StaffProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Staff Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Staff Information</Text>
           </View>),
       }} />
     </UsersManagementStack.Navigator>
@@ -574,6 +574,40 @@ function StaffIndividualProfileStackScreen({ route, navigation }) {
       }} />
 
     </StaffIndividualProfileStack.Navigator>
+  );
+}
+
+const StaffOrganizationProfileStack = createStackNavigator();
+
+function StaffOrganizationProfileStackScreen({ route, navigation }) {
+  return (
+    <StaffOrganizationProfileStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.primaryColor,
+        },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+          fontWeight: 'bold'
+        }
+      }}
+    >
+      <StaffOrganizationProfileStack.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
+        headerTitle: () => (
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Your Organization Information</Text>
+          </View>),
+        headerLeft: () => (
+          <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item
+              iconName="arrow-left"
+              onPress={() => { navigation.navigate('Dashboard') }}
+            />
+          </HeaderButtons>
+        )
+      }} />
+
+    </StaffOrganizationProfileStack.Navigator>
   );
 }
 
@@ -707,12 +741,19 @@ export default function MainNavigator() {
                 component={BottomTabsStaff}
               />
               <Drawer.Screen
-              name="Staff Profile"
-              component={StaffIndividualProfileStackScreen}
-              options={{
-                gestureEnabled: false,
-              }}
-            />
+                name="Staff Profile"
+                component={StaffIndividualProfileStackScreen}
+                options={{
+                  gestureEnabled: false,
+                }}
+              />
+               <Drawer.Screen
+                name="Staff Organization Profile"
+                component={StaffOrganizationProfileStackScreen}
+                options={{
+                  gestureEnabled: false,
+                }}
+              />
             </Drawer.Navigator>
           </>)
     ) : (

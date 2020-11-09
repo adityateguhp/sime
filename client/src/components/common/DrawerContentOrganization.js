@@ -89,7 +89,7 @@ const DrawerContentOrganization = props => {
                             }}
                         >
                             <Avatar.Image
-                                source={userData.picture === null || userData.picture === '' ? require('../../assets/avatar.png') : { uri: userData.picture }}
+                                source={userData.picture? { uri: userData.picture } : require('../../assets/avatar.png')}
                                 size={60}
                             />
                         </TouchableOpacity>

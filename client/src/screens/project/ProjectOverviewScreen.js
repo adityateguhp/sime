@@ -250,20 +250,20 @@ const ProjectOverviewScreen = ({ navigation }) => {
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}
-              source={project.picture === null || project.picture === '' ? require('../../assets/folder.png') : { uri: project.picture }}
+              source={project.picture ? { uri: project.picture } : require('../../assets/folder.png')}
             />
           </View>
           <Subheading style={{ fontWeight: 'bold' }}>Organization</Subheading>
           <List.Item
-            title={organization.name === null || organization.name === '' ? "-" : organization.name}
-            left={() => <Avatar.Image size={35} source={organization.picture === null || organization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.picture }} />}
+            title={organization.name ? organization.name : "-"}
+            left={() => <Avatar.Image size={35} source={organization.picture ? { uri: organization.picture } : require('../../assets/avatar.png')} />}
             onPress={() => { selectOrganizationHandler(project.organization_id) }}
           />
           <Subheading style={{ fontWeight: 'bold' }}>Head of Project</Subheading>
           <List.Item
-            title={staff.name === null || staff.name === '' ? "-" : staff.name}
-            left={() => <Avatar.Image size={35} source={staff.picture === null || staff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.picture }} />}
-            onPress={openModal}
+            title={staff.name ? staff.name : "-"}
+            left={() => <Avatar.Image size={35} source={staff.picture ? { uri: staff.picture } : require('../../assets/avatar.png')} />}
+            onPress={headProjectData.getHeadProject? openModal : null}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
@@ -274,7 +274,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Project Description</Subheading>
           <List.Item
-            title={project.description === null || project.description === '' ? "-" : project.description}
+            title={project.description ? project.description : "-"}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />
@@ -291,7 +291,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
         </View>
       </ScrollView>
       {
-        headProjectData.getHeadProject === null ? null :
+        headProjectData.getHeadProject ?
           <ModalProfile
             visible={visible}
             onBackButtonPress={closeModal}
@@ -304,7 +304,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
             positionName={true}
             onPressInfo={() => { selectInfoHandler(headProject.id) }}
             onPressIn={closeModal}
-          />
+          /> : null
       }
 
     </Provider>

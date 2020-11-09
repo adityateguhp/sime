@@ -68,20 +68,35 @@ const FormEvent = props => {
         setShowEndDate(false);
     };
 
-    const options = {
-        title: 'Select Event Cover Image',
+    const options1 = {
+        title: 'Choose Event Cover Image',
         storageOptions: {
-          skipBackup: true,
-          path: 'images',
+            skipBackup: true,
+            path: 'images',
         },
-        maxWidth: 500, 
+        maxWidth: 500,
         maxHeight: 500
-      };
+    };
+
+    const options2 = {
+        title: 'Change Event Cover Image',
+        customButtons: [{ name: 'remove', title: 'Remove Image...' }],
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
 
     const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
+        ImagePicker.showImagePicker(values.picture ? options2 : options1, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton) {
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -210,14 +225,14 @@ const FormEvent = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <TouchableCmp onPress={handleUpload}>
-                                        {values.picture === null || values.picture === '' ?
-                                            <View style={styles.imageUpload}>
-                                                <Icon name="image" size={70} color="black" />
-                                                <Text>Select Event Cover Image</Text>
-                                            </View>
-                                            :
+                                        {values.picture ?
                                             <View>
                                                 <Image source={{ uri: values.picture }} resizeMode="cover" style={styles.imageUploaded} />
+                                            </View>
+                                            :
+                                            <View style={styles.imageUpload}>
+                                                <Icon name="image" size={70} color="black" />
+                                                <Text>Choose Event Cover Image</Text>
                                             </View>
                                         }
                                     </TouchableCmp>
@@ -236,7 +251,7 @@ const FormEvent = props => {
                                                 onPress={showStartDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.start_date === null || values.start_date === '' ? 'FROM' : startDate}
+                                                {values.start_date ? startDate : 'FROM'}
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
@@ -244,7 +259,7 @@ const FormEvent = props => {
                                                 onPress={showEndDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.end_date === null || values.end_date === '' ? 'TO' : endDate}
+                                                {values.end_date ? endDate : 'TO'}
                                             </Button>
                                         </View>
                                     </View>

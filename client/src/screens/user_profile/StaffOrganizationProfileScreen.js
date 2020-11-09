@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { StyleSheet, ScrollView, View, RefreshControl } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 
 import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 import { theme } from '../../constants/Theme';
+import CenterSpinner from '../../components/common/CenterSpinner';
+import { SimeContext } from '../../context/SimePovider';
 
 const OrganizationProfileScreen = ({ route, navigation }) => {
+    
+    const sime = useContext(SimeContext);
+    
     const { data: organization, error: error1, loading: loading1, refetch: refetchOrganization } = useQuery(
         FETCH_ORGANIZATION_QUERY, {
         variables: {
-            organizationId: route.params?.organizationId
+            organizationId: route.params?.organizationId ? route.params?.organizationId : sime.user.organization_id
         },
         notifyOnNetworkStatusChange: true
     });
@@ -33,18 +38,22 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         return <Text>Error 1</Text>;
     }
 
+    if (loading1) {
+        return <CenterSpinner />;
+    }
+
     return (
         <Provider theme={theme}>
-            <ScrollView 
-            style={styles.screen}
-            refreshControl={
-              <RefreshControl
-                refreshing={loading1}
-                onRefresh={onRefresh} />
-            }
+            <ScrollView
+                style={styles.screen}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading1}
+                        onRefresh={onRefresh} />
+                }
             >
                 <View style={styles.profilePicture}>
-                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture === null || organization.getOrganization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.getOrganization.picture }} />
+                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture ? { uri: organization.getOrganization.picture } : require('../../assets/avatar.png')} />
                     <Headline>{organization.getOrganization.name}</Headline>
                 </View>
                 <Divider />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List} from 'react-native-paper';
+import { Avatar, List } from 'react-native-paper';
 
 const ExternalList = props => {
     let TouchableCmp = TouchableOpacity;
@@ -15,7 +15,7 @@ const ExternalList = props => {
                 <List.Item
                     style={props.style}
                     title={props.name}
-                    left={() => <Avatar.Image size={props.size} source={props.picture === null || props.picture === '' ? require('../../assets/avatar.png') : { uri: props.picture }} />}
+                    left={() => <Avatar.Image size={props.size} source={props.picture ? { uri: props.picture } : require('../../assets/avatar.png')} />}
                 />
             </View>
         </TouchableCmp>

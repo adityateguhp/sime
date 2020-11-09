@@ -43,24 +43,34 @@ const FormEditStaff = props => {
         organizationId: ''
     });
 
-    const options = {
+    const options1 = {
+        title: 'Choose Photo Profile',
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
+
+    const options2 = {
         title: 'Change Photo Profile',
         customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
         storageOptions: {
-          skipBackup: true,
-          path: 'images',
+            skipBackup: true,
+            path: 'images',
         },
-        maxWidth: 500, 
+        maxWidth: 500,
         maxHeight: 500
-      };
+    };
 
     const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
+        ImagePicker.showImagePicker(values.picture ? options2 : options1, response => {
             if (response.didCancel) {
                 return;
             }
 
-            if (response.customButton){
+            if (response.customButton) {
                 setValues({ ...values, picture: '' });
             }
 
@@ -108,11 +118,11 @@ const FormEditStaff = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
             });
             props.updateStaffsStateUpdate(result.data.updateStaff);
             props.updateStaffStateUpdate(result.data.updateStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: {organizationId: sime.user.id}});
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -121,7 +131,7 @@ const FormEditStaff = props => {
             const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
-            if (departmenError ||  staffNameError || positionNameError || emailError || phoneNumberError) {
+            if (departmenError || staffNameError || positionNameError || emailError || phoneNumberError) {
                 setErrors({
                     ...errors,
                     department_error: departmenError,
@@ -177,7 +187,7 @@ const FormEditStaff = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
                             <Appbar.Content title="Edit Staff" />
-                            {props.deleteButtonVisible? <Appbar.Action icon="delete" onPress={props.deleteButton} />: null}
+                            {props.deleteButtonVisible ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -188,21 +198,21 @@ const FormEditStaff = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture ? { uri: values.picture } : require('../../assets/avatar.png')} />
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
                                     </View>
                                     <View>
                                         <Dropdown
                                             label='Department'
-                                            value={values.department_id === '' || values.department_id !== sime.department_id? sime.department_id : values.department_id}
+                                            value={values.department_id === '' || values.department_id !== sime.department_id ? sime.department_id : values.department_id}
                                             data={props.departments}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
                                             onChangeText={(val) => onChange('department_id', val, 'department_error')}
                                             useNativeDriver={true}
                                             error={errors.department_error}
-                                            />
-                                            {errors.department_error ? <Text style={styles.error}>{errors.department_error}</Text> : null}
+                                        />
+                                        {errors.department_error ? <Text style={styles.error}>{errors.department_error}</Text> : null}
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput

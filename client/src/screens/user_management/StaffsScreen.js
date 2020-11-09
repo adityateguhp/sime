@@ -151,11 +151,11 @@ const StaffsScreen = ({ navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+    const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
-    const deleteAssignedTaskByCommittee = () => {
+    const deleteAssignedTaskByCommitteeHandler = () => {
         commiteesVal.map((committee) => {
-            deleteAssignedTask(({
+            deleteAssignedTaskByCommittee(({
                 variables: { committeeId: committee.id },
             }))
         })
@@ -163,7 +163,7 @@ const StaffsScreen = ({ navigation }) => {
 
     const staffId = sime.staff_id;
 
-    const [deleteCommittee] = useMutation(DELETE_COMMITTEE_BYSTAFF);
+    const [deleteCommitteeByDepartment] = useMutation(DELETE_COMMITTEE_BYSTAFF);
 
     const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
@@ -174,8 +174,8 @@ const StaffsScreen = ({ navigation }) => {
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
-            deleteCommittee({variables: {staffId}})
-            deleteAssignedTaskByCommittee();
+            deleteCommitteeByDepartment({variables: {staffId}})
+            deleteAssignedTaskByCommitteeHandler();
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
         },
         variables: {
@@ -210,6 +210,17 @@ const StaffsScreen = ({ navigation }) => {
         ]);
     };
 
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this staff, it's also delete all related to this staff", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
+                style: 'destructive',
+                onPress: deleteStaff
+            }
+        ]);
+    };
+
     const resetPasswordHandler = () => {
         closeModal();
         Alert.alert('Are you sure?', 'Do you really want to reset password this staff account?', [
@@ -218,17 +229,6 @@ const StaffsScreen = ({ navigation }) => {
                 text: 'Yes',
                 style: 'destructive',
                 onPress: resetPassword
-            }
-        ]);
-    };
-
-    const confirmToDeleteAll = () => {
-        Alert.alert('Wait... are you really sure?', "By deleting this staff, it's also delete all related to this staff", [
-            { text: 'Cancel', style: 'default' },
-            {
-                text: 'Agree',
-                style: 'destructive',
-                onPress: deleteStaff
             }
         ]);
     };

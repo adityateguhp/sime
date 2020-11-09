@@ -296,17 +296,17 @@ const CommitteeListStaffScreen = ({ navigation }) => {
 
     const divisionId = sime.division_id;
 
-    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+    const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
-    const deleteAssignedTaskByCommittee = () => {
+    const deleteAssignedTaskByCommitteeHandler = () => {
         committeeDivisionVal.map((committee) => {
-            deleteAssignedTask(({
+            deleteAssignedTaskByCommittee(({
                 variables: { committeeId: committee.id },
             }))
         })
     };
 
-    const [deleteCommittee] = useMutation(DELETE_COMMITTEE_BYDIVISION);
+    const [deleteCommitteeByDivision] = useMutation(DELETE_COMMITTEE_BYDIVISION);
 
     const [deleteDivision] = useMutation(DELETE_DIVISION, {
         update(proxy) {
@@ -316,12 +316,12 @@ const CommitteeListStaffScreen = ({ navigation }) => {
             });
             data.getDivisions = data.getDivisions.filter((d) => d.id !== divisionId);
             deleteDivisionsStateUpdate(divisionId);
-            deleteCommittee({ 
+            deleteCommitteeByDivision({ 
                 update(){
                     onRefresh();
             },
             variables: {divisionId}})
-            deleteAssignedTaskByCommittee();
+            deleteAssignedTaskByCommitteeHandler();
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {

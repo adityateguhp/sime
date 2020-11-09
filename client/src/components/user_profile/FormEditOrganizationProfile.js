@@ -38,24 +38,34 @@ const FormEditOrganizationProfile = props => {
         picture: null
     });
 
-    const options = {
+    const options1 = {
+        title: 'Choose Photo Profile',
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
+
+    const options2 = {
         title: 'Change Photo Profile',
         customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
         storageOptions: {
-          skipBackup: true,
-          path: 'images',
+            skipBackup: true,
+            path: 'images',
         },
-        maxWidth: 500, 
+        maxWidth: 500,
         maxHeight: 500
-      };
+    };
 
     const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
+        ImagePicker.showImagePicker(values.picture ? options2 : options1, response => {
             if (response.didCancel) {
                 return;
             }
 
-            if (response.customButton){
+            if (response.customButton) {
                 setValues({ ...values, picture: '' });
             }
 
@@ -173,8 +183,8 @@ const FormEditOrganizationProfile = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture ? { uri: values.picture } : require('../../assets/avatar.png')} />
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
                                     </View>
 
                                     <View style={styles.inputStyle}>

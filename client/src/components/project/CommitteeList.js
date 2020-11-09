@@ -57,7 +57,7 @@ const CommitteeList = props => {
         if (committee) setCommitteeVal(committee.getCommittee);
     }, [committee])
 
-    const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+    const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
     const [deleteCommittee] = useMutation(DELETE_COMMITTEE, {
         update(proxy) {
@@ -67,7 +67,7 @@ const CommitteeList = props => {
             });
             data.getCommittees = data.getCommittees.filter((e) => e.id !== sime.committee_id);
             props.deleteCommitteesStateUpdate(sime.committee_id);
-            deleteAssignedTask({variables: {committeeId: sime.committee_id}});
+            deleteAssignedTaskByCommittee({variables: {committeeId: sime.committee_id}});
             proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
@@ -171,7 +171,7 @@ const CommitteeList = props => {
                         style={styles.staffs}
                         title={staff.getStaff.name}
                         description={<Caption>{position.getPosition.name}</Caption>}
-                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />}
+                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
                     />
                 </View>
             </TouchableCmp>

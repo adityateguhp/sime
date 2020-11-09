@@ -34,6 +34,8 @@ const DrawerContentStaff = props => {
 
     const [userId, setUserId] = useState(null)
 
+    const [userOrganizationId, setUserOrganizationId] = useState(null)
+
     const [userData, setUserData] = useState({
         id: '',
         name: '',
@@ -90,7 +92,7 @@ const DrawerContentStaff = props => {
                             }}
                         >
                             <Avatar.Image
-                                source={userData.picture === null || userData.picture === '' ? require('../../assets/avatar.png') : { uri: userData.picture }}
+                                source={userData.picture ? { uri: userData.picture } : require('../../assets/avatar.png')}
                                 size={60}
                             />
                         </TouchableOpacity>
@@ -106,6 +108,15 @@ const DrawerContentStaff = props => {
                     label="Profile"
                     onPress={() => {
                         props.navigation.navigate('Staff Profile')
+                    }}
+                />
+                 <DrawerItem
+                    icon={({ color, size }) => (
+                        <Icon name="office-building" color={color} size={size} />
+                    )}
+                    label="Your Organization"
+                    onPress={() => {
+                        props.navigation.navigate('Staff Organization Profile')
                     }}
                 />
                 <DrawerItem

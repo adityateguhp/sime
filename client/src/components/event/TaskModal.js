@@ -49,7 +49,7 @@ const TaskModal = props => {
     };
 
     const onCheck = () => {
-        setValues({ ...values, completed: !values.completed, completed_date: values.completed === true ? '' : new Date() });
+        setValues({ ...values, completed: !values.completed, completed_date: values.completed ? '' : new Date() });
     };
 
     const onChangeDateTime = (key, val, err) => {
@@ -277,9 +277,9 @@ const TaskModal = props => {
                                                 onPress={showDateTimepicker}
                                                 mode="outlined"
                                             >
-                                                {values.due_date === null || values.due_date === '' ? 'SELECT DUE DATE' : due_date}
+                                                {values.due_date ? due_date : 'SELECT DUE DATE'}
                                             </Button>
-                                            {values.due_date === null || values.due_date === '' ? null :
+                                            {values.due_date ?
                                                 <Button
                                                     style={{ marginRight: 3 }}
                                                     icon="close"
@@ -288,7 +288,7 @@ const TaskModal = props => {
                                                     mode="outlined"
                                                     compact={true}
                                                 >
-                                                </Button>}
+                                                </Button> : null}
                                         </View>
                                     </View>
                                     <View style={styles.inputContainer}>

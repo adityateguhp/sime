@@ -129,7 +129,7 @@ const AssignedToCommitteeList = props => {
                         style={styles.staffs}
                         title={staff.getStaff.name}
                         description={<Caption>{position.getPosition.name}</Caption>}
-                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />}
+                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
                         right={assignedCommitteeId || selected ? () => <Icon style={{ alignSelf: "center" }} name="check" size={25} color={Colors.primaryColor} /> : null}
                     />
                     <Divider />

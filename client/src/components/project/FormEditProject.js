@@ -62,24 +62,34 @@ const FormEditProject = props => {
         setShowEndDate(false);
     };
 
-    const options = {
-        title: 'Select Project Cover Image',
+    const options1 = {
+        title: 'Choose Project Cover Image',
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
+
+    const options2 = {
+        title: 'Change Project Cover Image',
         customButtons: [{ name: 'remove', title: 'Remove Image...' }],
         storageOptions: {
-          skipBackup: true,
-          path: 'images',
+            skipBackup: true,
+            path: 'images',
         },
-        maxWidth: 500, 
+        maxWidth: 500,
         maxHeight: 500
-      };
+    };
 
     const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
+        ImagePicker.showImagePicker(values.picture ? options2 : options1, response => {
             if (response.didCancel) {
                 return;
             }
 
-            if (response.customButton){
+            if (response.customButton) {
                 setValues({ ...values, picture: '' });
             }
 
@@ -209,14 +219,14 @@ const FormEditProject = props => {
 
                                 <View style={styles.formViewStyle}>
                                     <TouchableCmp onPress={handleUpload}>
-                                        {values.picture === null || values.picture === '' ?
-                                            <View style={styles.imageUpload}>
-                                                <Icon name="image" size={70} color="black" />
-                                                <Text>Select Project Cover Image</Text>
-                                            </View>
-                                            :
+                                        {values.picture ?
                                             <View>
                                                 <Image source={{ uri: values.picture }} resizeMode="cover" style={styles.imageUploaded} />
+                                            </View>
+                                            :
+                                            <View style={styles.imageUpload}>
+                                                <Icon name="image" size={70} color="black" />
+                                                <Text>Choose Project Cover Image</Text>
                                             </View>
                                         }
                                     </TouchableCmp>
@@ -235,7 +245,7 @@ const FormEditProject = props => {
                                                 onPress={showStartDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.start_date === null || values.start_date === '' ? 'FROM' : startDate}
+                                                {values.start_date ? startDate : 'FROM'}
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
@@ -243,7 +253,7 @@ const FormEditProject = props => {
                                                 onPress={showEndDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.end_date === null || values.end_date === '' ? 'TO' : endDate}
+                                                {values.end_date ? endDate : 'TO'}
                                             </Button>
                                         </View>
                                     </View>

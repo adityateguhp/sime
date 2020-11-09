@@ -11,7 +11,15 @@ import FormEditStaffDepartment from '../../components/user_management/FormEditSt
 import StaffList from '../../components/user_management/StaffList';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
-import { FETCH_STAFFSBYDEPARTMENT_QUERY, DELETE_STAFF, FETCH_STAFF_QUERY } from '../../util/graphql';
+import {
+    FETCH_STAFFSBYDEPARTMENT_QUERY,
+    DELETE_STAFF,
+    DELETE_COMMITTEE_BYSTAFF,
+    DELETE_ASSIGNED_TASK_BYCOMMITTEE,
+    FETCH_STAFF_QUERY,
+    FETCH_COMMITTEES_BYSTAFF_QUERY,
+    RESET_PASSWORD_STAFF_MUTATION
+} from '../../util/graphql';
 
 const StaffsinDepartmentScreen = ({ navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -42,7 +50,17 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
 
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
+
+    const [visibleResetPassword, setVisibleResetPassword] = useState(false);
+
+    const onToggleSnackBarResetPassword = () => setVisibleResetPassword(!visibleResetPassword);
+
+    const onDismissSnackBarResetPassword = () => setVisibleResetPassword(false);
+
+
     const [staffsValue, setStaffsValue] = useState([]);
+    const [staffVal, setStaffVal] = useState(null);
+    const [commiteesVal, setCommitteesVal] = useState([])
 
     const { data: staffs, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_STAFFSBYDEPARTMENT_QUERY, {
@@ -61,7 +79,11 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
             variables: { staffId: sime.staff_id },
         });
 
-    const [staffVal, setStaffVal] = useState(null);
+    const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4 }] = useLazyQuery(
+        FETCH_COMMITTEES_BYSTAFF_QUERY,
+        {
+            variables: { staffId: sime.staff_id },
+        });
 
     const selectItemHandler = (id, department_id) => {
         navigation.navigate('Staff Profile', {
@@ -77,6 +99,10 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
     useEffect(() => {
         if (staff) setStaffVal(staff.getStaff);
     }, [staff])
+
+    useEffect(() => {
+        if (committeeByStaff) setCommitteesVal(committeeByStaff.getCommitteesByStaff);
+    }, [committeeByStaff])
 
     const closeModal = () => {
         setVisible(false);
@@ -95,6 +121,7 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
         sime.setStaff_name(name);
         sime.setStaff_id(id);
         loadExistData();
+        loadCommitteeData();
     }
 
     const openForm = () => {
@@ -109,6 +136,18 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
     const staffId = sime.staff_id;
     const departmentId = sime.department_id;
 
+    const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+
+    const deleteAssignedTaskByCommitteeHandler = () => {
+        commiteesVal.map((committee) => {
+            deleteAssignedTaskByCommittee(({
+                variables: { committeeId: committee.id },
+            }))
+        })
+    };
+
+    const [deleteCommitteeByDepartment] = useMutation(DELETE_COMMITTEE_BYSTAFF);
+
     const [deleteStaff] = useMutation(DELETE_STAFF, {
         update(proxy) {
             const data = proxy.readQuery({
@@ -117,7 +156,23 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
             });
             staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
+            deleteCommitteeByDepartment({variables: {staffId}})
+            deleteAssignedTaskByCommitteeHandler();
             proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId: departmentId } });
+        },
+        variables: {
+            staffId
+        }
+    });
+
+    const [resetPassword] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
+        update(proxy) {
+            const data = proxy.readQuery({
+                query: FETCH_STAFFS_QUERY,
+                variables: { organizationId: sime.user.id }
+            });
+            onToggleSnackBarResetPassword();
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
         },
         variables: {
             staffId
@@ -132,7 +187,30 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
             {
                 text: 'Yes',
                 style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this staff, it's also delete all related to this staff", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
+                style: 'destructive',
                 onPress: deleteStaff
+            }
+        ]);
+    };
+
+    const resetPasswordHandler = () => {
+        closeModal();
+        Alert.alert('Are you sure?', 'Do you really want to reset password this staff account?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: resetPassword
             }
         ]);
     };
@@ -183,14 +261,14 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
         refetch();
     };
 
-      useEffect(() => {
+    useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-          onRefresh();
+            onRefresh();
         });
-    
+
         // Return the function to unsubscribe from the event so it gets removed on unmount
         return unsubscribe;
-      }, [navigation]);
+    }, [navigation]);
 
     if (error1) {
         console.error(error1);
@@ -198,6 +276,11 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
     }
 
     if (called & error2) {
+        console.error(error2);
+        return <Text>Error</Text>;
+    }
+
+    if (called2 & error4) {
         console.error(error2);
         return <Text>Error</Text>;
     }
@@ -268,11 +351,16 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
                     onBackButtonPress={closeModal}
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
-                    <View style={styles.modalView}>
+                   <View style={styles.modalView}>
                         <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.staff_name}</Title>
                         <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
                                 <Text style={styles.text}>Edit</Text>
+                            </View>
+                        </TouchableCmp>
+                        <TouchableCmp onPress={resetPasswordHandler}>
+                            <View style={styles.textView}>
+                                <Text style={styles.text}>Reset password</Text>
                             </View>
                         </TouchableCmp>
                         <TouchableCmp onPress={deleteHandler}>
@@ -318,12 +406,18 @@ const StaffsinDepartmentScreen = ({ navigation }) => {
             >
                 Staff deleted!
             </Snackbar>
+            <Snackbar
+                visible={visibleResetPassword}
+                onDismiss={onDismissSnackBarResetPassword}
+            >
+                Staff account password has been reset!
+            </Snackbar>
         </Provider>
     );
 }
 
 const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
+const modalMenuHeight = wp(46.5);
 
 const styles = StyleSheet.create({
     screen: {

@@ -342,7 +342,7 @@ const EventListScreen = ({ route, navigation }) => {
                                 </View>
                             </TouchableCmp>
                             {
-                                cancelValue.cancel === true ?
+                                cancelValue.cancel ?
                                     <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
                                         <View style={styles.textView}>
                                             <Text style={styles.text}>Active event</Text>

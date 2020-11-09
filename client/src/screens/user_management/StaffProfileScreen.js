@@ -71,7 +71,7 @@ const StaffProfileScreen = ({ route }) => {
         <Provider theme={theme}>
             <ScrollView style={styles.screen}>
                 <View style={styles.profilePicture}>
-                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture === null || staff.getStaff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.getStaff.picture }} />
+                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />
                     <Headline>{staff.getStaff.name}</Headline>
                 </View>
                 <Divider />

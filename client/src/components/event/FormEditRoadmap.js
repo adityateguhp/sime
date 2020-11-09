@@ -139,12 +139,12 @@ const FormEditRoadmap = props => {
 
     //for get keyboard height
     Keyboard.addListener('keyboardDidShow', (frames) => {
-       if (!frames.endCoordinates) return;
-         setKeyboarSpace(frames.endCoordinates.height);
-     });
-     Keyboard.addListener('keyboardDidHide', (frames) => {
-         setKeyboarSpace(0);
-     });
+        if (!frames.endCoordinates) return;
+        setKeyboarSpace(frames.endCoordinates.height);
+    });
+    Keyboard.addListener('keyboardDidHide', (frames) => {
+        setKeyboarSpace(0);
+    });
 
     return (
         <Portal>
@@ -158,7 +158,7 @@ const FormEditRoadmap = props => {
                 style={{
                     justifyContent: 'flex-end',
                     margin: 0,
-                    top: keyboardSpace ? -10 -keyboardSpace : 0,
+                    top: keyboardSpace ? -10 - keyboardSpace : 0,
                 }}
                 statusBarTranslucent>
                 <View style={styles.buttomView}>
@@ -169,67 +169,67 @@ const FormEditRoadmap = props => {
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
-                            <ScrollView>
-                                <View style={styles.formViewStyle}>
+                        <ScrollView>
+                            <View style={styles.formViewStyle}>
                                 <View style={styles.dateInputContainer}>
-                                        <View style={styles.dateLabel}>
-                                            <Icon name="calendar" size={25} color={Colors.primaryColor} />
-                                            <Text style={styles.textDate}>
-                                                Date :
+                                    <View style={styles.dateLabel}>
+                                        <Icon name="calendar" size={25} color={Colors.primaryColor} />
+                                        <Text style={styles.textDate}>
+                                            Date :
                                             </Text>
-                                        </View>
-                                        <View style={styles.dateButtonContainer}>
-                                            <Button
-                                                style={styles.dateButton}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={showStartDatepicker}
-                                                mode="outlined"
-                                            >
-                                                {values.start_date === null || values.start_date === '' ? 'FROM' : startDate}
-                                            </Button>
-                                            <Button
-                                                style={styles.dateButton}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={showEndDatepicker}
-                                                mode="outlined"
-                                            >
-                                                {values.end_date === null || values.end_date === '' ? 'TO' : endDate}
-                                            </Button>
-                                        </View>
                                     </View>
-                                    {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
-
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                             style={styles.input}
-                                             label='Roadmap Name'
-                                             value={values.name}
-                                             onChangeText={(val) => onChange('name', val, 'roadmap_name_error')}
-                                             error={errors.roadmap_name_error ? true : false}
-                                             errorText={errors.roadmap_name_error}
-                                        />
+                                    <View style={styles.dateButtonContainer}>
+                                        <Button
+                                            style={styles.dateButton}
+                                            labelStyle={{ color: Colors.primaryColor }}
+                                            onPress={showStartDatepicker}
+                                            mode="outlined"
+                                        >
+                                            {values.start_date ? startDate : 'FROM'}
+                                        </Button>
+                                        <Button
+                                            style={styles.dateButton}
+                                            labelStyle={{ color: Colors.primaryColor }}
+                                            onPress={showEndDatepicker}
+                                            mode="outlined"
+                                        >
+                                            {values.end_date ? endDate : 'TO'}
+                                        </Button>
                                     </View>
                                 </View>
-                                <Portal>
-                                    <DateTimePicker
-                                        isVisible={showStartDate}
-                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
-                                        onCancel={closeStartDatepicker}
-                                        mode="date"
-                                        display="default"
-                                        maximumDate={values.end_date ? new Date(values.end_date) : new Date(eventDate.end_date)}
+                                {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
+
+                                <View style={styles.inputStyle}>
+                                    <TextInput
+                                        style={styles.input}
+                                        label='Roadmap Name'
+                                        value={values.name}
+                                        onChangeText={(val) => onChange('name', val, 'roadmap_name_error')}
+                                        error={errors.roadmap_name_error ? true : false}
+                                        errorText={errors.roadmap_name_error}
                                     />
-                                    <DateTimePicker
-                                        isVisible={showEndDate}
-                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
-                                        onCancel={closeEndDatepicker}
-                                        mode="date"
-                                        display="default"
-                                        minimumDate={values.start_date ? new Date(values.start_date) : null}
-                                        maximumDate={new Date(eventDate.end_date)}
-                                    />
-                                </Portal>
-                            </ScrollView>
+                                </View>
+                            </View>
+                            <Portal>
+                                <DateTimePicker
+                                    isVisible={showStartDate}
+                                    onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
+                                    onCancel={closeStartDatepicker}
+                                    mode="date"
+                                    display="default"
+                                    maximumDate={values.end_date ? new Date(values.end_date) : new Date(eventDate.end_date)}
+                                />
+                                <DateTimePicker
+                                    isVisible={showEndDate}
+                                    onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
+                                    onCancel={closeEndDatepicker}
+                                    mode="date"
+                                    display="default"
+                                    minimumDate={values.start_date ? new Date(values.start_date) : null}
+                                    maximumDate={new Date(eventDate.end_date)}
+                                />
+                            </Portal>
+                        </ScrollView>
                     </View>
                 </View>
             </Modal>
@@ -242,7 +242,7 @@ const modalFormHeight = hp(44);
 
 const styles = StyleSheet.create({
     appbar: {
-        
+
     },
     formView: {
         backgroundColor: 'white',

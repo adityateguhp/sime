@@ -197,7 +197,7 @@ const FormRundown = props => {
                                                 onPress={showDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.date === null || values.date === '' ? 'SELECT DATE' : date}
+                                                {values.date ? date : 'SELECT DATE'}
                                             </Button>
                                         </View>
                                     </View>
@@ -220,7 +220,7 @@ const FormRundown = props => {
                                                 onPress={showStartTimepicker}
                                                 mode="outlined"
                                             >
-                                                {values.start_time === null || values.start_time === '' ? 'FROM' : startTime}
+                                                {values.start_time ? startTime : 'FROM'}
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
@@ -229,7 +229,7 @@ const FormRundown = props => {
                                                 onPress={showEndTimepicker}
                                                 mode="outlined"
                                             >
-                                                {values.end_time === null || values.end_time === '' ? 'TO' : endTime}
+                                                {values.end_time ? endTime : 'TO'}
                                             </Button>
                                         </View>
                                     </View>

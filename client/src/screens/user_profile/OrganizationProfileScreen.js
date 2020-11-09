@@ -10,6 +10,7 @@ import { theme } from '../../constants/Theme';
 import HeaderButton from '../../components/common/HeaderButton';
 import FormEditOrganizationProfile from '../../components/user_profile/FormEditOrganizationProfile';
 import FormChangePasswordOrganization from '../../components/user_profile/FormChangePasswordOrganization';
+import CenterSpinner from '../../components/common/CenterSpinner';
 
 const OrganizationProfileScreen = ({ route, navigation }) => {
     const sime = useContext(SimeContext);
@@ -105,6 +106,10 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         return <Text>Error 1</Text>;
     }
 
+    if (loading1) {
+        return <CenterSpinner />;
+    }
+
     return (
         <Provider theme={theme}>
             <ScrollView
@@ -116,7 +121,7 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                 }
             >
                 <View style={styles.profilePicture}>
-                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture === null || organization.getOrganization.picture === '' ? require('../../assets/avatar.png') : { uri: organization.getOrganization.picture }} />
+                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture ? { uri: organization.getOrganization.picture } : require('../../assets/avatar.png')} />
                     <Headline>{organization.getOrganization.name}</Headline>
                 </View>
                 <Divider />

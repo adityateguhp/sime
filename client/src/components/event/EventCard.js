@@ -22,7 +22,7 @@ const EventCard = props => {
 
     return (
         <View>
-            <TouchableCmp onPress={props.onSelect} onLongPress={sime.user_type === "Organization" || sime.order === '1' ||  sime.order === '2' ? props.onLongPress : null} useForeground>
+            <TouchableCmp onPress={props.onSelect} onLongPress={sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' ? props.onLongPress : null} useForeground>
                 <Card style={styles.event}>
                     <Card.Title
                         title={props.name}
@@ -30,7 +30,7 @@ const EventCard = props => {
                             <Caption>
                                 <Icon name="calendar" size={13} color='black' /> {startDate} - {endDate}
                             </Caption>}
-                        left={() => <Avatar.Image size={50} source={props.picture === null || props.picture === '' ? require('../../assets/calendar.png') : { uri: props.picture }}
+                        left={() => <Avatar.Image size={50} source={props.picture ? { uri: props.picture } : require('../../assets/calendar.png')}
                         />}
                     />
                     <Card.Content>

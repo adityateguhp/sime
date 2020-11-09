@@ -39,20 +39,35 @@ const FormExternal = props => {
         picture: null,
     });
 
-    const options = {
-        title: 'Change Photo Profile',
+    const options1 = {
+        title: 'Choose Photo Profile',
         storageOptions: {
-          skipBackup: true,
-          path: 'images',
+            skipBackup: true,
+            path: 'images',
         },
-        maxWidth: 500, 
+        maxWidth: 500,
         maxHeight: 500
-      };
+    };
+
+    const options2 = {
+        title: 'Change Photo Profile',
+        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
 
     const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
+        ImagePicker.showImagePicker(values.picture ? options2 : options1, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton) {
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -70,7 +85,7 @@ const FormExternal = props => {
                 method: 'POST',
             }).then(async r => {
                 let data = await r.json()
-                setValues({...values, picture: data.secure_url })
+                setValues({ ...values, picture: data.secure_url })
             }).catch(err => console.log(err))
         })
     }
@@ -84,11 +99,11 @@ const FormExternal = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_EXBYTYPE_QUERY,
-                variables: {eventId: values.event_id, externalType: values.external_type}
+                variables: { eventId: values.event_id, externalType: values.external_type }
             });
             data.getExternalByType = [result.data.addExternal, ...data.getExternalByType];
             props.addExternalsStateUpdate(result.data.addExternal);
-            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: {eventId: values.event_id, externalType: values.external_type} });
+            proxy.writeQuery({ query: FETCH_EXBYTYPE_QUERY, data, variables: { eventId: values.event_id, externalType: values.external_type } });
             values.name = '';
             values.email = '';
             values.phone_number = '';
@@ -101,7 +116,8 @@ const FormExternal = props => {
             const emailError = emailValidator(values.email);
             const phoneNumberError = phoneNumberValidator(values.phone_number);
             if (externalNameError || emailError || phoneNumberError) {
-                setErrors({ ...errors, 
+                setErrors({
+                    ...errors,
                     external_name_error: externalNameError,
                     email_error: emailError,
                     phone_number_error: phoneNumberError
@@ -157,8 +173,8 @@ const FormExternal = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                    <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture ? { uri: values.picture } : require('../../assets/avatar.png')} />
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
                                     </View>
 
                                     <View style={styles.inputStyle}>
@@ -189,23 +205,23 @@ const FormExternal = props => {
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                           style={styles.input}
-                                           label='Phone Number'
-                                           returnKeyType="next"
-                                           value={values.phone_number}
-                                           onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
-                                           error={errors.phone_number_error ? true : false}
-                                           errorText={errors.phone_number_error}
-                                           keyboardType="phone-pad"
+                                            style={styles.input}
+                                            label='Phone Number'
+                                            returnKeyType="next"
+                                            value={values.phone_number}
+                                            onChangeText={(val) => onChange('phone_number', val, 'phone_number_error')}
+                                            error={errors.phone_number_error ? true : false}
+                                            errorText={errors.phone_number_error}
+                                            keyboardType="phone-pad"
                                         />
                                     </View>
                                     <View style={styles.inputStyle}>
                                         <TextInput
-                                           style={styles.input}
-                                           multiline={true}
-                                           label='Details'
-                                           value={values.details}
-                                           onChangeText={(val) => onChange('details', val, '')}
+                                            style={styles.input}
+                                            multiline={true}
+                                            label='Details'
+                                            value={values.details}
+                                            onChangeText={(val) => onChange('details', val, '')}
                                         />
                                     </View>
                                 </View>
@@ -223,7 +239,7 @@ const modalFormHeight = hp(80);
 
 const styles = StyleSheet.create({
     appbar: {
-        
+
     },
     formView: {
         backgroundColor: 'white',

@@ -194,7 +194,7 @@ const EventOverviewScreen = ({ navigation }) => {
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}
-              source={event.picture === null || event.picture === '' ? require('../../assets/calendar.png') : { uri: event.picture }}
+              source={event.picture ? { uri: event.picture } : require('../../assets/calendar.png')}
             />
           </View>
           <Subheading style={{ fontWeight: 'bold' }}>Guests</Subheading>
@@ -247,7 +247,7 @@ const EventOverviewScreen = ({ navigation }) => {
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Event Description</Subheading>
           <List.Item
-            title={event.description === null || event.description === '' ? "-" : event.description}
+            title={event.description ? event.description : "-"}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />
@@ -265,10 +265,12 @@ const EventOverviewScreen = ({ navigation }) => {
           <Subheading style={{ fontWeight: 'bold' }}>Location</Subheading>
           <List.Item
             title={
-              event.location === null || event.location === '' ? "-" :
+              event.location ?
                 <Text>
                   <Icon name="map-marker" size={16} color='black' /> {event.location}
-                </Text>}
+                </Text>
+                :
+                "-"}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
           />

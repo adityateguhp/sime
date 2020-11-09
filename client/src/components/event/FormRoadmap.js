@@ -176,7 +176,7 @@ const FormRoadmap = props => {
                                                 onPress={showStartDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.start_date === null || values.start_date === '' ? 'FROM' : startDate}
+                                                {values.start_date ? startDate : 'FROM'}
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
@@ -184,7 +184,7 @@ const FormRoadmap = props => {
                                                 onPress={showEndDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.end_date === null || values.end_date === '' ? 'TO' : endDate}
+                                                {values.end_date ? endDate : 'TO'}
                                             </Button>
                                         </View>
                                     </View>

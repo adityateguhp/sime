@@ -44,20 +44,35 @@ const FormStaff = props => {
         organizationId: sime.user.id
     });
 
-    const options = {
-        title: 'Change Photo Profile',
+    const options1 = {
+        title: 'Choose Photo Profile',
         storageOptions: {
-          skipBackup: true,
-          path: 'images',
+            skipBackup: true,
+            path: 'images',
         },
-        maxWidth: 500, 
+        maxWidth: 500,
         maxHeight: 500
-      };
+    };
+
+    const options2 = {
+        title: 'Change Photo Profile',
+        customButtons: [{ name: 'remove', title: 'Remove Photo...' }],
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        },
+        maxWidth: 500,
+        maxHeight: 500
+    };
 
     const handleUpload = () => {
-        ImagePicker.showImagePicker(options, response => {
+        ImagePicker.showImagePicker(values.picture ? options2 : options1, response => {
             if (response.didCancel) {
                 return;
+            }
+
+            if (response.customButton) {
+                setValues({ ...values, picture: '' });
             }
 
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
@@ -89,11 +104,11 @@ const FormStaff = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
             });
             data.getStaffs = [result.data.addStaff, ...data.getStaffs];
             props.addStaffsStateUpdate(result.data.addStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data,  variables: {organizationId: sime.user.id} });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
             values.name = '';
             values.position_name = '';
             values.email = '';
@@ -174,8 +189,8 @@ const FormStaff = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture === null || values.picture === '' ? require('../../assets/avatar.png') : { uri: values.picture }} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>Change Photo Profile</Text>
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture? { uri: values.picture } : require('../../assets/avatar.png')} />
+                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
                                     </View>
                                     <View>
                                         <Dropdown
@@ -290,7 +305,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: theme.colors.error,
         paddingHorizontal: 4
-      },
+    },
 });
 
 

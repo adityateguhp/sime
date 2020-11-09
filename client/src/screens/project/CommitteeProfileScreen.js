@@ -4,12 +4,12 @@ import { Text, Title, Paragraph, Avatar, Headline, Divider } from 'react-native-
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import CenterSpinner from '../../components/common/CenterSpinner';
-import { 
-    FETCH_COMMITTEE_QUERY, 
-    FETCH_STAFF_QUERY, 
-    FETCH_DEPARTMENT_QUERY, 
-    FETCH_POSITION_QUERY, 
-    FETCH_DIVISION_QUERY 
+import {
+    FETCH_COMMITTEE_QUERY,
+    FETCH_STAFF_QUERY,
+    FETCH_DEPARTMENT_QUERY,
+    FETCH_POSITION_QUERY,
+    FETCH_DIVISION_QUERY
 } from '../../util/graphql';
 
 const CommitteeProfileScreen = ({ route }) => {
@@ -163,7 +163,7 @@ const CommitteeProfileScreen = ({ route }) => {
     return (
         <ScrollView style={styles.screen}>
             <View style={styles.profilePicture}>
-                <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.picture === null || staff.picture === '' ? require('../../assets/avatar.png') : { uri: staff.picture }} />
+                <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.picture ? { uri: staff.picture } : require('../../assets/avatar.png')} />
                 <Headline>{staff.name}</Headline>
             </View>
             <Divider />

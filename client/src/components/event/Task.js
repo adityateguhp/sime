@@ -43,7 +43,7 @@ const Task = props => {
             console.log(err)
             return err;
         },
-        variables: { ...completedValue, completed: !completedValue.completed, completed_date: completedValue.completed === true ? '' : new Date() }
+        variables: { ...completedValue, completed: !completedValue.completed, completed_date: completedValue.completed ? '' : new Date() }
     });
 
 
@@ -143,30 +143,30 @@ const Task = props => {
                     <View style={styles.checkTask}>
                         <Checkbox
                             onPress={onPressCheck}
-                            status={props.completed === true ? 'checked' : 'unchecked'}
+                            status={props.completed ? 'checked' : 'unchecked'}
                             color="white"
                             uncheckedColor="white" />
                     </View>
                     <TouchableCmp onPress={openModal}>
                         <View style={styles.task}>
                             <View>
-                                <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.completed === true ? 'line-through' : 'none', opacity: props.completed === true ? 0.6 : 1 } }}>{props.name}</Subheading>
-                                {props.completed === true ?
-                                    <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
+                                <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.completed ? 'line-through' : 'none', opacity: props.completed ? 0.6 : 1 } }}>{props.name}</Subheading>
+                                {props.completed ?
+                                    <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
                                     :
                                     dueDate > nowDate ?
-                                        <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
+                                        <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
                                         :
                                         dueDate < nowDate ?
-                                            <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed === true ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption> :
+                                            <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption> :
                                             null}
                             </View>
                             <View style={styles.taskSub}>
-                                <View style={{ ...styles.comment, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
+                                <View style={{ ...styles.comment, ...{ opacity: props.completed ? 0.6 : 1 } }}>
                                     <Icon name="comment-multiple" size={16} color="grey" />
                                     <Caption style={{ marginLeft: 3 }}>5</Caption>
                                 </View>
-                                <View style={{ ...styles.people, ...{ opacity: props.completed === true ? 0.6 : 1 } }}>
+                                <View style={{ ...styles.people, ...{ opacity: props.completed ? 0.6 : 1 } }}>
                                     <Icon name="account-multiple" size={16} color="grey" />
                                     <Caption style={{ marginLeft: 3 }}>{assignedTasksFilter.length}</Caption>
                                 </View>
