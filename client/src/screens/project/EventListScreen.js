@@ -6,8 +6,8 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
-import FormEvent from '../../components/event/FormEvent';
-import FormEditEvent from '../../components/event/FormEditEvent';
+import FormEvent from '../../components/project/FormEvent';
+import FormEditEvent from '../../components/project/FormEditEvent';
 import EventCard from '../../components/event/EventCard';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';

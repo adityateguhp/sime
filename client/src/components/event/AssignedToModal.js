@@ -37,7 +37,7 @@ const AssignedToModal = props => {
                             }
                         }}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="Committee" subtitle={sime.project_name} />
+                            <Appbar.Content title="Committee" subtitle={sime.project_name? sime.project_name : props.project_name} />
                         </Appbar>
                             <View style={styles.formViewStyle}>
                                 <FlatList

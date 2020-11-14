@@ -17,6 +17,18 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async getTasksCreatedBy(_, { createdBy }, context) {
+            try {
+                const tasks = await Task.find({ createdBy: createdBy }).sort({ createdAt: -1, completed: 1 });
+                if (tasks) {
+                    return tasks;
+                } else {
+                    throw new Error('Tasks not found');
+                }
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
         async getTask(_, { taskId }) {
             try {
                 const task = await Task.findById(taskId);

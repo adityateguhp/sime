@@ -1,10 +1,6 @@
 const { model, Schema } = require('mongoose');
 
 const task_assigned_to_Schema = new Schema({	
-    roadmap_id:{
-        type: Schema.Types.ObjectId,
-        ref: 'roadmaps'
-    }, 	
     task_id:{
         type: Schema.Types.ObjectId,
         ref: 'tasks'

@@ -257,7 +257,6 @@ const RoadmapScreen = ({ route, navigation }) => {
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <RoadmapCard
-                        navigation={navigation}
                         roadmapId={itemData.item.id}
                         name={itemData.item.name}
                         start_date={itemData.item.start_date}
@@ -266,6 +265,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                             selectItemHandler(itemData.item.id, itemData.item.name);
                         }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
+                        onRefresh={onRefresh}
                     >
                     </RoadmapCard>
                 )}

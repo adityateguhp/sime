@@ -24,11 +24,11 @@ const CommitteeChip = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: {roadmapId: props.roadmapId }
+                variables: {taskId: props.taskId }
             });
             data.getAssignedTasks = data.getAssignedTasks.filter((e) => e.id !== props.assignedId);
             props.deleteAssignedTasksStateUpdate(props.assignedId)
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { taskId: props.taskId } });
         },
         variables: {
             assignedId: props.assignedId

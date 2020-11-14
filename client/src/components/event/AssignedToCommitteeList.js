@@ -52,11 +52,11 @@ const AssignedToCommitteeList = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: { roadmapId: props.roadmapId }
+                variables: { taskId: props.taskId }
             });
             data.getAssignedTasks = data.getAssignedTasks.filter((e) => e.id !== assignedCommitteeId);
             props.deleteAssignedTasksStateUpdate(assignedCommitteeId)
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { taskId: props.taskId } });
         },
         variables: {
             assignedId: assignedCommitteeId
@@ -67,14 +67,13 @@ const AssignedToCommitteeList = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: { roadmapId: props.roadmapId }
+                variables: { taskId: props.taskId }
             });
             data.getAssignedTasks = [result.data.assignedTask, ...data.getAssignedTasks];
             props.assignedTasksStateUpdate(result.data.assignedTask);
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { taskId: props.taskId } });
         },
         variables: {
-            roadmapId: props.roadmapId,
             taskId: props.taskId,
             committeeId: props.committee_id
         }

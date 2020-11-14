@@ -5,8 +5,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import SkeletonContent from "react-native-skeleton-content-nonexpo";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Status from '../../components/common/Status';
-import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'
+import Status from '../common/Status';
+import { Percentage, StatusProgressDays, StatusProgressBar } from '../common/StatusProgressBar'
 import { useQuery } from '@apollo/react-hooks';
 
 import Colors from '../../constants/Colors';

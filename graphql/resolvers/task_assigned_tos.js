@@ -4,9 +4,9 @@ const Task_assigned_to = require('../../model/Task_assigned_to');
 
 module.exports = {
     Query: {
-        async getAssignedTasks(_, { roadmapId }, context) {
+        async getAssignedTasks(_, { taskId }, context) {
             try {
-                const assignedTasks = await Task_assigned_to.find({ roadmap_id: roadmapId }).sort({ createdAt: -1 });
+                const assignedTasks = await Task_assigned_to.find({ task_id: taskId }).sort({ createdAt: -1 });
                 if (assignedTasks) {
                     return assignedTasks;
                 } else {
@@ -42,10 +42,9 @@ module.exports = {
         },
     },
     Mutation: {
-        async assignedTask(_, { roadmapId, taskId, committeeId }, context) {
+        async assignedTask(_, { taskId, committeeId }, context) {
 
             const newAssign = new Task_assigned_to({
-                roadmap_id: roadmapId,
                 task_id: taskId,
                 committee_id: committeeId,
                 createdAt: new Date().toISOString()
@@ -66,8 +65,19 @@ module.exports = {
         },
         async deleteAssignedTaskByCommittee(_, { committeeId }, context) {
             try {
-                const committee = await Task_assigned_to.find({ committee_id: committeeId });
-                committee.map((data) => {
+                const assign = await Task_assigned_to.find({ committee_id: committeeId });
+                assign.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteAssignedTaskByTask(_, { taskId }, context) {
+            try {
+                const assign = await Task_assigned_to.find({ task_id: taskId });
+                assign.map((data) => {
                     data.deleteOne()
                 })
                 return 'Deleted successfully';

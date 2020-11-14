@@ -6,7 +6,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
-import { FETCH_TASKS_QUERY, DELETE_TASK, COMPLETED_TASK } from '../../util/graphql';
+import { 
+    FETCH_TASKS_QUERY, 
+    DELETE_TASK, 
+    COMPLETED_TASK, 
+    FETCH_ASSIGNED_TASKS_QUERY, 
+    DELETE_ASSIGNED_TASK_BYTASK
+} from '../../util/graphql';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 import TaskModal from './TaskModal';
@@ -19,8 +25,6 @@ const Task = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const assignedTasksFilter = props.assignedTasks.filter((e) => e.task_id === props.taskId);
-
     const [visible, setVisible] = useState(false);
     const [due_date, setDue_date] = useState('');
     const [completed_date, setCompleted_date] = useState('');
@@ -29,6 +33,16 @@ const Task = props => {
         completed: props.completed,
         completed_date: props.completed_date
     });
+    const [assignedTasksValue, setAssignedTasksValue] = useState([]);
+
+    const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch } = useQuery(
+        FETCH_ASSIGNED_TASKS_QUERY,
+        {
+            variables: { taskId: props.taskId },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
+        }
+    );
 
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
@@ -46,6 +60,7 @@ const Task = props => {
         variables: { ...completedValue, completed: !completedValue.completed, completed_date: completedValue.completed ? '' : new Date() }
     });
 
+    const [deleteAssignedTaskByTask] = useMutation(DELETE_ASSIGNED_TASK_BYTASK);
 
     const [deleteTask] = useMutation(DELETE_TASK, {
         update(proxy) {
@@ -54,13 +69,27 @@ const Task = props => {
                 variables: { roadmapId: props.roadmapId }
             });
             props.tasks = props.tasks.filter((p) => p.id !== props.taskId);
-            props.deleteTasksStateUpdate(props.taskId)
+            props.deleteTasksStateUpdate(props.taskId);
+            deleteAssignedTaskByTask({variables: {taskId: props.taskId}});
             proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
         },
         variables: {
             taskId: props.taskId
         }
     });
+
+    const deleteAssignedTasksStateUpdate = (e) => {
+        const temp = [...assignedTasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setAssignedTasksValue(temp);
+    }
+
+    const assignedTasksStateUpdate = (e) => {
+        setAssignedTasksValue([e, ...assignedTasksValue]);
+    }
 
     const onDeleteTask = () => {
         closeModal();
@@ -129,6 +158,10 @@ const Task = props => {
         }
     }, [props.completed_date])
 
+    useEffect(() => {
+        refetch();
+    }, [props.onRefresh]);
+
     return (
         <Provider theme={theme}>
             <View style={styles.container}>
@@ -162,13 +195,9 @@ const Task = props => {
                                             null}
                             </View>
                             <View style={styles.taskSub}>
-                                <View style={{ ...styles.comment, ...{ opacity: props.completed ? 0.6 : 1 } }}>
-                                    <Icon name="comment-multiple" size={16} color="grey" />
-                                    <Caption style={{ marginLeft: 3 }}>5</Caption>
-                                </View>
                                 <View style={{ ...styles.people, ...{ opacity: props.completed ? 0.6 : 1 } }}>
                                     <Icon name="account-multiple" size={16} color="grey" />
-                                    <Caption style={{ marginLeft: 3 }}>{assignedTasksFilter.length}</Caption>
+                                    <Caption style={{ marginLeft: 3 }}>{assignedTasksValue.length}</Caption>
                                 </View>
                             </View>
                         </View>
@@ -181,7 +210,8 @@ const Task = props => {
                 taskId={props.taskId}
                 roadmapId={props.roadmapId}
                 name={props.name}
-                assignedTasks={assignedTasksFilter}
+                project_name={props.project_name}
+                assignedTasks={assignedTasksValue}
                 committees={props.committees}
                 divisions={props.divisions}
                 roadmap={props.roadmap}
@@ -192,8 +222,8 @@ const Task = props => {
                 deleteButton={deleteHandler}
                 updateTasksStateUpdate={props.updateTasksStateUpdate}
                 task={props.task}
-                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
-                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
+                assignedTasksStateUpdate={assignedTasksStateUpdate}
             />
         </Provider>
     );
@@ -230,8 +260,7 @@ const styles = StyleSheet.create({
     },
     people: {
         flexDirection: 'row',
-        alignItems: 'center',
-        marginLeft: 8,
+        alignItems: 'center'
     },
     nameTask: {
         fontWeight: 'bold',

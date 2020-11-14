@@ -5,8 +5,8 @@ import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-import ProjectCard from '../../components/project/ProjectCard';
-import FormEditProject from '../../components/project/FormEditProject';
+import ProjectCard from '../../components/home/ProjectCard';
+import FormEditProject from '../../components/home/FormEditProject';
 import { theme } from '../../constants/Theme';
 import { SimeContext } from '../../context/SimePovider';
 import {
@@ -84,7 +84,7 @@ const ProjectListStaffScreen = ({ navigation }) => {
             if (project.id === committee.project_id) {
                 projectsStaff.push(project);
             } else {
-                return null
+                return null;
             }
             return null;
         }))

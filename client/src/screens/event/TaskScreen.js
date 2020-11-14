@@ -11,7 +11,6 @@ import { theme } from '../../constants/Theme';
 import {
     FETCH_TASKS_QUERY,
     FETCH_COMMITTEES_QUERY,
-    FETCH_ASSIGNED_TASKS_QUERY,
     FETCH_DIVISIONS_QUERY,
     FETCH_ROADMAP_QUERY
 } from '../../util/graphql';
@@ -43,11 +42,10 @@ const TaskScreen = ({ navigation }) => {
 
     const [tasksValue, setTasksValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
-    const [assignedTasksValue, setAssignedTasksValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);
     const [roadmapValue, setRoadmapValue] = useState(null);
 
-    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees, networkStatus: networkStatusCommittees } = useQuery(
+    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -64,7 +62,7 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
-    const { data: tasks, error: errorTasks, loading: loadingTasks, refetch, networkStatus } = useQuery(
+    const { data: tasks, error: errorTasks, loading: loadingTasks, refetch } = useQuery(
         FETCH_TASKS_QUERY,
         {
             variables: { roadmapId: sime.roadmap_id },
@@ -81,7 +79,7 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
-    const { data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap, networkStatus: networkStatusRoadmap } = useQuery(
+    const { data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap } = useQuery(
         FETCH_ROADMAP_QUERY,
         {
             variables: { roadmapId: sime.roadmap_id },
@@ -91,16 +89,7 @@ const TaskScreen = ({ navigation }) => {
             }
         });
 
-    const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch: refetchAssignedTasks, networkStatus: networkStatusAssignedTasks } = useQuery(
-        FETCH_ASSIGNED_TASKS_QUERY,
-        {
-            variables: { roadmapId: sime.roadmap_id },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
-        }
-    );
-
-    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions, networkStatus: networkStatusDivisions } = useQuery(
+    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions } = useQuery(
         FETCH_DIVISIONS_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -122,7 +111,6 @@ const TaskScreen = ({ navigation }) => {
     const onRefresh = () => {
         refetch();
         refetchCommittees();
-        refetchAssignedTasks();
         refetchDivisions();
         refetchRoadmap();
     };
@@ -182,22 +170,9 @@ const TaskScreen = ({ navigation }) => {
         onToggleSnackBarUpdate();
     }
 
-    const deleteAssignedTasksStateUpdate = (e) => {
-        const temp = [...assignedTasksValue];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e);
-        temp.splice(index, 1);
-        setAssignedTasksValue(temp);
-    }
+    let incompletedTask = tasksValue.filter((t) => t.completed === false);
 
-    const assignedTasksStateUpdate = (e) => {
-        setAssignedTasksValue([e, ...assignedTasksValue]);
-    }
-
-    let pendingTask = tasksValue.filter((t) => t.completed === false);
-
-    let completeTask = tasksValue.filter((t) => t.completed === true);
+    let completedTask = tasksValue.filter((t) => t.completed === true);
 
     if (errorTasks) {
         console.error(errorTasks);
@@ -207,12 +182,6 @@ const TaskScreen = ({ navigation }) => {
     if (errorCommittees) {
         console.error(errorCommittees);
         return <Text>errorCommittees</Text>;
-    }
-
-
-    if (errorAssignedTasks) {
-        console.error(errorAssignedTasks);
-        return <Text>errorAssignedTasks</Text>;
     }
 
     if (errorRoadmap) {
@@ -232,7 +201,7 @@ const TaskScreen = ({ navigation }) => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks && loadingAssignedTasks && loadingCommittees && loadingRoadmap && loadingDivisions}
+                        refreshing={loadingTasks && loadingCommittees && loadingRoadmap && loadingDivisions}
                         onRefresh={onRefresh} />
                 }
             >
@@ -265,7 +234,7 @@ const TaskScreen = ({ navigation }) => {
             <FlatList
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks && loadingAssignedTasks && loadingCommittees && loadingRoadmap && loadingDivisions}
+                        refreshing={loadingTasks && loadingCommittees && loadingRoadmap && loadingDivisions}
                         onRefresh={onRefresh} />
                 }
                 ListHeaderComponentStyle={styles.screen}
@@ -273,8 +242,8 @@ const TaskScreen = ({ navigation }) => {
                 keyExtractor={item => item.id}
                 ListHeaderComponent={
                     <View style={styles.taskStatusContainer}>
-                        <View style={styles.pending}>
-                            <Text style={styles.textStatus}>Pending: {pendingTask.length} Tasks</Text>
+                        <View style={styles.incompleted}>
+                            <Text style={styles.textStatus}>Incompleted: {incompletedTask.length} Tasks</Text>
                         </View>
                         <Divider style={[styles.dividerStatus, {
                             transform: [
@@ -282,7 +251,7 @@ const TaskScreen = ({ navigation }) => {
                             ]
                         }]} />
                         <View style={styles.completed}>
-                            <Text style={styles.textStatus}>Completed: {completeTask.length} Tasks</Text>
+                            <Text style={styles.textStatus}>Completed: {completedTask.length} Tasks</Text>
                         </View>
                     </View>
                 }
@@ -290,7 +259,6 @@ const TaskScreen = ({ navigation }) => {
                     <Task
                         tasks={tasksValue}
                         committees={committeesValue}
-                        assignedTasks={assignedTasksValue}
                         divisions={divisionsValue}
                         task={itemData.item}
                         taskId={itemData.item.id}
@@ -302,13 +270,12 @@ const TaskScreen = ({ navigation }) => {
                         completedTasksStateUpdate={completedTasksStateUpdate}
                         deleteTasksStateUpdate={deleteTasksStateUpdate}
                         updateTasksStateUpdate={updateTasksStateUpdate}
-                        deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
                         priority={itemData.item.priority}
                         completed_date={itemData.item.completed_date}
                         createdAt={itemData.item.createdAt}
                         createdBy={itemData.item.createdBy}
-                        assignedTasksStateUpdate={assignedTasksStateUpdate}
                         roadmap={roadmapValue}
+                        onRefresh={onRefresh}
                     >
                     </Task>
                 )}
@@ -353,14 +320,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    pending: {
+    incompleted: {
         backgroundColor: 'white',
-        marginLeft: 55,
+        marginLeft: 40,
         marginVertical: 10
     },
     completed: {
         backgroundColor: 'white',
-        marginRight: 55,
+        marginRight: 40,
         marginVertical: 10
     },
     taskStatusContainer: {

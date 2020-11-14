@@ -6,9 +6,9 @@ import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import FABbutton from '../../components/common/FABbutton';
-import ProjectCard from '../../components/project/ProjectCard';
-import FormProject from '../../components/project/FormProject';
-import FormEditProject from '../../components/project/FormEditProject';
+import ProjectCard from '../../components/home/ProjectCard';
+import FormProject from '../../components/home/FormProject';
+import FormEditProject from '../../components/home/FormEditProject';
 import { theme } from '../../constants/Theme';
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_PROJECTS_QUERY, FETCH_PROJECT_QUERY, DELETE_PROJECT, CANCEL_PROJECT_MUTATION } from '../../util/graphql';

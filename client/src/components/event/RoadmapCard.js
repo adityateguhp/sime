@@ -35,13 +35,8 @@ const RoadmapCard = props => {
     );
 
     useEffect(() => {
-        const unsubscribe = props.navigation.addListener('focus', () => {
-            refetch();
-        });
-
-        // Return the function to unsubscribe from the event so it gets removed on unmount
-        return unsubscribe;
-    }, [props.navigation]);
+        refetch();
+    }, [props.onRefresh]);
 
     const startDate = moment(props.start_date).format('ll');
     const endDate = moment(props.end_date).format('ll');

@@ -382,6 +382,7 @@ const TaskModal = props => {
                                 <AssignedToModal
                                     visible={visible}
                                     closeButton={closeModal}
+                                    project_name={props.project_name}
                                     priority={values.priority}
                                     taskId={props.taskId}
                                     roadmapId={props.roadmapId}

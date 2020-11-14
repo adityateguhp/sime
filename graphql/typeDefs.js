@@ -131,7 +131,6 @@ module.exports = gql`
 
     type Task_assigned_to {
         id: ID!
-        roadmap_id: ID!
         task_id: ID!
         committee_id: ID!
         createdAt: String!
@@ -169,8 +168,9 @@ module.exports = gql`
         getRundowns(eventId: ID!): [Rundown]
         getRundown(rundownId: ID!): Rundown 
         getTasks(roadmapId: ID!): [Task]
+        getTasksCreatedBy(createdBy: ID!): [Task]
         getTask(taskId: ID!): Task
-        getAssignedTasks(roadmapId: ID!): [Task_assigned_to]
+        getAssignedTasks(taskId: ID!): [Task_assigned_to]
         getAssignedTask(assignedId: ID!): Task_assigned_to
         getAssignedTasksByCommittee(committeeId: ID!): [Task_assigned_to]
     }
@@ -410,7 +410,6 @@ module.exports = gql`
         completedTask(taskId: ID!, completed: Boolean!, completed_date: String): Task!
 
         assignedTask(
-            roadmapId: ID!
             taskId: ID!
             committeeId: ID!
         ): Task_assigned_to!
@@ -421,6 +420,10 @@ module.exports = gql`
 
         deleteAssignedTaskByCommittee(
             committeeId: ID!
+        ): String!
+
+        deleteAssignedTaskByTask(
+            taskId: ID!
         ): String!
     }
 `;

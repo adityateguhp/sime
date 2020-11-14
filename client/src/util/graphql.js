@@ -1196,6 +1196,24 @@ export const FETCH_TASKS_QUERY = gql`
   }
 `;
 
+export const FETCH_TASKS_CREATEDBY_QUERY = gql`
+  query($createdBy: ID!) {
+    getTasksCreatedBy(createdBy: $createdBy){
+    id
+    name
+    description
+    completed
+    due_date
+    completed_date
+    priority
+    roadmap_id
+    createdAt
+    createdBy
+  }
+  }
+`;
+
+
 export const FETCH_TASK_QUERY = gql`
    query($taskId: ID!) {
     getTask(taskId: $taskId){
@@ -1311,10 +1329,9 @@ export const COMPLETED_TASK = gql`
 `;
 
 export const FETCH_ASSIGNED_TASKS_QUERY = gql`
-  query($roadmapId: ID!){
-    getAssignedTasks(roadmapId: $roadmapId){
+  query($taskId: ID!){
+    getAssignedTasks(taskId: $taskId){
       id
-      roadmap_id
       task_id
       committee_id
       createdAt
@@ -1327,7 +1344,6 @@ export const FETCH_ASSIGNED_TASK_QUERY = gql`
   query($assignedId: ID!){
     getAssignedTask(assignedId: $assignedId){
       id
-      roadmap_id
       task_id
       committee_id
       createdAt
@@ -1340,7 +1356,6 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYCOMMITTEE = gql`
   query($committeeId: ID!){
     getAssignedTasksByCommittee(committeeId: $committeeId){
       id
-      roadmap_id
       task_id
       committee_id
       createdAt
@@ -1350,10 +1365,9 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYCOMMITTEE = gql`
 
 
 export const ASSIGNED_TASK_MUTATION = gql`
-  mutation assignedTask($roadmapId: ID!, $taskId: ID!, $committeeId: ID!) {
-    assignedTask(roadmapId: $roadmapId, taskId: $taskId, committeeId: $committeeId) {
+  mutation assignedTask($taskId: ID!, $committeeId: ID!) {
+    assignedTask(taskId: $taskId, committeeId: $committeeId) {
       id
-      roadmap_id
       task_id
       committee_id
       createdAt
@@ -1370,5 +1384,11 @@ export const DELETE_ASSIGNED_TASK = gql`
 export const DELETE_ASSIGNED_TASK_BYCOMMITTEE = gql`
   mutation deleteAssignedTaskByCommittee($committeeId: ID!) {
     deleteAssignedTaskByCommittee(committeeId: $committeeId)
+  }
+`;
+
+export const DELETE_ASSIGNED_TASK_BYTASK = gql`
+  mutation deleteAssignedTaskByTask($taskId: ID!) {
+    deleteAssignedTaskByTask(taskId: $taskId)
   }
 `;
