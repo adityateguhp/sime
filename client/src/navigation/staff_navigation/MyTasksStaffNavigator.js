@@ -11,11 +11,11 @@ import AssignedToMeScreen from '../../screens/home/AssignedToMeScreen';
 import CreatedByMeScreen from '../../screens/home/CreatedByMeScreen';
 import Colors from '../../constants/Colors';
 
-const TopTabMyTask = createMaterialTopTabNavigator();
+const TopTabMyTaskStaff = createMaterialTopTabNavigator();
 
-function TopTabMytasks() {
+function TopTabMyTasksStaff() {
   return (
-    <TopTabMyTask.Navigator
+    <TopTabMyTaskStaff.Navigator
       initialRouteName="Assigned To Me"
       backBehavior="none"
       tabBarOptions={{
@@ -26,15 +26,15 @@ function TopTabMytasks() {
         style: { backgroundColor: Colors.primaryColor }
       }}
     >
-      <TopTabMyTask.Screen name="Assigned To Me" component={AssignedToMeScreen} />
-      <TopTabMyTask.Screen name="Created By Me" component={CreatedByMeScreen} />
-    </TopTabMyTask.Navigator>
+      <TopTabMyTaskStaff.Screen name="Assigned To Me" component={AssignedToMeScreen} />
+      <TopTabMyTaskStaff.Screen name="Created By Me" component={CreatedByMeScreen} />
+    </TopTabMyTaskStaff.Navigator>
   );
 }
 
-const MyTasksStack = createStackNavigator();
+const MyTasksStaffStack = createStackNavigator();
 
-export default function MyTasksNavigator({ route, navigation }) {
+export default function MyTasksStaffNavigator({ route, navigation }) {
     const sime = useContext(SimeContext);
     const [userId, setUserId] = useState(null)
     const [userPict, setUserPict] = useState('')
@@ -59,7 +59,7 @@ export default function MyTasksNavigator({ route, navigation }) {
       }
     }, [sime.user, staff])
     return (
-      <MyTasksStack.Navigator
+      <MyTasksStaffStack.Navigator
         screenOptions={{
           headerStyle: {
             backgroundColor: Colors.primaryColor,
@@ -70,9 +70,9 @@ export default function MyTasksNavigator({ route, navigation }) {
           }
         }}
       >
-        <MyTasksStack.Screen
+        <MyTasksStaffStack.Screen
           name="My Tasks"
-          component={TopTabMytasks}
+          component={TopTabMyTasksStaff}
           options={{
             headerLeft: () => (
               <TouchableOpacity
@@ -89,6 +89,6 @@ export default function MyTasksNavigator({ route, navigation }) {
             ),
           }}
         />
-      </MyTasksStack.Navigator>
+      </MyTasksStaffStack.Navigator>
     );
   }

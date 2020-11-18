@@ -22,7 +22,7 @@ const EventCard = props => {
 
     return (
         <View>
-            <TouchableCmp onPress={props.onSelect} onLongPress={sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' ? props.onLongPress : null} useForeground>
+            <TouchableCmp onPress={props.onSelect} onLongPress={sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ? props.onLongPress : null} useForeground>
                 <Card style={styles.event}>
                     <Card.Title
                         title={props.name}

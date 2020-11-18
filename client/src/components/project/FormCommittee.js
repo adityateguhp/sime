@@ -33,7 +33,7 @@ const FormCommittee = props => {
         positionId: '',
         divisionId: '',
         projectId: sime.project_id,
-        organizationId: sime.user_type === "Organization"? sime.user.id : sime.user.organization_id,
+        organizationId: sime.user_type === "Organization" ? sime.user.id : sime.user.organization_id,
         order: ''
     });
 
@@ -78,6 +78,14 @@ const FormCommittee = props => {
             setPositionsFiltered(pos)
         }
     };
+
+    useEffect(() => {
+        if (sime.order === '6' || sime.order === '7') {
+            setValues({ ...values, divisionId: sime.userCommitteeDivision, positionId: '', staffId: '' });
+            const pos = props.positions.filter((e) => e.core === false);
+            setPositionsFiltered(pos)
+        }
+    },[props.openForm])
 
     let checkStaffs = [];
     props.committees.map((committee) =>
@@ -207,16 +215,26 @@ const FormCommittee = props => {
                                     {errors.staff_error ? <Text style={styles.error}>{errors.staff_error}</Text> : null}
                                 </View>
                                 <View>
-                                    <Dropdown
-                                        useNativeDriver={true}
-                                        label='Division'
-                                        value={values.divisionId}
-                                        data={props.divisions}
-                                        valueExtractor={({ id }) => id}
-                                        labelExtractor={({ name }) => name}
-                                        onChangeText={(val) => onChangeDivision('divisionId', val, 'division_error')}
-                                        error={errors.division_error}
-                                    />
+                                    {sime.order === '6' ||sime.order === '7' ?
+                                        <Dropdown
+                                            useNativeDriver={true}
+                                            label='Division'
+                                            disabled={true}
+                                            value={values.divisionId}
+                                            data={props.divisions}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                        /> :
+                                        <Dropdown
+                                            useNativeDriver={true}
+                                            label='Division'
+                                            value={values.divisionId}
+                                            data={props.divisions}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChangeDivision('divisionId', val, 'division_error')}
+                                            error={errors.division_error}
+                                        />}
                                     {errors.division_error ? <Text style={styles.error}>{errors.division_error}</Text> : null}
                                 </View>
                                 <View>

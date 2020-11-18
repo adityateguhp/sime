@@ -313,7 +313,7 @@ module.exports = gql`
 
         addCommittee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!, organizationId: ID!, order: String!): Committee!
         
-        updateCommittee(committeeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!, organization_id: ID!, order: String!): Committee!
+        updateCommittee(committeeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!, order: String!): Committee!
         
         deleteCommittee(committeeId: ID!): String!
 

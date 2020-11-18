@@ -261,21 +261,12 @@ const TaskScreen = ({ navigation }) => {
                         committees={committeesValue}
                         divisions={divisionsValue}
                         task={itemData.item}
-                        taskId={itemData.item.id}
-                        roadmapId={itemData.item.roadmap_id}
-                        name={itemData.item.name}
-                        due_date={itemData.item.due_date}
-                        completed={itemData.item.completed}
-                        roadmapId={itemData.item.roadmap_id}
                         completedTasksStateUpdate={completedTasksStateUpdate}
                         deleteTasksStateUpdate={deleteTasksStateUpdate}
                         updateTasksStateUpdate={updateTasksStateUpdate}
-                        priority={itemData.item.priority}
-                        completed_date={itemData.item.completed_date}
-                        createdAt={itemData.item.createdAt}
-                        createdBy={itemData.item.createdBy}
                         roadmap={roadmapValue}
                         onRefresh={onRefresh}
+                        taskScreen={true}
                     >
                     </Task>
                 )}

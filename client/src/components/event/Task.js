@@ -29,29 +29,37 @@ const Task = props => {
     const [due_date, setDue_date] = useState('');
     const [completed_date, setCompleted_date] = useState('');
     const [completedValue, setCompletedValue] = useState({
-        taskId: props.taskId,
-        completed: props.completed,
-        completed_date: props.completed_date
+        taskId: props.task.id,
+        completed: props.task.completed,
+        completed_date: props.task.completed_date
     });
     const [assignedTasksValue, setAssignedTasksValue] = useState([]);
 
     const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch } = useQuery(
         FETCH_ASSIGNED_TASKS_QUERY,
         {
-            variables: { taskId: props.taskId },
+            variables: { taskId: props.task.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
         }
     );
 
+    const completeTaskScreen = (proxy, result) => {
+        const data = proxy.readQuery({
+            query: FETCH_TASKS_QUERY,
+            variables: { roadmapId: props.task.roadmap_id },
+        });
+        props.completedTasksStateUpdate(result.data.completedTask);
+        proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
+    }
+
+    const completeMyTaskScreen = (result) => {
+        props.completedTasksStateUpdate(result.data.completedTask);
+    }
+
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
-            const data = proxy.readQuery({
-                query: FETCH_TASKS_QUERY,
-                variables: { roadmapId: props.roadmapId },
-            });
-            props.completedTasksStateUpdate(result.data.completedTask);
-            proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+            props.taskScreen? completeTaskScreen(proxy, result) : completeMyTaskScreen(result);
         },
         onError(err) {
             console.log(err)
@@ -62,19 +70,28 @@ const Task = props => {
 
     const [deleteAssignedTaskByTask] = useMutation(DELETE_ASSIGNED_TASK_BYTASK);
 
+    const deleteTaskScreen = (proxy) => {
+        const data = proxy.readQuery({
+            query: FETCH_TASKS_QUERY,
+            variables: { roadmapId: props.task.roadmap_id }
+        });
+        props.tasks = props.tasks.filter((p) => p.id !== props.task.id);
+        props.deleteTasksStateUpdate(props.task.id);
+        deleteAssignedTaskByTask({variables: {taskId: props.task.id}});
+        proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
+    }
+
+    const deleteMyTaskScreen = () => {
+        deleteAssignedTaskByTask({variables: {taskId: props.task.id}, update(){props.setDeleteCalled(false)}});
+        props.deleteTasksStateUpdate(props.task.id);
+    }
+
     const [deleteTask] = useMutation(DELETE_TASK, {
         update(proxy) {
-            const data = proxy.readQuery({
-                query: FETCH_TASKS_QUERY,
-                variables: { roadmapId: props.roadmapId }
-            });
-            props.tasks = props.tasks.filter((p) => p.id !== props.taskId);
-            props.deleteTasksStateUpdate(props.taskId);
-            deleteAssignedTaskByTask({variables: {taskId: props.taskId}});
-            proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
+           props.taskScreen? deleteTaskScreen(proxy) : deleteMyTaskScreen();
         },
         variables: {
-            taskId: props.taskId
+            taskId: props.task.id
         }
     });
 
@@ -140,23 +157,23 @@ const Task = props => {
     }
 
     const nowDate = new Date();
-    const dueDate = new Date(props.due_date)
+    const dueDate = new Date(props.task.due_date)
 
     useEffect(() => {
-        if (props.due_date !== '') {
+        if (props.task.due_date !== '') {
             if (dueDate > nowDate) {
-                setDue_date(moment(props.due_date).format('ddd, MMM D YYYY h:mm a'));
+                setDue_date(moment(props.task.due_date).format('ddd, MMM D YYYY h:mm a'));
             } else {
-                setDue_date(durationAsString(props.due_date, nowDate));
+                setDue_date(durationAsString(props.task.due_date, nowDate));
             }
         }
-    }, [props.due_date])
+    }, [props.task.due_date])
 
     useEffect(() => {
-        if (props.completed_date !== '') {
-            setCompleted_date(moment(props.completed_date).format('ddd, MMM D YYYY h:mm a'))
+        if (props.task.completed_date !== '') {
+            setCompleted_date(moment(props.task.completed_date).format('ddd, MMM D YYYY h:mm a'))
         }
-    }, [props.completed_date])
+    }, [props.task.completed_date])
 
     useEffect(() => {
         refetch();
@@ -168,34 +185,34 @@ const Task = props => {
                 <View style={{
                     ...styles.taskContainer, ...{
                         backgroundColor:
-                            props.priority === "high" ? "#ff4943" :
-                                props.priority === "medium" ? "#a3cd3b" :
-                                    props.priority === "low" ? "#ffc916" : "#e2e2e2",
+                            props.task.priority === "high" ? "#ff4943" :
+                                props.task.priority === "medium" ? "#a3cd3b" :
+                                    props.task.priority === "low" ? "#ffc916" : "#e2e2e2",
                     }
                 }}>
                     <View style={styles.checkTask}>
                         <Checkbox
                             onPress={onPressCheck}
-                            status={props.completed ? 'checked' : 'unchecked'}
+                            status={props.task.completed ? 'checked' : 'unchecked'}
                             color="white"
                             uncheckedColor="white" />
                     </View>
                     <TouchableCmp onPress={openModal}>
                         <View style={styles.task}>
                             <View>
-                                <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.completed ? 'line-through' : 'none', opacity: props.completed ? 0.6 : 1 } }}>{props.name}</Subheading>
-                                {props.completed ?
-                                    <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
+                                <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.task.completed ? 'line-through' : 'none', opacity: props.task.completed ? 0.6 : 1 } }}>{props.task.name}</Subheading>
+                                {props.task.completed ?
+                                    <Caption style={{ ...styles.statusTask, ...{ opacity: props.task.completed ? 0.6 : 1 } }}>{"Completed on " + completed_date}</Caption>
                                     :
                                     dueDate > nowDate ?
-                                        <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
+                                        <Caption style={{ ...styles.statusTask, ...{ opacity: props.task.completed ? 0.6 : 1 } }}>{"Due on " + due_date}</Caption>
                                         :
                                         dueDate < nowDate ?
-                                            <Caption style={{ ...styles.statusTask, ...{ opacity: props.completed ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption> :
+                                            <Caption style={{ ...styles.statusTask, ...{ opacity: props.task.completed ? 0.6 : 1, color: theme.colors.error } }}>{"Overdue by " + due_date}</Caption> :
                                             null}
                             </View>
                             <View style={styles.taskSub}>
-                                <View style={{ ...styles.people, ...{ opacity: props.completed ? 0.6 : 1 } }}>
+                                <View style={{ ...styles.people, ...{ opacity: props.task.completed ? 0.6 : 1 } }}>
                                     <Icon name="account-multiple" size={16} color="grey" />
                                     <Caption style={{ marginLeft: 3 }}>{assignedTasksValue.length}</Caption>
                                 </View>
@@ -207,17 +224,17 @@ const Task = props => {
             <TaskModal
                 visible={visible}
                 closeButton={closeModal}
-                taskId={props.taskId}
-                roadmapId={props.roadmapId}
-                name={props.name}
+                taskId={props.task.id}
+                roadmapId={props.task.roadmap_id}
+                name={props.task.name}
                 project_name={props.project_name}
                 assignedTasks={assignedTasksValue}
                 committees={props.committees}
                 divisions={props.divisions}
                 roadmap={props.roadmap}
-                createdBy={props.createdBy}
-                createdAt={props.createdAt}
-                completed={props.completed}
+                createdBy={props.task.createdBy}
+                createdAt={props.task.createdAt}
+                completed={props.task.completed}
                 checkButton={onPressCheck}
                 deleteButton={deleteHandler}
                 updateTasksStateUpdate={props.updateTasksStateUpdate}

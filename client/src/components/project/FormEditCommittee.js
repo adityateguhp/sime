@@ -7,7 +7,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
-import { FETCH_COMMITTEES_QUERY, UPDATE_COMMITTEE_MUTATION  } from '../../util/graphql';
+import { FETCH_COMMITTEES_QUERY, UPDATE_COMMITTEE_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import { theme } from '../../constants/Theme';
 
@@ -55,7 +55,7 @@ const FormCommittee = props => {
     let coreDivision = null
     props.divisions.map((division) => {
         if (division.name === "Core Committee") {
-            coreDivision=division.id
+            coreDivision = division.id
         } else {
             return null
         }
@@ -114,12 +114,12 @@ const FormCommittee = props => {
     let filteredPositions = []
     positionsFiltered.map((position) => {
         if (checkPositions.indexOf(position.id) > -1) {
-            if (props.committee.position_id === position.id){
+            if (props.committee.position_id === position.id) {
                 filteredPositions.push(position)
-            }else{
+            } else {
                 return null
             }
-        } else{
+        } else {
             filteredPositions.push(position)
         }
     })
@@ -200,20 +200,29 @@ const FormCommittee = props => {
                                         data={props.staffs}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
-                                        onChangeText={(val) => onChange('staffId', val, 'staff_error')}
                                     />
                                 </View>
                                 <View>
-                                    <Dropdown
-                                        useNativeDriver={true}
-                                        label='Division'
-                                        value={values.divisionId}
-                                        data={props.divisions}
-                                        valueExtractor={({ id }) => id}
-                                        labelExtractor={({ name }) => name}
-                                        onChangeText={(val) => onChangeDivision('divisionId', val, 'division_error')}
-                                        error={errors.division_error}
-                                    />
+                                    {sime.order === '6' ||sime.order === '7' ?
+                                        <Dropdown
+                                            useNativeDriver={true}
+                                            label='Division'
+                                            disabled={true}
+                                            value={values.divisionId}
+                                            data={props.divisions}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                        /> :
+                                        <Dropdown
+                                            useNativeDriver={true}
+                                            label='Division'
+                                            value={values.divisionId}
+                                            data={props.divisions}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChangeDivision('divisionId', val, 'division_error')}
+                                            error={errors.division_error}
+                                        />}
                                     {errors.division_error ? <Text style={styles.error}>{errors.division_error}</Text> : null}
                                 </View>
                                 <View>
@@ -268,7 +277,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: theme.colors.error,
         paddingHorizontal: 4
-      },
+    },
 });
 
 

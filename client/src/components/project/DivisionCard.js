@@ -15,7 +15,7 @@ const DivisionCard = props => {
     const sime = useContext(SimeContext);
 
     return (
-        <TouchableCmp onLongPress={ props.name === "Core Committee"? null : sime.order === '1' || sime.order ==='2' || sime.user_type === "Organization"? props.onLongPress : null}>
+        <TouchableCmp onLongPress={ props.name === "Core Committee"? null : sime.order === '1' || sime.order ==='2' || sime.order ==='3' || sime.user_type === "Organization"? props.onLongPress : null}>
             <View style={styles.container}>
                 <List.Section
                     style={styles.accordion}

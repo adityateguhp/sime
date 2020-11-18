@@ -164,6 +164,9 @@ const CommitteeList = props => {
                 onPress={() => { selectItemHandler() }}
                 onLongPress={sime.order === '1' && sime.userCommitteeId !== props.committee_id ||
                     sime.order === '2' && sime.userCommitteeId !== props.committee_id && props.order !== '1' ||
+                    sime.order === '3' && sime.userCommitteeId !== props.committee_id && props.order !== '1' && props.order !== '2' ||
+                    sime.order === '6' && sime.userCommitteeId !== props.committee_id && sime.userCommitteeDivision === props.division_id ||
+                    sime.order === '7' && sime.userCommitteeId !== props.committee_id && sime.userCommitteeDivision === props.division_id && props.order !== '6' ||
                     sime.user_type === "Organization" ? () => { longPressHandler(props.committee_id, props.staff_id, staff.getStaff.name) } : null}
                 useForeground>
                 <View style={styles.wrap}>
@@ -177,6 +180,9 @@ const CommitteeList = props => {
             </TouchableCmp>
             {sime.order === '1' && sime.userCommitteeId !== props.committee_id ||
                 sime.order === '2' && sime.userCommitteeId !== props.committee_id && props.order !== '1' ||
+                sime.order === '3' && sime.userCommitteeId !== props.committee_id && props.order !== '1' && props.order !== '2' ||
+                sime.order === '6' && sime.userCommitteeId !== props.committee_id && sime.userCommitteeDivision === props.division_id ||
+                sime.order === '7' && sime.userCommitteeId !== props.committee_id && sime.userCommitteeDivision === props.division_id && props.order !== '6' ||
                 sime.user_type === "Organization" ?
                 <Portal>
                     <Modal

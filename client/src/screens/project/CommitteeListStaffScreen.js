@@ -5,6 +5,7 @@ import { Provider, Portal, Title, Text, Snackbar, FAB } from 'react-native-paper
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
+import FABbutton from '../../components/common/FABbutton';
 import FormCommittee from '../../components/project/FormCommittee';
 import FormEditDivision from '../../components/project/FormEditDivision';
 import FormDivision from '../../components/project/FormDivision';
@@ -131,6 +132,7 @@ const CommitteeListStaffScreen = ({ navigation }) => {
             onCompleted: () => {
                 sime.setOrder(committeeStaff.getCommitteesByStaffProject.order)
                 sime.setUserCommitteeId(committeeStaff.getCommitteesByStaffProject.id)
+                sime.setUserCommitteeDivision(committeeStaff.getCommitteesByStaffProject.division_id)
             }
         });
 
@@ -316,11 +318,12 @@ const CommitteeListStaffScreen = ({ navigation }) => {
             });
             data.getDivisions = data.getDivisions.filter((d) => d.id !== divisionId);
             deleteDivisionsStateUpdate(divisionId);
-            deleteCommitteeByDivision({ 
-                update(){
+            deleteCommitteeByDivision({
+                update() {
                     onRefresh();
-            },
-            variables: {divisionId}})
+                },
+                variables: { divisionId }
+            })
             deleteAssignedTaskByCommitteeHandler();
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
@@ -441,7 +444,7 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                     />
                 )}
             />
-            { sime.order === '1' || sime.order === '2' ?
+            { sime.order === '1' || sime.order === '2' || sime.order === '3' ?
                 <Portal>
                     <Modal
                         useNativeDriver={true}
@@ -543,7 +546,41 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                     >
                         Division deleted!
             </Snackbar>
-                </Portal> : null}
+                </Portal> :
+                sime.order === '6' || sime.order === '7' ?
+                    <Portal>
+                        <FABbutton Icon="plus" label="commitee" onPress={openForm} />
+                        <FormCommittee
+                            openForm={openForm}
+                            closeModalForm={closeModalForm}
+                            visibleForm={visibleForm}
+                            closeButton={closeModalForm}
+                            staffs={staffsValue}
+                            divisions={divisionsValue}
+                            positions={positionsValue}
+                            committees={committeesValue}
+                            addCommitteesStateUpdate={addCommitteesStateUpdate}
+                        />
+                        <Snackbar
+                            visible={visibleAdd}
+                            onDismiss={onDismissSnackBarAdd}
+                        >
+                            Committee added!
+                        </Snackbar>
+                        <Snackbar
+                            visible={visibleUpdate}
+                            onDismiss={onDismissSnackBarUpdate}
+                        >
+                            Committee updated!
+                        </Snackbar>
+                        <Snackbar
+                            visible={visibleDelete}
+                            onDismiss={onDismissSnackBarDelete}
+                        >
+                            Committee deleted!
+                        </Snackbar>
+                    </Portal>
+                    : null}
         </Provider>
     );
 }

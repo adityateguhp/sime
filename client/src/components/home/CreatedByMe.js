@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import {
     FETCH_COMMITTEES_QUERY,
@@ -18,41 +18,46 @@ const CreatedByMe = props => {
     const [committeesValue, setCommitteesValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);
 
-    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
+    const [loadCommitteesData, { data: committees, error: errorCommittees, loading: loadingCommittees }] = useLazyQuery(
         FETCH_COMMITTEES_QUERY,
         {
             variables: { projectId: props.project.id },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => {
-                committees.getCommittees.sort(function (a, b) {
-                    var textA = a.order;
-                    var textB = b.order;
-
-                    return textA.localeCompare(textB)
-                });
-                setCommitteesValue(committees.getCommittees)
-            }
+            notifyOnNetworkStatusChange: true
         }
     );
 
-    const { data: divisions, error: errorDivisions, loading: loadingDivisions, refetch: refetchDivisions } = useQuery(
+    const [loadDivisionsData, { data: divisions, error: errorDivisions, loading: loadingDivisions }] = useLazyQuery(
         FETCH_DIVISIONS_QUERY,
         {
             variables: { projectId: props.project.id },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => { setDivisionsValue(divisions.getDivisions) }
+            notifyOnNetworkStatusChange: true
         }
     );
 
-
-    const onRefresh = () => {
-        refetchCommittees();
-        refetchDivisions();
-    }
+    useEffect(() => {
+        if (props.project.id) {
+            loadCommitteesData();
+            loadDivisionsData();
+        }
+    }, [props.project])
 
     useEffect(() => {
-        onRefresh();
-    }, [props.onRefresh]);
+        if (committees) {
+            committees.getCommittees.sort(function (a, b) {
+                var textA = a.order;
+                var textB = b.order;
+
+                return textA.localeCompare(textB)
+            });
+            setCommitteesValue(committees.getCommittees)
+        }
+    }, [committees])
+
+    useEffect(() => {
+        if (divisions) {
+            setDivisionsValue(divisions.getDivisions)
+        }
+    }, [divisions])
 
     return (
         <View style={styles.container}>
@@ -70,25 +75,17 @@ const CreatedByMe = props => {
                 </TouchableCmp>
             </View>
             <Task
+                project_name={props.project.name}
                 tasks={props.tasks}
                 committees={committeesValue}
                 divisions={divisionsValue}
                 task={props.task}
-                taskId={props.task.id}
-                roadmapId={props.task.roadmap_id}
-                name={props.task.name}
-                project_name={props.project.name}
-                due_date={props.task.due_date}
-                completed={props.task.completed}
                 completedTasksStateUpdate={props.completedTasksStateUpdate}
                 deleteTasksStateUpdate={props.deleteTasksStateUpdate}
                 updateTasksStateUpdate={props.updateTasksStateUpdate}
-                priority={props.task.priority}
-                completed_date={props.task.completed_date}
-                createdAt={props.task.createdAt}
-                createdBy={props.task.createdBy}
                 roadmap={props.roadmap}
                 onRefresh={props.onRefresh}
+                taskScreen={true}
             />
         </View>
     );
@@ -109,7 +106,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 15
     },
-    breadcrumbContainer:{
+    breadcrumbContainer: {
         flexDirection: 'row',
         alignItems: 'center'
     }

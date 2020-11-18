@@ -21,7 +21,8 @@ import UsersManagementNavigator from './organization_navigation/UsersManagementN
 import OrganizationProfileNavigator from './organization_navigation/OrganizationProfileNavigator'
 import StaffProfileNavigator from './staff_navigation/StaffProfileNavigator'
 import StaffOrganizationProfileNavigator from './staff_navigation/StaffOrganizationProfileNavigator'
-import MyTasksNavigator from './staff_navigation/MyTasksNavigator'
+import MyTasksStaffNavigator from './staff_navigation/MyTasksStaffNavigator'
+import MyTasksNavigator from './organization_navigation/MyTasksNavigator'
 import Colors from '../constants/Colors';
 
 function TabVisible(route) {
@@ -35,6 +36,8 @@ function TabVisible(route) {
     case 'Dashboard':
       return true;
     case 'Projects':
+      return true;
+    case 'My Tasks':
       return true;
     default:
       return false;
@@ -83,6 +86,9 @@ function BottomTabs() {
           } else if (route.name === 'Projects') {
             iconName = focused ? 'folder-open' : 'folder';
           }
+          else if (route.name === 'My Tasks') {
+            iconName = focused ? 'clipboard-text' : 'clipboard-text-outline';
+          }
 
           // You can return any component that you like here!
           return <Icon name={iconName} size={size} color={color} />;
@@ -90,6 +96,7 @@ function BottomTabs() {
       })}
     >
       <BottomTab.Screen name="Dashboard" component={DashboardNavigator} />
+      <BottomTabStaff.Screen name="My Tasks" component={MyTasksNavigator} />
       <BottomTab.Screen name="Projects" component={ProjectNavigator} />
     </BottomTab.Navigator>
   );
@@ -128,7 +135,7 @@ function BottomTabsStaff() {
       })}
     >
       <BottomTabStaff.Screen name="Dashboard" component={DashboardStaffNavigator} />
-      <BottomTabStaff.Screen name="My Tasks" component={MyTasksNavigator} />
+      <BottomTabStaff.Screen name="My Tasks" component={MyTasksStaffNavigator} />
       <BottomTabStaff.Screen name="My Projects" component={ProjectStaffNavigator} />
     </BottomTabStaff.Navigator>
   );

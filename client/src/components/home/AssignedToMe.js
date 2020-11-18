@@ -31,7 +31,6 @@ const AssignedToMe = props => {
         createdAt: '',
         createdBy: ''
     });
-    const [tasksValue, setTasksValue] = useState([]);
     const [roadmapValue, setRoadmapValue] = useState({
         id: '',
         name: '',
@@ -59,7 +58,7 @@ const AssignedToMe = props => {
             variables: { taskId: props.taskId },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                if (task.getTask === null) {
+                if (task.getTask === null || props.deleteCalled) {
                     setRoadmapValue({
                         id: '',
                         name: '',
@@ -68,7 +67,6 @@ const AssignedToMe = props => {
                         end_date: '',
                         createdAt: ''
                     });
-                    setTasksValue([]);
                 } else {
                     setTaskValue({
                         id: task.getTask.id,
@@ -82,17 +80,7 @@ const AssignedToMe = props => {
                         createdAt: task.getTask.createdAt,
                         createdBy: task.getTask.createdBy
                     })
-                    loadTasksData();
                     loadRoadmapData();
-                    if (tasks) {
-                        tasks.getTasks.sort(function (x, y) {
-                            return new Date(x.createdAt) - new Date(y.createdAt);
-                        }).reverse();
-                        tasks.getTasks.sort(function (x, y) {
-                            return Number(x.completed) - Number(y.completed);
-                        });
-                        setTasksValue(tasks.getTasks)
-                    }
                     if (roadmap) {
                         setRoadmapValue({
                             id: roadmap.getRoadmap.id,
@@ -136,14 +124,6 @@ const AssignedToMe = props => {
             notifyOnNetworkStatusChange: true
         });
 
-    const [loadTasksData, { data: tasks, error: errorTasks, loading: loadingTasks }] = useLazyQuery(
-        FETCH_TASKS_QUERY,
-        {
-            variables: { roadmapId: taskValue.roadmap_id },
-            notifyOnNetworkStatusChange: true
-        }
-    );
-
     useEffect(() => {
         if (roadmap) {
             setRoadmapValue({
@@ -168,17 +148,6 @@ const AssignedToMe = props => {
         }
     }, [event])
 
-    useEffect(() => {
-        if (tasks) {
-            tasks.getTasks.sort(function (x, y) {
-                return new Date(x.createdAt) - new Date(y.createdAt);
-            }).reverse();
-            tasks.getTasks.sort(function (x, y) {
-                return Number(x.completed) - Number(y.completed);
-            });
-            setTasksValue(tasks.getTasks)
-        }
-    }, [tasks])
 
     const completedTasksStateUpdate = (e) => {
         setTaskValue(e)
@@ -202,12 +171,6 @@ const AssignedToMe = props => {
     const deleteTasksStateUpdate = (e) => {
         deleteTaskStateUpdate();
         props.deleteStateUpdate(e);
-        const temp = [...tasksValue];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e);
-        temp.splice(index, 1);
-        setTasksValue(temp);
         props.onToggleSnackBarDelete();
     }
 
@@ -245,25 +208,17 @@ const AssignedToMe = props => {
                 </TouchableCmp>
             </View>
             <Task
-                tasks={tasksValue}
                 project_name={projectValue.name}
                 committees={props.committees}
                 divisions={props.divisions}
                 task={taskValue}
-                taskId={taskValue.id}
-                roadmapId={taskValue.roadmap_id}
-                name={taskValue.name}
-                due_date={taskValue.due_date}
-                completed={taskValue.completed}
                 completedTasksStateUpdate={completedTasksStateUpdate}
                 deleteTasksStateUpdate={deleteTasksStateUpdate}
                 updateTasksStateUpdate={updateTasksStateUpdate}
-                priority={taskValue.priority}
-                completed_date={taskValue.completed_date}
-                createdAt={taskValue.createdAt}
-                createdBy={taskValue.createdBy}
                 roadmap={roadmapValue}
                 onRefresh={props.onRefresh}
+                taskScreen={false}
+                setDeleteCalled={props.setDeleteCalled}
             />
         </View>
     );

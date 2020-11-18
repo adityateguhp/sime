@@ -19,6 +19,7 @@ const AssignedToMeContainer = props => {
     const [assignedTasksValue, setAssignedTasksValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);
+    const [deleteCalled, setDeleteCalled] = useState(false)
 
     const { data: assignedTasksByCommittee, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_ASSIGNED_TASKS_QUERY_BYCOMMITTEE,
@@ -26,7 +27,9 @@ const AssignedToMeContainer = props => {
             variables: { committeeId: props.committeeId },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                setAssignedTasksValue(assignedTasksByCommittee.getAssignedTasksByCommittee)
+                if (!deleteCalled) {
+                    setAssignedTasksValue(assignedTasksByCommittee.getAssignedTasksByCommittee)
+                }
             }
         });
 
@@ -56,8 +59,8 @@ const AssignedToMeContainer = props => {
         }
     );
 
-
     const deleteStateUpdate = (e) => {
+        setDeleteCalled(true)
         const temp = [...assignedTasksValue];
         const index = temp.map(function (item) {
             return item.task_id
@@ -65,6 +68,8 @@ const AssignedToMeContainer = props => {
         temp.splice(index, 1);
         setAssignedTasksValue(temp);
     }
+
+    console.log(assignedTasksValue)
 
     const onRefresh = () => {
         refetch();
@@ -91,6 +96,8 @@ const AssignedToMeContainer = props => {
                     deleteStateUpdate={deleteStateUpdate}
                     onToggleSnackBarDelete={props.onToggleSnackBarDelete}
                     onToggleSnackBarUpdate={props.onToggleSnackBarUpdate}
+                    setDeleteCalled={setDeleteCalled}
+                    deleteCalled={deleteCalled}
                 />
             )}
         />

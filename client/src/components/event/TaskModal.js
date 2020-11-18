@@ -70,7 +70,7 @@ const TaskModal = props => {
                 priority: props.task.priority
             })
         }
-    }, [props.task, props.closeButton])
+    }, [props.task])
 
     useEffect(() => {
         if (props.roadmap) {
@@ -107,18 +107,26 @@ const TaskModal = props => {
         if (organization) {
             setCreatedByName(organization.getOrganization.name)
         }
-      }, [organization])
-    
+    }, [organization])
+
+    const updateTaskScreen = (proxy, result) => {
+        const data = proxy.readQuery({
+            query: FETCH_TASKS_QUERY,
+            variables: { roadmapId: props.task.roadmap_id }
+        });
+        props.updateTasksStateUpdate(result.data.updateTask);
+        props.closeButton();
+        proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
+    }
+
+    const updateMyTaskScreen = (result) => {
+        props.updateTasksStateUpdate(result.data.updateTask);
+        props.closeButton();
+    }
 
     const [updateTask, { loading }] = useMutation(UPDATE_TASK_MUTATION, {
         update(proxy, result) {
-            const data = proxy.readQuery({
-                query: FETCH_TASKS_QUERY,
-                variables: { roadmapId: props.task.roadmap_id }
-            });
-            props.updateTasksStateUpdate(result.data.updateTask);
-            props.closeButton();
-            proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
+            props.taskScreen ? updateTaskScreen(proxy, result) : updateMyTaskScreen(result);
         },
         onError(err) {
             const taskNameError = taskNameValidator(values.name);
@@ -352,7 +360,7 @@ const TaskModal = props => {
                                         {
                                             props.assignedTasks.length === 0 ? null :
                                                 props.assignedTasks.map((assigned) => (
-                                                    <View style={styles.chip}>
+                                                    <View style={styles.chip}  key={assigned.id}>
                                                         <CommitteeChipContainer
                                                             committeeId={assigned.committee_id}
                                                             assignedId={assigned.id}

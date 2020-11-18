@@ -271,7 +271,7 @@ const EventListScreen = ({ route, navigation }) => {
                 }
             >
                 <Text>No events found, let's add events!</Text>
-                { sime.user_type === "Organization" || sime.order === '1' ?
+                { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ?
                     <FABbutton Icon="plus" label="event" onPress={openForm} />
                     : null
                 }
@@ -324,7 +324,7 @@ const EventListScreen = ({ route, navigation }) => {
                     </EventCard>
                 )}
             />
-            { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' ?
+            { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ?
                 <Portal>
                     <Modal
                         useNativeDriver={true}

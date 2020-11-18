@@ -146,6 +146,7 @@ const EventOverviewScreen = ({ navigation }) => {
             guest.length === 0 ? <Text>-</Text> :
               guest.map((Guest) => (
                 <ExternalList
+                  key={Guest.id}
                   id={Guest.id}
                   name={Guest.name}
                   picture={Guest.picture}
@@ -160,6 +161,7 @@ const EventOverviewScreen = ({ navigation }) => {
             sponsor.length === 0 ? <Text>-</Text> :
               sponsor.map((Sponsor) => (
                 <ExternalList
+                  key={Sponsor.id}
                   id={Sponsor.id}
                   name={Sponsor.name}
                   picture={Sponsor.picture}
@@ -174,6 +176,7 @@ const EventOverviewScreen = ({ navigation }) => {
             media.length === 0 ? <Text>-</Text> :
               media.map((Media) => (
                 <ExternalList
+                  key={Media.id}
                   id={Media.id}
                   name={Media.name}
                   picture={Media.picture}
