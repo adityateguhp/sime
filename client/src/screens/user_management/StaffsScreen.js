@@ -322,7 +322,7 @@ const StaffsScreen = ({ navigation }) => {
                 }
             >
                 <Text>No staffs found, let's add staffs!</Text>
-                <FABbutton Icon="plus" label="staff" onPress={openForm} />
+                <FABbutton Icon="plus" onPress={openForm} />
                 <FormStaff
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -408,7 +408,7 @@ const StaffsScreen = ({ navigation }) => {
                     </View>
                 </Modal>
             </Portal>
-            <FABbutton Icon="plus" label="staff" onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormStaff
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}

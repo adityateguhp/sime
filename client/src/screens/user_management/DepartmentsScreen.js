@@ -294,7 +294,7 @@ const DepartmentsScreen = ({ navigation }) => {
                     }
                 >
                     <Text>No departments found, let's add departments!</Text>
-                    <FABbutton Icon="plus" label="department" onPress={openForm} />
+                    <FABbutton Icon="plus" onPress={openForm} />
                     <FormDepartment
                         closeModalForm={closeModalForm}
                         visibleForm={visibleForm}
@@ -358,7 +358,7 @@ const DepartmentsScreen = ({ navigation }) => {
                 openFormEdit={openFormEdit}
                 deleteHandler={deleteHandler}
             />
-            <FABbutton Icon="plus" label="department" onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormDepartment
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}

@@ -194,7 +194,7 @@ const FormCommittee = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="New Committee" />
+                            <Appbar.Content title="New Person in Charge" />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <ScrollView>
@@ -216,7 +216,7 @@ const FormCommittee = props => {
                                     {sime.order === '6' ||sime.order === '7' ?
                                         <Dropdown
                                             useNativeDriver={true}
-                                            label='Division'
+                                            label='Committee'
                                             disabled={true}
                                             value={values.divisionId}
                                             data={props.divisions}
@@ -225,7 +225,7 @@ const FormCommittee = props => {
                                         /> :
                                         <Dropdown
                                             useNativeDriver={true}
-                                            label='Division'
+                                            label='Committee'
                                             value={values.divisionId}
                                             data={props.divisions}
                                             valueExtractor={({ id }) => id}

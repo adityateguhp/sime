@@ -210,7 +210,7 @@ const ExternalListScreen = ({ navigation }) => {
                 }
             >
                 <Text>No {sime.external_type_name} found, let's add {sime.external_type_name}!</Text>
-                <FABbutton Icon="plus" label={sime.external_type_name} onPress={openForm} />
+                <FABbutton Icon="plus" onPress={openForm} />
                 <FormExternal
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -278,7 +278,7 @@ const ExternalListScreen = ({ navigation }) => {
                 openFormEdit={openFormEdit}
                 deleteHandler={deleteHandler}
             />
-            <FABbutton Icon="plus" label={sime.external_type_name} onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormExternal
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}

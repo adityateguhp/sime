@@ -387,7 +387,7 @@ const CommitteeListScreen = ({ navigation }) => {
     if (divisionsValue.length === 0) {
         return (
             <View style={styles.content}>
-                <Text>No divisions found, let's add divisions!</Text>
+                <Text>No commitees found, let's add commitees!</Text>
             </View>
         );
     }
@@ -431,12 +431,12 @@ const CommitteeListScreen = ({ navigation }) => {
                 actions={[
                     {
                         icon: 'account',
-                        label: 'Committee',
+                        label: 'Person in Charge',
                         onPress: openForm
                     },
                     {
                         icon: 'account-multiple',
-                        label: 'Division',
+                        label: 'Committee',
                         onPress: openFormDivision
                     },
                 ]}
@@ -476,7 +476,7 @@ const CommitteeListScreen = ({ navigation }) => {
                         onDismissSnackBarAdd();
                     },
                 }}>
-                Committee added!
+                Person in Charge added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
@@ -487,7 +487,7 @@ const CommitteeListScreen = ({ navigation }) => {
                         onDismissSnackBarUpdate();
                     },
                 }}>
-                Committee updated!
+                Person in Charge updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
@@ -498,7 +498,7 @@ const CommitteeListScreen = ({ navigation }) => {
                         onDismissSnackBarDelete();
                     },
                 }}>
-                Committee deleted!
+                Person in Charge deleted!
             </Snackbar>
             <Snackbar
                 visible={visibleAddDivision}
@@ -510,7 +510,7 @@ const CommitteeListScreen = ({ navigation }) => {
                     },
                 }}
             >
-                Division added!
+                Committee added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdateDivision}
@@ -522,7 +522,7 @@ const CommitteeListScreen = ({ navigation }) => {
                     },
                 }}
             >
-                Division updated!
+                Committee updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDeleteDivision}
@@ -534,7 +534,7 @@ const CommitteeListScreen = ({ navigation }) => {
                     },
                 }}
             >
-                Division deleted!
+                Committee deleted!
             </Snackbar>
             <LoadingModal loading={loadingDelete} />
         </Provider>

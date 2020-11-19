@@ -197,7 +197,7 @@ const ProjectListScreen = ({ navigation }) => {
                 }
             >
                 <Text>No projects found, let's add projects!</Text>
-                <FABbutton Icon="plus" label="project" onPress={openForm} />
+                <FABbutton Icon="plus" onPress={openForm} />
                 <FormProject
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -266,7 +266,7 @@ const ProjectListScreen = ({ navigation }) => {
                     deleteHandler={deleteHandler}
                 />
             </Portal>
-            <FABbutton Icon="plus" label="project" onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormProject
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}

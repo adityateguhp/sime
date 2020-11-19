@@ -206,7 +206,7 @@ const TaskScreen = ({ navigation }) => {
                 }
             >
                 <Text>No tasks found, let's add tasks!</Text>
-                <FABbutton Icon="plus" label="task" onPress={openForm} />
+                <FABbutton Icon="plus" onPress={openForm} />
                 <FormTask
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -281,7 +281,7 @@ const TaskScreen = ({ navigation }) => {
                     </Task>
                 )}
             />
-            <FABbutton Icon="plus" label="task" onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormTask
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}

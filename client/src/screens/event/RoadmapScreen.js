@@ -214,7 +214,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 }
             >
                 <Text>No roadmaps found, let's add roadmaps!</Text>
-                <FABbutton Icon="plus" label="roadmap" onPress={openForm} />
+                <FABbutton Icon="plus" onPress={openForm} />
                 <FormRoadmap
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -281,7 +281,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 openFormEdit={openFormEdit}
                 deleteHandler={deleteHandler}
             />
-            <FABbutton Icon="plus" label="roadmap" onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormRoadmap
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}

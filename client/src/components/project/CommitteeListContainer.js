@@ -10,7 +10,7 @@ const CommitteeListContainer = props => {
     if (comiteeInDivision.length === 0) {
         return (
             <View style={styles.content}>
-                <Text>No committees found, let's add committees!</Text>
+                <Text>No person in charges found</Text>
             </View>
         );
     }

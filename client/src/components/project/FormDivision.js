@@ -91,7 +91,7 @@ const FormDivision = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="New Division" />
+                            <Appbar.Content title="New Committee" />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <ScrollView>
@@ -99,7 +99,7 @@ const FormDivision = props => {
                                 <View style={styles.inputStyle}>
                                     <TextInput
                                         style={styles.input}
-                                        label='Division Name'
+                                        label='Committee Name'
                                         value={values.name}
                                         onChangeText={(val) => onChange('name', val, 'division_name_error')}
                                         error={errors.division_name_error ? true : false}

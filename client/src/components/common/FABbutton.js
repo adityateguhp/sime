@@ -15,7 +15,6 @@ const FABbutton = props => {
             }}
             icon={props.Icon}
             onPress={props.onPress}
-            label={props.label}
         />
     );
 };

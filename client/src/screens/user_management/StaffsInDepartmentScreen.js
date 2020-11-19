@@ -297,7 +297,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                 }
             >
                 <Text>No staffs found, let's add staffs!</Text>
-                <FABbutton Icon="plus" label="staff" onPress={openForm} />
+                <FABbutton Icon="plus" onPress={openForm} />
                 <FormStaffDepartment
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -382,7 +382,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                     </View>
                 </Modal>
             </Portal>
-            <FABbutton Icon="plus" label="staff" onPress={openForm} />
+            <FABbutton Icon="plus" onPress={openForm} />
             <FormStaffDepartment
                 departmentId={departmentId}
                 closeModalForm={closeModalForm}

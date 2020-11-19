@@ -292,7 +292,7 @@ const RundownScreen = ({ navigation }) => {
         }
       >
         <Text>No agendas found, let's add agendas!</Text>
-        <FABbutton Icon="plus" label="agenda" onPress={openForm} />
+        <FABbutton Icon="plus" onPress={openForm} />
         <FormRundown
           closeModalForm={closeModalForm}
           visibleForm={visibleForm}
@@ -365,7 +365,7 @@ const RundownScreen = ({ navigation }) => {
         openFormEdit={openFormEdit}
         deleteHandler={deleteHandler}
       />
-      <FABbutton Icon="plus" label="agenda" onPress={openForm} />
+      <FABbutton Icon="plus" onPress={openForm} />
       <FormRundown
         closeModalForm={closeModalForm}
         visibleForm={visibleForm}
