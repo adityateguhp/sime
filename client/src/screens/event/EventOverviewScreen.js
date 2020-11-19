@@ -20,7 +20,6 @@ const EventOverviewScreen = ({ navigation }) => {
     description: '',
     start_date: '',
     end_date: '',
-    cancel: false,
     location: '',
     picture: ''
   });
@@ -42,7 +41,6 @@ const EventOverviewScreen = ({ navigation }) => {
         description: eventData.getEvent.description,
         start_date: eventData.getEvent.start_date,
         end_date: eventData.getEvent.end_date,
-        cancel: eventData.getEvent.cancel,
         location: eventData.getEvent.location,
         picture: eventData.getEvent.picture
       })
@@ -150,8 +148,11 @@ const EventOverviewScreen = ({ navigation }) => {
                   id={Guest.id}
                   name={Guest.name}
                   picture={Guest.picture}
+                  email={Guest.email}
+                  phone_number={Guest.phone_number}
                   size={35}
                   navigation={navigation}
+                  eventOverview={true}
                 />
               ))
           }
@@ -165,8 +166,11 @@ const EventOverviewScreen = ({ navigation }) => {
                   id={Sponsor.id}
                   name={Sponsor.name}
                   picture={Sponsor.picture}
+                  email={Sponsor.email}
+                  phone_number={Sponsor.phone_number}
                   size={35}
                   navigation={navigation}
+                  eventOverview={true}
                 />
               ))
           }
@@ -180,8 +184,11 @@ const EventOverviewScreen = ({ navigation }) => {
                   id={Media.id}
                   name={Media.name}
                   picture={Media.picture}
+                  email={Media.email}
+                  phone_number={Media.phone_number}
                   size={35}
                   navigation={navigation}
+                  eventOverview={true}
                 />
               ))
           }
@@ -189,7 +196,7 @@ const EventOverviewScreen = ({ navigation }) => {
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
             left={() =>
-              <Status start_date={event.start_date} end_date={event.end_date} cancel={event.cancel} fontSize={wp(3)} />}
+              <Status start_date={event.start_date} end_date={event.end_date} fontSize={wp(3)} />}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Event Description</Subheading>

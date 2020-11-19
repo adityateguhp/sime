@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Appbar, Portal } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -9,13 +9,9 @@ import { singlePasswordValidator, confirmPasswordValidator } from '../../util/va
 import { UPDATE_PASSWORD_ORGANIZATION_MUTATION, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
+import LoadingModal from '../common/LoadingModal';
 
 const FormChangePasswordOrganization = props => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const sime = useContext(SimeContext);
 
@@ -55,7 +51,7 @@ const FormChangePasswordOrganization = props => {
             const currentPassword = singlePasswordValidator(values.currentPassword);
             const newPasswordError = singlePasswordValidator(values.newPassword);
             const confirmPasswordError = confirmPasswordValidator(values.newPassword, values.confirmNewPassword);
-            if ( currentPassword || newPasswordError || confirmPasswordError) {
+            if (currentPassword || newPasswordError || confirmPasswordError) {
                 setErrors({
                     ...errors,
                     current_password_error: currentPassword,
@@ -163,6 +159,7 @@ const FormChangePasswordOrganization = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

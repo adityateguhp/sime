@@ -1,18 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { Appbar, Portal, Text } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
-import Colors from '../../constants/Colors';
 import { staffValidator, positionValidator, divisionValidator } from '../../util/validator';
 import { FETCH_COMMITTEES_QUERY, ADD_COMMITTEE_MUTATION, } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
 
 const FormCommittee = props => {
 
@@ -255,6 +253,7 @@ const FormCommittee = props => {
                         </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

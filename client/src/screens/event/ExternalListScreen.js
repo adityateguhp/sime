@@ -1,8 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Text, Snackbar } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -12,16 +10,11 @@ import ExternalList from '../../components/event/ExternalList';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import { FETCH_EXBYTYPE_QUERY, DELETE_EXTERNAL, FETCH_EXTERNAL_QUERY } from '../../util/graphql';
-
+import LoadingModal from '../../components/common/LoadingModal';
+import OptionModal from '../../components/common/OptionModal';
 
 const ExternalListScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
-
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const [visibleDelete, setVisibleDelete] = useState(false);
 
@@ -113,7 +106,7 @@ const ExternalListScreen = ({ navigation }) => {
     const eventId = sime.event_id;
     const externalType = sime.external_type
 
-    const [deleteExternal] = useMutation(DELETE_EXTERNAL, {
+    const [deleteExternal, { loading: loadingDelete }] = useMutation(DELETE_EXTERNAL, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_EXBYTYPE_QUERY,
@@ -227,13 +220,23 @@ const ExternalListScreen = ({ navigation }) => {
                 <Snackbar
                     visible={visibleAdd}
                     onDismiss={onDismissSnackBarAdd}
-                >
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
                     External added!
             </Snackbar>
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
-                >
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
                     External deleted!
             </Snackbar>
             </ScrollView>
@@ -254,39 +257,27 @@ const ExternalListScreen = ({ navigation }) => {
                 renderItem={itemData => (
                     <ExternalList
                         style={styles.external}
+                        id={itemData.item.id}
                         name={itemData.item.name}
                         picture={itemData.item.picture}
+                        email={itemData.item.email}
+                        phone_number={itemData.item.phone_number}
                         size={50}
                         onSelect={() => { selectItemHandler(itemData.item.id) }}
                         onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
+                        navigation={navigation}
+                        eventOverview={false}
                     >
                     </ExternalList>
                 )}
             />
-            <Portal>
-                <Modal
-                    useNativeDriver={true}
-                    isVisible={visible}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    onBackButtonPress={closeModal}
-                    onBackdropPress={closeModal}
-                    statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.external_name}</Title>
-                        <TouchableCmp onPress={openFormEdit}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
-                </Modal>
-            </Portal>
+            <OptionModal
+                visible={visible}
+                closeModal={closeModal}
+                title={sime.external_name}
+                openFormEdit={openFormEdit}
+                deleteHandler={deleteHandler}
+            />
             <FABbutton Icon="plus" label={sime.external_type_name} onPress={openForm} />
             <FormExternal
                 closeModalForm={closeModalForm}
@@ -307,27 +298,40 @@ const ExternalListScreen = ({ navigation }) => {
             <Snackbar
                 visible={visibleAdd}
                 onDismiss={onDismissSnackBarAdd}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                }}>
                 External added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                }}>
                 External updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                }}>
                 External deleted!
             </Snackbar>
+            <LoadingModal loading={loadingDelete} />
         </Provider>
     );
 }
-
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
@@ -338,23 +342,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    modalView: {
-        backgroundColor: 'white',
-        height: modalMenuHeight,
-        width: modalMenuWidth,
-        alignSelf: 'center',
-        justifyContent: 'flex-start',
-    },
-    textView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "flex-start",
-        marginBottom: 5
-    },
-    text: {
-        marginLeft: wp(5.6),
-        fontSize: wp(3.65)
     },
     external: {
         marginLeft: 10,

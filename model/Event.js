@@ -3,7 +3,6 @@ const { model, Schema } = require('mongoose');
 const eventSchema = new Schema({	
     name: String,
     description: String,
-    cancel: Boolean,
     location: String,
     start_date: String,
     end_date: String,

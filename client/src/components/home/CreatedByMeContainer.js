@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import {
@@ -10,11 +10,6 @@ import {
 import CreatedByMe from './CreatedByMe'
 
 const CreatedByMeContainer = props => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const [roadmapValue, setRoadmapValue] = useState({
         id: '',

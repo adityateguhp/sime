@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -11,14 +11,9 @@ import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberV
 import { FETCH_STAFFSBYDEPARTMENT_QUERY, UPDATE_STAFF_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
-
+import LoadingModal from '../common/LoadingModal';
 
 const FormEditStaffDepartment = props => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const sime = useContext(SimeContext);
 
@@ -252,6 +247,7 @@ const FormEditStaffDepartment = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

@@ -7,7 +7,7 @@ const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getEvents(_, {projectId}, context) {
+    async getEvents(_, { projectId }, context) {
       try {
         const events = await Event.find({ project_id: projectId }).sort({ createdAt: -1 });
         if (events) {
@@ -36,7 +36,6 @@ module.exports = {
     async addEvent(_, {
       name,
       description,
-      cancel,
       location,
       start_date,
       end_date,
@@ -56,7 +55,7 @@ module.exports = {
       const newEvent = new Event({
         name,
         description,
-        cancel,
+
         location,
         start_date,
         end_date,
@@ -73,7 +72,6 @@ module.exports = {
       eventId,
       name,
       description,
-      cancel,
       location,
       start_date,
       end_date,
@@ -95,7 +93,7 @@ module.exports = {
           {
             name,
             description,
-            cancel,
+
             location,
             start_date,
             end_date,
@@ -113,24 +111,6 @@ module.exports = {
         const event = await Event.findById(eventId);
         await event.delete();
         return 'External deleted successfully';
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
-    async cancelEvent(_, {
-      eventId,
-      cancel,
-    }, context) {
-      try {
-
-        const updatedEvent = await Event.findByIdAndUpdate(
-          { _id: eventId },
-          {
-            cancel
-          },
-          { new: true });
-
-        return updatedEvent;
       } catch (err) {
         throw new Error(err);
       }

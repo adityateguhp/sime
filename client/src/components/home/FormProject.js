@@ -15,6 +15,7 @@ import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION, ADD_DIVISION_MUTATION } fro
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
 import { SimeContext } from '../../context/SimePovider';
+import LoadingModal from '../common/LoadingModal';
 
 const FormProject = props => {
     let TouchableCmp = TouchableOpacity;
@@ -35,7 +36,6 @@ const FormProject = props => {
     const [values, setValues] = useState({
         name: '',
         description: '',
-        cancel: false,
         start_date: '',
         end_date: '',
         picture: null,
@@ -164,7 +164,7 @@ const FormProject = props => {
         closeEndDatepicker();
     };
 
-    const [addDivision, { loading2 }] = useMutation(ADD_DIVISION_MUTATION);
+    const [addDivision, { loading: loading2 }] = useMutation(ADD_DIVISION_MUTATION);
 
     const updateFieldChanged = (name, value) => {
         let newArr = divisionValues.map((item) => {
@@ -176,7 +176,7 @@ const FormProject = props => {
         })
     };
 
-    const [addProject, { loading1 }] = useMutation(ADD_PROJECT_MUTATION, {
+    const [addProject, { loading }] = useMutation(ADD_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
@@ -191,7 +191,6 @@ const FormProject = props => {
             values.start_date = '';
             values.end_date = '';
             values.picture = '';
-            values.cancel = false;
             props.closeModalForm();
         },
         onError(err) {
@@ -245,7 +244,7 @@ const FormProject = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="New Project" />
-                            <Appbar.Action icon="check" onPress={onSubmit}/>
+                            <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
@@ -282,7 +281,7 @@ const FormProject = props => {
                                                 onPress={showStartDatepicker}
                                                 mode="outlined"
                                             >
-                                                {values.start_date ?  startDate : 'FROM'}
+                                                {values.start_date ? startDate : 'FROM'}
                                             </Button>
                                             <Button
                                                 style={styles.dateButton}
@@ -339,6 +338,7 @@ const FormProject = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

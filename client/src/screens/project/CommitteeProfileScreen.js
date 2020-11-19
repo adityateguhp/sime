@@ -164,11 +164,11 @@ const CommitteeProfileScreen = ({ route }) => {
         <ScrollView style={styles.screen}>
             <View style={styles.profilePicture}>
                 <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.picture ? { uri: staff.picture } : require('../../assets/avatar.png')} />
-                <Headline>{staff.name}</Headline>
+                <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{staff.name}</Headline>
             </View>
             <Divider />
             <View style={styles.profileDetails}>
-                <Title style={styles.titleInfo}>
+                <Title style={styles.titleInfo} numberOfLines={1} ellipsizeMode='tail'>
                     Position in {division.name}
                 </Title>
                 <Paragraph>
@@ -178,11 +178,11 @@ const CommitteeProfileScreen = ({ route }) => {
                 <Title style={styles.titleInfo}>
                     Department
                 </Title>
-                <Paragraph>
+                <Paragraph numberOfLines={1} ellipsizeMode='tail'>
                     {department.name}
                 </Paragraph>
                 <Divider />
-                <Title style={styles.titleInfo}>
+                <Title style={styles.titleInfo} numberOfLines={1} ellipsizeMode='tail'>
                     Position in {department.name}
                 </Title>
                 <Paragraph>

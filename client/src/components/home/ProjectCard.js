@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Dimensions } from 'react-native';
-import { Card, Caption, ProgressBar, Button } from 'react-native-paper';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { Card, Caption } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import SkeletonContent from "react-native-skeleton-content-nonexpo";
@@ -82,13 +82,13 @@ const ProjectCard = props => {
                     >
                         <Card.Content>
                             <View style={styles.task}>
-                                <StatusProgressDays start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                                <StatusProgressDays start_date={props.start_date} end_date={props.end_date} />
                                 <View style={{ flexDirection: 'row' }}>
-                                    <Percentage start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                                    <Percentage start_date={props.start_date} end_date={props.end_date} />
                                     <Caption style={styles.caption}>%</Caption>
                                 </View>
                             </View>
-                            <StatusProgressBar start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} />
+                            <StatusProgressBar start_date={props.start_date} end_date={props.end_date} />
                         </Card.Content>
                     </SkeletonContent>
 
@@ -99,7 +99,7 @@ const ProjectCard = props => {
                     >
                         <View>
                             <Card.Actions style={styles.cardAction}>
-                                <Status start_date={props.start_date} end_date={props.end_date} cancel={props.cancel} fontSize={wp(2.18)} />
+                                <Status start_date={props.start_date} end_date={props.end_date} fontSize={wp(2.18)} />
                             </Card.Actions>
                         </View>
                     </SkeletonContent>

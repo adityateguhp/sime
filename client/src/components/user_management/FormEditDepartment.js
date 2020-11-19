@@ -1,19 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Button, Appbar, Portal, Text, Snackbar } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { Appbar, Portal} from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 
 import { departmentNameValidator } from '../../util/validator';
 import TextInput from '../common/TextInput';
-import CenterSpinner from '../common/CenterSpinner';
 import { SimeContext } from '../../context/SimePovider'
 import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import LoadingModal from '../common/LoadingModal';
 
 const FormEditDepartment = props => {
     const sime = useContext(SimeContext);
@@ -34,24 +30,24 @@ const FormEditDepartment = props => {
     };
 
     useEffect(() => {
-        if(props.department){
+        if (props.department) {
             setValues({
-                departmentId: props.department.id, 
+                departmentId: props.department.id,
                 name: props.department.name,
                 organizationId: props.department.organization_id
             })
         }
-    }, [props.department])    
+    }, [props.department])
 
-    const [updateDepartment] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
+    const [updateDepartment, { loading }] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
             });
             props.updateDepartmentsStateUpdate(result.data.updateDepartment)
             props.updateDepartmentStateUpdate(result.data.updateDepartment)
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId: sime.user.id } });
             props.closeModalForm();
         },
         onError() {
@@ -118,6 +114,7 @@ const FormEditDepartment = props => {
                         </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

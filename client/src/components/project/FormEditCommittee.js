@@ -10,6 +10,7 @@ import { staffValidator, positionValidator, divisionValidator } from '../../util
 import { FETCH_COMMITTEES_QUERY, UPDATE_COMMITTEE_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
 
 const FormCommittee = props => {
 
@@ -242,6 +243,7 @@ const FormCommittee = props => {
                         </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

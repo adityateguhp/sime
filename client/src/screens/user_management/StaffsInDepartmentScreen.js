@@ -20,6 +20,7 @@ import {
     FETCH_COMMITTEES_BYSTAFF_QUERY,
     RESET_PASSWORD_STAFF_MUTATION
 } from '../../util/graphql';
+import LoadingModal from '../../components/common/LoadingModal';
 
 const StaffsinDepartmentScreen = ({ route, navigation }) => {
     let TouchableCmp = TouchableOpacity;
@@ -148,7 +149,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
 
     const [deleteCommitteeByDepartment] = useMutation(DELETE_COMMITTEE_BYSTAFF);
 
-    const [deleteStaff] = useMutation(DELETE_STAFF, {
+    const [deleteStaff, { loading: loadingDelete }] = useMutation(DELETE_STAFF, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFSBYDEPARTMENT_QUERY,
@@ -156,7 +157,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             });
             staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
-            deleteCommitteeByDepartment({variables: {staffId}})
+            deleteCommitteeByDepartment({ variables: { staffId } })
             deleteAssignedTaskByCommitteeHandler();
             proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId } });
         },
@@ -165,14 +166,14 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         }
     });
 
-    const [resetPassword] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
+    const [resetPassword, {loading: loadingResetPassword}] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY,
-                variables: { organizationId: sime.user.id }
+                query: FETCH_STAFFSBYDEPARTMENT_QUERY,
+                variables: { departmentId }
             });
             onToggleSnackBarResetPassword();
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId } });
         },
         variables: {
             staffId
@@ -305,14 +306,24 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                 />
                 <Snackbar
                     visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                >
+                 onDismiss={onDismissSnackBarAdd}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                  }}>
                     Staff added!
             </Snackbar>
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
-                >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                  }}>
                     Staff deleted!
             </Snackbar>
             </ScrollView>
@@ -351,7 +362,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                     onBackButtonPress={closeModal}
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
-                   <View style={styles.modalView}>
+                    <View style={styles.modalView}>
                         <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.staff_name}</Title>
                         <TouchableCmp onPress={openFormEdit}>
                             <View style={styles.textView}>
@@ -391,28 +402,51 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             />
             <Snackbar
                 visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-            >
+             onDismiss={onDismissSnackBarAdd}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                  }}>
                 Staff added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                  }}>
                 Staff updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-            >
+               onDismiss={onDismissSnackBarDelete}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                  }}>
                 Staff deleted!
             </Snackbar>
             <Snackbar
                 visible={visibleResetPassword}
                 onDismiss={onDismissSnackBarResetPassword}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarResetPassword();
+                            },
+                          }}
             >
                 Staff account password has been reset!
             </Snackbar>
+            <LoadingModal loading={loadingDelete} />
+            <LoadingModal loading={loadingResetPassword} />
         </Provider>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -11,15 +11,9 @@ import { staffNameValidator, emailValidator, phoneNumberValidator } from '../../
 import { FETCH_STAFF_QUERY, UPDATE_STAFF_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
+import LoadingModal from '../common/LoadingModal';
 
-
-const FormEditStaffProfile
- = props => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
+const FormEditStaffProfile = props => {
 
     const sime = useContext(SimeContext);
 
@@ -116,11 +110,11 @@ const FormEditStaffProfile
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFF_QUERY,
-                variables: {staffId: sime.user.id}
+                variables: { staffId: sime.user.id }
             });
             props.updateStaffStateUpdate(result.data.updateStaff)
             sime.setUser(result.data.updateStaff)
-            proxy.writeQuery({ query: FETCH_STAFF_QUERY, data, variables: {staffId: sime.user.id}});
+            proxy.writeQuery({ query: FETCH_STAFF_QUERY, data, variables: { staffId: sime.user.id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -181,7 +175,7 @@ const FormEditStaffProfile
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
                             <Appbar.Content title="Edit Staff" />
-                            {props.deleteButtonVisible? <Appbar.Action icon="delete" onPress={props.deleteButton} />: null}
+                            {props.deleteButtonVisible ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -238,6 +232,7 @@ const FormEditStaffProfile
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );
@@ -284,4 +279,4 @@ const styles = StyleSheet.create({
 
 
 export default FormEditStaffProfile
-;
+    ;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
+import { StyleSheet, FlatList } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 
 import {
@@ -10,12 +10,6 @@ import {
 import AssignedToMe from './AssignedToMe'
 
 const AssignedToMeContainer = props => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
-
     const [assignedTasksValue, setAssignedTasksValue] = useState([]);
     const [committeesValue, setCommitteesValue] = useState([]);
     const [divisionsValue, setDivisionsValue] = useState([]);

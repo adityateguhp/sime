@@ -354,7 +354,6 @@ query($organizationId: ID!){
     id
     name
     description
-    cancel
     start_date
     end_date
     picture
@@ -370,7 +369,6 @@ export const FETCH_PROJECT_QUERY = gql`
     id
     name
     description
-    cancel
     start_date
     end_date
     picture
@@ -385,7 +383,6 @@ export const ADD_PROJECT_MUTATION = gql`
   addProject(
     $name: String!,
     $description: String,
-    $cancel: Boolean!,
     $start_date: String!,
     $end_date: String!,
     $picture: String,
@@ -394,7 +391,6 @@ export const ADD_PROJECT_MUTATION = gql`
   addProject(
     name: $name,
     description: $description,
-    cancel: $cancel, 	
     start_date: $start_date,
     end_date: $end_date,
     picture: $picture,
@@ -403,7 +399,6 @@ export const ADD_PROJECT_MUTATION = gql`
     id
     name
     description
-    cancel
     start_date
     end_date
     picture
@@ -419,7 +414,6 @@ export const UPDATE_PROJECT_MUTATION = gql`
     $projectId: ID!,
     $name: String!,
     $description: String,
-    $cancel: Boolean!,
     $start_date: String!,
     $end_date: String!,
     $picture: String,
@@ -428,7 +422,6 @@ export const UPDATE_PROJECT_MUTATION = gql`
     projectId: $projectId,
     name: $name,
     description: $description,
-    cancel: $cancel, 	
     start_date: $start_date,
     end_date: $end_date,
     picture: $picture
@@ -436,7 +429,6 @@ export const UPDATE_PROJECT_MUTATION = gql`
     id
     name
     description
-    cancel
     start_date
     end_date
     picture
@@ -452,36 +444,12 @@ export const DELETE_PROJECT = gql`
   }
 `;
 
-export const CANCEL_PROJECT_MUTATION = gql`
-  mutation 
-  cancelProject(
-    $projectId: ID!,
-    $cancel: Boolean!
-  ) {
-  cancelProject(
-    projectId: $projectId,
-    cancel: $cancel
-  ) {
-    id
-    name
-    description
-    cancel
-    start_date
-    end_date
-    picture
-    organization_id
-    createdAt
-  }
-  } 
-`;
-
 export const FETCH_EVENTS_QUERY = gql`
   query($projectId: ID!) {
     getEvents(projectId: $projectId){
     id
     name
     description
-    cancel
     location
     start_date
     end_date
@@ -498,7 +466,6 @@ export const FETCH_EVENT_QUERY = gql`
     id
     name
     description
-    cancel
     location
     start_date
     end_date
@@ -514,7 +481,6 @@ export const ADD_EVENT_MUTATION = gql`
   addEvent(
     $name: String!,
     $description: String,
-    $cancel: Boolean!,
     $location: String,
     $start_date: String!,
     $end_date: String!,
@@ -523,8 +489,7 @@ export const ADD_EVENT_MUTATION = gql`
   ) {
   addEvent(
     name: $name,
-    description: $description,
-    cancel: $cancel, 	
+    description: $description,	
     location: $location,
     start_date: $start_date,
     end_date: $end_date,
@@ -534,7 +499,6 @@ export const ADD_EVENT_MUTATION = gql`
     id
     name
     description
-    cancel
     location
     start_date
     end_date
@@ -551,7 +515,6 @@ export const UPDATE_EVENT_MUTATION = gql`
     $eventId: ID!,
     $name: String!,
     $description: String,
-    $cancel: Boolean!,
     $location: String,
     $start_date: String!,
     $end_date: String!,
@@ -560,8 +523,7 @@ export const UPDATE_EVENT_MUTATION = gql`
   updateEvent(
     eventId: $eventId,
     name: $name,
-    description: $description,
-    cancel: $cancel, 	
+    description: $description,	
     location: $location,
     start_date: $start_date,
     end_date: $end_date,
@@ -570,7 +532,6 @@ export const UPDATE_EVENT_MUTATION = gql`
     id
     name
     description
-    cancel
     location
     start_date
     end_date
@@ -585,30 +546,6 @@ export const DELETE_EVENT = gql`
   mutation deleteEvent($eventId: ID!) {
     deleteEvent(eventId: $eventId)
   }
-`;
-
-export const CANCEL_EVENT_MUTATION = gql`
-  mutation 
-  cancelEvent(
-    $eventId: ID!,
-    $cancel: Boolean!
-  ) {
-  cancelEvent(
-    eventId: $eventId,
-    cancel: $cancel
-  ) {
-    id
-    name
-    description
-    cancel,
-    location
-    start_date
-    end_date
-    picture
-    project_id
-    createdAt
-  }
-  } 
 `;
 
 export const FETCH_POSITIONS_QUERY = gql`

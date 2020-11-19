@@ -14,6 +14,7 @@ import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION, FETCH_STAFF_QUERY, FETCH_ORGAN
 import Colors from '../../constants/Colors';
 import CommitteeChipContainer from './CommitteeChipContainer'
 import AssignedToModal from './AssignedToModal'
+import LoadingModal from '../common/LoadingModal';
 
 const TaskModal = props => {
     let TouchableCmp = TouchableOpacity;
@@ -404,6 +405,7 @@ const TaskModal = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal>
     )

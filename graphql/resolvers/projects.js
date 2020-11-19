@@ -36,7 +36,6 @@ module.exports = {
     async addProject(_, {
       name,
       description,
-      cancel,
       start_date,
       end_date,
       picture,
@@ -55,7 +54,7 @@ module.exports = {
       const newProject = new Project({
         name,
         description,
-        cancel,
+
         start_date,
         end_date,
         organization_id: organizationId,
@@ -71,7 +70,6 @@ module.exports = {
       projectId,
       name,
       description,
-      cancel,
       start_date,
       end_date,
       picture
@@ -92,7 +90,7 @@ module.exports = {
           {
             name,
             description,
-            cancel,
+    
             start_date,
             end_date,
             picture,
@@ -109,24 +107,6 @@ module.exports = {
         const project = await Project.findById(projectId);
         await project.delete();
         return 'Project deleted successfully';
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
-    async cancelProject(_, {
-      projectId,
-      cancel,
-    }, context) {
-      try {
-
-        const updatedProject = await Project.findByIdAndUpdate(
-          { _id: projectId },
-          {
-            cancel
-          },
-          { new: true });
-
-        return updatedProject;
       } catch (err) {
         throw new Error(err);
       }

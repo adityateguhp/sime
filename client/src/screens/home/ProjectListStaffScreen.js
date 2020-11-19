@@ -13,7 +13,6 @@ import {
     FETCH_PROJECTS_QUERY,
     FETCH_PROJECT_QUERY,
     FETCH_COMMITTEES_BYSTAFF_QUERY,
-    CANCEL_PROJECT_MUTATION
 } from '../../util/graphql';
 
 const ProjectListStaffScreen = ({ navigation }) => {
@@ -24,20 +23,6 @@ const ProjectListStaffScreen = ({ navigation }) => {
     }
 
     const sime = useContext(SimeContext);
-
-    const [visibleCancel, setVisibleCancel] = useState(false);
-
-    const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
-
-    const onDismissSnackBarCancel = () => setVisibleCancel(false);
-
-
-    const [visibleActivate, setVisibleActivate] = useState(false);
-
-    const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
-
-    const onDismissSnackBarActivate = () => setVisibleActivate(false);
-
 
     const [visibleUpdate, setVisibleUpdate] = useState(false);
 
@@ -98,10 +83,6 @@ const ProjectListStaffScreen = ({ navigation }) => {
     const [projectVal, setProjectVal] = useState(null);
     const [visible, setVisible] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
-    const [cancelValue, setCancelValues] = useState({
-        projectId: '',
-        cancel: false
-    });
 
     useEffect(() => {
         if (project) setProjectVal(project.getProject);
@@ -115,11 +96,11 @@ const ProjectListStaffScreen = ({ navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (id, name, cancel) => {
+    const longPressHandler = (id, name) => {
         setVisible(true);
         sime.setProject_name(name);
         sime.setProject_id(id);
-        setCancelValues({ cancel: cancel, projectId: id })
+
         loadExistData();
     }
 
@@ -127,28 +108,6 @@ const ProjectListStaffScreen = ({ navigation }) => {
         closeModal();
         setVisibleFormEdit(true);
     }
-
-    const [cancelProject, { loading }] = useMutation(CANCEL_PROJECT_MUTATION, {
-        update(proxy, result) {
-            const data = proxy.readQuery({
-                query: FETCH_PROJECTS_QUERY,
-                variables: { organizationId: sime.user.organization_id },
-            });
-            cancelProjectsStateUpdate(result.data.cancelProject);
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
-            closeModal();
-        },
-        onError(err) {
-            console.log(err)
-            return err;
-        },
-        variables: { ...cancelValue, cancel: !cancelValue.cancel }
-    });
-
-    const onCancel = (event) => {
-        event.preventDefault();
-        cancelProject();
-    };
 
     const updateProjectsStateUpdate = (e) => {
         const temp = [...projectsValue];
@@ -162,15 +121,6 @@ const ProjectListStaffScreen = ({ navigation }) => {
 
     const updateProjectStateUpdate = (e) => {
         setProjectVal(e)
-    }
-
-    const cancelProjectsStateUpdate = (e) => {
-        const temp = [...projectsValue];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e.id);
-        temp[index] = e
-        setProjectsValue(temp)
     }
 
     const onRefresh = () => {
@@ -236,12 +186,11 @@ const ProjectListStaffScreen = ({ navigation }) => {
                     <ProjectCard
                         projectId={itemData.item.id}
                         name={itemData.item.name}
-                        cancel={itemData.item.cancel}
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
                         onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.picture) }}
-                        onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
+                        onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
                         loading={loading1}
                     >
                     </ProjectCard>
@@ -264,20 +213,6 @@ const ProjectListStaffScreen = ({ navigation }) => {
                                 <Text style={styles.text}>Edit</Text>
                             </View>
                         </TouchableCmp>
-                        {
-                            cancelValue.cancel ?
-                                <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
-                                    <View style={styles.textView}>
-                                        <Text style={styles.text}>Activate project</Text>
-                                    </View>
-                                </TouchableCmp>
-                                :
-                                <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
-                                    <View style={styles.textView}>
-                                        <Text style={styles.text}>Cancel project</Text>
-                                    </View>
-                                </TouchableCmp>
-                        }
                     </View>
                 </Modal>
             </Portal>
@@ -290,21 +225,14 @@ const ProjectListStaffScreen = ({ navigation }) => {
                 updateProjectStateUpdate={updateProjectStateUpdate}
             />
             <Snackbar
-                visible={visibleCancel}
-                onDismiss={onDismissSnackBarCancel}
-            >
-                Project canceled!
-        </Snackbar>
-            <Snackbar
-                visible={visibleActivate}
-                onDismiss={onDismissSnackBarActivate}
-            >
-                Project activated!
-        </Snackbar>
-            <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                }}>
                 Project updated!
         </Snackbar>
         </Provider>

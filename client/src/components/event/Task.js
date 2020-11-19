@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
-import { Subheading, Divider, Checkbox, Caption, Provider } from 'react-native-paper';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Subheading, Checkbox, Caption, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
-import { 
-    FETCH_TASKS_QUERY, 
-    DELETE_TASK, 
-    COMPLETED_TASK, 
-    FETCH_ASSIGNED_TASKS_QUERY, 
+import {
+    FETCH_TASKS_QUERY,
+    DELETE_TASK,
+    COMPLETED_TASK,
+    FETCH_ASSIGNED_TASKS_QUERY,
     DELETE_ASSIGNED_TASK_BYTASK
 } from '../../util/graphql';
-import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 import TaskModal from './TaskModal';
+import LoadingModal from '../common/LoadingModal';
 
 const Task = props => {
 
@@ -59,7 +58,7 @@ const Task = props => {
 
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
-            props.taskScreen? completeTaskScreen(proxy, result) : completeMyTaskScreen(result);
+            props.taskScreen ? completeTaskScreen(proxy, result) : completeMyTaskScreen(result);
         },
         onError(err) {
             console.log(err)
@@ -77,18 +76,18 @@ const Task = props => {
         });
         props.tasks = props.tasks.filter((p) => p.id !== props.task.id);
         props.deleteTasksStateUpdate(props.task.id);
-        deleteAssignedTaskByTask({variables: {taskId: props.task.id}});
+        deleteAssignedTaskByTask({ variables: { taskId: props.task.id } });
         proxy.writeQuery({ query: FETCH_TASKS_QUERY, data, variables: { roadmapId: props.task.roadmap_id } });
     }
 
     const deleteMyTaskScreen = () => {
-        deleteAssignedTaskByTask({variables: {taskId: props.task.id}, update(){props.setDeleteCalled(false)}});
+        deleteAssignedTaskByTask({ variables: { taskId: props.task.id }, update() { props.setDeleteCalled(false) } });
         props.deleteTasksStateUpdate(props.task.id);
     }
 
-    const [deleteTask] = useMutation(DELETE_TASK, {
+    const [deleteTask, { loading: loadingDelete }] = useMutation(DELETE_TASK, {
         update(proxy) {
-           props.taskScreen? deleteTaskScreen(proxy) : deleteMyTaskScreen();
+            props.taskScreen ? deleteTaskScreen(proxy) : deleteMyTaskScreen();
         },
         variables: {
             taskId: props.task.id
@@ -242,6 +241,7 @@ const Task = props => {
                 deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
                 assignedTasksStateUpdate={assignedTasksStateUpdate}
             />
+            <LoadingModal loading={loadingDelete} />
         </Provider>
     );
 };

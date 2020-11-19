@@ -1,9 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
-import { Provider, Portal, Title, Text, Snackbar, FAB } from 'react-native-paper';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { FlatList, Alert, StyleSheet, View, RefreshControl } from 'react-native';
+import { Provider, Text, Snackbar, FAB } from 'react-native-paper';
 
 import FormCommittee from '../../components/project/FormCommittee';
 import FormEditDivision from '../../components/project/FormEditDivision';
@@ -22,13 +20,10 @@ import {
     DELETE_COMMITTEE_BYDIVISION,
     DELETE_ASSIGNED_TASK_BYCOMMITTEE
 } from '../../util/graphql';
+import LoadingModal from '../../components/common/LoadingModal';
+import OptionModal from '../../components/common/OptionModal';
 
 const CommitteeListScreen = ({ navigation }) => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const sime = useContext(SimeContext);
 
@@ -122,13 +117,13 @@ const CommitteeListScreen = ({ navigation }) => {
         }
     );
 
-    const [loadExistData, { called, data: division, error: error2}] = useLazyQuery(
+    const [loadExistData, { called, data: division, error: error2 }] = useLazyQuery(
         FETCH_DIVISION_QUERY,
         {
             variables: { divisionId: sime.division_id }
         });
 
-    const [loadCommiteeData, { called: called2, data: commiteeInDiv, error: error3}] = useLazyQuery(
+    const [loadCommiteeData, { called: called2, data: commiteeInDiv, error: error3 }] = useLazyQuery(
         FETCH_COMMITTEES_IN_DIVISION_QUERY,
         {
             variables: { divisionId: sime.division_id }
@@ -296,7 +291,7 @@ const CommitteeListScreen = ({ navigation }) => {
 
     const [deleteCommitteeByDivision] = useMutation(DELETE_COMMITTEE_BYDIVISION);
 
-    const [deleteDivision] = useMutation(DELETE_DIVISION, {
+    const [deleteDivision, { loading: loadingDelete }] = useMutation(DELETE_DIVISION, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_DIVISIONS_QUERY,
@@ -304,11 +299,12 @@ const CommitteeListScreen = ({ navigation }) => {
             });
             data.getDivisions = data.getDivisions.filter((d) => d.id !== divisionId);
             deleteDivisionsStateUpdate(divisionId);
-            deleteCommitteeByDivision({ 
-                update(){
+            deleteCommitteeByDivision({
+                update() {
                     onRefresh();
-            },
-            variables: {divisionId}})
+                },
+                variables: { divisionId }
+            })
             deleteAssignedTaskByCommitteeHandler();
             proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: sime.project_id } });
         },
@@ -422,30 +418,13 @@ const CommitteeListScreen = ({ navigation }) => {
                     />
                 )}
             />
-            <Portal>
-                <Modal
-                    useNativeDriver={true}
-                    isVisible={visible}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    onBackButtonPress={closeModal}
-                    onBackdropPress={closeModal}
-                    statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.division_name}</Title>
-                        <TouchableCmp onPress={openFormEditDivision}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete division</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
-                </Modal>
-            </Portal>
+            <OptionModal
+                visible={visible}
+                closeModal={closeModal}
+                title={sime.division_name}
+                openFormEdit={openFormEditDivision}
+                deleteHandler={deleteHandler}
+            />
             <FAB.Group
                 open={open}
                 icon={open ? 'account-multiple-plus' : 'plus'}
@@ -491,45 +470,76 @@ const CommitteeListScreen = ({ navigation }) => {
             <Snackbar
                 visible={visibleAdd}
                 onDismiss={onDismissSnackBarAdd}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                }}>
                 Committee added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                }}>
                 Committee updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                }}>
                 Committee deleted!
             </Snackbar>
             <Snackbar
                 visible={visibleAddDivision}
                 onDismiss={onDismissSnackBarAddDivision}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAddDivision();
+                    },
+                }}
             >
                 Division added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdateDivision}
                 onDismiss={onDismissSnackBarUpdateDivision}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdateDivision();
+                    },
+                }}
             >
                 Division updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDeleteDivision}
                 onDismiss={onDismissSnackBarDeleteDivision}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDeleteDivision();
+                    },
+                }}
             >
                 Division deleted!
             </Snackbar>
+            <LoadingModal loading={loadingDelete} />
         </Provider>
     );
 }
-
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
@@ -540,23 +550,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    modalView: {
-        backgroundColor: 'white',
-        height: modalMenuHeight,
-        width: modalMenuWidth,
-        alignSelf: 'center',
-        justifyContent: 'flex-start'
-    },
-    textView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "flex-start",
-        marginBottom: 5
-    },
-    text: {
-        marginLeft: wp(5.6),
-        fontSize: wp(3.65)
     }
 });
 

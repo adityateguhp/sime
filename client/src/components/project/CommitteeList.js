@@ -1,23 +1,23 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption, Provider, Portal, Title, Text } from 'react-native-paper';
-import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Avatar, List, Caption, Provider, Portal, Text } from 'react-native-paper';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';;
 
-import { 
-    FETCH_STAFF_QUERY, 
-    FETCH_POSITION_QUERY, 
-    FETCH_COMMITTEE_QUERY, 
+import {
+    FETCH_STAFF_QUERY,
+    FETCH_POSITION_QUERY,
+    FETCH_COMMITTEE_QUERY,
     FETCH_COMMITTEES_QUERY,
-    DELETE_COMMITTEE, 
+    DELETE_COMMITTEE,
     DELETE_ASSIGNED_TASK_BYCOMMITTEE
 } from '../../util/graphql';
 import CenterSpinnerSmall from '../common/CenterSpinnerSmall';
-import ModalProfile from '../common/ModalProfile';
+import ProfileModal from '../common/ProfileModal';
 import FormEditCommittee from './FormEditCommittee';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
+import OptionModal from '../common/OptionModal';
 
 const CommitteeList = props => {
     let TouchableCmp = TouchableOpacity;
@@ -50,7 +50,7 @@ const CommitteeList = props => {
 
     const [committeeVal, setCommitteeVal] = useState(null);
     const [visible, setVisible] = useState(false);
-    const [visibleModalProfile, setVisibleModalProfile] = useState(false);
+    const [visibleProfileModal, setVisibleProfileModal] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     useEffect(() => {
@@ -59,7 +59,7 @@ const CommitteeList = props => {
 
     const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
 
-    const [deleteCommittee] = useMutation(DELETE_COMMITTEE, {
+    const [deleteCommittee, { loading: loadingDelete }] = useMutation(DELETE_COMMITTEE, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_COMMITTEES_QUERY,
@@ -67,7 +67,7 @@ const CommitteeList = props => {
             });
             data.getCommittees = data.getCommittees.filter((e) => e.id !== sime.committee_id);
             props.deleteCommitteesStateUpdate(sime.committee_id);
-            deleteAssignedTaskByCommittee({variables: {committeeId: sime.committee_id}});
+            deleteAssignedTaskByCommittee({ variables: { committeeId: sime.committee_id } });
             proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
@@ -79,8 +79,8 @@ const CommitteeList = props => {
         setVisible(false);
     }
 
-    const closeModalProfile = () => {
-        setVisibleModalProfile(false);
+    const closeProfileModal = () => {
+        setVisibleProfileModal(false);
     }
 
     const closeModalFormEdit = () => {
@@ -102,7 +102,7 @@ const CommitteeList = props => {
 
     const selectItemHandler = () => {
         sime.setCommittee_id(props.committee_id);
-        setVisibleModalProfile(true);
+        setVisibleProfileModal(true);
     }
 
     const updateCommitteeStateUpdate = (e) => {
@@ -185,28 +185,13 @@ const CommitteeList = props => {
                 sime.order === '7' && sime.userCommitteeId !== props.committee_id && sime.userCommitteeDivision === props.division_id && props.order !== '6' ||
                 sime.user_type === "Organization" ?
                 <Portal>
-                    <Modal
-                        useNativeDriver={true}
-                        isVisible={visible}
-                        animationIn="zoomIn"
-                        animationOut="zoomOut"
-                        onBackButtonPress={closeModal}
-                        onBackdropPress={closeModal}
-                        statusBarTranslucent>
-                        <View style={styles.modalView}>
-                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }}>{sime.staff_name}</Title>
-                            <TouchableCmp onPress={openFormEdit}>
-                                <View style={styles.textView}>
-                                    <Text style={styles.text}>Edit</Text>
-                                </View>
-                            </TouchableCmp>
-                            <TouchableCmp onPress={deleteHandler}>
-                                <View style={styles.textView}>
-                                    <Text style={styles.text}>Delete</Text>
-                                </View>
-                            </TouchableCmp>
-                        </View>
-                    </Modal>
+                  <OptionModal
+                        visible={visible}
+                        closeModal={closeModal}
+                        title={sime.staff_name}
+                        openFormEdit={openFormEdit}
+                        deleteHandler={deleteHandler}
+                    />
                     <FormEditCommittee
                         closeModalForm={closeModalFormEdit}
                         visibleForm={visibleFormEdit}
@@ -220,11 +205,12 @@ const CommitteeList = props => {
                         updateCommitteesStateUpdate={props.updateCommitteesStateUpdate}
                         updateCommitteeStateUpdate={updateCommitteeStateUpdate}
                     />
+                    <LoadingModal loading={loadingDelete} />
                 </Portal> : null}
-            <ModalProfile
-                visible={visibleModalProfile}
-                onBackButtonPress={closeModalProfile}
-                onBackdropPress={closeModalProfile}
+            <ProfileModal
+                visible={visibleProfileModal}
+                onBackButtonPress={closeProfileModal}
+                onBackdropPress={closeProfileModal}
                 name={staff.getStaff.name}
                 position_name={position.getPosition.name}
                 email={staff.getStaff.email}
@@ -232,14 +218,12 @@ const CommitteeList = props => {
                 picture={staff.getStaff.picture}
                 positionName={true}
                 onPressInfo={props.onSelect}
-                onPressIn={closeModalProfile}
+                onPressIn={closeProfileModal}
             />
         </Provider>
     );
 };
 
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     staffs: {
@@ -249,23 +233,6 @@ const styles = StyleSheet.create({
     wrap: {
         marginTop: 1
     },
-    modalView: {
-        backgroundColor: 'white',
-        height: modalMenuHeight,
-        width: modalMenuWidth,
-        alignSelf: 'center',
-        justifyContent: 'flex-start'
-    },
-    textView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "flex-start",
-        marginBottom: 5
-    },
-    text: {
-        marginLeft: wp(5.6),
-        fontSize: wp(3.65)
-    }
 });
 
 

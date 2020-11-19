@@ -1,10 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Alert, StyleSheet, ScrollView, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, SectionList } from 'react-native';
+import { Alert, StyleSheet, ScrollView, View, RefreshControl, SectionList } from 'react-native';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
+import { Provider, Text, Snackbar } from 'react-native-paper';
 
 import FABbutton from '../../components/common/FABbutton';
 import RundownContainer from '../../components/event/RundownContainer';
@@ -19,17 +17,11 @@ import {
   DELETE_RUNDOWN,
   FETCH_EVENT_QUERY
 } from '../../util/graphql';
-
+import LoadingModal from '../../components/common/LoadingModal';
+import OptionModal from '../../components/common/OptionModal';
 
 const RundownScreen = ({ navigation }) => {
-
   const sime = useContext(SimeContext);
-
-  let TouchableCmp = TouchableOpacity;
-
-  if (Platform.OS === 'android' && Platform.Version >= 21) {
-    TouchableCmp = TouchableNativeFeedback;
-  }
 
   const [visibleDelete, setVisibleDelete] = useState(false);
 
@@ -58,6 +50,15 @@ const RundownScreen = ({ navigation }) => {
     },
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {
+      rundowns.getRundowns.sort(function (a, b) {
+        var dateA = new Date(a.date).toLocaleDateString();
+        var dateB = new Date(b.date).toLocaleDateString();
+
+        var timeA = new Date(a.start_time).toLocaleTimeString();
+        var timeB = new Date(b.start_time).toLocaleTimeString();
+
+        return dateA - dateB || timeA - timeB
+      })
       setRundownsValTemp(rundowns.getRundowns);
     }
   });
@@ -143,7 +144,7 @@ const RundownScreen = ({ navigation }) => {
     setVisibleFormEdit(true);
   }
 
-  const [deleteRundown] = useMutation(DELETE_RUNDOWN, {
+  const [deleteRundown, { loading: loadingDelete }] = useMutation(DELETE_RUNDOWN, {
     update(proxy) {
       const data = proxy.readQuery({
         query: FETCH_RUNDOWNS_QUERY,
@@ -302,12 +303,24 @@ const RundownScreen = ({ navigation }) => {
         <Snackbar
           visible={visibleAdd}
           onDismiss={onDismissSnackBarAdd}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarAdd();
+            },
+          }}
         >
           Agenda added!
             </Snackbar>
         <Snackbar
           visible={visibleDelete}
           onDismiss={onDismissSnackBarDelete}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarDelete();
+            },
+          }}
         >
           Agenda deleted!
             </Snackbar>
@@ -345,30 +358,13 @@ const RundownScreen = ({ navigation }) => {
           }
         />
       </View>
-      <Portal>
-        <Modal
-          useNativeDriver={true}
-          isVisible={visible}
-          animationIn="zoomIn"
-          animationOut="zoomOut"
-          onBackButtonPress={closeModal}
-          onBackdropPress={closeModal}
-          statusBarTranslucent>
-          <View style={styles.modalView}>
-            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.rundown_agenda}</Title>
-            <TouchableCmp onPress={openFormEdit}>
-              <View style={styles.textView}>
-                <Text style={styles.text}>Edit</Text>
-              </View>
-            </TouchableCmp>
-            <TouchableCmp onPress={deleteHandler}>
-              <View style={styles.textView}>
-                <Text style={styles.text}>Delete</Text>
-              </View>
-            </TouchableCmp>
-          </View>
-        </Modal>
-      </Portal>
+      <OptionModal
+        visible={visible}
+        closeModal={closeModal}
+        title={sime.rundown_agenda}
+        openFormEdit={openFormEdit}
+        deleteHandler={deleteHandler}
+      />
       <FABbutton Icon="plus" label="agenda" onPress={openForm} />
       <FormRundown
         closeModalForm={closeModalForm}
@@ -389,28 +385,44 @@ const RundownScreen = ({ navigation }) => {
       />
       <Snackbar
         visible={visibleAdd}
-        onDismiss={onDismissSnackBarAdd}
+        onDismiss={onToggleSnackBarAdd}
+        action={{
+          label: 'dismiss',
+          onPress: () => {
+            onToggleSnackBarAdd();
+          },
+        }}
       >
         Agenda added!
             </Snackbar>
       <Snackbar
         visible={visibleUpdate}
         onDismiss={onDismissSnackBarUpdate}
+        action={{
+          label: 'dismiss',
+          onPress: () => {
+            onDismissSnackBarUpdate();
+          },
+        }}
       >
         Agenda updated!
             </Snackbar>
       <Snackbar
         visible={visibleDelete}
         onDismiss={onDismissSnackBarDelete}
+        action={{
+          label: 'dismiss',
+          onPress: () => {
+            onDismissSnackBarDelete();
+          },
+        }}
       >
         Agenda deleted!
             </Snackbar>
+      <LoadingModal loading={loadingDelete} />
     </Provider>
   );
 }
-
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
   container: {
@@ -426,23 +438,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  modalView: {
-    backgroundColor: 'white',
-    height: modalMenuHeight,
-    width: modalMenuWidth,
-    alignSelf: 'center',
-    justifyContent: 'flex-start',
-  },
-  textView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-start",
-    marginBottom: 5
-  },
-  text: {
-    marginLeft: wp(5.6),
-    fontSize: wp(3.65)
-  }
 });
 
 export default RundownScreen;

@@ -34,7 +34,6 @@ module.exports = gql`
         id: ID!
         name: String!
         description: String
-        cancel: Boolean!
         start_date: String!
         end_date: String!
         organization_id: ID!
@@ -45,7 +44,6 @@ module.exports = gql`
         id: ID!
         name: String!
         description: String
-        cancel: Boolean!
         location: String
         start_date: String!
         end_date: String!
@@ -246,7 +244,7 @@ module.exports = gql`
         addProject(
             name: String!,
             description: String,
-            cancel: Boolean!,
+,
             start_date: String!,
             end_date: String!,
             picture: String,
@@ -257,7 +255,7 @@ module.exports = gql`
             projectId: ID!,
             name: String!,
             description: String,
-            cancel: Boolean!,
+,
             start_date: String!,
             end_date: String!,
             picture: String
@@ -265,15 +263,10 @@ module.exports = gql`
 
         deleteProject(projectId: ID!): String!
 
-        cancelProject(
-            projectId: ID!,
-            cancel: Boolean!
-        ): Project!
-
         addEvent(
             name: String!,
             description: String,
-            cancel: Boolean!,
+,
             location: String,
             start_date: String!,
             end_date: String!,
@@ -285,7 +278,7 @@ module.exports = gql`
             eventId: ID!,
             name: String!,
             description: String,
-            cancel: Boolean!,
+,
             location: String,
             start_date: String!,
             end_date: String!,
@@ -293,11 +286,6 @@ module.exports = gql`
         ): Event!
 
         deleteEvent(eventId: ID!): String!
-
-        cancelEvent(
-            eventId: ID!,
-            cancel: Boolean!
-        ): Event!
 
         addPosition(name: String!, core: Boolean!, order: String!): Position!
         

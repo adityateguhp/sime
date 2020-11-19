@@ -9,6 +9,7 @@ import { taskNameValidator } from '../../util/validator';
 import { FETCH_TASKS_QUERY, ADD_TASK_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { SimeContext } from '../../context/SimePovider';
+import LoadingModal from '../common/LoadingModal';
 
 const FormTask = props => {
 
@@ -108,6 +109,7 @@ const FormTask = props => {
                             </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

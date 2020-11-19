@@ -7,7 +7,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
-import ModalProfile from '../../components/common/ModalProfile';
+import ProfileModal from '../../components/common/ProfileModal';
 import {
   FETCH_STAFF_QUERY,
   FETCH_PROJECT_QUERY,
@@ -26,7 +26,6 @@ const ProjectOverviewScreen = ({ navigation }) => {
     start_date: '',
     end_date: '',
     description: '',
-    cancel: false,
     organization_id: '',
     picture: ''
   });
@@ -87,7 +86,6 @@ const ProjectOverviewScreen = ({ navigation }) => {
           start_date: projectData.getProject.start_date,
           end_date: projectData.getProject.end_date,
           description: projectData.getProject.description,
-          cancel: projectData.getProject.cancel,
           organization_id: projectData.getProject.organization_id,
           picture: projectData.getProject.picture
         });
@@ -269,7 +267,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>
           <List.Item
             left={() =>
-              <Status start_date={project.start_date} end_date={project.end_date} cancel={project.cancel} fontSize={wp(3)} />}
+              <Status start_date={project.start_date} end_date={project.end_date} fontSize={wp(3)} />}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Project Description</Subheading>
@@ -292,7 +290,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
       </ScrollView>
       {
         headProjectData.getHeadProject ?
-          <ModalProfile
+          <ProfileModal
             visible={visible}
             onBackButtonPress={closeModal}
             onBackdropPress={closeModal}

@@ -7,21 +7,17 @@ const Status = props => {
     const planned = moment(nowDate).isBefore(props.start_date);
     const actived = moment(nowDate).isBetween(props.start_date, props.end_date, undefined, '[]');
     const completed = moment(nowDate).isAfter(props.end_date);
-    if (planned === true && props.cancel === false) {
+    if (planned === true) {
         return (
             <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="blue">PLANNED</Button>
         )
-    } else if (actived === true && props.cancel === false) {
+    } else if (actived === true) {
         return (
             <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="orange">ACTIVE</Button>
         )
-    } else if (completed === true && props.cancel === false) {
+    } else if (completed === true) {
         return (
             <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="green">COMPLETED</Button>
-        )
-    } else if (props.cancel === true) {
-        return (
-            <Button mode="contained" labelStyle={{fontSize: props.fontSize}} color="red">CANCELLED</Button>
         )
     } else {
         return (

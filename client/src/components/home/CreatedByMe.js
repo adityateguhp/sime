@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Text } from 'react-native';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 import {
     FETCH_COMMITTEES_QUERY,

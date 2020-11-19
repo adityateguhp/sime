@@ -14,6 +14,7 @@ import { singleDateValidator, timeValidator, agendaValidator } from '../../util/
 import { FETCH_RUNDOWNS_QUERY, ADD_RUNDOWN_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
 
 const FormRundown = props => {
 
@@ -84,21 +85,31 @@ const FormRundown = props => {
     };
 
     const onChangeStartTime = (key, dateVal, val, err) => {
-        let timeVal = dateVal.concat(' ', val);
+        const h = (val.getHours() < 10 ? '0' : '') + val.getHours();
+        const m = (val.getMinutes() < 10 ? '0' : '') + val.getMinutes();
+        const time = h + ':' + m;
+        let timeVal = dateVal.concat(' ', time);
         setValues({ ...values, [key]: timeVal });
         setErrors({ ...errors, [err]: '' });
         closeStartTimepicker();
     };
 
     const onChangeEndTime = (key, dateVal, val, err) => {
-        let timeVal = dateVal.concat(' ', val);
+        const h = (val.getHours() < 10 ? '0' : '') + val.getHours();
+        const m = (val.getMinutes() < 10 ? '0' : '') + val.getMinutes();
+        const time = h + ':' + m;
+        let timeVal = dateVal.concat(' ', time);
         setValues({ ...values, [key]: timeVal });
         setErrors({ ...errors, [err]: '' });
         closeEndTimepicker();
     };
 
     const onChangeDate = (key, val, err) => {
-        setValues({ ...values, [key]: val, start_time: '', end_time: '' });
+        const year = (val.getFullYear() < 10 ? '0' : '') + val.getFullYear();
+        const mes = ((val.getMonth()+1) < 10 ? '0' : '') + (val.getMonth()+1);
+        const dia = (val.getDate() < 10 ? '0' : '') + val.getDate();;
+        const date = year + "-" + mes + "-" + dia;
+        setValues({ ...values, [key]: date, start_time: '', end_time: '' });
         setErrors({ ...errors, [err]: '' });
         closeDatepicker();
     };
@@ -145,9 +156,9 @@ const FormRundown = props => {
         variables: values
     });
 
-    const date = moment(values.date).format('dddd, MMM D YYYY');
-    const startTime = moment(values.start_time).format('LT');
-    const endTime = moment(values.end_time).format('LT');
+    const date = moment(values.date).format('dddd, MMM D YYYY')
+    const startTime = moment(values.start_time).format('LT')
+    const endTime = moment(values.end_time).format('LT')
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -201,7 +212,7 @@ const FormRundown = props => {
                                             </Button>
                                         </View>
                                     </View>
-                                    <View style={{marginBottom: 15}}>
+                                    <View style={{ marginBottom: 15 }}>
                                         {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
                                     </View>
 
@@ -259,21 +270,21 @@ const FormRundown = props => {
                                 <Portal>
                                     <DateTimePicker
                                         isVisible={showStartTime}
-                                        onConfirm={(val) => onChangeStartTime('start_time', values.date, val.toLocaleTimeString(), 'time_error')}
+                                        onConfirm={(val) => onChangeStartTime('start_time', values.date, val, 'time_error')}
                                         onCancel={closeStartTimepicker}
                                         mode="time"
                                         display="default"
                                     />
                                     <DateTimePicker
                                         isVisible={showEndTime}
-                                        onConfirm={(val) => onChangeEndTime('end_time', values.date, val.toLocaleTimeString(), 'time_error')}
+                                        onConfirm={(val) => onChangeEndTime('end_time', values.date, val, 'time_error')}
                                         onCancel={closeEndTimepicker}
                                         mode="time"
                                         display="default"
                                     />
                                     <DateTimePicker
                                         isVisible={showDate}
-                                        onConfirm={(val) => onChangeDate('date', val.toLocaleDateString(), 'date_error')}
+                                        onConfirm={(val) => onChangeDate('date', val, 'date_error')}
                                         onCancel={closeDatepicker}
                                         mode="date"
                                         display="default"
@@ -285,6 +296,7 @@ const FormRundown = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

@@ -15,6 +15,7 @@ import { eventNameValidator, dateValidator } from '../../util/validator';
 import { FETCH_EVENTS_QUERY, ADD_EVENT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
 
 const FormEvent = props => {
 
@@ -37,7 +38,6 @@ const FormEvent = props => {
         name: '',
         description: '',
         location: '',
-        cancel: false,
         start_date: '',
         end_date: '',
         project_id: sime.project_id,
@@ -160,7 +160,6 @@ const FormEvent = props => {
             values.start_date = '';
             values.end_date = '';
             values.picture = '';
-            values.cancel = false;
             props.closeModalForm();
         },
         onError(err) {
@@ -319,6 +318,7 @@ const FormEvent = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

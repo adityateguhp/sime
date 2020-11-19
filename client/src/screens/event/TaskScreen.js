@@ -215,14 +215,24 @@ const TaskScreen = ({ navigation }) => {
                 />
                 <Snackbar
                     visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                >
+                 onDismiss={onDismissSnackBarAdd}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                  }}>
                     Task added!
             </Snackbar>
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
-                >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                  }}>
                     Task deleted!
             </Snackbar>
             </ScrollView>
@@ -280,20 +290,35 @@ const TaskScreen = ({ navigation }) => {
             />
             <Snackbar
                 visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-            >
+             onDismiss={onDismissSnackBarAdd}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                  }}>
                 Task added!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-            >
+               onDismiss={onDismissSnackBarDelete}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                  }}>
                 Task deleted!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                  }}>
                 Task updated!
             </Snackbar>
         </Provider>

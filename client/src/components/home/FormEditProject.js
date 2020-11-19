@@ -15,6 +15,7 @@ import { FETCH_PROJECTS_QUERY, UPDATE_PROJECT_MUTATION } from '../../util/graphq
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
 
 const FormEditProject = props => {
     let TouchableCmp = TouchableOpacity;
@@ -36,7 +37,6 @@ const FormEditProject = props => {
         projectId: '',
         name: '',
         description: '',
-        cancel: false,
         start_date: '',
         end_date: '',
         picture: null,
@@ -136,7 +136,6 @@ const FormEditProject = props => {
                 projectId: props.project.id,
                 name: props.project.name,
                 description: props.project.description,
-                cancel: props.project.cancel,
                 start_date: props.project.start_date,
                 end_date: props.project.end_date,
                 picture: props.project.picture,
@@ -149,11 +148,11 @@ const FormEditProject = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: {organizationId: sime.user_type === 'Organizaition'? sime.user.id : sime.user.organization_id}
+                variables: {organizationId: sime.user_type === 'Organization'? sime.user.id : sime.user.organization_id}
             });
             props.updateProjectsStateUpdate(result.data.updateProject);
             props.updateProjectStateUpdate(result.data.updateProject)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user_type === 'Organizaition'? sime.user.id : sime.user.organization_id} });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user_type === 'Organization'? sime.user.id : sime.user.organization_id} });
             props.closeModalForm();
         },
         onError(err) {
@@ -302,6 +301,7 @@ const FormEditProject = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

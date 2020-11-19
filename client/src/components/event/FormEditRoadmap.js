@@ -14,6 +14,8 @@ import { roadmapNameValidator, dateValidator } from '../../util/validator';
 import { FETCH_ROADMAPS_QUERY, UPDATE_ROADMAP_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
+
 
 const FormEditRoadmap = props => {
 
@@ -232,6 +234,7 @@ const FormEditRoadmap = props => {
                         </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

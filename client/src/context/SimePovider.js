@@ -22,7 +22,6 @@ const SimeProvider = (props) => {
   const [external_name, setExternal_name] = useState('');
   const [external_type, setExternal_type] = useState('');
   const [external_type_name, setExternal_type_name] = useState('');
-  const [cancelProject, setCancelProject] = useState(false);
   const [rundown_id, setRundown_id] = useState('');
   const [rundown_agenda, setRundown_agenda] = useState('');
   const [committee_id, setCommittee_id] = useState('');
@@ -51,7 +50,6 @@ const SimeProvider = (props) => {
         external_name,
         external_type,
         external_type_name,
-        cancelProject,
         rundown_id,
         rundown_agenda,
         committee_id,
@@ -77,7 +75,6 @@ const SimeProvider = (props) => {
         setExternal_name,
         setExternal_type,
         setExternal_type_name,
-        setCancelProject,
         setRundown_id,
         setRundown_agenda,
         setCommittee_id,

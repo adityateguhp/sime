@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Text } from 'react-native';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import {
     FETCH_ROADMAP_QUERY,
-    FETCH_TASKS_QUERY,
     FETCH_TASK_QUERY,
     FETCH_EVENT_QUERY,
     FETCH_PROJECT_QUERY
 } from '../../util/graphql';
 import Task from '../event/Task';
-import CenterSpinnerSmall from '../common/CenterSpinnerSmall';
 
 const AssignedToMe = props => {
     let TouchableCmp = TouchableOpacity;

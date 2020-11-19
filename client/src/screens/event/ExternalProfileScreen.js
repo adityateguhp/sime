@@ -30,7 +30,7 @@ const ExternalProfileScreen = ({ route }) => {
         <ScrollView style={styles.screen}>
             <View style={styles.profilePicture}>
                 <Avatar.Image style={{ marginBottom: 10 }} size={150} source={external.getExternal.picture ? { uri: external.getExternal.picture } : require('../../assets/avatar.png')} />
-                <Headline>{external.getExternal.name}</Headline>
+                <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{external.getExternal.name}</Headline>
             </View>
             <Divider />
             <View style={styles.profileDetails}>

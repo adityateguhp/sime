@@ -1,14 +1,9 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList, Text } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, FlatList, Text } from 'react-native';
 
 import CommitteeList from './CommitteeList';
 
 const CommitteeListContainer = props => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const comiteeInDivision = props.committees.filter((e) => e.division_id === props.division_id);
 

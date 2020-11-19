@@ -82,13 +82,23 @@ const AssignedToMeScreen = ({ navigation }) => {
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                  }}>
                 Task updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-            >
+               onDismiss={onDismissSnackBarDelete}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                  }}>
                 Task deleted!
             </Snackbar>
         </Provider>

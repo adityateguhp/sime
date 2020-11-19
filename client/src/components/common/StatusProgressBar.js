@@ -26,9 +26,7 @@ export function Percentage(props) {
     return (
         <Caption style={styles.caption}>
             {
-                props.cancel ?
-                    0
-                    : today < start_date ?
+               today < start_date ?
                         0
                         :
                         today < end_date ?
@@ -61,9 +59,7 @@ export function StatusProgressDays(props) {
     return (
         <Caption style={styles.caption}>
             {
-                props.cancel ?
-                    null
-                    : today < start_date ?
+              today < start_date ?
                         plannedDays + " Days to go"
                         :
                         today < end_date ?
@@ -96,9 +92,7 @@ export function StatusProgressBar(props) {
         <View>
             <ProgressBar
                 progress={
-                    props.cancel ?
-                        0
-                        : today < start_date ?
+                    today < start_date ?
                             0
                             :
                             today < end_date ?

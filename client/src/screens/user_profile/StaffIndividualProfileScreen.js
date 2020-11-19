@@ -140,14 +140,14 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
             >
                 <View style={styles.profilePicture}>
                     <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />
-                    <Headline>{staff.getStaff.name}</Headline>
+                    <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{staff.getStaff.name}</Headline>
                 </View>
                 <Divider />
                 <View style={styles.profileDetails}>
                     <Title style={styles.titleInfo}>
                         Department
                 </Title>
-                    <Paragraph>
+                    <Paragraph numberOfLines={1} ellipsizeMode='tail'>
                         {department.getDepartment.name}
                     </Paragraph>
                     <Divider />
@@ -189,7 +189,12 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                  }}>
                 Profile updated!
             </Snackbar>
         </Provider>

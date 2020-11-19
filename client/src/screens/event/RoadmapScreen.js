@@ -1,8 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Text, Snackbar } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -17,14 +15,10 @@ import {
     DELETE_ROADMAP,
     FETCH_EVENT_QUERY
 } from '../../util/graphql';
-
+import LoadingModal from '../../components/common/LoadingModal';
+import OptionModal from '../../components/common/OptionModal';
 
 const RoadmapScreen = ({ route, navigation }) => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const sime = useContext(SimeContext);
 
@@ -123,7 +117,7 @@ const RoadmapScreen = ({ route, navigation }) => {
 
     const roadmapId = sime.roadmap_id;
 
-    const [deleteRoadmap] = useMutation(DELETE_ROADMAP, {
+    const [deleteRoadmap, { loading: loadingDelete }] = useMutation(DELETE_ROADMAP, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ROADMAPS_QUERY,
@@ -231,13 +225,23 @@ const RoadmapScreen = ({ route, navigation }) => {
                 <Snackbar
                     visible={visibleAdd}
                     onDismiss={onDismissSnackBarAdd}
-                >
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
                     Roadmap added!
             </Snackbar>
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
-                >
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
                     Roadmap deleted!
             </Snackbar>
             </ScrollView>
@@ -270,27 +274,13 @@ const RoadmapScreen = ({ route, navigation }) => {
                     </RoadmapCard>
                 )}
             />
-            <Portal>
-                <View style={styles.centeredView}>
-                    <Modal useNativeDriver={true} isVisible={visible} animationIn="zoomIn" animationInTiming={100} animationOut="zoomOut" animationOutTiming={100} onBackButtonPress={closeModal} onBackdropPress={closeModal} statusBarTranslucent>
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.roadmap_name}</Title>
-                                <TouchableCmp onPress={openFormEdit}>
-                                    <View style={styles.textView}>
-                                        <Text style={styles.text}>Edit</Text>
-                                    </View>
-                                </TouchableCmp>
-                                <TouchableCmp onPress={deleteHandler}>
-                                    <View style={styles.textView}>
-                                        <Text style={styles.text}>Delete roadmap</Text>
-                                    </View>
-                                </TouchableCmp>
-                            </View>
-                        </View>
-                    </Modal>
-                </View>
-            </Portal>
+            <OptionModal
+                visible={visible}
+                closeModal={closeModal}
+                title={sime.roadmap_name}
+                openFormEdit={openFormEdit}
+                deleteHandler={deleteHandler}
+            />
             <FABbutton Icon="plus" label="roadmap" onPress={openForm} />
             <FormRoadmap
                 closeModalForm={closeModalForm}
@@ -312,27 +302,40 @@ const RoadmapScreen = ({ route, navigation }) => {
             <Snackbar
                 visible={visibleAdd}
                 onDismiss={onDismissSnackBarAdd}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                }}>
                 Roadmap added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                }}>
                 Roadmap updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                }}>
                 Roadmap deleted!
             </Snackbar>
+            <LoadingModal loading={loadingDelete} />
         </Provider>
     );
 }
-
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
@@ -343,29 +346,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-    },
-    modalView: {
-        backgroundColor: 'white',
-        height: modalMenuHeight,
-        width: modalMenuWidth,
-        alignSelf: 'center',
-        justifyContent: 'flex-start'
-    },
-    textView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "flex-start",
-        marginBottom: 5
-    },
-    text: {
-        marginLeft: wp(5.6),
-        fontSize: wp(3.65)
     }
 });
 

@@ -1,9 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Text, Snackbar } from 'react-native-paper';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormDepartment from '../../components/user_management/FormDepartment';
@@ -21,6 +19,8 @@ import {
     FETCH_COMMITTEES_BYORGANIZATION_QUERY,
     DELETE_ASSIGNED_TASK_BYCOMMITTEE
 } from '../../util/graphql';
+import LoadingModal from '../../components/common/LoadingModal';
+import OptionModal from '../../components/common/OptionModal';
 
 const DepartmentsScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
@@ -78,12 +78,6 @@ const DepartmentsScreen = ({ navigation }) => {
         {
             variables: { organizationId: sime.user.id },
         });
-
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
 
     const selectItemHandler = (name, id) => {
         navigation.navigate('Staff List in Department', {
@@ -169,7 +163,7 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const [deleteStaffByDepartment] = useMutation(DELETE_STAFF_BYDEPARTMENT);
 
-    const [deleteDepartment] = useMutation(DELETE_DEPARTMENT, {
+    const [deleteDepartment, { loading: loadingDelete }] = useMutation(DELETE_DEPARTMENT, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY,
@@ -310,12 +304,24 @@ const DepartmentsScreen = ({ navigation }) => {
                     <Snackbar
                         visible={visibleAdd}
                         onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}
                     >
                         Department added!
             </Snackbar>
                     <Snackbar
                         visible={visibleDelete}
                         onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}
                     >
                         Department deleted!
             </Snackbar>
@@ -345,30 +351,13 @@ const DepartmentsScreen = ({ navigation }) => {
                     </DepartmentCard>
                 )}
             />
-            <Portal>
-                <Modal
-                    useNativeDriver={true}
-                    isVisible={visible}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    onBackButtonPress={closeModal}
-                    onBackdropPress={closeModal}
-                    statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.department_name}</Title>
-                        <TouchableCmp onPress={openFormEdit}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete department</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
-                </Modal>
-            </Portal>
+            <OptionModal
+                visible={visible}
+                closeModal={closeModal}
+                title={sime.department_name}
+                openFormEdit={openFormEdit}
+                deleteHandler={deleteHandler}
+            />
             <FABbutton Icon="plus" label="department" onPress={openForm} />
             <FormDepartment
                 closeModalForm={closeModalForm}
@@ -388,27 +377,40 @@ const DepartmentsScreen = ({ navigation }) => {
             <Snackbar
                 visible={visibleAdd}
                 onDismiss={onDismissSnackBarAdd}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                }}>
                 Department added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                }}>
                 Department updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
-            >
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                }}>
                 Department deleted!
             </Snackbar>
+            <LoadingModal loading={loadingDelete} />
         </Provider>
     );
 }
-
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
@@ -419,23 +421,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    modalView: {
-        backgroundColor: 'white',
-        height: modalMenuHeight,
-        width: modalMenuWidth,
-        alignSelf: 'center',
-        justifyContent: 'flex-start',
-    },
-    textView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "flex-start",
-        marginBottom: 5
-    },
-    text: {
-        marginLeft: wp(5.6),
-        fontSize: wp(3.65)
     },
 });
 

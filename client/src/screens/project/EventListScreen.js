@@ -1,8 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Portal, Title, Text, Snackbar } from 'react-native-paper';
-import Modal from "react-native-modal";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { Provider, Portal, Text, Snackbar } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -15,17 +13,13 @@ import {
     FETCH_EVENTS_QUERY,
     FETCH_EVENT_QUERY,
     DELETE_EVENT,
-    CANCEL_EVENT_MUTATION,
     FETCH_PROJECT_QUERY
 } from '../../util/graphql';
+import LoadingModal from '../../components/common/LoadingModal';
+import OptionModal from '../../components/common/OptionModal';
 
 const EventListScreen = ({ route, navigation }) => {
-    let TouchableCmp = TouchableOpacity;
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback;
-    }
-
+    
     const sime = useContext(SimeContext);
 
     const [visibleDelete, setVisibleDelete] = useState(false);
@@ -33,20 +27,6 @@ const EventListScreen = ({ route, navigation }) => {
     const onToggleSnackBarDelete = () => setVisibleDelete(!visibleDelete);
 
     const onDismissSnackBarDelete = () => setVisibleDelete(false);
-
-
-    const [visibleCancel, setVisibleCancel] = useState(false);
-
-    const onToggleSnackBarCancel = () => setVisibleCancel(!visibleCancel);
-
-    const onDismissSnackBarCancel = () => setVisibleCancel(false);
-
-
-    const [visibleActivate, setVisibleActivate] = useState(false);
-
-    const onToggleSnackBarActivate = () => setVisibleActivate(!visibleActivate);
-
-    const onDismissSnackBarActivate = () => setVisibleActivate(false);
 
 
     const [visibleAdd, setVisibleAdd] = useState(false);
@@ -72,7 +52,7 @@ const EventListScreen = ({ route, navigation }) => {
         sime.setEvent_name(event_name);
     };
 
-    const { data: events, error: error1, loading: loading1, refetch,  } = useQuery(
+    const { data: events, error: error1, loading: loading1, refetch, } = useQuery(
         FETCH_EVENTS_QUERY,
         {
             variables: { projectId: sime.project_id },
@@ -103,10 +83,6 @@ const EventListScreen = ({ route, navigation }) => {
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
-    const [cancelValue, setCancelValues] = useState({
-        eventId: '',
-        cancel: false
-    });
 
     useEffect(() => {
         if (event) setEventVal(event.getEvent);
@@ -124,11 +100,10 @@ const EventListScreen = ({ route, navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (id, name, cancel) => {
+    const longPressHandler = (id, name) => {
         setVisible(true);
         sime.setEvent_name(name);
         sime.setEvent_id(id);
-        setCancelValues({ cancel: cancel, eventId: id })
         loadExistData();
     }
 
@@ -156,7 +131,7 @@ const EventListScreen = ({ route, navigation }) => {
 
     const eventId = sime.event_id;
 
-    const [deleteEvent] = useMutation(DELETE_EVENT, {
+    const [deleteEvent, { loading: loadingDelete }] = useMutation(DELETE_EVENT, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_EVENTS_QUERY,
@@ -170,28 +145,6 @@ const EventListScreen = ({ route, navigation }) => {
             eventId
         }
     });
-
-    const [cancelEvent, { loading }] = useMutation(CANCEL_EVENT_MUTATION, {
-        update(proxy, result) {
-            const data = proxy.readQuery({
-                query: FETCH_EVENTS_QUERY,
-                variables: { projectId: sime.project_id }
-            });
-            cancelEventsStateUpdate(result.data.cancelEvent);
-            proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
-            closeModal();
-        },
-        onError(err) {
-            console.log(err)
-            return err;
-        },
-        variables: { ...cancelValue, cancel: !cancelValue.cancel }
-    });
-
-    const onCancel = (event) => {
-        event.preventDefault();
-        cancelEvent();
-    };
 
     const addEventsStateUpdate = (e) => {
         setEventsValue([e, ...eventsValue]);
@@ -220,15 +173,6 @@ const EventListScreen = ({ route, navigation }) => {
 
     const updateEventStateUpdate = (e) => {
         setEventVal(e)
-    }
-
-    const cancelEventsStateUpdate = (e) => {
-        const temp = [...eventsValue];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e.id);
-        temp[index] = e
-        setEventsValue(temp)
     }
 
     const onRefresh = () => {
@@ -285,13 +229,23 @@ const EventListScreen = ({ route, navigation }) => {
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
-                >
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
                     Event deleted!
             </Snackbar>
                 <Snackbar
                     visible={visibleAdd}
                     onDismiss={onDismissSnackBarAdd}
-                >
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
                     Event added!
             </Snackbar>
             </ScrollView>
@@ -314,54 +268,24 @@ const EventListScreen = ({ route, navigation }) => {
                         name={itemData.item.name}
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
-                        cancel={itemData.item.cancel}
                         picture={itemData.item.picture}
                         onSelect={() => {
                             selectItemHandler(itemData.item.id, itemData.item.name);
                         }}
-                        onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.cancel) }}
+                        onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
                     >
                     </EventCard>
                 )}
             />
             { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ?
                 <Portal>
-                    <Modal
-                        useNativeDriver={true}
-                        isVisible={visible}
-                        animationIn="zoomIn"
-                        animationOut="zoomOut"
-                        onBackButtonPress={closeModal}
-                        onBackdropPress={closeModal}
-                        statusBarTranslucent>
-                        <View style={styles.modalView}>
-                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Title>
-                            <TouchableCmp onPress={openFormEdit}>
-                                <View style={styles.textView}>
-                                    <Text style={styles.text}>Edit</Text>
-                                </View>
-                            </TouchableCmp>
-                            {
-                                cancelValue.cancel ?
-                                    <TouchableCmp onPress={onToggleSnackBarActivate} onPressIn={onCancel}>
-                                        <View style={styles.textView}>
-                                            <Text style={styles.text}>Active event</Text>
-                                        </View>
-                                    </TouchableCmp>
-                                    :
-                                    <TouchableCmp onPress={onToggleSnackBarCancel} onPressIn={onCancel}>
-                                        <View style={styles.textView}>
-                                            <Text style={styles.text}>Cancel event</Text>
-                                        </View>
-                                    </TouchableCmp>
-                            }
-                            <TouchableCmp onPress={deleteHandler}>
-                                <View style={styles.textView}>
-                                    <Text style={styles.text}>Delete event</Text>
-                                </View>
-                            </TouchableCmp>
-                        </View>
-                    </Modal>
+                    <OptionModal
+                        visible={visible}
+                        closeModal={closeModal}
+                        title={sime.event_name}
+                        openFormEdit={openFormEdit}
+                        deleteHandler={deleteHandler}
+                    />
                     <FABbutton Icon="plus" label="event" onPress={openForm} />
                     <FormEvent
                         closeModalForm={closeModalForm}
@@ -383,40 +307,44 @@ const EventListScreen = ({ route, navigation }) => {
                     <Snackbar
                         visible={visibleDelete}
                         onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}
                     >
                         Event deleted!
-            </Snackbar>
-                    <Snackbar
-                        visible={visibleCancel}
-                        onDismiss={onDismissSnackBarCancel}
-                    >
-                        Event canceled!
-            </Snackbar>
-                    <Snackbar
-                        visible={visibleActivate}
-                        onDismiss={onDismissSnackBarActivate}
-                    >
-                        Event activated!
-            </Snackbar>
+                    </Snackbar>
                     <Snackbar
                         visible={visibleAdd}
                         onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}
                     >
                         Event added!
-            </Snackbar>
+                    </Snackbar>
                     <Snackbar
                         visible={visibleUpdate}
                         onDismiss={onDismissSnackBarUpdate}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarUpdate();
+                            },
+                        }}
                     >
                         Event updated!
-            </Snackbar>
+                    </Snackbar>
+                    <LoadingModal loading={loadingDelete} />
                 </Portal> : null}
         </Provider>
     );
 }
-
-const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(46.5);
 
 const styles = StyleSheet.create({
     screen: {
@@ -427,23 +355,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    modalView: {
-        backgroundColor: 'white',
-        height: modalMenuHeight,
-        width: modalMenuWidth,
-        alignSelf: 'center',
-        justifyContent: 'flex-start'
-    },
-    textView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "flex-start",
-        marginBottom: 5
-    },
-    text: {
-        marginLeft: wp(5.6),
-        fontSize: wp(3.65)
     }
 });
 

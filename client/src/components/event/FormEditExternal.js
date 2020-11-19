@@ -11,6 +11,8 @@ import { SimeContext } from '../../context/SimePovider';
 import { emailValidator, phoneNumberValidator, externalNameValidator } from '../../util/validator';
 import { FETCH_EXBYTYPE_QUERY, UPDATE_EXTERNAL_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
+import LoadingModal from '../common/LoadingModal';
+
 
 const FormEditExternal = props => {
     let TouchableCmp = TouchableOpacity;
@@ -237,6 +239,7 @@ const FormEditExternal = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

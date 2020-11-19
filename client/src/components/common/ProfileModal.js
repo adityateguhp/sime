@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-const ModalProfile = props => {
+const ProfileModal = props => {
     const positionName = props.positionName;
     let TouchableCmp = TouchableOpacity;
 
@@ -108,4 +108,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default ModalProfile;
+export default ProfileModal;

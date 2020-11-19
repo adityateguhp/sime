@@ -54,7 +54,7 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
             >
                 <View style={styles.profilePicture}>
                     <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture ? { uri: organization.getOrganization.picture } : require('../../assets/avatar.png')} />
-                    <Headline>{organization.getOrganization.name}</Headline>
+                    <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{organization.getOrganization.name}</Headline>
                 </View>
                 <Divider />
                 <View style={styles.profileDetails}>

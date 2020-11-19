@@ -15,6 +15,8 @@ import { eventNameValidator, dateValidator } from '../../util/validator';
 import { FETCH_EVENTS_QUERY, UPDATE_EVENT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
+import LoadingModal from '../common/LoadingModal';
+
 
 const FormEditEvent = props => {
 
@@ -38,7 +40,6 @@ const FormEditEvent = props => {
         name: '',
         description: '',
         location: '',
-        cancel: false,
         start_date: '',
         end_date: '',
         picture: null,
@@ -142,7 +143,6 @@ const FormEditEvent = props => {
                 eventId: props.event.id,
                 name: props.event.name,
                 description: props.event.description,
-                cancel: props.event.cancel,
                 location: props.event.location,
                 start_date: props.event.start_date,
                 end_date: props.event.end_date,
@@ -328,6 +328,7 @@ const FormEditEvent = props => {
                         </KeyboardAvoidingView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );

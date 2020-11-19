@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Appbar, Portal} from 'react-native-paper';
+import { Appbar, Portal } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useMutation } from '@apollo/react-hooks';
@@ -9,6 +9,7 @@ import { divisionNameValidator } from '../../util/validator';
 import { FETCH_DIVISIONS_QUERY, ADD_DIVISION_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { SimeContext } from '../../context/SimePovider';
+import LoadingModal from '../common/LoadingModal';
 
 const FormDivision = props => {
 
@@ -32,11 +33,11 @@ const FormDivision = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_DIVISIONS_QUERY,
-                variables: {projectId: values.projectId}
+                variables: { projectId: values.projectId }
             });
             data.getDivisions = [result.data.addDivision, ...data.getDivisions];
             props.addDivisionsStateUpdate(result.data.addDivision);
-            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: {projectId: values.projectId}});
+            proxy.writeQuery({ query: FETCH_DIVISIONS_QUERY, data, variables: { projectId: values.projectId } });
             values.name = '';
             props.closeModalForm();
         },
@@ -64,12 +65,12 @@ const FormDivision = props => {
 
     //for get keyboard height
     Keyboard.addListener('keyboardDidShow', (frames) => {
-       if (!frames.endCoordinates) return;
-         setKeyboarSpace(frames.endCoordinates.height);
-     });
-     Keyboard.addListener('keyboardDidHide', (frames) => {
-         setKeyboarSpace(0);
-     });
+        if (!frames.endCoordinates) return;
+        setKeyboarSpace(frames.endCoordinates.height);
+    });
+    Keyboard.addListener('keyboardDidHide', (frames) => {
+        setKeyboarSpace(0);
+    });
 
     return (
         <Portal>
@@ -83,7 +84,7 @@ const FormDivision = props => {
                 style={{
                     justifyContent: 'flex-end',
                     margin: 0,
-                    top: keyboardSpace ? -10 -keyboardSpace : 0,
+                    top: keyboardSpace ? -10 - keyboardSpace : 0,
                 }}
                 statusBarTranslucent>
                 <View style={styles.buttomView}>
@@ -93,22 +94,23 @@ const FormDivision = props => {
                             <Appbar.Content title="New Division" />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
-                            <ScrollView>
-                                <View style={styles.formViewStyle}>
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
-                                            label='Division Name'
-                                            value={values.name}
-                                            onChangeText={(val) => onChange('name', val, 'division_name_error')}
-                                            error={errors.division_name_error? true : false}
-                                            errorText={errors.division_name_error}
-                                        />
-                                    </View>
+                        <ScrollView>
+                            <View style={styles.formViewStyle}>
+                                <View style={styles.inputStyle}>
+                                    <TextInput
+                                        style={styles.input}
+                                        label='Division Name'
+                                        value={values.name}
+                                        onChangeText={(val) => onChange('name', val, 'division_name_error')}
+                                        error={errors.division_name_error ? true : false}
+                                        errorText={errors.division_name_error}
+                                    />
                                 </View>
-                            </ScrollView>
+                            </View>
+                        </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );
@@ -119,7 +121,7 @@ const modalFormHeight = hp(34);
 
 const styles = StyleSheet.create({
     appbar: {
-       
+
     },
     formView: {
         backgroundColor: 'white',

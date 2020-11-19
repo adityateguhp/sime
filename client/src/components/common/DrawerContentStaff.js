@@ -96,7 +96,7 @@ const DrawerContentStaff = props => {
                                 size={60}
                             />
                         </TouchableOpacity>
-                        <Title style={styles.title}>{userData.name}</Title>
+                        <Title style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{userData.name}</Title>
                         <Caption>{userData.email}</Caption>
                     </View>
                 </Drawer.Section>
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     },
     title: {
         marginTop: 10,
+        marginRight: 10,
         fontWeight: 'bold',
     },
     drawerSection: {

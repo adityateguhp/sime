@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
 import { Appbar, Portal } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useMutation } from '@apollo/react-hooks';
@@ -11,6 +10,7 @@ import { departmentNameValidator } from '../../util/validator';
 import { FETCH_DEPARTMENTS_QUERY, ADD_DEPARTMENT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { SimeContext } from '../../context/SimePovider'
+import LoadingModal from '../common/LoadingModal';
 
 const FormDepartment = props => {
     const sime = useContext(SimeContext);
@@ -65,7 +65,6 @@ const FormDepartment = props => {
     Keyboard.addListener('keyboardDidHide', (frames) => {
         setKeyboarSpace(0);
     });
-    const safeArea = useSafeArea();
 
     return (
         <Portal>
@@ -105,6 +104,7 @@ const FormDepartment = props => {
                         </ScrollView>
                     </View>
                 </View>
+                <LoadingModal loading={loading} />
             </Modal>
         </Portal >
     );
