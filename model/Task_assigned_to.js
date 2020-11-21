@@ -5,9 +5,9 @@ const task_assigned_to_Schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'tasks'
     }, 	
-    committee_id:{
+    personInCharge_id:{
         type: Schema.Types.ObjectId,
-        ref: 'committees'
+        ref: 'person_in_charges'
     },
     createdAt: String 	
 });

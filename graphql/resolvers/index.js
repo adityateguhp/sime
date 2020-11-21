@@ -3,8 +3,8 @@ const departmentsResolvers = require('./departments');
 const staffsResolvers = require('./staffs');
 const projectsResolvers = require('./projects');
 const positionResolvers = require('./positions');
-const divisionResolvers = require('./divisions');
 const committeeResolvers = require('./committees');
+const person_in_chargeResolvers = require('./person_in_charges');
 const eventResolvers = require('./events');
 const externalResolvers = require('./externals');
 const externalTypeResolvers = require('./externalTypes');
@@ -20,8 +20,8 @@ module.exports = {
         ...staffsResolvers.Query,
         ...projectsResolvers.Query,
         ...positionResolvers.Query,
-        ...divisionResolvers.Query,
         ...committeeResolvers.Query,
+        ...person_in_chargeResolvers.Query,
         ...eventResolvers.Query,
         ...externalResolvers.Query,
         ...externalTypeResolvers.Query,
@@ -36,8 +36,8 @@ module.exports = {
         ...staffsResolvers.Mutation,
         ...projectsResolvers.Mutation,
         ...positionResolvers.Mutation,
-        ...divisionResolvers.Mutation,
         ...committeeResolvers.Mutation,
+        ...person_in_chargeResolvers.Mutation,
         ...eventResolvers.Mutation,
         ...externalResolvers.Mutation,
         ...externalTypeResolvers.Mutation,

@@ -1,10 +1,10 @@
 import React from 'react';
 import { FAB, Portal } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 
 const FABbutton = props => {
-    const safeArea = useSafeArea();
+    const safeArea = useSafeAreaInsets();
     return (
         <FAB
             style={{

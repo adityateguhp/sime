@@ -14,10 +14,10 @@ import { theme } from '../../constants/Theme';
 import {
     FETCH_STAFFSBYDEPARTMENT_QUERY,
     DELETE_STAFF,
-    DELETE_COMMITTEE_BYSTAFF,
-    DELETE_ASSIGNED_TASK_BYCOMMITTEE,
+    DELETE_PIC_BYSTAFF,
+    DELETE_ASSIGNED_TASK_BYPIC,
     FETCH_STAFF_QUERY,
-    FETCH_COMMITTEES_BYSTAFF_QUERY,
+    FETCH_PICS_BYSTAFF_QUERY,
     RESET_PASSWORD_STAFF_MUTATION
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
@@ -84,7 +84,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         });
 
     const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4 }] = useLazyQuery(
-        FETCH_COMMITTEES_BYSTAFF_QUERY,
+        FETCH_PICS_BYSTAFF_QUERY,
         {
             variables: { staffId: sime.staff_id },
         });
@@ -105,7 +105,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
     }, [staff])
 
     useEffect(() => {
-        if (committeeByStaff) setCommitteesVal(committeeByStaff.getCommitteesByStaff);
+        if (committeeByStaff) setCommitteesVal(committeeByStaff.getPersonInChargesByStaff);
     }, [committeeByStaff])
 
     const closeModal = () => {
@@ -137,17 +137,17 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const [deleteAssignedTaskByCommittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+    const [deleteAssignedTaskByPersonInCharge] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
 
-    const deleteAssignedTaskByCommitteeHandler = () => {
+    const deleteAssignedTaskByPersonInChargeHandler = () => {
         commiteesVal.map((committee) => {
-            deleteAssignedTaskByCommittee(({
-                variables: { committeeId: committee.id },
+            deleteAssignedTaskByPersonInCharge(({
+                variables: { personInChargeId: committee.id },
             }))
         })
     };
 
-    const [deleteCommitteeByDepartment] = useMutation(DELETE_COMMITTEE_BYSTAFF);
+    const [deletePersonInChargeByDepartment] = useMutation(DELETE_PIC_BYSTAFF);
 
     const [deleteStaff, { loading: loadingDelete }] = useMutation(DELETE_STAFF, {
         update(proxy) {
@@ -157,8 +157,8 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             });
             staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
-            deleteCommitteeByDepartment({ variables: { staffId } })
-            deleteAssignedTaskByCommitteeHandler();
+            deletePersonInChargeByDepartment({ variables: { staffId } })
+            deleteAssignedTaskByPersonInChargeHandler();
             proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId } });
         },
         variables: {

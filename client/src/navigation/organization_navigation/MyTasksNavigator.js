@@ -7,7 +7,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
-import CreatedByMeScreen from '../../screens/home/CreatedByMeScreen';
+import CreatedByMeScreen from '../../screens/my_task/CreatedByMeScreen';
 import Colors from '../../constants/Colors';
 
 const TopTabMyTask = createMaterialTopTabNavigator();

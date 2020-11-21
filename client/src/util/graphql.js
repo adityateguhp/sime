@@ -602,111 +602,12 @@ export const DELETE_POSITION = gql`
   }
 `;
 
-export const FETCH_DIVISIONS_QUERY = gql`
-   query($projectId: ID!){
-    getDivisions(projectId: $projectId){
-      id
-      name
-      project_id
-      createdAt
-  }
-  }
-`;
-
-export const FETCH_DIVISION_QUERY = gql`
-   query($divisionId: ID!) {
-    getDivision(divisionId: $divisionId){
-      id
-      name
-      project_id
-      createdAt
-  }
-  }
-`;
-
-export const ADD_DIVISION_MUTATION = gql`
-  mutation addDivision($name: String!, $projectId: ID!) {
-    addDivision(name: $name, projectId: $projectId) {
-      id
-      name
-      project_id
-      createdAt
-  }
-  } 
-`;
-
-export const UPDATE_DIVISION_MUTATION = gql`
-  mutation updateDivision($divisionId: ID!, $name: String!) {
-    updateDivision(divisionId: $divisionId, name: $name) {
-      id
-      name
-      project_id
-      createdAt
-  }
-  } 
-`;
-
-export const DELETE_DIVISION = gql`
-  mutation deleteDivision($divisionId: ID!) {
-    deleteDivision(divisionId: $divisionId)
-  }
-`;
-
 export const FETCH_COMMITTEES_QUERY = gql`
-  query($projectId: ID!){
+   query($projectId: ID!){
     getCommittees(projectId: $projectId){
       id
-      staff_id
-      position_id
-      division_id
+      name
       project_id
-      organization_id
-      order
-      createdAt
-  }
-  }
-`;
-
-export const FETCH_COMMITTEES_BYSTAFF_QUERY = gql`
-  query($staffId: ID!){
-    getCommitteesByStaff(staffId: $staffId){
-      id
-      staff_id
-      position_id
-      division_id
-      project_id
-      organization_id
-      order
-      createdAt
-  }
-  }
-`;
-
-export const FETCH_COMMITTEES_BYSTAFF_PROJECT_QUERY = gql`
-  query($staffId: ID!, $projectId: ID!){
-    getCommitteesByStaffProject(staffId: $staffId, projectId: $projectId){
-      id
-      staff_id
-      position_id
-      division_id
-      project_id
-      organization_id
-      order
-      createdAt
-  }
-  }
-`;
-
-export const FETCH_COMMITTEES_BYORGANIZATION_QUERY = gql`
-  query($organizationId: ID!){
-    getCommitteesByOrganization(organizationId: $organizationId){
-      id
-      staff_id
-      position_id
-      division_id
-      project_id
-      organization_id
-      order
       createdAt
   }
   }
@@ -716,9 +617,108 @@ export const FETCH_COMMITTEE_QUERY = gql`
    query($committeeId: ID!) {
     getCommittee(committeeId: $committeeId){
       id
+      name
+      project_id
+      createdAt
+  }
+  }
+`;
+
+export const ADD_COMMITTEE_MUTATION = gql`
+  mutation addCommittee($name: String!, $projectId: ID!) {
+    addCommittee(name: $name, projectId: $projectId) {
+      id
+      name
+      project_id
+      createdAt
+  }
+  } 
+`;
+
+export const UPDATE_COMMITTEE_MUTATION = gql`
+  mutation updateCommittee($committeeId: ID!, $name: String!) {
+    updateCommittee(committeeId: $committeeId, name: $name) {
+      id
+      name
+      project_id
+      createdAt
+  }
+  } 
+`;
+
+export const DELETE_COMMITTEE = gql`
+  mutation deleteCommittee($committeeId: ID!) {
+    deleteCommittee(committeeId: $committeeId)
+  }
+`;
+
+export const FETCH_PICS_QUERY = gql`
+  query($projectId: ID!){
+    getPersonInCharges(projectId: $projectId){
+      id
       staff_id
       position_id
-      division_id
+      committee_id
+      project_id
+      organization_id
+      order
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_PICS_BYSTAFF_QUERY = gql`
+  query($staffId: ID!){
+    getPersonInChargesByStaff(staffId: $staffId){
+      id
+      staff_id
+      position_id
+      committee_id
+      project_id
+      organization_id
+      order
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_PICS_BYSTAFF_PROJECT_QUERY = gql`
+  query($staffId: ID!, $projectId: ID!){
+    getPersonInChargesByStaffProject(staffId: $staffId, projectId: $projectId){
+      id
+      staff_id
+      position_id
+      committee_id
+      project_id
+      organization_id
+      order
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_PICS_BYORGANIZATION_QUERY = gql`
+  query($organizationId: ID!){
+    getPersonInChargesByOrganization(organizationId: $organizationId){
+      id
+      staff_id
+      position_id
+      committee_id
+      project_id
+      organization_id
+      order
+      createdAt
+  }
+  }
+`;
+
+export const FETCH_PIC_QUERY = gql`
+   query($personInChargeId: ID!) {
+    getPersonInCharge(personInChargeId: $personInChargeId){
+      id
+      staff_id
+      position_id
+      committee_id
       project_id
       organization_id
       order
@@ -733,7 +733,7 @@ export const FETCH_HEADPROJECT_QUERY = gql`
       id
       staff_id
       position_id
-      division_id
+      committee_id
       project_id
       organization_id
       order
@@ -742,13 +742,13 @@ export const FETCH_HEADPROJECT_QUERY = gql`
   }
 `;
 
-export const FETCH_COMMITTEES_IN_DIVISION_QUERY = gql`
-   query($divisionId: ID!) {
-    getCommitteesInDivision(divisionId: $divisionId){
+export const FETCH_PICS_IN_COMMITTEE_QUERY = gql`
+   query($committeeId: ID!) {
+    getPersonInChargesInCommittee(committeeId: $committeeId){
       id
       staff_id
       position_id
-      division_id
+      committee_id
       project_id
       organization_id
       order
@@ -757,13 +757,13 @@ export const FETCH_COMMITTEES_IN_DIVISION_QUERY = gql`
   }
 `;
 
-export const ADD_COMMITTEE_MUTATION = gql`
-  mutation addCommittee($staffId: ID!, $positionId: ID!, $divisionId: ID!, $projectId: ID!, $organizationId: ID!, $order: String!) {
-    addCommittee(staffId: $staffId, positionId: $positionId, divisionId: $divisionId, projectId: $projectId, organizationId: $organizationId, order: $order) {
+export const ADD_PIC_MUTATION = gql`
+  mutation addPersonInCharge($staffId: ID!, $positionId: ID!, $committeeId: ID!, $projectId: ID!, $organizationId: ID!, $order: String!) {
+    addPersonInCharge(staffId: $staffId, positionId: $positionId, committeeId: $committeeId, projectId: $projectId, organizationId: $organizationId, order: $order) {
       id
       staff_id
       position_id
-      division_id
+      committee_id
       project_id
       organization_id
       order
@@ -772,13 +772,13 @@ export const ADD_COMMITTEE_MUTATION = gql`
   } 
 `;
 
-export const UPDATE_COMMITTEE_MUTATION = gql`
-  mutation updateCommittee($committeeId: ID!, $staffId: ID!, $positionId: ID!, $divisionId: ID!, $order: String!) {
-    updateCommittee(committeeId: $committeeId, staffId: $staffId, positionId: $positionId, divisionId: $divisionId, order:$order) {
+export const UPDATE_PIC_MUTATION = gql`
+  mutation updatePersonInCharge($personInChargeId: ID!, $staffId: ID!, $positionId: ID!, $committeeId: ID!, $order: String!) {
+    updatePersonInCharge(personInChargeId: $personInChargeId, staffId: $staffId, positionId: $positionId, committeeId: $committeeId, order:$order) {
       id
       staff_id
       position_id
-      division_id
+      committee_id
       project_id
       organization_id
       order
@@ -787,21 +787,21 @@ export const UPDATE_COMMITTEE_MUTATION = gql`
   } 
 `;
 
-export const DELETE_COMMITTEE = gql`
-  mutation deleteCommittee($committeeId: ID!) {
-    deleteCommittee(committeeId: $committeeId)
+export const DELETE_PIC = gql`
+  mutation deletePersonInCharge($personInChargeId: ID!) {
+    deletePersonInCharge(personInChargeId: $personInChargeId)
   }
 `;
 
-export const DELETE_COMMITTEE_BYDIVISION = gql`
-  mutation deleteCommitteeByStaff($divisionId: ID!) {
-    deleteCommitteeByDivision(divisionId: $divisionId)
+export const DELETE_PIC_BYCOMMITTEE = gql`
+  mutation deletePersonInChargeByStaff($committeeId: ID!) {
+    deletePersonInChargeByCommittee(committeeId: $committeeId)
   }
 `;
 
-export const DELETE_COMMITTEE_BYSTAFF = gql`
-  mutation deleteCommitteeByStaff($staffId: ID!) {
-    deleteCommitteeByStaff(staffId: $staffId)
+export const DELETE_PIC_BYSTAFF = gql`
+  mutation deletePersonInChargeByStaff($staffId: ID!) {
+    deletePersonInChargeByStaff(staffId: $staffId)
   }
 `;
 
@@ -1270,7 +1270,7 @@ export const FETCH_ASSIGNED_TASKS_QUERY = gql`
     getAssignedTasks(taskId: $taskId){
       id
       task_id
-      committee_id
+      personInCharge_id
       createdAt
   }
   }
@@ -1282,19 +1282,19 @@ export const FETCH_ASSIGNED_TASK_QUERY = gql`
     getAssignedTask(assignedId: $assignedId){
       id
       task_id
-      committee_id
+      personInCharge_id
       createdAt
   }
   }
 `;
 
 
-export const FETCH_ASSIGNED_TASKS_QUERY_BYCOMMITTEE = gql`
-  query($committeeId: ID!){
-    getAssignedTasksByCommittee(committeeId: $committeeId){
+export const FETCH_ASSIGNED_TASKS_QUERY_BYPIC = gql`
+  query($personInChargeId: ID!){
+    getAssignedTasksByPersonInCharge(personInChargeId: $personInChargeId){
       id
       task_id
-      committee_id
+      personInCharge_id
       createdAt
   }
   }
@@ -1302,11 +1302,11 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYCOMMITTEE = gql`
 
 
 export const ASSIGNED_TASK_MUTATION = gql`
-  mutation assignedTask($taskId: ID!, $committeeId: ID!) {
-    assignedTask(taskId: $taskId, committeeId: $committeeId) {
+  mutation assignedTask($taskId: ID!, $personInChargeId: ID!) {
+    assignedTask(taskId: $taskId, personInChargeId: $personInChargeId) {
       id
       task_id
-      committee_id
+      personInCharge_id
       createdAt
   }
   } 
@@ -1318,9 +1318,9 @@ export const DELETE_ASSIGNED_TASK = gql`
   }
 `;
 
-export const DELETE_ASSIGNED_TASK_BYCOMMITTEE = gql`
-  mutation deleteAssignedTaskByCommittee($committeeId: ID!) {
-    deleteAssignedTaskByCommittee(committeeId: $committeeId)
+export const DELETE_ASSIGNED_TASK_BYPIC = gql`
+  mutation deleteAssignedTaskByPersonInCharge($personInChargeId: ID!) {
+    deleteAssignedTaskByPersonInCharge(personInChargeId: $personInChargeId)
   }
 `;
 

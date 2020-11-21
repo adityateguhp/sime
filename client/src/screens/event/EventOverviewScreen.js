@@ -8,7 +8,7 @@ import { useQuery } from '@apollo/react-hooks';
 
 import Status from '../../components/common/Status';
 import { SimeContext } from '../../context/SimePovider';
-import ExternalList from '../../components/event/ExternalList';
+import ExternalList from '../../components/external/ExternalList';
 import Colors from '../../constants/Colors';
 import { theme } from '../../constants/Theme';
 import { FETCH_EVENT_QUERY, FETCH_EXBYTYPE_QUERY } from '../../util/graphql';

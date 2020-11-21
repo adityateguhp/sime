@@ -18,8 +18,8 @@ export const eventNameValidator = (name) => {
   return '';
 }
 
-export const divisionNameValidator = (name) => {
-  if (!name || name.length <= 0) return 'Division name must not be empty';
+export const committeeNameValidator = (name) => {
+  if (!name || name.length <= 0) return 'Committee name must not be empty';
   return '';
 }
 
@@ -134,8 +134,8 @@ export const staffValidator = (staff) => {
   return '';
 }
 
-export const divisionValidator = (division) => {
-  if (!division || division.length <= 0) return 'Division must not be empty';
+export const committeeValidator = (committee) => {
+  if (!committee || committee.length <= 0) return 'Committee must not be empty';
   return '';
 }
 

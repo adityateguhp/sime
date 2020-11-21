@@ -6,7 +6,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_STAFF_QUERY } from '../../util/graphql';
-import DashboardScreen from '../../screens/home/DashboardScreen';
+import DashboardScreen from '../../screens/dashboard/DashboardScreen';
 import Colors from '../../constants/Colors';
 
 const DashboardStack = createStackNavigator();

@@ -14,10 +14,10 @@ import {
     DELETE_DEPARTMENT,
     FETCH_DEPARTMENT_QUERY,
     DELETE_STAFF_BYDEPARTMENT,
-    DELETE_COMMITTEE_BYSTAFF,
+    DELETE_PIC_BYSTAFF,
     FETCH_STAFFSBYDEPARTMENT_QUERY,
-    FETCH_COMMITTEES_BYORGANIZATION_QUERY,
-    DELETE_ASSIGNED_TASK_BYCOMMITTEE
+    FETCH_PICS_BYORGANIZATION_QUERY,
+    DELETE_ASSIGNED_TASK_BYPIC
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
@@ -74,7 +74,7 @@ const DepartmentsScreen = ({ navigation }) => {
         });
 
     const [loadCommitteeData, { called: called3, data: committeesByorganization, error: error4 }] = useLazyQuery(
-        FETCH_COMMITTEES_BYORGANIZATION_QUERY,
+        FETCH_PICS_BYORGANIZATION_QUERY,
         {
             variables: { organizationId: sime.user.id },
         });
@@ -101,7 +101,7 @@ const DepartmentsScreen = ({ navigation }) => {
     }, [staffByDepartment])
 
     useEffect(() => {
-        if (committeesByorganization) setCommitteesVal(committeesByorganization.getCommitteesByOrganization);
+        if (committeesByorganization) setCommitteesVal(committeesByorganization.getPersonInChargesByOrganization);
     }, [committeesByorganization])
 
     const closeModal = () => {
@@ -137,24 +137,24 @@ const DepartmentsScreen = ({ navigation }) => {
     const departmentId = sime.department_id;
     const organizationId = sime.user.id;
 
-    const [deleteCommitteeByStaff] = useMutation(DELETE_COMMITTEE_BYSTAFF);
+    const [deletePersonInChargeByStaff] = useMutation(DELETE_PIC_BYSTAFF);
 
-    const deleteCommitteeByStaffHandler = () => {
+    const deletePersonInChargeByStaffHandler = () => {
         staffsVal.map((staff) => {
-            deleteCommitteeByStaff(({
+            deletePersonInChargeByStaff(({
                 variables: { staffId: staff.id },
             }))
         })
     };
 
-    const [deleteAssignedByCommmittee] = useMutation(DELETE_ASSIGNED_TASK_BYCOMMITTEE);
+    const [deleteAssignedByCommmittee] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
 
     const deleteAssignedByCommmitteeHandler = () => {
         committeesVal.map((committee) => {
             staffsVal.map((staff) => {
                 if (committee.staff_id === staff.id) {
                     deleteAssignedByCommmittee(({
-                        variables: { committeeId: committee.id },
+                        variables: { personInChargeId: committee.id },
                     }))
                 }
             })
@@ -172,7 +172,7 @@ const DepartmentsScreen = ({ navigation }) => {
             departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
             deleteDepartmentsStateUpdate(departmentId);
             deleteStaffByDepartment({ variables: { departmentId } });
-            deleteCommitteeByStaffHandler();
+            deletePersonInChargeByStaffHandler();
             deleteAssignedByCommmitteeHandler();
             proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId } });
         },

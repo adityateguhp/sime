@@ -28,9 +28,9 @@ module.exports = {
                 throw new Error(err);
             }
         },
-        async getAssignedTasksByCommittee(_, { committeeId }) {
+        async getAssignedTasksByPersonInCharge(_, { personInChargeId }) {
             try {
-                const assignedTask = await Task_assigned_to.find({ committee_id: committeeId });
+                const assignedTask = await Task_assigned_to.find({ personInCharge_id: personInChargeId });
                 if (assignedTask) {
                     return assignedTask;
                 } else {
@@ -42,11 +42,11 @@ module.exports = {
         },
     },
     Mutation: {
-        async assignedTask(_, { taskId, committeeId }, context) {
+        async assignedTask(_, { taskId, personInChargeId }, context) {
 
             const newAssign = new Task_assigned_to({
                 task_id: taskId,
-                committee_id: committeeId,
+                personInCharge_id: personInChargeId,
                 createdAt: new Date().toISOString()
             });
 
@@ -63,9 +63,9 @@ module.exports = {
                 throw new Error(err);
             }
         },
-        async deleteAssignedTaskByCommittee(_, { committeeId }, context) {
+        async deleteAssignedTaskByPersonInCharge(_, { personInChargeId }, context) {
             try {
-                const assign = await Task_assigned_to.find({ committee_id: committeeId });
+                const assign = await Task_assigned_to.find({ personInCharge_id: personInChargeId });
                 assign.map((data) => {
                     data.deleteOne()
                 })

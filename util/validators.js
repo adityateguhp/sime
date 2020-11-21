@@ -318,12 +318,12 @@ module.exports.validatePositionInput = (
     };
 };
 
-module.exports.validateDivisionInput = (
+module.exports.validateCommitteeInput = (
     name
 ) => {
     const errors = {};
     if (name.trim() === '') {
-        errors.name = 'Division name must not be empty';
+        errors.name = 'Committee name must not be empty';
     }
 
     return {
@@ -332,15 +332,15 @@ module.exports.validateDivisionInput = (
     };
 };
 
-module.exports.validateCommitteeInput = (
-    staffId, divisionId, positionId
+module.exports.validatePersonInChargeInput = (
+    staffId, committeId, positionId
 ) => {
     const errors = {};
     if (staffId.trim() === '') {
         errors.staffId = 'Staff must not be empty';
     }
-    if (divisionId.trim() === '') {
-        errors.divisionId = 'Division must not be empty';
+    if (committeId.trim() === '') {
+        errors.committeId = 'Committee must not be empty';
     } 
     if (positionId.trim() === '') {
         errors.positionId = 'Position must not be empty';

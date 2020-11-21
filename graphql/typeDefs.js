@@ -59,18 +59,18 @@ module.exports = gql`
         order: String!
     }
 
-    type Division {
+    type Committee {
         id: ID!
         name: String!
         project_id: ID!
         createdAt: String!
     }
     
-    type Committee {
+    type Person_in_charge {
         id: ID!
         staff_id: ID!
         position_id: ID!
-        division_id: ID!
+        committee_id: ID!
         project_id: ID!
         organization_id: ID!
         order: String!
@@ -130,7 +130,7 @@ module.exports = gql`
     type Task_assigned_to {
         id: ID!
         task_id: ID!
-        committee_id: ID!
+        personInCharge_id: ID!
         createdAt: String!
     }
 
@@ -145,15 +145,15 @@ module.exports = gql`
         getProject(projectId: ID!): Project
         getPositions: [Position]
         getPosition(positionId: ID!): Position
-        getDivisions(projectId: ID!): [Division]
-        getDivision(divisionId: ID!): Division
         getCommittees(projectId: ID!): [Committee]
-        getCommitteesByStaff(staffId: ID!): [Committee]
-        getCommitteesByOrganization(organizationId: ID!): [Committee]
-        getCommitteesByStaffProject(staffId: ID!, projectId: ID!): Committee
-        getCommittee(committeeId: ID!): Committee 
-        getHeadProject(projectId: ID!, order: String!): Committee
-        getCommitteesInDivision(divisionId: ID!): [Committee] 
+        getCommittee(committeeId: ID!): Committee
+        getPersonInCharges(projectId: ID!): [Person_in_charge]
+        getPersonInChargesByStaff(staffId: ID!): [Person_in_charge]
+        getPersonInChargesByOrganization(organizationId: ID!): [Person_in_charge]
+        getPersonInChargesByStaffProject(staffId: ID!, projectId: ID!): Person_in_charge
+        getPersonInCharge(personInChargeId: ID!): Person_in_charge 
+        getHeadProject(projectId: ID!, order: String!): Person_in_charge
+        getPersonInChargesInCommittee(committeeId: ID!): [Person_in_charge] 
         getEvents(projectId: ID!): [Event]
         getEvent(eventId: ID!): Event  
         getExternals(eventId: ID!): [External]
@@ -170,7 +170,7 @@ module.exports = gql`
         getTask(taskId: ID!): Task
         getAssignedTasks(taskId: ID!): [Task_assigned_to]
         getAssignedTask(assignedId: ID!): Task_assigned_to
-        getAssignedTasksByCommittee(committeeId: ID!): [Task_assigned_to]
+        getAssignedTasksByPersonInCharge(personInChargeId: ID!): [Task_assigned_to]
     }
     type Mutation {
         registerOrganization(
@@ -244,7 +244,6 @@ module.exports = gql`
         addProject(
             name: String!,
             description: String,
-,
             start_date: String!,
             end_date: String!,
             picture: String,
@@ -255,7 +254,6 @@ module.exports = gql`
             projectId: ID!,
             name: String!,
             description: String,
-,
             start_date: String!,
             end_date: String!,
             picture: String
@@ -266,7 +264,6 @@ module.exports = gql`
         addEvent(
             name: String!,
             description: String,
-,
             location: String,
             start_date: String!,
             end_date: String!,
@@ -278,7 +275,6 @@ module.exports = gql`
             eventId: ID!,
             name: String!,
             description: String,
-,
             location: String,
             start_date: String!,
             end_date: String!,
@@ -293,21 +289,21 @@ module.exports = gql`
         
         deletePosition(positionId: ID!): String!
 
-        addDivision(name: String!, projectId:ID!): Division!
+        addCommittee(name: String!, projectId:ID!): Committee!
         
-        updateDivision(divisionId: ID!, name: String!): Division!
-        
-        deleteDivision(divisionId: ID!): String!
-
-        addCommittee(staffId: ID!, positionId: ID!, divisionId: ID!, projectId: ID!, organizationId: ID!, order: String!): Committee!
-        
-        updateCommittee(committeeId: ID!, staffId: ID!, positionId: ID!, divisionId: ID!, order: String!): Committee!
+        updateCommittee(committeeId: ID!, name: String!): Committee!
         
         deleteCommittee(committeeId: ID!): String!
 
-        deleteCommitteeByDivision(divisionId: ID!): String!
+        addPersonInCharge(staffId: ID!, positionId: ID!, committeeId: ID!, projectId: ID!, organizationId: ID!, order: String!): Person_in_charge!
+        
+        updatePersonInCharge(personInChargeId: ID!, staffId: ID!, positionId: ID!, committeeId: ID!, order: String!): Person_in_charge!
+        
+        deletePersonInCharge(personInChargeId: ID!): String!
 
-        deleteCommitteeByStaff(staffId: ID!): String!
+        deletePersonInChargeByCommittee(committeeId: ID!): String!
+
+        deletePersonInChargeByStaff(staffId: ID!): String!
 
         addExternalType(name: String!): ExternalType!
         
@@ -399,15 +395,15 @@ module.exports = gql`
 
         assignedTask(
             taskId: ID!
-            committeeId: ID!
+            personInChargeId: ID!
         ): Task_assigned_to!
 
         deleteAssignedTask(
             assignedId: ID!
         ): String!
 
-        deleteAssignedTaskByCommittee(
-            committeeId: ID!
+        deleteAssignedTaskByPersonInCharge(
+            personInChargeId: ID!
         ): String!
 
         deleteAssignedTaskByTask(

@@ -54,8 +54,8 @@ const ProjectOverviewScreen = ({ navigation }) => {
   });
 
   const selectInfoHandler = (id) => {
-    navigation.navigate('Committee Profile', {
-      committeeId: id
+    navigation.navigate('Person in Charge Profile', {
+      personInChargeId: id
     });
     setVisible(false);
   };

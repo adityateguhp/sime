@@ -7,18 +7,18 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_STAFF_QUERY } from '../../util/graphql';
-import ProjectListStaffScreen from '../../screens/home/ProjectListStaffScreen';
+import ProjectListStaffScreen from '../../screens/project/ProjectListStaffScreen';
 import ProjectOverviewScreen from '../../screens/project/ProjectOverviewScreen';
-import CommitteeListStaffScreen from '../../screens/project/CommitteeListStaffScreen';
-import EventListScreen from '../../screens/project/EventListScreen';
+import CommitteeListStaffScreen from '../../screens/committee/CommitteeListStaffScreen';
+import EventListScreen from '../../screens/event/EventListScreen';
 import EventOverviewScreen from '../../screens/event/EventOverviewScreen';
-import TaskScreen from '../../screens/event/TaskScreen';
-import RoadmapScreen from '../../screens/event/RoadmapScreen';
-import ExternalScreen from '../../screens/event/ExternalScreen';
-import RundownScreen from '../../screens/event/RundownScreen';
-import ExternalListScreen from '../../screens/event/ExternalListScreen';
-import ExternalProfileScreen from '../../screens/event/ExternalProfileScreen';
-import CommitteeProfileScreen from '../../screens/project/CommitteeProfileScreen';
+import TaskScreen from '../../screens/task/TaskScreen';
+import RoadmapScreen from '../../screens/roadmap/RoadmapScreen';
+import ExternalScreen from '../../screens/external/ExternalScreen';
+import RundownScreen from '../../screens/rundown/RundownScreen';
+import ExternalListScreen from '../../screens/external/ExternalListScreen';
+import ExternalProfileScreen from '../../screens/external/ExternalProfileScreen';
+import PersonInChargeProfileScreen from '../../screens/committee/PersonInChargeProfileScreen';
 import StaffOrganizationProfileScreen from '../../screens/user_profile/StaffOrganizationProfileScreen';
 import Colors from '../../constants/Colors';
 
@@ -134,10 +134,10 @@ export default function ProjectStaffNavigator({ route, navigation }) {
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
           </View>),
       }} />
-      <ProjectsStackStaff.Screen name="Committee Profile" component={CommitteeProfileScreen} options={{
+      <ProjectsStackStaff.Screen name="Person in Charge Profile" component={PersonInChargeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Committee Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Person in Charge Information</Text>
           </View>),
       }} />
       <ProjectsStackStaff.Screen name="Event Detail" component={TopTabEvents} options={{

@@ -16,18 +16,18 @@ const SimeProvider = (props) => {
   const [staff_name, setStaff_name] = useState('');
   const [staff_id, setStaff_id] = useState('');
   const [position_id, setPosition_id] = useState('');
-  const [division_id, setDivision_id] = useState('');
-  const [division_name, setDivision_name] = useState('');
+  const [committee_id, setCommittee_id] = useState('');
+  const [committee_name, setCommittee_name] = useState('');
   const [external_id, setExternal_id] = useState('');
   const [external_name, setExternal_name] = useState('');
   const [external_type, setExternal_type] = useState('');
   const [external_type_name, setExternal_type_name] = useState('');
   const [rundown_id, setRundown_id] = useState('');
   const [rundown_agenda, setRundown_agenda] = useState('');
-  const [committee_id, setCommittee_id] = useState('');
+  const [personInCharge_id, setPersonInCharge_id] = useState('');
   const [order, setOrder] = useState('');
-  const [userCommitteeId, setUserCommitteeId] = useState('');
-  const [userCommitteeDivision, setUserCommitteeDivision] = useState('');
+  const [userPersonInChargeId, setUserPersonInChargeId] = useState('');
+  const [userPicCommittee, setUserPicCommittee] = useState('');
   return (
     <SimeContext.Provider
       value={{
@@ -44,18 +44,18 @@ const SimeProvider = (props) => {
         staff_name,
         staff_id,
         position_id,
-        division_id,
-        division_name,
+        committee_id,
+        committee_name,
         external_id,
         external_name,
         external_type,
         external_type_name,
         rundown_id,
         rundown_agenda,
-        committee_id,
+        personInCharge_id,
         order,
-        userCommitteeId,
-        userCommitteeDivision,
+        userPersonInChargeId,
+        userPicCommittee,
         setUser,
         setUser_type,
         setDepartment_id,
@@ -69,18 +69,18 @@ const SimeProvider = (props) => {
         setStaff_name,
         setStaff_id,
         setPosition_id,
-        setDivision_id,
-        setDivision_name,
+        setCommittee_id,
+        setCommittee_name,
         setExternal_id,
         setExternal_name,
         setExternal_type,
         setExternal_type_name,
         setRundown_id,
         setRundown_agenda,
-        setCommittee_id,
+        setPersonInCharge_id,
         setOrder,
-        setUserCommitteeId,
-        setUserCommitteeDivision
+        setUserPersonInChargeId,
+        setUserPicCommittee
       }}
     >
       {props.children}

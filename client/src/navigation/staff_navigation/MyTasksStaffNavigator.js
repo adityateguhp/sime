@@ -7,8 +7,8 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_STAFF_QUERY } from '../../util/graphql';
-import AssignedToMeScreen from '../../screens/home/AssignedToMeScreen';
-import CreatedByMeScreen from '../../screens/home/CreatedByMeScreen';
+import AssignedToMeScreen from '../../screens/my_task/AssignedToMeScreen';
+import CreatedByMeScreen from '../../screens/my_task/CreatedByMeScreen';
 import Colors from '../../constants/Colors';
 
 const TopTabMyTaskStaff = createMaterialTopTabNavigator();
