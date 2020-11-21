@@ -51,6 +51,8 @@ module.exports = {
             completed_date,
             priority,
             roadmapId,
+            projectId,
+            eventId,
             createdBy
         }, context) {
             const { valid, errors } =
@@ -69,6 +71,8 @@ module.exports = {
                 completed_date,
                 priority,
                 roadmap_id: roadmapId,
+                project_id: projectId,
+                event_id: eventId,
                 createdAt: new Date().toISOString(),
                 createdBy
             });

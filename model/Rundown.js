@@ -5,6 +5,10 @@ const rundownSchema = new Schema({
     event_id:{
         type: Schema.Types.ObjectId,
         ref: 'events'
+    }, 
+    project_id:{
+        type: Schema.Types.ObjectId,
+        ref: 'projects'
     }, 	
     date: String,
     start_time: String,

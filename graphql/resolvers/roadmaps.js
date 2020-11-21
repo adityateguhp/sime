@@ -36,6 +36,8 @@ module.exports = {
     async addRoadmap(_, {
       name,
       event_id,
+      project_id,
+      committee_id,
       start_date,
       end_date
     }, context) {
@@ -52,6 +54,8 @@ module.exports = {
       const newRoadmap = new Roadmap({
         name,
         event_id,
+        project_id,
+        committee_id,
         start_date,
         end_date,
         createdAt: new Date().toISOString()

@@ -45,7 +45,7 @@ const PicList = props => {
     const [loadExistData, { called, data: personInCharge, error: errorCommittee }] = useLazyQuery(
         FETCH_PIC_QUERY,
         {
-            variables: { personInChargeId: sime.personInCharge_id }
+            variables: { personInChargeId: sime.person_in_charge_id }
         });
 
     const [personInChargeVal, setCommitteeVal] = useState(null);
@@ -65,13 +65,13 @@ const PicList = props => {
                 query: FETCH_PICS_QUERY,
                 variables: { projectId: sime.project_id }
             });
-            data.getPersonInCharges = data.getPersonInCharges.filter((e) => e.id !== sime.personInCharge_id);
-            props.deletePersonInChargesStateUpdate(sime.personInCharge_id);
-            deleteAssignedTaskByPersonInCharge({ variables: { personInChargeId: sime.personInCharge_id } });
+            data.getPersonInCharges = data.getPersonInCharges.filter((e) => e.id !== sime.person_in_charge_id);
+            props.deletePersonInChargesStateUpdate(sime.person_in_charge_id);
+            deleteAssignedTaskByPersonInCharge({ variables: { personInChargeId: sime.person_in_charge_id } });
             proxy.writeQuery({ query: FETCH_PICS_QUERY, data, variables: { projectId: sime.project_id } });
         },
         variables: {
-            personInChargeId: sime.personInCharge_id
+            personInChargeId: sime.person_in_charge_id
         }
     });
 
@@ -87,9 +87,9 @@ const PicList = props => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (personInCharge_id, staff_id, name) => {
+    const longPressHandler = (person_in_charge_id, staff_id, name) => {
         setVisible(true);
-        sime.setPersonInCharge_id(personInCharge_id);
+        sime.setPerson_in_charge_id(person_in_charge_id);
         sime.setStaff_name(name);
         sime.setStaff_id(staff_id);
         loadExistData();
@@ -101,7 +101,7 @@ const PicList = props => {
     }
 
     const selectItemHandler = () => {
-        sime.setPersonInCharge_id(props.personInCharge_id);
+        sime.setPerson_in_charge_id(props.person_in_charge_id);
         setVisibleProfileModal(true);
     }
 
@@ -162,12 +162,12 @@ const PicList = props => {
         <Provider theme={theme}>
             <TouchableCmp
                 onPress={() => { selectItemHandler() }}
-                onLongPress={sime.order === '1' && sime.userPersonInChargeId !== props.personInCharge_id ||
-                    sime.order === '2' && sime.userPersonInChargeId !== props.personInCharge_id && props.order !== '1' ||
-                    sime.order === '3' && sime.userPersonInChargeId !== props.personInCharge_id && props.order !== '1' && props.order !== '2' ||
-                    sime.order === '6' && sime.userPersonInChargeId !== props.personInCharge_id && sime.userPicCommittee === props.committee_id ||
-                    sime.order === '7' && sime.userPersonInChargeId !== props.personInCharge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
-                    sime.user_type === "Organization" ? () => { longPressHandler(props.personInCharge_id, props.staff_id, staff.getStaff.name) } : null}
+                onLongPress={sime.order === '1' && sime.userPersonInChargeId !== props.person_in_charge_id ||
+                    sime.order === '2' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' ||
+                    sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
+                    sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
+                    sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
+                    sime.user_type === "Organization" ? () => { longPressHandler(props.person_in_charge_id, props.staff_id, staff.getStaff.name) } : null}
                 useForeground>
                 <View style={styles.wrap}>
                     <List.Item
@@ -178,11 +178,11 @@ const PicList = props => {
                     />
                 </View>
             </TouchableCmp>
-            {sime.order === '1' && sime.userPersonInChargeId !== props.personInCharge_id ||
-                sime.order === '2' && sime.userPersonInChargeId !== props.personInCharge_id && props.order !== '1' ||
-                sime.order === '3' && sime.userPersonInChargeId !== props.personInCharge_id && props.order !== '1' && props.order !== '2' ||
-                sime.order === '6' && sime.userPersonInChargeId !== props.personInCharge_id && sime.userPicCommittee === props.committee_id ||
-                sime.order === '7' && sime.userPersonInChargeId !== props.personInCharge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
+            {sime.order === '1' && sime.userPersonInChargeId !== props.person_in_charge_id ||
+                sime.order === '2' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' ||
+                sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
+                sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
+                sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
                 sime.user_type === "Organization" ?
                 <Portal>
                   <OptionModal

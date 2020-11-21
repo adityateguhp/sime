@@ -26,7 +26,7 @@ const AssignedToPicList = props => {
     let assignedCommitteeId = null;
 
     props.assignedTasks.map((e) => {
-        if (e.personInCharge_id === props.personInCharge_id) {
+        if (e.person_in_charge_id === props.person_in_charge_id) {
             assignedCommitteeId = e.id
         }
     }
@@ -75,7 +75,7 @@ const AssignedToPicList = props => {
         },
         variables: {
             taskId: props.taskId,
-            personInChargeId: props.personInCharge_id
+            personInChargeId: props.person_in_charge_id
         }
     });
 

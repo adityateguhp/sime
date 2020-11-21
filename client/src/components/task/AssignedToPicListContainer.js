@@ -26,7 +26,7 @@ const AssignedToPicListContainer = props => {
                      keyExtractor={item => item.id}
                      renderItem={itemData => (
                          <AssignedToPicList
-                            personInCharge_id = {itemData.item.id}
+                            person_in_charge_id = {itemData.item.id}
                             staff_id = {itemData.item.staff_id}
                             position_id = {itemData.item.position_id} 
                             assignedTasks={props.assignedTasks}   

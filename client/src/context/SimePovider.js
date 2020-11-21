@@ -24,7 +24,7 @@ const SimeProvider = (props) => {
   const [external_type_name, setExternal_type_name] = useState('');
   const [rundown_id, setRundown_id] = useState('');
   const [rundown_agenda, setRundown_agenda] = useState('');
-  const [personInCharge_id, setPersonInCharge_id] = useState('');
+  const [person_in_charge_id, setPerson_in_charge_id] = useState('');
   const [order, setOrder] = useState('');
   const [userPersonInChargeId, setUserPersonInChargeId] = useState('');
   const [userPicCommittee, setUserPicCommittee] = useState('');
@@ -52,7 +52,7 @@ const SimeProvider = (props) => {
         external_type_name,
         rundown_id,
         rundown_agenda,
-        personInCharge_id,
+        person_in_charge_id,
         order,
         userPersonInChargeId,
         userPicCommittee,
@@ -77,7 +77,7 @@ const SimeProvider = (props) => {
         setExternal_type_name,
         setRundown_id,
         setRundown_agenda,
-        setPersonInCharge_id,
+        setPerson_in_charge_id,
         setOrder,
         setUserPersonInChargeId,
         setUserPicCommittee

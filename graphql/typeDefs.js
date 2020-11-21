@@ -62,7 +62,7 @@ module.exports = gql`
     type Committee {
         id: ID!
         name: String!
-        project_id: ID!
+        organization_id: ID!
         createdAt: String!
     }
     
@@ -82,6 +82,7 @@ module.exports = gql`
         name: String!
         external_type: ID!
         event_id: ID!
+        project_id: ID!
         email: String!
         phone_number: String!
         details: String
@@ -98,6 +99,8 @@ module.exports = gql`
         id: ID!
         name: String!
         event_id: ID!
+        project_id: ID!
+        committee_id: ID!
         start_date: String!
         end_date: String!
         createdAt: String!
@@ -107,6 +110,7 @@ module.exports = gql`
         id: ID!
         agenda: String!
         event_id: ID!
+        project_id: ID!
         date: String!
         start_time: String!
         end_time: String!
@@ -123,6 +127,8 @@ module.exports = gql`
         completed_date: String
         priority: String
         roadmap_id: ID!
+        project_id: ID!
+        event_id: ID!
         createdAt: String!
         createdBy: ID!
     }
@@ -130,7 +136,10 @@ module.exports = gql`
     type Task_assigned_to {
         id: ID!
         task_id: ID!
-        personInCharge_id: ID!
+        person_in_charge_id: ID!
+        project_id: ID!
+        event_id: ID!
+        roadmap_id: ID!
         createdAt: String!
     }
 
@@ -145,7 +154,7 @@ module.exports = gql`
         getProject(projectId: ID!): Project
         getPositions: [Position]
         getPosition(positionId: ID!): Position
-        getCommittees(projectId: ID!): [Committee]
+        getCommittees(organizationId: ID!): [Committee]
         getCommittee(committeeId: ID!): Committee
         getPersonInCharges(projectId: ID!): [Person_in_charge]
         getPersonInChargesByStaff(staffId: ID!): [Person_in_charge]
@@ -168,7 +177,7 @@ module.exports = gql`
         getTasks(roadmapId: ID!): [Task]
         getTasksCreatedBy(createdBy: ID!): [Task]
         getTask(taskId: ID!): Task
-        getAssignedTasks(taskId: ID!): [Task_assigned_to]
+        getAssignedTasks(roadmapId: ID!): [Task_assigned_to]
         getAssignedTask(assignedId: ID!): Task_assigned_to
         getAssignedTasksByPersonInCharge(personInChargeId: ID!): [Task_assigned_to]
     }
@@ -289,7 +298,7 @@ module.exports = gql`
         
         deletePosition(positionId: ID!): String!
 
-        addCommittee(name: String!, projectId:ID!): Committee!
+        addCommittee(name: String!, organizationId:ID!): Committee!
         
         updateCommittee(committeeId: ID!, name: String!): Committee!
         
@@ -315,6 +324,7 @@ module.exports = gql`
             name: String!,
             external_type: ID!,
             event_id: ID!,
+            project_id: ID!,
             email: String!,
             phone_number: String!,
             details: String,
@@ -335,6 +345,8 @@ module.exports = gql`
         addRoadmap(
             name: String!,
             event_id: ID!,
+            project_id: ID!,
+            committee_id: ID!,
             start_date: String!,
             end_date: String!
         ): Roadmap!
@@ -351,6 +363,7 @@ module.exports = gql`
         addRundown(
             agenda: String!
             event_id: ID!
+            project_id: ID!
             date: String!
             start_time: String!
             end_time: String!
@@ -376,6 +389,8 @@ module.exports = gql`
             completed_date: String
             priority: String
             roadmapId: ID!
+            projectId: ID!
+            eventId: ID!
             createdBy: ID!
         ): Task!
 
@@ -396,6 +411,9 @@ module.exports = gql`
         assignedTask(
             taskId: ID!
             personInChargeId: ID!
+            projectId: ID!
+            eventId: ID!
+            roadmapId: ID!
         ): Task_assigned_to!
 
         deleteAssignedTask(

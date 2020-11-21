@@ -5,7 +5,15 @@ const roadmapSchema = new Schema({
     event_id:{
         type: Schema.Types.ObjectId,
         ref: 'events'
+    }, 
+    project_id:{
+        type: Schema.Types.ObjectId,
+        ref: 'projects'
     }, 	
+    committee_id:{
+        type: Schema.Types.ObjectId,
+        ref: 'committees'
+    }, 		
     start_date: String,
     end_date: String,
     createdAt: String

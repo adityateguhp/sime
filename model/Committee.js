@@ -2,9 +2,9 @@ const { model, Schema } = require('mongoose');
 
 const committeeSchema = new Schema({
     name: String,
-    project_id: {
+    organization_id: {
         type: Schema.Types.ObjectId,
-        ref: 'projects'
+        ref: 'organizations'
     },
     createdAt: String
 });

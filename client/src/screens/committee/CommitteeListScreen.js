@@ -149,7 +149,7 @@ const CommitteeListScreen = ({ navigation }) => {
 
     const selectItemHandler = () => {
         navigation.navigate('Person in Charge Profile', {
-            personInChargeId: sime.personInCharge_id
+            personInChargeId: sime.person_in_charge_id
         })
     };
 

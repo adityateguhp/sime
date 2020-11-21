@@ -36,6 +36,7 @@ module.exports = {
         async addRundown(_, {
             agenda,
             event_id,
+            project_id,
             date,
             start_time,
             end_time,
@@ -55,6 +56,7 @@ module.exports = {
             const newRundown = new Rundown({
                 agenda,
                 event_id,
+                project_id,
                 date,
                 start_time,
                 end_time,

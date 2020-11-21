@@ -603,11 +603,11 @@ export const DELETE_POSITION = gql`
 `;
 
 export const FETCH_COMMITTEES_QUERY = gql`
-   query($projectId: ID!){
-    getCommittees(projectId: $projectId){
+   query($organizationId: ID!){
+    getCommittees(organizationId: $organizationId){
       id
       name
-      project_id
+      organization_id
       createdAt
   }
   }
@@ -618,18 +618,18 @@ export const FETCH_COMMITTEE_QUERY = gql`
     getCommittee(committeeId: $committeeId){
       id
       name
-      project_id
+      organization_id
       createdAt
   }
   }
 `;
 
 export const ADD_COMMITTEE_MUTATION = gql`
-  mutation addCommittee($name: String!, $projectId: ID!) {
-    addCommittee(name: $name, projectId: $projectId) {
+  mutation addCommittee($name: String!, $organizationId: ID!) {
+    addCommittee(name: $name, organizationId: $organizationId) {
       id
       name
-      project_id
+      organization_id
       createdAt
   }
   } 
@@ -640,7 +640,7 @@ export const UPDATE_COMMITTEE_MUTATION = gql`
     updateCommittee(committeeId: $committeeId, name: $name) {
       id
       name
-      project_id
+      organization_id
       createdAt
   }
   } 
@@ -830,6 +830,7 @@ export const FETCH_EXTERNALS_QUERY = gql`
       name
       external_type
       event_id
+      project_id
       email
       phone_number
       details
@@ -846,6 +847,7 @@ export const FETCH_EXTERNAL_QUERY = gql`
       name
       external_type
       event_id
+      project_id
       email
       phone_number
       details
@@ -862,6 +864,7 @@ export const FETCH_EXBYTYPE_QUERY = gql`
       name
       external_type
       event_id
+      project_id
       email
       phone_number
       details
@@ -876,6 +879,7 @@ export const ADD_EXTERNAL_MUTATION = gql`
     $name: String!,
     $external_type: ID!,
     $event_id: ID!,
+    $project_id: ID!,
     $email: String!,
     $phone_number: String!,
     $details: String,
@@ -885,6 +889,7 @@ export const ADD_EXTERNAL_MUTATION = gql`
       name: $name,
       external_type: $external_type,
       event_id: $event_id,
+      project_id: $project_id,
       email: $email,
       phone_number: $phone_number,
       details: $details,
@@ -894,6 +899,7 @@ export const ADD_EXTERNAL_MUTATION = gql`
       name
       external_type
       event_id
+      project_id
       email
       phone_number
       details
@@ -924,6 +930,7 @@ export const UPDATE_EXTERNAL_MUTATION = gql`
       name
       external_type
       event_id
+      project_id
       email
       phone_number
       details
@@ -945,6 +952,8 @@ export const FETCH_ROADMAPS_QUERY = gql`
     id
     name
     event_id
+    project_id
+    committee_id
     start_date
     end_date
     createdAt
@@ -958,6 +967,8 @@ export const FETCH_ROADMAP_QUERY = gql`
     id
     name
     event_id
+    project_id
+    committee_id
     start_date
     end_date
     createdAt
@@ -970,18 +981,24 @@ export const ADD_ROADMAP_MUTATION = gql`
   addRoadmap(
     $name: String!,
     $event_id: ID!,
+    $project_id: ID!,
+    $committee_id: ID!,
     $start_date: String!,
     $end_date: String!
   ) {
   addRoadmap(
     name: $name,
     event_id: $event_id,
+    project_id: $project_id,
+    committee_id: $committee_id,
     start_date: $start_date,
     end_date: $end_date
   ) {
     id
     name
     event_id
+    project_id
+    committee_id
     start_date
     end_date
     createdAt
@@ -1006,6 +1023,8 @@ export const UPDATE_ROADMAP_MUTATION = gql`
     id
     name
     event_id
+    project_id
+    committee_id
     start_date
     end_date
     createdAt
@@ -1025,6 +1044,7 @@ export const FETCH_RUNDOWNS_QUERY = gql`
     id
     agenda
     event_id
+    project_id
     date
     start_time
     end_time
@@ -1040,6 +1060,7 @@ export const FETCH_RUNDOWN_QUERY = gql`
     id
     agenda
     event_id
+    project_id
     date
     start_time
     end_time
@@ -1054,6 +1075,7 @@ export const ADD_RUNDOWN_MUTATION = gql`
   addRundown(
     $agenda: String!,
     $event_id: ID!,
+    $project_id: ID!,
     $date: String!,
     $start_time: String!,
     $end_time: String!,
@@ -1062,6 +1084,7 @@ export const ADD_RUNDOWN_MUTATION = gql`
   addRundown(
     agenda: $agenda,
     event_id: $event_id,
+    project_id: $project_id,
     date: $date,
     start_time: $start_time,
     end_time: $end_time,
@@ -1070,6 +1093,7 @@ export const ADD_RUNDOWN_MUTATION = gql`
     id
     agenda
     event_id
+    project_id
     date
     start_time
     end_time
@@ -1100,6 +1124,7 @@ export const UPDATE_RUNDOWN_MUTATION = gql`
     id
     agenda
     event_id
+    project_id
     date
     start_time
     end_time
@@ -1127,6 +1152,8 @@ export const FETCH_TASKS_QUERY = gql`
     completed_date
     priority
     roadmap_id
+    project_id
+    event_id
     createdAt
     createdBy
   }
@@ -1144,6 +1171,8 @@ export const FETCH_TASKS_CREATEDBY_QUERY = gql`
     completed_date
     priority
     roadmap_id
+    project_id
+    event_id
     createdAt
     createdBy
   }
@@ -1162,6 +1191,8 @@ export const FETCH_TASK_QUERY = gql`
     completed_date
     priority
     roadmap_id
+    project_id
+    event_id
     createdAt
     createdBy
   }
@@ -1178,6 +1209,8 @@ export const ADD_TASK_MUTATION = gql`
     $completed_date: String,
     $priority: String,
     $roadmapId: ID!,
+    $projectId: ID!,
+    $eventId: ID!,
     $createdBy: ID!
   ) {
   addTask(
@@ -1188,6 +1221,8 @@ export const ADD_TASK_MUTATION = gql`
     completed_date: $completed_date,
     priority: $priority,
     roadmapId: $roadmapId,
+    projectId: $projectId,
+    eventId: $eventId,
     createdBy: $createdBy
   ) {
     id
@@ -1198,6 +1233,8 @@ export const ADD_TASK_MUTATION = gql`
     completed_date
     priority
     roadmap_id
+    project_id
+    event_id
     createdAt
     createdBy
   }
@@ -1232,6 +1269,8 @@ export const UPDATE_TASK_MUTATION = gql`
     completed_date
     priority
     roadmap_id
+    project_id
+    event_id
     createdAt
     createdBy
   }
@@ -1259,6 +1298,8 @@ export const COMPLETED_TASK = gql`
     completed_date
     priority
     roadmap_id
+    project_id
+    event_id
     createdAt
     createdBy
     }
@@ -1266,11 +1307,14 @@ export const COMPLETED_TASK = gql`
 `;
 
 export const FETCH_ASSIGNED_TASKS_QUERY = gql`
-  query($taskId: ID!){
-    getAssignedTasks(taskId: $taskId){
+  query($roadmapId: ID!){
+    getAssignedTasks(roadmapId: $roadmapId){
       id
       task_id
-      personInCharge_id
+      person_in_charge_id
+      project_id
+      event_id
+      roadmap_id
       createdAt
   }
   }
@@ -1282,7 +1326,10 @@ export const FETCH_ASSIGNED_TASK_QUERY = gql`
     getAssignedTask(assignedId: $assignedId){
       id
       task_id
-      personInCharge_id
+      person_in_charge_id
+      project_id
+      event_id
+      roadmap_id
       createdAt
   }
   }
@@ -1294,7 +1341,10 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYPIC = gql`
     getAssignedTasksByPersonInCharge(personInChargeId: $personInChargeId){
       id
       task_id
-      personInCharge_id
+      person_in_charge_id
+      project_id
+      event_id
+      roadmap_id
       createdAt
   }
   }
@@ -1306,7 +1356,10 @@ export const ASSIGNED_TASK_MUTATION = gql`
     assignedTask(taskId: $taskId, personInChargeId: $personInChargeId) {
       id
       task_id
-      personInCharge_id
+      person_in_charge_id
+      project_id
+      event_id
+      roadmap_id
       createdAt
   }
   } 

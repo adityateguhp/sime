@@ -4,9 +4,9 @@ const Task_assigned_to = require('../../model/Task_assigned_to');
 
 module.exports = {
     Query: {
-        async getAssignedTasks(_, { taskId }, context) {
+        async getAssignedTasks(_, { roadmapId }, context) {
             try {
-                const assignedTasks = await Task_assigned_to.find({ task_id: taskId }).sort({ createdAt: -1 });
+                const assignedTasks = await Task_assigned_to.find({ roadmap_id: roadmapId }).sort({ createdAt: -1 });
                 if (assignedTasks) {
                     return assignedTasks;
                 } else {
@@ -30,7 +30,7 @@ module.exports = {
         },
         async getAssignedTasksByPersonInCharge(_, { personInChargeId }) {
             try {
-                const assignedTask = await Task_assigned_to.find({ personInCharge_id: personInChargeId });
+                const assignedTask = await Task_assigned_to.find({ person_in_charge_id: personInChargeId });
                 if (assignedTask) {
                     return assignedTask;
                 } else {
@@ -42,11 +42,14 @@ module.exports = {
         },
     },
     Mutation: {
-        async assignedTask(_, { taskId, personInChargeId }, context) {
+        async assignedTask(_, { taskId, personInChargeId, projectId, eventId, roadmapId }, context) {
 
             const newAssign = new Task_assigned_to({
                 task_id: taskId,
-                personInCharge_id: personInChargeId,
+                person_in_charge_id: personInChargeId,
+                project_id: projectId,
+                event_id: eventId,
+                roadmap_id: roadmapId,
                 createdAt: new Date().toISOString()
             });
 
@@ -65,7 +68,7 @@ module.exports = {
         },
         async deleteAssignedTaskByPersonInCharge(_, { personInChargeId }, context) {
             try {
-                const assign = await Task_assigned_to.find({ personInCharge_id: personInChargeId });
+                const assign = await Task_assigned_to.find({ person_in_charge_id: personInChargeId });
                 assign.map((data) => {
                     data.deleteOne()
                 })

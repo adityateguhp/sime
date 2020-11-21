@@ -363,7 +363,7 @@ const TaskModal = props => {
                                                 props.assignedTasks.map((assigned) => (
                                                     <View style={styles.chip}  key={assigned.id}>
                                                         <PersonInChargeChipContainer
-                                                            personInChargeId={assigned.personInCharge_id}
+                                                            personInChargeId={assigned.person_in_charge_id}
                                                             assignedId={assigned.id}
                                                             taskId={assigned.task_id}
                                                             deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}

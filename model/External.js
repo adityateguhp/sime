@@ -9,7 +9,11 @@ const externalSchema = new Schema({
     event_id:{
         type: Schema.Types.ObjectId,
         ref: 'events'
-    }, 	
+    }, 
+    project_id:{
+        type: Schema.Types.ObjectId,
+        ref: 'projects'
+    },	
     email: String,
     phone_number: String,
     details: String,

@@ -6,9 +6,9 @@ const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getCommittees(_, {projectId}, context) {
+    async getCommittees(_, {organizationId}, context) {
       try {
-        const committees = await Committee.find({ project_id: projectId }).sort({ name: 1 });
+        const committees = await Committee.find({ organization_id: organizationId }).sort({ name: 1 });
         if (committees) {
           return committees;
         } else {
@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async addCommittee(_, { name, projectId }, context) {
+    async addCommittee(_, { name, organizationId }, context) {
       const { valid, errors } = validateCommitteeInput(name);
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -40,7 +40,7 @@ module.exports = {
 
       const newCommittee = new Committee({
         name,
-        project_id: projectId,
+        organization_id: organizationId,
         createdAt: new Date().toISOString()
       });
 
