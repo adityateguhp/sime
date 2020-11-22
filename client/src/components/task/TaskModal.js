@@ -396,7 +396,7 @@ const TaskModal = props => {
                                     taskId={props.taskId}
                                     roadmapId={props.roadmapId}
                                     personInCharges={props.personInCharges}
-                                    committees={props.committees}
+                                    committee={props.committee}
                                     assignedTasks={props.assignedTasks}
                                     assignedTasksStateUpdate={props.assignedTasksStateUpdate}
                                     deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}

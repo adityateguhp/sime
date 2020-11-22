@@ -9,7 +9,6 @@ import {
     FETCH_TASKS_QUERY,
     DELETE_TASK,
     COMPLETED_TASK,
-    FETCH_ASSIGNED_TASKS_QUERY,
     DELETE_ASSIGNED_TASK_BYTASK
 } from '../../util/graphql';
 import { theme } from '../../constants/Theme';
@@ -32,16 +31,6 @@ const Task = props => {
         completed: props.task.completed,
         completed_date: props.task.completed_date
     });
-    const [assignedTasksValue, setAssignedTasksValue] = useState([]);
-
-    const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch } = useQuery(
-        FETCH_ASSIGNED_TASKS_QUERY,
-        {
-            variables: { taskId: props.task.id },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
-        }
-    );
 
     const completeTaskScreen = (proxy, result) => {
         const data = proxy.readQuery({
@@ -93,19 +82,6 @@ const Task = props => {
             taskId: props.task.id
         }
     });
-
-    const deleteAssignedTasksStateUpdate = (e) => {
-        const temp = [...assignedTasksValue];
-        const index = temp.map(function (item) {
-            return item.id
-        }).indexOf(e);
-        temp.splice(index, 1);
-        setAssignedTasksValue(temp);
-    }
-
-    const assignedTasksStateUpdate = (e) => {
-        setAssignedTasksValue([e, ...assignedTasksValue]);
-    }
 
     const onDeleteTask = () => {
         closeModal();
@@ -174,10 +150,6 @@ const Task = props => {
         }
     }, [props.task.completed_date])
 
-    useEffect(() => {
-        refetch();
-    }, [props.onRefresh]);
-
     return (
         <Provider theme={theme}>
             <View style={styles.container}>
@@ -213,7 +185,7 @@ const Task = props => {
                             <View style={styles.taskSub}>
                                 <View style={{ ...styles.people, ...{ opacity: props.task.completed ? 0.6 : 1 } }}>
                                     <Icon name="account-multiple" size={16} color="grey" />
-                                    <Caption style={{ marginLeft: 3 }}>{assignedTasksValue.length}</Caption>
+                                    <Caption style={{ marginLeft: 3 }}>{props.assignedTasks.length}</Caption>
                                 </View>
                             </View>
                         </View>
@@ -227,9 +199,9 @@ const Task = props => {
                 roadmapId={props.task.roadmap_id}
                 name={props.task.name}
                 project_name={props.project_name}
-                assignedTasks={assignedTasksValue}
+                assignedTasks={props.assignedTasks}
                 personInCharges={props.personInCharges}
-                committees={props.committees}
+                committee={props.committee}
                 roadmap={props.roadmap}
                 createdBy={props.task.createdBy}
                 createdAt={props.task.createdAt}
@@ -238,8 +210,8 @@ const Task = props => {
                 deleteButton={deleteHandler}
                 updateTasksStateUpdate={props.updateTasksStateUpdate}
                 task={props.task}
-                deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
-                assignedTasksStateUpdate={assignedTasksStateUpdate}
+                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
             />
             <LoadingModal loading={loadingDelete} />
         </Provider>

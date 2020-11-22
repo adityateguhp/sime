@@ -11,8 +11,9 @@ import { theme } from '../../constants/Theme';
 import {
     FETCH_TASKS_QUERY,
     FETCH_PICS_QUERY,
-    FETCH_COMMITTEES_QUERY,
-    FETCH_ROADMAP_QUERY
+    FETCH_COMMITTEE_QUERY,
+    FETCH_ROADMAP_QUERY,
+    FETCH_ASSIGNED_TASKS_QUERY,
 } from '../../util/graphql';
 
 
@@ -42,8 +43,9 @@ const TaskScreen = ({ navigation }) => {
 
     const [tasksValue, setTasksValue] = useState([]);
     const [personInChargesValue, setPersonInChargesValue] = useState([]);
-    const [committeesValue, setCommitteesValue] = useState([]);
+    const [committeeValue, setCommitteeValue] = useState(null);
     const [roadmapValue, setRoadmapValue] = useState(null);
+    const [assignedTasksValue, setAssignedTasksValue] = useState([]);
 
     const { data: personInCharges, error: errorPersonInCharges, loading: loadingPersonInCharges, refetch: refetchPersonInCharges } = useQuery(
         FETCH_PICS_QUERY,
@@ -79,6 +81,17 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
+   
+
+    const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch: refetchAssignedTasks } = useQuery(
+        FETCH_ASSIGNED_TASKS_QUERY,
+        {
+            variables: { roadmapId: sime.roadmap_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
+        }
+    );
+
     const { data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap } = useQuery(
         FETCH_ROADMAP_QUERY,
         {
@@ -89,12 +102,12 @@ const TaskScreen = ({ navigation }) => {
             }
         });
 
-    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
-        FETCH_COMMITTEES_QUERY,
+    const { data: committee, error: errorCommittee, loading: loadingCommittee, refetch: refetchCommittee } = useQuery(
+        FETCH_COMMITTEE_QUERY,
         {
-            variables: { projectId: sime.project_id },
+            variables: { committeeId: sime.committee_id },
             notifyOnNetworkStatusChange: true,
-            onCompleted: () => { setCommitteesValue(committees.getCommittees) }
+            onCompleted: () => { setCommitteeValue(committee.getCommittee) }
         }
     );
 
@@ -111,8 +124,9 @@ const TaskScreen = ({ navigation }) => {
     const onRefresh = () => {
         refetch();
         refetchPersonInCharges();
-        refetchCommittees();
+        refetchCommittee();
         refetchRoadmap();
+        refetchAssignedTasks();
     };
 
     useEffect(() => {
@@ -170,6 +184,19 @@ const TaskScreen = ({ navigation }) => {
         onToggleSnackBarUpdate();
     }
 
+    const deleteAssignedTasksStateUpdate = (e) => {
+        const temp = [...assignedTasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setAssignedTasksValue(temp);
+    }
+
+    const assignedTasksStateUpdate = (e) => {
+        setAssignedTasksValue([e, ...assignedTasksValue]);
+    }
+
     let incompletedTask = tasksValue.filter((t) => t.completed === false);
 
     let completedTask = tasksValue.filter((t) => t.completed === true);
@@ -189,9 +216,14 @@ const TaskScreen = ({ navigation }) => {
         return <Text>errorRoadmap</Text>;
     }
 
-    if (errorCommittees) {
-        console.error(errorCommittees);
-        return <Text>errorCommittees</Text>;
+    if (errorCommittee) {
+        console.error(errorCommittee);
+        return <Text>errorCommittee</Text>;
+    }
+
+    if (errorAssignedTasks) {
+        console.error(errorAssignedTasks);
+        return <Text>errorAssignedTasks</Text>;
     }
 
 
@@ -201,7 +233,7 @@ const TaskScreen = ({ navigation }) => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittees}
+                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittee && loadingAssignedTasks}
                         onRefresh={onRefresh} />
                 }
             >
@@ -244,7 +276,7 @@ const TaskScreen = ({ navigation }) => {
             <FlatList
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittees}
+                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittee}
                         onRefresh={onRefresh} />
                 }
                 ListHeaderComponentStyle={styles.screen}
@@ -269,13 +301,15 @@ const TaskScreen = ({ navigation }) => {
                     <Task
                         tasks={tasksValue}
                         personInCharges={personInChargesValue}
-                        committees={committeesValue}
+                        committee={committeeValue}
+                        assignedTasks={assignedTasksValue}
                         task={itemData.item}
                         completedTasksStateUpdate={completedTasksStateUpdate}
                         deleteTasksStateUpdate={deleteTasksStateUpdate}
                         updateTasksStateUpdate={updateTasksStateUpdate}
+                        assignedTasksStateUpdate={assignedTasksStateUpdate}
+                        deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
                         roadmap={roadmapValue}
-                        onRefresh={onRefresh}
                         taskScreen={true}
                     >
                     </Task>

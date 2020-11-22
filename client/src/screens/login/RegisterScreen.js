@@ -11,7 +11,7 @@ import Header from '../../components/common/Header';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
-import { REGISTER_ORGANIZATION } from '../../util/graphql';
+import { REGISTER_ORGANIZATION, ADD_COMMITTEE_MUTATION } from '../../util/graphql';
 
 const RegisterScreen = ({ navigation }) => {
     const [errors, setErrors] = useState({});
@@ -25,12 +25,59 @@ const RegisterScreen = ({ navigation }) => {
         picture: ''
     });
 
+    const [committeeValues, setCommitteeValues] = useState([
+        {
+            name: 'Core Committee',
+            organizationId: ''
+        },
+        {
+            name: 'Funding Subcommittee',
+            organizationId: ''
+        },
+        {
+            name: 'Secretariat Subcommittee',
+            organizationId: ''
+        },
+        {
+            name: 'Program Subcommittee',
+            organizationId: ''
+        },
+        {
+            name: 'Food Subcommittee',
+            organizationId: ''
+        },
+        {
+            name: 'Security Subcommittee',
+            organizationId: ''
+        },
+        {
+            name: 'Publication & Documentation Subcommittee',
+            organizationId: ''
+        },
+        {
+            name: 'Equipment & Transportation Subcommittee',
+            organizationId: ''
+        },
+    ]);
+
     const onChange = (key, val) => {
         setValues({ ...values, [key]: val });
         setErrors('')
     };
 
-    const [addUser, { loading }] = useMutation(REGISTER_ORGANIZATION, {
+    const [addCommittee, { loading: loading2 }] = useMutation(ADD_COMMITTEE_MUTATION);
+
+    const updateFieldChanged = (name, value) => {
+        let newArr = committeeValues.map((item) => {
+            return { ...item, [name]: value };
+        });
+        setCommitteeValues(newArr);
+        newArr.map((data) => {
+            addCommittee(({ variables: data }))
+        })
+    };
+
+    const [registerOrganization, { loading }] = useMutation(REGISTER_ORGANIZATION, {
         update(_, result) {
             navigation.dispatch(
                 CommonActions.reset({
@@ -38,6 +85,7 @@ const RegisterScreen = ({ navigation }) => {
                    routes: [{ name: "Register Completed" }],
                })
            );
+           updateFieldChanged('organizationId', result.data.registerOrganization.id);
         },
         onError(err) {
             setErrors(err.graphQLErrors[0].extensions.exception.errors);
@@ -47,7 +95,7 @@ const RegisterScreen = ({ navigation }) => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addUser();
+        registerOrganization();
     };
 
     return (

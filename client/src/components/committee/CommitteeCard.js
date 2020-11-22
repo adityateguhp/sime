@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { List } from 'react-native-paper';
+import { Avatar, Card } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import PicListContainer from './PicListContainer';
-import { SimeContext } from '../../context/SimePovider';
+import Colors from '../../constants/Colors';
 
 const CommitteeCard = props => {
     let TouchableCmp = TouchableOpacity;
@@ -11,51 +11,37 @@ const CommitteeCard = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
-
-    const sime = useContext(SimeContext);
+    const label = props.name.substring(0, 2).toUpperCase();
 
     return (
-        <TouchableCmp onLongPress={ props.name === "Core Committee"? null : sime.order === '1' || sime.order ==='2' || sime.order ==='3' || sime.user_type === "Organization"? props.onLongPress : null}>
-            <View style={styles.container}>
-                <List.Section
-                    style={styles.accordion}
-                    titleStyle={{ color:'black', fontSize: 16 }}
-                    title={props.name}
-                >
-                    <PicListContainer
-                        committee_id={props.committee_id}
-                        staffs={props.staffs}
-                        committees={props.committees}
-                        positions={props.positions}
-                        personInCharges={props.personInCharges}
-                        onSelect={props.onSelect}
-                        deletePersonInChargesStateUpdate={props.deletePersonInChargesStateUpdate}
-                        updatePersonInChargesStateUpdate={props.updatePersonInChargesStateUpdate}
+        <View>
+            <TouchableCmp onLongPress={props.name === "Core Committee" ? null : props.onLongPress}>
+                <Card style={styles.event}>
+                    <Card.Title
+                        title={props.name}
+                        left={() => <Avatar.Text size={45} label={label} style={{ backgroundColor: Colors.primaryColor }} />}
+                        right={props.name === "Core Committee" ? null : ({ color, size }) => (
+                            <Icon name="pencil" size={size} color={color} style={{ marginHorizontal: 10, opacity: 0.5 }} />
+                        )}
                     />
-                </List.Section>
-            </View >
-        </TouchableCmp>
+                </Card >
+            </TouchableCmp>
+        </View>
+
     );
 };
 
 const styles = StyleSheet.create({
-    accordion: {
-
+    event: {
+        marginVertical: 5,
+        marginHorizontal: 10,
+        elevation: 3
     },
     task: {
         display: "flex"
     },
     status: {
         fontSize: 11
-    },
-    container: {
-        marginVertical: 5,
-        marginHorizontal: 10,
-        flex: 1,
-        backgroundColor: 'white',
-        elevation: 3,
-        borderRadius: 4
-
     }
 });
 

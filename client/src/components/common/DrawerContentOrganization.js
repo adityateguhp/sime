@@ -117,6 +117,15 @@ const DrawerContentOrganization = props => {
                         props.navigation.navigate('Users Management')
                     }}
                 />
+                  <DrawerItem
+                    icon={({ color, size }) => (
+                        <Icon name="account-multiple-outline" color={color} size={size} />
+                    )}
+                    label="Committees Management"
+                    onPress={() => {
+                        props.navigation.navigate('Committees Management')
+                    }}
+                />
                 <DrawerItem
                     icon={({ color, size }) => (
                         <Icon name="exit-to-app" color={color} size={size} />

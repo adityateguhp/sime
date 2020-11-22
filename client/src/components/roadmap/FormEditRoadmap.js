@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useMutation } from '@apollo/react-hooks';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider'
@@ -41,6 +42,7 @@ const FormEditRoadmap = props => {
         name: '',
         start_date: '',
         end_date: '',
+        committee_id:''
     });
 
     const [eventDate, setEventDate] = useState({
@@ -91,6 +93,7 @@ const FormEditRoadmap = props => {
                 name: props.roadmap.name,
                 start_date: props.roadmap.start_date,
                 end_date: props.roadmap.end_date,
+                committee_id: props.roadmap.committee_id
             })
         }
     }, [props.roadmap])
@@ -127,7 +130,12 @@ const FormEditRoadmap = props => {
                 return;
             }
         },
-        variables: values
+        variables: {
+            roadmapId: values.roadmapId,
+            name: values.name,
+            start_date: values.start_date,
+            end_date: values.end_date
+        }
     });
 
     const startDate = moment(values.start_date).format('ll');
@@ -209,6 +217,17 @@ const FormEditRoadmap = props => {
                                         onChangeText={(val) => onChange('name', val, 'roadmap_name_error')}
                                         error={errors.roadmap_name_error ? true : false}
                                         errorText={errors.roadmap_name_error}
+                                    />
+                                </View>
+                                <View>
+                                    <Dropdown
+                                        useNativeDriver={true}
+                                        label='Committee'
+                                        disabled={true}
+                                        value={values.committee_id}
+                                        data={props.committees}
+                                        valueExtractor={({ id }) => id}
+                                        labelExtractor={({ name }) => name}
                                     />
                                 </View>
                             </View>

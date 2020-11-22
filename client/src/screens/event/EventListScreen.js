@@ -278,7 +278,7 @@ const EventListScreen = ({ route, navigation }) => {
                 )}
             />
             { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ?
-                <Portal>
+                <Provider theme={theme}>
                     <OptionModal
                         visible={visible}
                         closeModal={closeModal}
@@ -341,7 +341,7 @@ const EventListScreen = ({ route, navigation }) => {
                         Event updated!
                     </Snackbar>
                     <LoadingModal loading={loadingDelete} />
-                </Portal> : null}
+                </Provider> : null}
         </Provider>
     );
 }

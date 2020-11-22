@@ -1352,8 +1352,8 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYPIC = gql`
 
 
 export const ASSIGNED_TASK_MUTATION = gql`
-  mutation assignedTask($taskId: ID!, $personInChargeId: ID!) {
-    assignedTask(taskId: $taskId, personInChargeId: $personInChargeId) {
+  mutation assignedTask($taskId: ID!, $personInChargeId: ID!, $projectId: ID!, $eventId: ID!, $roadmapId: ID!) {
+    assignedTask(taskId: $taskId, personInChargeId: $personInChargeId, projectId: $projectId, eventId: $eventId, roadmapId: $roadmapId) {
       id
       task_id
       person_in_charge_id

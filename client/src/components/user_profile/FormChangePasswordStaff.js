@@ -9,6 +9,7 @@ import { singlePasswordValidator, confirmPasswordValidator } from '../../util/va
 import { UPDATE_PASSWORD_STAFF_MUTATION, FETCH_STAFF_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
+import LoadingModal from '../common/LoadingModal';
 
 const FormChangePasswordStaff = props => {
   

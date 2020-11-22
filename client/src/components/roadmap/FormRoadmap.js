@@ -7,10 +7,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useMutation } from '@apollo/react-hooks';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { SimeContext } from '../../context/SimePovider'
-import { roadmapNameValidator, dateValidator } from '../../util/validator';
+import { roadmapNameValidator, dateValidator, committeeValidator } from '../../util/validator';
 import { FETCH_ROADMAPS_QUERY, ADD_ROADMAP_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
@@ -30,7 +31,8 @@ const FormRoadmap = props => {
 
     const [errors, setErrors] = useState({
         roadmap_name_error: '',
-        date_error: ''
+        date_error: '',
+        committee_error: ''
     });
 
     //const [keyboardSpace, setKeyboarSpace] = useState(0);
@@ -38,6 +40,8 @@ const FormRoadmap = props => {
     const [values, setValues] = useState({
         name: '',
         event_id: sime.event_id,
+        project_id: sime.project_id,
+        committee_id: '',
         start_date: '',
         end_date: '',
     });
@@ -92,6 +96,12 @@ const FormRoadmap = props => {
         }
     }, [props.event])
 
+    useEffect(() => {
+        if (sime.order === '6' || sime.order === '7') {
+            setValues({ ...values, committee_id: sime.userPicCommittee});       
+         }
+    },[props.openForm])
+
     const [addRoadmap, { loading }] = useMutation(ADD_ROADMAP_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
@@ -104,16 +114,19 @@ const FormRoadmap = props => {
             values.name = '';
             values.start_date = '';
             values.end_date = '';
+            values.committee_id = '';
             props.closeModalForm();
         },
         onError(err) {
             const roadmapNameError = roadmapNameValidator(values.name);
             const dateError = dateValidator(values.start_date, values.end_date);
-            if (roadmapNameError || dateError) {
+            const committeeError = committeeValidator(values.committee_id);
+            if (roadmapNameError || dateError || committeeError) {
                 setErrors({
                     ...errors,
                     roadmap_name_error: roadmapNameError,
-                    date_error: dateError
+                    date_error: dateError,
+                    committee_error: committeeError
                 })
                 return;
             }
@@ -132,12 +145,12 @@ const FormRoadmap = props => {
 
     //for get keyboard height
     Keyboard.addListener('keyboardDidShow', (frames) => {
-       if (!frames.endCoordinates) return;
-         setKeyboarSpace(frames.endCoordinates.height);
-     });
-     Keyboard.addListener('keyboardDidHide', (frames) => {
-         setKeyboarSpace(0);
-     });
+        if (!frames.endCoordinates) return;
+        setKeyboarSpace(frames.endCoordinates.height);
+    });
+    Keyboard.addListener('keyboardDidHide', (frames) => {
+        setKeyboarSpace(0);
+    });
 
     return (
         <Portal>
@@ -151,7 +164,7 @@ const FormRoadmap = props => {
                 style={{
                     justifyContent: 'flex-end',
                     margin: 0,
-                    top: keyboardSpace ? -10 -keyboardSpace : 0,
+                    top: keyboardSpace ? -10 - keyboardSpace : 0,
                 }}
                 statusBarTranslucent>
                 <View style={styles.buttomView}>
@@ -161,67 +174,90 @@ const FormRoadmap = props => {
                             <Appbar.Content title="New Roadmap" />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
-                            <ScrollView>
-                                <View style={styles.formViewStyle}>
+                        <ScrollView>
+                            <View style={styles.formViewStyle}>
                                 <View style={styles.dateInputContainer}>
-                                        <View style={styles.dateLabel}>
-                                            <Icon name="calendar" size={25} color={Colors.primaryColor} />
-                                            <Text style={styles.textDate}>
-                                                Date :
+                                    <View style={styles.dateLabel}>
+                                        <Icon name="calendar" size={25} color={Colors.primaryColor} />
+                                        <Text style={styles.textDate}>
+                                            Date :
                                             </Text>
-                                        </View>
-                                        <View style={styles.dateButtonContainer}>
-                                            <Button
-                                                style={styles.dateButton}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={showStartDatepicker}
-                                                mode="outlined"
-                                            >
-                                                {values.start_date ? startDate : 'FROM'}
-                                            </Button>
-                                            <Button
-                                                style={styles.dateButton}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={showEndDatepicker}
-                                                mode="outlined"
-                                            >
-                                                {values.end_date ? endDate : 'TO'}
-                                            </Button>
-                                        </View>
                                     </View>
-                                    {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
-
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                             style={styles.input}
-                                             label='Roadmap Name'
-                                             value={values.name}
-                                             onChangeText={(val) => onChange('name', val, 'roadmap_name_error')}
-                                             error={errors.roadmap_name_error ? true : false}
-                                             errorText={errors.roadmap_name_error}
-                                        />
+                                    <View style={styles.dateButtonContainer}>
+                                        <Button
+                                            style={styles.dateButton}
+                                            labelStyle={{ color: Colors.primaryColor }}
+                                            onPress={showStartDatepicker}
+                                            mode="outlined"
+                                        >
+                                            {values.start_date ? startDate : 'FROM'}
+                                        </Button>
+                                        <Button
+                                            style={styles.dateButton}
+                                            labelStyle={{ color: Colors.primaryColor }}
+                                            onPress={showEndDatepicker}
+                                            mode="outlined"
+                                        >
+                                            {values.end_date ? endDate : 'TO'}
+                                        </Button>
                                     </View>
                                 </View>
-                                <Portal>
-                                    <DateTimePicker
-                                        isVisible={showStartDate}
-                                        onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
-                                        onCancel={closeStartDatepicker}
-                                        mode="date"
-                                        display="default"
-                                        maximumDate={values.end_date ? new Date(values.end_date) : new Date(eventDate.end_date)}
+                                {errors.date_error ? <Text style={styles.error}>{errors.date_error}</Text> : null}
+
+                                <View style={styles.inputStyle}>
+                                    <TextInput
+                                        style={styles.input}
+                                        label='Roadmap Name'
+                                        value={values.name}
+                                        onChangeText={(val) => onChange('name', val, 'roadmap_name_error')}
+                                        error={errors.roadmap_name_error ? true : false}
+                                        errorText={errors.roadmap_name_error}
                                     />
-                                    <DateTimePicker
-                                        isVisible={showEndDate}
-                                        onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
-                                        onCancel={closeEndDatepicker}
-                                        mode="date"
-                                        display="default"
-                                        minimumDate={values.start_date ? new Date(values.start_date) : null}
-                                        maximumDate={new Date(eventDate.end_date)}
-                                    />
-                                </Portal>
-                            </ScrollView>
+                                </View>
+                                <View>
+                                    {sime.order === '6' || sime.order === '7' ?
+                                        <Dropdown
+                                            useNativeDriver={true}
+                                            label='Committee'
+                                            disabled={true}
+                                            value={values.committee_id}
+                                            data={props.committees}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                        /> :
+                                        <Dropdown
+                                            useNativeDriver={true}
+                                            label='Committee'
+                                            value={values.committee_id}
+                                            data={props.committees}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChange('committee_id', val, 'committee_error')}
+                                            error={errors.committee_error}
+                                        />}
+                                    {errors.committee_error ? <Text style={styles.error}>{errors.committee_error}</Text> : null}
+                                </View>
+                            </View>
+                            <Portal>
+                                <DateTimePicker
+                                    isVisible={showStartDate}
+                                    onConfirm={(val) => onChangeStartDate('start_date', val, 'date_error')}
+                                    onCancel={closeStartDatepicker}
+                                    mode="date"
+                                    display="default"
+                                    maximumDate={values.end_date ? new Date(values.end_date) : new Date(eventDate.end_date)}
+                                />
+                                <DateTimePicker
+                                    isVisible={showEndDate}
+                                    onConfirm={(val) => onChangeEndDate('end_date', val, 'date_error')}
+                                    onCancel={closeEndDatepicker}
+                                    mode="date"
+                                    display="default"
+                                    minimumDate={values.start_date ? new Date(values.start_date) : null}
+                                    maximumDate={new Date(eventDate.end_date)}
+                                />
+                            </Portal>
+                        </ScrollView>
                     </View>
                 </View>
                 <LoadingModal loading={loading} />
@@ -231,11 +267,11 @@ const FormRoadmap = props => {
 };
 
 const modalFormWidth = wp(100);
-const modalFormHeight = hp(44);
+const modalFormHeight = hp(54);
 
 const styles = StyleSheet.create({
     appbar: {
-        
+
     },
     formView: {
         backgroundColor: 'white',

@@ -34,6 +34,7 @@ const FormExternal = props => {
         name: '',
         external_type: sime.external_type,
         event_id: sime.event_id,
+        project_id: sime.project_id,
         email: '',
         phone_number: '',
         details: '',

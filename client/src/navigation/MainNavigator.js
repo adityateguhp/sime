@@ -23,6 +23,7 @@ import StaffProfileNavigator from './staff_navigation/StaffProfileNavigator'
 import StaffOrganizationProfileNavigator from './staff_navigation/StaffOrganizationProfileNavigator'
 import MyTasksStaffNavigator from './staff_navigation/MyTasksStaffNavigator'
 import MyTasksNavigator from './organization_navigation/MyTasksNavigator'
+import CommitteeManagementNavigator from './organization_navigation/CommitteeManagementNavigator'
 import Colors from '../constants/Colors';
 
 function TabVisible(route) {
@@ -185,6 +186,13 @@ export default function MainNavigator() {
             <Drawer.Screen
               name="Users Management"
               component={UsersManagementNavigator}
+              options={{
+                gestureEnabled: false,
+              }}
+            />
+             <Drawer.Screen
+              name="Committees Management"
+              component={CommitteeManagementNavigator}
               options={{
                 gestureEnabled: false,
               }}

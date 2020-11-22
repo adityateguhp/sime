@@ -11,7 +11,7 @@ import moment from 'moment';
 
 import Colors from '../../constants/Colors';
 import { projectNameValidator, dateValidator } from '../../util/validator';
-import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION, ADD_COMMITTEE_MUTATION } from '../../util/graphql';
+import { FETCH_PROJECTS_QUERY, ADD_PROJECT_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
 import { SimeContext } from '../../context/SimePovider';
@@ -41,41 +41,6 @@ const FormProject = props => {
         picture: null,
         organizationId: sime.user.id
     });
-
-    const [committeeValues, setCommitteeValues] = useState([
-        {
-            name: 'Core Committee',
-            projectId: ''
-        },
-        {
-            name: 'Funding Subcommittee',
-            projectId: ''
-        },
-        {
-            name: 'Secretariat Subcommittee',
-            projectId: ''
-        },
-        {
-            name: 'Program Subcommittee',
-            projectId: ''
-        },
-        {
-            name: 'Food Subcommittee',
-            projectId: ''
-        },
-        {
-            name: 'Security Subcommittee',
-            projectId: ''
-        },
-        {
-            name: 'Publication & Documentation Subcommittee',
-            projectId: ''
-        },
-        {
-            name: 'Equipment & Transportation Subcommittee',
-            projectId: ''
-        },
-    ]);
 
     const [showStartDate, setShowStartDate] = useState(false);
     const [showEndDate, setShowEndDate] = useState(false);
@@ -164,18 +129,6 @@ const FormProject = props => {
         closeEndDatepicker();
     };
 
-    const [addCommittee, { loading: loading2 }] = useMutation(ADD_COMMITTEE_MUTATION);
-
-    const updateFieldChanged = (name, value) => {
-        let newArr = committeeValues.map((item) => {
-            return { ...item, [name]: value };
-        });
-        setCommitteeValues(newArr);
-        newArr.map((data) => {
-            addCommittee(({ variables: data }))
-        })
-    };
-
     const [addProject, { loading }] = useMutation(ADD_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
@@ -185,7 +138,6 @@ const FormProject = props => {
             data.getProjects = [result.data.addProject, ...data.getProjects];
             props.addProjectsStateUpdate(result.data.addProject);
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id } });
-            updateFieldChanged('projectId', result.data.addProject.id);
             values.name = '';
             values.description = '';
             values.start_date = '';

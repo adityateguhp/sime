@@ -21,7 +21,7 @@ const FormCommittee = props => {
 
     const [values, setValues] = useState({
         name: '',
-        projectId: sime.project_id
+        organizationId: sime.user.id
     });
 
     const onChange = (key, val, err) => {
@@ -33,11 +33,11 @@ const FormCommittee = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_COMMITTEES_QUERY,
-                variables: { projectId: values.projectId }
+                variables: { organizationId: values.organizationId }
             });
             data.getCommittees = [result.data.addCommittee, ...data.getCommittees];
             props.addCommitteesStateUpdate(result.data.addCommittee);
-            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: values.projectId } });
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: values.organizationId } });
             values.name = '';
             props.closeModalForm();
         },

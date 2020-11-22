@@ -37,26 +37,20 @@ const AssignedToModal = props => {
                             }
                         }}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="Committee" subtitle={sime.project_name? sime.project_name : props.project_name} />
+                            <Appbar.Content title="Assigned to" />
                         </Appbar>
-                            <View style={styles.formViewStyle}>
-                                <FlatList
-                                    data={props.committees}
-                                    keyExtractor={item => item.id}
-                                    renderItem={itemData => (
-                                            <AssignedToSeparator
-                                                name={itemData.item.name}
-                                                committeeId={itemData.item.id}
-                                                personInCharges={props.personInCharges}
-                                                assignedTasks={props.assignedTasks}
-                                                taskId={props.taskId}
-                                                roadmapId={props.roadmapId}
-                                                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
-                                                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
-                                            />
-                                    )}
-                                />
-                            </View>
+                        <View style={styles.formViewStyle}>
+                            <AssignedToSeparator
+                                name={props.committee.name}
+                                committeeId={props.committee.id}
+                                personInCharges={props.personInCharges}
+                                assignedTasks={props.assignedTasks}
+                                taskId={props.taskId}
+                                roadmapId={props.roadmapId}
+                                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                            />
+                        </View>
                     </View>
                 </View>
             </Modal>

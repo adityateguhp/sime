@@ -31,6 +31,7 @@ const FormRundown = props => {
     const [values, setValues] = useState({
         agenda: '',
         event_id: sime.event_id,
+        project_id: sime.project_id,
         date: '',
         start_time: '',
         end_time: '',

@@ -227,11 +227,12 @@ const PicList = props => {
 
 const styles = StyleSheet.create({
     staffs: {
-        marginLeft: 10,
-        marginTop: 3
+        
+        elevation: 3,
+        backgroundColor: 'white',
     },
     wrap: {
-        marginTop: 1
+        marginHorizontal: 10,
     },
 });
 

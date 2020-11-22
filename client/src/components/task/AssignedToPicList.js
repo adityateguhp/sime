@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, Provider, Divider, Text } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -15,8 +15,11 @@ import {
 import CenterSpinner from '../common/CenterSpinner';
 import { theme } from '../../constants/Theme';
 import Colors from '../../constants/Colors';
+import { SimeContext } from '../../context/SimePovider';
 
 const AssignedToPicList = props => {
+    const sime = useContext(SimeContext);
+
     let TouchableCmp = TouchableOpacity;
 
     if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -52,11 +55,11 @@ const AssignedToPicList = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: { taskId: props.taskId }
+                variables: { roadmapId: sime.roadmap_id }
             });
             data.getAssignedTasks = data.getAssignedTasks.filter((e) => e.id !== assignedCommitteeId);
             props.deleteAssignedTasksStateUpdate(assignedCommitteeId)
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { taskId: props.taskId } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: sime.roadmap_id } });
         },
         variables: {
             assignedId: assignedCommitteeId
@@ -67,15 +70,18 @@ const AssignedToPicList = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: { taskId: props.taskId }
+                variables: { roadmapId: sime.roadmap_id }
             });
             data.getAssignedTasks = [result.data.assignedTask, ...data.getAssignedTasks];
             props.assignedTasksStateUpdate(result.data.assignedTask);
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { taskId: props.taskId } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: sime.roadmap_id } });
         },
         variables: {
             taskId: props.taskId,
-            personInChargeId: props.person_in_charge_id
+            personInChargeId: props.person_in_charge_id,
+            projectId: sime.project_id,
+            eventId: sime.event_id,
+            roadmapId: sime.roadmap_id,
         }
     });
 

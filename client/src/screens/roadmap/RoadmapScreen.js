@@ -13,7 +13,9 @@ import {
     FETCH_ROADMAPS_QUERY,
     FETCH_ROADMAP_QUERY,
     DELETE_ROADMAP,
-    FETCH_EVENT_QUERY
+    FETCH_EVENT_QUERY,
+    FETCH_PICS_QUERY,
+    FETCH_COMMITTEES_QUERY
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
@@ -44,7 +46,30 @@ const RoadmapScreen = ({ route, navigation }) => {
 
 
     const [roadmapsValue, setRoadmapsValue] = useState([]);
+    const [committeesFilterTemp, setCommitteesFilterTemp] = useState([]);
+    const [committeesFilter, setCommitteesFilter] = useState([]);
+    const [committeesValue, setCommitteesValue] = useState([]);
     const [eventVal, setEventVal] = useState(null);
+
+    const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
+        FETCH_COMMITTEES_QUERY,
+        {
+            variables: { organizationId: sime.user_type === "Organization" ? sime.user.id : sime.user.organization_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setCommitteesValue(committees.getCommittees) }
+        }
+    );
+
+    const { data: personInCharges, error: errorPersonInCharges, loading: loadingPersonInCharges, refetch: refetchPersonInCharges } = useQuery(
+        FETCH_PICS_QUERY,
+        {
+            variables: { projectId: sime.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setCommitteesFilterTemp(personInCharges.getPersonInCharges)
+            }
+        }
+    );
 
     const { data: roadmaps, error: errorRoadmaps, loading: loadingRoadmaps, refetch: refetchRoadmaps } = useQuery(
         FETCH_ROADMAPS_QUERY,
@@ -72,10 +97,11 @@ const RoadmapScreen = ({ route, navigation }) => {
             variables: { roadmapId: sime.roadmap_id }
         });
 
-    const selectItemHandler = (_id, name) => {
+    const selectItemHandler = (_id, name, committee_id) => {
         navigation.navigate('Task');
         sime.setRoadmap_id(_id);
         sime.setRoadmap_name(name);
+        sime.setCommittee_id(committee_id);
     };
 
     const [roadmapVal, setRoadmapVal] = useState(null);
@@ -86,6 +112,37 @@ const RoadmapScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (roadmap) setRoadmapVal(roadmap.getRoadmap);
     }, [roadmap])
+
+    useEffect(() => {
+        if (committeesFilterTemp) {
+            let dataSource = committeesFilterTemp.reduce(function (sections, item) {
+
+                let section = sections.find(section => section.committee_id === item.committee_id);
+
+                if (!section) {
+                    section = { committee_id: item.committee_id };
+                    sections.push(section);
+                }
+
+                return sections;
+
+            }, []);
+            setCommitteesFilter(dataSource)
+        }
+    }, [committeesFilterTemp, personInCharges, setCommitteesFilter])
+
+
+    let committeesInProject = []
+    committeesFilter.map((pic) =>
+        committeesValue.map((committee) => {
+            if (committee.id === pic.committee_id) {
+                committeesInProject.push(committee);
+            } else {
+                return null;
+            }
+            return null;
+        }))
+
 
     const closeModal = () => {
         setVisible(false);
@@ -198,6 +255,16 @@ const RoadmapScreen = ({ route, navigation }) => {
         return <Text>errorEvent</Text>;
     }
 
+    if (errorCommittees) {
+        console.error(errorCommittees);
+        return <Text>errorCommittees</Text>;
+    }
+
+    if (errorPersonInCharges) {
+        console.error(errorPersonInCharges);
+        return <Text>errorPersonInCharges</Text>;
+    }
+
     if (called & errorRoadmap) {
         console.error(errorRoadmap);
         return <Text>errorRoadmap</Text>;
@@ -209,7 +276,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingRoadmaps && loadingEvent}
+                        refreshing={loadingRoadmaps && loadingEvent && loadingCommittees && loadingPersonInCharges}
                         onRefresh={onRefresh} />
                 }
             >
@@ -219,6 +286,8 @@ const RoadmapScreen = ({ route, navigation }) => {
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
                     closeButton={closeModalForm}
+                    committees={committeesInProject}
+                    openForm={openForm}
                     addRoadmapsStateUpdate={addRoadmapsStateUpdate}
                     event={eventVal}
                 />
@@ -266,7 +335,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         onSelect={() => {
-                            selectItemHandler(itemData.item.id, itemData.item.name);
+                            selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.committee_id);
                         }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
                         onRefresh={onRefresh}
@@ -286,6 +355,8 @@ const RoadmapScreen = ({ route, navigation }) => {
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
+                committees={committeesInProject}
+                openForm={openForm}
                 addRoadmapsStateUpdate={addRoadmapsStateUpdate}
                 event={eventVal}
             />
@@ -295,6 +366,8 @@ const RoadmapScreen = ({ route, navigation }) => {
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
                 roadmap={roadmapVal}
+                committees={committeesInProject}
+                openForm={openForm}
                 updateRoadmapsStateUpdate={updateRoadmapsStateUpdate}
                 updateRoadmapStateUpdate={updateRoadmapStateUpdate}
                 event={eventVal}

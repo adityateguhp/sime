@@ -24,11 +24,11 @@ const PersonInChargeChip = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: {taskId: props.taskId }
+                variables: {roadmapId: props.roadmapId }
             });
             data.getAssignedTasks = data.getAssignedTasks.filter((e) => e.id !== props.assignedId);
             props.deleteAssignedTasksStateUpdate(props.assignedId)
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { taskId: props.taskId } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
         },
         variables: {
             assignedId: props.assignedId

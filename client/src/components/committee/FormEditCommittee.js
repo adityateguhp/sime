@@ -43,11 +43,11 @@ const FormEditCommittee = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_COMMITTEES_QUERY,
-                variables: { projectId: sime.project_id }
+                variables: { organizationId: sime.user.id }
             });
             props.updateCommitteesStateUpdate(result.data.updateCommittee)
             props.updateCommitteeStateUpdate(result.data.updateCommittee)
-            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { projectId: sime.project_id } });
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: sime.user.id } });
             props.closeModalForm();
         },
         onError(err) {

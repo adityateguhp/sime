@@ -26,6 +26,8 @@ const FormTask = props => {
         due_date: '',
         priority:'',
         roadmapId: sime.roadmap_id,
+        projectId: sime.project_id,
+        eventId: sime.event_id,
         createdBy: sime.user.id
     });
 
