@@ -136,6 +136,7 @@ module.exports = gql`
     type Task_assigned_to {
         id: ID!
         task_id: ID!
+        staff_id: ID!
         person_in_charge_id: ID!
         project_id: ID!
         event_id: ID!
@@ -180,6 +181,7 @@ module.exports = gql`
         getAssignedTasks(roadmapId: ID!): [Task_assigned_to]
         getAssignedTask(assignedId: ID!): Task_assigned_to
         getAssignedTasksByPersonInCharge(personInChargeId: ID!): [Task_assigned_to]
+        getAssignedTasksByStaff(staffId: ID!): [Task_assigned_to]
     }
     type Mutation {
         registerOrganization(
@@ -410,6 +412,7 @@ module.exports = gql`
 
         assignedTask(
             taskId: ID!
+            staffId: ID!
             personInChargeId: ID!
             projectId: ID!
             eventId: ID!

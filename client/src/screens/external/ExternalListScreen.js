@@ -70,6 +70,9 @@ const ExternalListScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (external) setExternalVal(external.getExternal);
+        return () => {
+            console.log("This will be logged on unmount");
+          }
     }, [external])
 
 

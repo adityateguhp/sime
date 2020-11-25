@@ -46,7 +46,7 @@ const EventCard = props => {
 
                     <View>
                         <Card.Actions style={styles.cardAction}>
-                            <Status start_date={props.start_date} end_date={props.end_date} fontSize={11} />
+                            <Status start_date={props.start_date} end_date={props.end_date} fontSize={8} />
                         </Card.Actions>
                     </View>
                 </Card >

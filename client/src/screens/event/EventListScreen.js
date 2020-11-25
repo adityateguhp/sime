@@ -19,7 +19,7 @@ import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
 
 const EventListScreen = ({ route, navigation }) => {
-    
+
     const sime = useContext(SimeContext);
 
     const [visibleDelete, setVisibleDelete] = useState(false);
@@ -86,6 +86,9 @@ const EventListScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (event) setEventVal(event.getEvent);
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [event])
 
     const closeModal = () => {

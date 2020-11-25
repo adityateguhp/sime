@@ -42,7 +42,7 @@ const FormEditRoadmap = props => {
         name: '',
         start_date: '',
         end_date: '',
-        committee_id:''
+        committee_id: ''
     });
 
     const [eventDate, setEventDate] = useState({
@@ -96,6 +96,9 @@ const FormEditRoadmap = props => {
                 committee_id: props.roadmap.committee_id
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.roadmap])
 
     useEffect(() => {
@@ -104,6 +107,9 @@ const FormEditRoadmap = props => {
                 start_date: props.event.start_date,
                 end_date: props.event.end_date,
             })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.event])
 

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView} from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -107,6 +107,9 @@ const FormEditStaff = props => {
                 picture: props.staff.picture,
                 organizationId: props.staff.organization_id
             })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.staff])
 

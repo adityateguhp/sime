@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
-import { Appbar, Portal} from 'react-native-paper';
+import { Appbar, Portal } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useMutation } from '@apollo/react-hooks';
@@ -36,6 +36,9 @@ const FormEditDepartment = props => {
                 name: props.department.name,
                 organizationId: props.department.organization_id
             })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.department])
 

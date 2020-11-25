@@ -143,6 +143,9 @@ const FormEvent = props => {
                 end_date: props.project.end_date,
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.project])
 
     const [addEvent, { loading }] = useMutation(ADD_EVENT_MUTATION, {

@@ -3,10 +3,10 @@ import { TouchableOpacity, View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Avatar, Text} from 'react-native-paper';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_ORGANIZATION_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
 import ProjectListScreen from '../../screens/project/ProjectListScreen';
 import ProjectOverviewScreen from '../../screens/project/ProjectOverviewScreen';
 import CommitteeListScreen from '../../screens/committee/CommitteeListScreen';
@@ -75,6 +75,7 @@ export default function ProjectNavigator({ route, navigation }) {
   const sime = useContext(SimeContext);
   const [userId, setUserId] = useState(null)
   const [userPict, setUserPict] = useState('')
+  const [committeeName, setCommitteeName] = useState('')
 
   const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
     FETCH_ORGANIZATION_QUERY, {
@@ -82,6 +83,13 @@ export default function ProjectNavigator({ route, navigation }) {
       organizationId: userId
     }
   });
+
+  const [loadCommittee, { data: committee, error: errorCommittee, loading: loadingCommittee}] = useLazyQuery(
+    FETCH_COMMITTEE_QUERY,
+    {
+        variables: { committeeId: sime.committee_id }
+    }
+);
 
   useEffect(() => {
     if (sime.user) {
@@ -92,9 +100,22 @@ export default function ProjectNavigator({ route, navigation }) {
       }
     }
     return () => {
-      console.log("This will be logged on unmount dashboard header pict");
+      console.log("This will be logged on unmount");
     }
   }, [sime.user, organization])
+
+  useEffect(() => {
+    if (sime.committee_id) {
+      loadCommittee();
+      if (committee) {
+        setCommitteeName(committee.getCommittee.name)
+      }
+    }
+    return () => {
+      console.log("This will be logged on unmount");
+    }
+  }, [sime.committee_id, committee])
+
   return (
     <ProjectsStack.Navigator
       screenOptions={{
@@ -159,7 +180,13 @@ export default function ProjectNavigator({ route, navigation }) {
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Information</Text>
           </View>),
       }} />
-      <ProjectsStack.Screen name="Task" component={TaskScreen} options={{ title: sime.roadmap_name }} />
+      <ProjectsStack.Screen name="Task" component={TaskScreen} options={{
+        headerTitle: () =>
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.roadmap_name}</Text>
+            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{committeeName}</Text>
+          </View>
+      }} />
     </ProjectsStack.Navigator>
   );
 }

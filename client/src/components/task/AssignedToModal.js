@@ -6,6 +6,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 import { SimeContext } from '../../context/SimePovider';
 import AssignedToSeparator from './AssignedToSeparator';
+import Colors from '../../constants/Colors';
 
 const AssignedToModal = props => {
     let TouchableCmp = TouchableOpacity;
@@ -36,8 +37,8 @@ const AssignedToModal = props => {
                                             props.priority === "low" ? "#ffc916" : "#e2e2e2",
                             }
                         }}>
-                            <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title="Assigned to" />
+                            <Appbar.Action icon="window-close" onPress={props.closeButton} color="white" />
+                            <Appbar.Content title="Assigned to" color="white" />
                         </Appbar>
                         <View style={styles.formViewStyle}>
                             <AssignedToSeparator
@@ -47,6 +48,8 @@ const AssignedToModal = props => {
                                 assignedTasks={props.assignedTasks}
                                 taskId={props.taskId}
                                 roadmapId={props.roadmapId}
+                                eventId={props.eventId}
+                                projectId={props.projectId}
                                 deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
                                 assignedTasksStateUpdate={props.assignedTasksStateUpdate}
                             />

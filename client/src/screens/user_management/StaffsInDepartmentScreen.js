@@ -102,10 +102,16 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (staff) setStaffVal(staff.getStaff);
+        return () => {
+            console.log("This will be logged on unmount");
+          }
     }, [staff])
 
     useEffect(() => {
         if (committeeByStaff) setCommitteesVal(committeeByStaff.getPersonInChargesByStaff);
+        return () => {
+            console.log("This will be logged on unmount");
+          }
     }, [committeeByStaff])
 
     const closeModal = () => {

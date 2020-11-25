@@ -1311,6 +1311,7 @@ export const FETCH_ASSIGNED_TASKS_QUERY = gql`
     getAssignedTasks(roadmapId: $roadmapId){
       id
       task_id
+      staff_id
       person_in_charge_id
       project_id
       event_id
@@ -1326,6 +1327,7 @@ export const FETCH_ASSIGNED_TASK_QUERY = gql`
     getAssignedTask(assignedId: $assignedId){
       id
       task_id
+      staff_id
       person_in_charge_id
       project_id
       event_id
@@ -1341,6 +1343,23 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYPIC = gql`
     getAssignedTasksByPersonInCharge(personInChargeId: $personInChargeId){
       id
       task_id
+      staff_id
+      person_in_charge_id
+      project_id
+      event_id
+      roadmap_id
+      createdAt
+  }
+  }
+`;
+
+
+export const FETCH_ASSIGNED_TASKS_QUERY_BYSTAFF = gql`
+  query($staffId: ID!){
+    getAssignedTasksByStaff(staffId: $staffId){
+      id
+      task_id
+      staff_id
       person_in_charge_id
       project_id
       event_id
@@ -1352,10 +1371,11 @@ export const FETCH_ASSIGNED_TASKS_QUERY_BYPIC = gql`
 
 
 export const ASSIGNED_TASK_MUTATION = gql`
-  mutation assignedTask($taskId: ID!, $personInChargeId: ID!, $projectId: ID!, $eventId: ID!, $roadmapId: ID!) {
-    assignedTask(taskId: $taskId, personInChargeId: $personInChargeId, projectId: $projectId, eventId: $eventId, roadmapId: $roadmapId) {
+  mutation assignedTask($taskId: ID!, $staffId:ID!, $personInChargeId: ID!, $projectId: ID!, $eventId: ID!, $roadmapId: ID!) {
+    assignedTask(taskId: $taskId, staffId: $staffId, personInChargeId: $personInChargeId, projectId: $projectId, eventId: $eventId, roadmapId: $roadmapId) {
       id
       task_id
+      staff_id
       person_in_charge_id
       project_id
       event_id

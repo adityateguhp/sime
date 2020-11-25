@@ -106,6 +106,9 @@ const FormEditStaffDepartment = props => {
                 organizationId: props.staff.organization_id
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.staff])
 
     const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {

@@ -1,114 +1,163 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import {
     FETCH_ROADMAP_QUERY,
     FETCH_EVENT_QUERY,
-    FETCH_PROJECT_QUERY
+    FETCH_PROJECT_QUERY,
+    FETCH_ASSIGNED_TASKS_QUERY,
+    FETCH_PICS_BYSTAFF_PROJECT_QUERY,
+    FETCH_PICS_QUERY
 } from '../../util/graphql';
 import CreatedByMe from './CreatedByMe'
+import { SimeContext } from '../../context/SimePovider';
 
 const CreatedByMeContainer = props => {
 
-    const [roadmapValue, setRoadmapValue] = useState({
-        id: '',
-        name: '',
-        event_id: '',
-        start_date: '',
-        end_date: '',
-        createdAt: ''
-    });
+    const sime = useContext(SimeContext);
 
-    const [eventValue, setEventValue] = useState({
-        id: '',
-        name: '',
-        project_id: ''
-    });
+    const [roadmapValue, setRoadmapValue] = useState(null);
 
-    const [projectValue, setProjectValue] = useState({
-        id: '',
-        name: '',
-        organization_id: ''
-    });
+    const [eventValue, setEventValue] = useState(null);
 
-    const { data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch } = useQuery(
+    const [projectValue, setProjectValue] = useState(null);
+
+    const [assignedTasksValue, setAssignedTasksValue] = useState([]);
+
+    const [personInChargeValue, setPersonInChargeValue] = useState(null);
+
+    const [personInChargesValue, setPersonInChargesValue] = useState([]);
+
+    const { data: roadmap, error: errorRoadmap, loading: loadingRoadmap, refetch: refetchRoadmap } = useQuery(
         FETCH_ROADMAP_QUERY,
         {
             variables: { roadmapId: props.task.roadmap_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                if (roadmap.getRoadmap === null) {
-                    setEventValue({
-                        id: '',
-                        name: '',
-                        project_id: ''
-                    });
-                } else {
-                    setRoadmapValue({
-                        id: roadmap.getRoadmap.id,
-                        name: roadmap.getRoadmap.name,
-                        event_id: roadmap.getRoadmap.event_id,
-                        start_date: roadmap.getRoadmap.start_date,
-                        end_date: roadmap.getRoadmap.end_date,
-                        createdAt: roadmap.getRoadmap.createdAt
-                    })
-                    loadEventData();
-                    if (event) {
-                        setEventValue({
-                            id: event.getEvent.id,
-                            name: event.getEvent.name,
-                            project_id: event.getEvent.project_id
-                        })
-                        loadProjectData();
-                    }
-                }
+                setRoadmapValue(roadmap.getRoadmap)
             }
         });
 
-    const [loadEventData, { data: event, error: errorEvent, loading: loadingEvent }] = useLazyQuery(
+    const { data: event, error: errorEvent, loading: loadingEvent, refetch: refetchEvent } = useQuery(
         FETCH_EVENT_QUERY,
         {
-            variables: { eventId: roadmapValue.event_id },
-            notifyOnNetworkStatusChange: true
+            variables: { eventId: props.task.event_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setEventValue(event.getEvent)
+            }
         });
 
 
-    const [loadProjectData, { data: project, error: errorProject, loading: loadingProject }] = useLazyQuery(
+    const { data: project, error: errorProject, loading: loadingProject, refetch: refetchProject } = useQuery(
         FETCH_PROJECT_QUERY,
         {
-            variables: { projectId: eventValue.project_id },
-            notifyOnNetworkStatusChange: true
+            variables: { projectId: props.task.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setProjectValue(project.getProject)
+            }
+        });
+
+    const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch: refetchAssignedTasks } = useQuery(
+        FETCH_ASSIGNED_TASKS_QUERY,
+        {
+            variables: { roadmapId: props.task.roadmap_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => { setAssignedTasksValue(assignedTasks.getAssignedTasks) }
+        }
+    );
+
+    const [loadPic, { data: picStaff, error: error1, loading: loading1 }] = useLazyQuery(
+        FETCH_PICS_BYSTAFF_PROJECT_QUERY,
+        {
+            variables: { staffId: props.createdBy, projectId: props.task.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setPersonInChargeValue(picStaff.getPersonInChargesByStaffProject)
+            }
         });
 
     useEffect(() => {
-        if (event) {
-            setEventValue({
-                id: event.getEvent.id,
-                name: event.getEvent.name,
-                project_id: event.getEvent.project_id
-            })
-            loadProjectData();
+        if (sime.user_type !== "Organization") {
+            loadPic();
+            if (picStaff) {
+                setPersonInChargeValue(picStaff.getPersonInChargesByStaffProject)
+            }
         }
-    }, [event])
+    }, [sime.user_type, picStaff])
 
-    useEffect(() => {
-        if (project) {
-            setProjectValue({
-                id: project.getProject.id,
-                name: project.getProject.name,
-                organization_id: project.getProject.organization_id
-            })
+    const { data: personInCharges, error: errorPersonInCharges, loading: loadingPersonInCharges, refetch: refetchPersonInCharges } = useQuery(
+        FETCH_PICS_QUERY,
+        {
+            variables: { projectId: props.task.project_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                personInCharges.getPersonInCharges.sort(function (a, b) {
+                    var textA = a.order;
+                    var textB = b.order;
+
+                    return textA.localeCompare(textB)
+                });
+                setPersonInChargesValue(personInCharges.getPersonInCharges)
+            }
         }
-    }, [project])
+    );
+
+    const deleteAssignedTasksStateUpdate = (e) => {
+        const temp = [...assignedTasksValue];
+        const index = temp.map(function (item) {
+            return item.id
+        }).indexOf(e);
+        temp.splice(index, 1);
+        setAssignedTasksValue(temp);
+    }
+
+    const assignedTasksStateUpdate = (e) => {
+        setAssignedTasksValue([e, ...assignedTasksValue]);
+    }
+
+    console.log(personInChargeValue)
 
     const onRefresh = () => {
-        refetch();
-    }
+        refetchRoadmap();
+        refetchPersonInCharges();
+        refetchAssignedTasks();
+        refetchProject();
+        refetchEvent();
+    };
 
     useEffect(() => {
         onRefresh();
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.onRefresh]);
+
+    if (loadingAssignedTasks) {
+        return null
+    }
+
+    if (loadingEvent) {
+        return null
+    }
+
+    if (loading1) {
+        return null
+    }
+
+    if (loadingPersonInCharges) {
+        return null
+    }
+
+    if (loadingProject) {
+        return null
+    }
+
+    if (loadingRoadmap) {
+        return null
+    }
 
     return (
         <CreatedByMe
@@ -117,10 +166,15 @@ const CreatedByMeContainer = props => {
             roadmap={roadmapValue}
             event={eventValue}
             project={projectValue}
+            personInCharges={personInChargesValue}
+            userPersonInCharge={personInChargeValue}
+            assignedTasks={assignedTasksValue}
             onRefresh={props.onRefresh}
             completedTasksStateUpdate={props.completedTasksStateUpdate}
             deleteTasksStateUpdate={props.deleteTasksStateUpdate}
             updateTasksStateUpdate={props.updateTasksStateUpdate}
+            deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
+            assignedTasksStateUpdate={assignedTasksStateUpdate}
         />
     );
 };

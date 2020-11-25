@@ -83,7 +83,10 @@ const FormPic = props => {
             const pos = props.positions.filter((e) => e.core === false);
             setPositionsFiltered(pos)
         }
-    },[props.openForm])
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.openForm])
 
     let checkStaffs = [];
     props.personInCharges.map((personInCharge) =>
@@ -213,7 +216,7 @@ const FormPic = props => {
                                     {errors.staff_error ? <Text style={styles.error}>{errors.staff_error}</Text> : null}
                                 </View>
                                 <View>
-                                    {sime.order === '6' ||sime.order === '7' ?
+                                    {sime.order === '6' || sime.order === '7' ?
                                         <Dropdown
                                             useNativeDriver={true}
                                             label='Committee'

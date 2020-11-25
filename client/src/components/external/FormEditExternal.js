@@ -107,6 +107,9 @@ const FormEditExternal = props => {
                 picture: props.external.picture
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.external])
 
     const [updateExternal, { loading }] = useMutation(UPDATE_EXTERNAL_MUTATION, {

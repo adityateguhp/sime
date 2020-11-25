@@ -161,7 +161,7 @@ export default function MainNavigator() {
   useEffect(() => {
     loginCheck()
     return () => {
-      console.log("This will be logged on unmount loginCheck");
+      console.log("This will be logged on unmount");
     }
   }, [isLogin, user, logout])
 

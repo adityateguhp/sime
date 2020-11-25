@@ -94,14 +94,23 @@ const DepartmentsScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (department) setDepartmentVal(department.getDepartment);
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [department])
 
     useEffect(() => {
         if (staffByDepartment) setStaffsVal(staffByDepartment.getStaffsByDepartment);
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [staffByDepartment])
 
     useEffect(() => {
         if (committeesByorganization) setCommitteesVal(committeesByorganization.getPersonInChargesByOrganization);
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [committeesByorganization])
 
     const closeModal = () => {

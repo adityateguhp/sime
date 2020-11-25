@@ -67,7 +67,7 @@ const DrawerContentStaff = props => {
             }
         }
         return () => {
-            console.log("This will be logged on unmount drawer");
+            console.log("This will be logged on unmount");
         }
     }, [sime.user, staff])
 
@@ -110,7 +110,7 @@ const DrawerContentStaff = props => {
                         props.navigation.navigate('Staff Profile')
                     }}
                 />
-                 <DrawerItem
+                <DrawerItem
                     icon={({ color, size }) => (
                         <Icon name="office-building" color={color} size={size} />
                     )}

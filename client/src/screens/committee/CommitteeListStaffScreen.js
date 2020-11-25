@@ -130,6 +130,9 @@ const CommitteeListStaffScreen = ({ navigation }) => {
             }, []);
             setPersonInChargesValue(dataSource)
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [personInChargesValueTemp, personInCharges, setPersonInChargesValue])
 
 
@@ -277,42 +280,39 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                     || sime.order === '3'
                     || sime.order === '6'
                     || sime.order === '7' ?
-                    <Provider theme={theme}>
-                        <FABbutton Icon="plus" onPress={openForm} />
-                        <FormPic
-                            closeModalForm={closeModalForm}
-                            visibleForm={visibleForm}
-                            closeButton={closeModalForm}
-                            staffs={staffsValue}
-                            committees={committeesValue}
-                            positions={positionsValue}
-                            personInCharges={personInChargesValueTemp}
-                            addPersonInChargesStateUpdate={addPersonInChargesStateUpdate}
-                        />
-                        <Snackbar
-                            visible={visibleAdd}
-                            onDismiss={onDismissSnackBarAdd}
-                            action={{
-                                label: 'dismiss',
-                                onPress: () => {
-                                    onDismissSnackBarAdd();
-                                },
-                            }}>
-                            Person in Charge added!
+                    <FABbutton Icon="plus" onPress={openForm} /> : null}
+                <FormPic
+                    closeModalForm={closeModalForm}
+                    visibleForm={visibleForm}
+                    closeButton={closeModalForm}
+                    staffs={staffsValue}
+                    committees={committeesValue}
+                    positions={positionsValue}
+                    personInCharges={personInChargesValueTemp}
+                    addPersonInChargesStateUpdate={addPersonInChargesStateUpdate}
+                />
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Person in Charge added!
                         </Snackbar>
-                        <Snackbar
-                            visible={visibleDelete}
-                            onDismiss={onDismissSnackBarDelete}
-                            action={{
-                                label: 'dismiss',
-                                onPress: () => {
-                                    onDismissSnackBarDelete();
-                                },
-                            }}>
-                            Person in Charge deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Person in Charge deleted!
                         </Snackbar>
-                    </Provider>
-                    : null}
             </ScrollView>
         );
     }
@@ -361,57 +361,54 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                 || sime.order === '3'
                 || sime.order === '6'
                 || sime.order === '7' ?
-                <Provider theme={theme}>
-                    <FABbutton Icon="plus" onPress={openForm} />
-                    <FormPic
-                        openForm={openForm}
-                        closeModalForm={closeModalForm}
-                        visibleForm={visibleForm}
-                        closeButton={closeModalForm}
-                        staffs={staffsValue}
-                        committees={committeesValue}
-                        positions={positionsValue}
-                        personInCharges={personInChargesValueTemp}
-                        addPersonInChargesStateUpdate={addPersonInChargesStateUpdate}
-                    />
-                    <Snackbar
-                        visible={visibleAdd}
-                        onDismiss={onDismissSnackBarAdd}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarAdd();
-                            },
-                        }}
-                    >
-                        Person in Charge added!
+                <FABbutton Icon="plus" onPress={openForm} /> : null}
+            <FormPic
+                openForm={openForm}
+                closeModalForm={closeModalForm}
+                visibleForm={visibleForm}
+                closeButton={closeModalForm}
+                staffs={staffsValue}
+                committees={committeesValue}
+                positions={positionsValue}
+                personInCharges={personInChargesValueTemp}
+                addPersonInChargesStateUpdate={addPersonInChargesStateUpdate}
+            />
+            <Snackbar
+                visible={visibleAdd}
+                onDismiss={onDismissSnackBarAdd}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarAdd();
+                    },
+                }}
+            >
+                Person in Charge added!
                         </Snackbar>
-                    <Snackbar
-                        visible={visibleUpdate}
-                        onDismiss={onDismissSnackBarUpdate}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarUpdate();
-                            },
-                        }}
-                    >
-                        Person in Charge updated!
+            <Snackbar
+                visible={visibleUpdate}
+                onDismiss={onDismissSnackBarUpdate}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarUpdate();
+                    },
+                }}
+            >
+                Person in Charge updated!
                         </Snackbar>
-                    <Snackbar
-                        visible={visibleDelete}
-                        onDismiss={onDismissSnackBarDelete}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarDelete();
-                            },
-                        }}
-                    >
-                        Person in Charge deleted!
+            <Snackbar
+                visible={visibleDelete}
+                onDismiss={onDismissSnackBarDelete}
+                action={{
+                    label: 'dismiss',
+                    onPress: () => {
+                        onDismissSnackBarDelete();
+                    },
+                }}
+            >
+                Person in Charge deleted!
                         </Snackbar>
-                </Provider>
-                : null}
         </Provider>
     );
 }

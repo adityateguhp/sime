@@ -64,7 +64,7 @@ const DrawerContentOrganization = props => {
             }
         }
         return () => {
-            console.log("This will be logged on unmount drawer");
+            console.log("This will be logged on unmount");
         }
     }, [sime.user, organization])
 
@@ -112,7 +112,7 @@ const DrawerContentOrganization = props => {
                     icon={({ color, size }) => (
                         <Icon name="account-group-outline" color={color} size={size} />
                     )}
-                    label="Users Management"
+                    label="User Management"
                     onPress={() => {
                         props.navigation.navigate('Users Management')
                     }}
@@ -121,7 +121,7 @@ const DrawerContentOrganization = props => {
                     icon={({ color, size }) => (
                         <Icon name="account-multiple-outline" color={color} size={size} />
                     )}
-                    label="Committees Management"
+                    label="Committee"
                     onPress={() => {
                         props.navigation.navigate('Committees Management')
                     }}

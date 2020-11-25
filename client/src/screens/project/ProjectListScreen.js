@@ -72,6 +72,9 @@ const ProjectListScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (project) setProjectVal(project.getProject);
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [project])
 
     const closeModal = () => {

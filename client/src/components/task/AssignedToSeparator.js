@@ -24,6 +24,8 @@ const AssignedToSeparator = props => {
                     assignedTasks={props.assignedTasks}
                     taskId={props.taskId}
                     roadmapId={props.roadmapId}
+                    eventId={props.eventId}
+                    projectId={props.projectId}
                     deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
                     assignedTasksStateUpdate={props.assignedTasksStateUpdate}
                 />

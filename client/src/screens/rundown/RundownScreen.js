@@ -108,11 +108,17 @@ const RundownScreen = ({ navigation }) => {
       }, []);
       setRundownsVal(dataSource)
     }
+    return () => {
+      console.log("This will be logged on unmount");
+    }
   }, [rundownsValTemp, rundowns, setRundownsVal])
 
   useEffect(() => {
     if (rundown) {
       setRundownVal(rundown.getRundown)
+    }
+    return () => {
+      console.log("This will be logged on unmount");
     }
   }, [rundown])
 

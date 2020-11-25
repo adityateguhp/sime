@@ -7,7 +7,8 @@ import { SimeContext } from '../../context/SimePovider';
 import AssignedToMeContainer from '../../components/my_task/AssignedToMeContainer';
 import { theme } from '../../constants/Theme';
 import {
-    FETCH_PICS_BYSTAFF_QUERY
+    FETCH_PICS_BYSTAFF_QUERY,
+    FETCH_ASSIGNED_TASKS_QUERY_BYSTAFF
 } from '../../util/graphql';
 
 
@@ -27,21 +28,30 @@ const AssignedToMeScreen = ({ navigation }) => {
 
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
-    const [picsStaff, setPicsStaff] = useState([]);
+    const [assignedStaff, setAssignedStaff] = useState([]);
 
-    const { data: picsByStaff, error: error1, loading: loading1, refetch: refetchPicStaff } = useQuery(
-        FETCH_PICS_BYSTAFF_QUERY,
+    const { data: assignedByStaff, error: error1, loading: loading1, refetch: refetchAssignedStaff } = useQuery(
+        FETCH_ASSIGNED_TASKS_QUERY_BYSTAFF,
         {
             variables: { staffId: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                setPicsStaff(picsByStaff.getPersonInChargesByStaff)
+                setAssignedStaff(assignedByStaff.getAssignedTasksByStaff)
             }
         });
 
+        const deleteStateUpdate = (e) => {
+            const temp = [...assignedStaff];
+            const index = temp.map(function (item) {
+                return item.task_id
+            }).indexOf(e);
+            temp.splice(index, 1);
+            setAssignedStaff(temp);
+        }
+
 
     const onRefresh = () => {
-        refetchPicStaff();
+        refetchAssignedStaff();
     };
 
     useEffect(() => {
@@ -67,12 +77,16 @@ const AssignedToMeScreen = ({ navigation }) => {
                         refreshing={loading1}
                         onRefresh={onRefresh} />
                 }
-                data={picsStaff}
+                data={assignedStaff}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
                     <AssignedToMeContainer
-                        personInChargeId={itemData.item.id}
+                        taskId={itemData.item.task_id}
                         projectId={itemData.item.project_id}
+                        eventId={itemData.item.event_id}
+                        roadmapId={itemData.item.roadmap_id}
+                        personInChargeId={itemData.item.person_in_charge_id}
+                        deleteStateUpdate={deleteStateUpdate}
                         onRefresh={onRefresh}
                         onToggleSnackBarDelete={onToggleSnackBarDelete}
                         onToggleSnackBarUpdate={onToggleSnackBarUpdate}

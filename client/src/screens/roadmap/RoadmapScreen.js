@@ -111,6 +111,9 @@ const RoadmapScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (roadmap) setRoadmapVal(roadmap.getRoadmap);
+        return () => {
+            console.log("This will be logged on unmount");
+          }
     }, [roadmap])
 
     useEffect(() => {
@@ -129,6 +132,9 @@ const RoadmapScreen = ({ route, navigation }) => {
             }, []);
             setCommitteesFilter(dataSource)
         }
+        return () => {
+            console.log("This will be logged on unmount");
+          }
     }, [committeesFilterTemp, personInCharges, setCommitteesFilter])
 
 
@@ -281,7 +287,13 @@ const RoadmapScreen = ({ route, navigation }) => {
                 }
             >
                 <Text>No roadmaps found, let's add roadmaps!</Text>
-                <FABbutton Icon="plus" onPress={openForm} />
+                {  sime.user_type === "Organization"
+                    || sime.order === '1'
+                    || sime.order === '2'
+                    || sime.order === '3'
+                    || sime.order === '6'
+                    || sime.order === '7' ?
+                    <FABbutton Icon="plus" onPress={openForm} /> : null}
                 <FormRoadmap
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -301,7 +313,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                         },
                     }}>
                     Roadmap added!
-            </Snackbar>
+                        </Snackbar>
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
@@ -312,7 +324,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                         },
                     }}>
                     Roadmap deleted!
-            </Snackbar>
+                        </Snackbar>
             </ScrollView>
         );
     }
@@ -331,6 +343,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                 renderItem={itemData => (
                     <RoadmapCard
                         roadmapId={itemData.item.id}
+                        committeeId={itemData.item.committee_id}
                         name={itemData.item.name}
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
@@ -350,7 +363,13 @@ const RoadmapScreen = ({ route, navigation }) => {
                 openFormEdit={openFormEdit}
                 deleteHandler={deleteHandler}
             />
-            <FABbutton Icon="plus" onPress={openForm} />
+            {  sime.user_type === "Organization"
+                || sime.order === '1'
+                || sime.order === '2'
+                || sime.order === '3'
+                || sime.order === '6'
+                || sime.order === '7' ?
+                <FABbutton Icon="plus" onPress={openForm} /> : null}
             <FormRoadmap
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
@@ -382,7 +401,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                     },
                 }}>
                 Roadmap added!
-            </Snackbar>
+                    </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
@@ -393,7 +412,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                     },
                 }}>
                 Roadmap updated!
-            </Snackbar>
+                    </Snackbar>
             <Snackbar
                 visible={visibleDelete}
                 onDismiss={onDismissSnackBarDelete}
@@ -404,7 +423,7 @@ const RoadmapScreen = ({ route, navigation }) => {
                     },
                 }}>
                 Roadmap deleted!
-            </Snackbar>
+                    </Snackbar>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );

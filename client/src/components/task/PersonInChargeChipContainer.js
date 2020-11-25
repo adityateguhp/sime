@@ -36,6 +36,8 @@ const PersonInChargeChipContainer = props => {
                 staffId={personInCharge.getPersonInCharge.staff_id}
                 assignedId={props.assignedId}
                 taskId={props.taskId}
+                userPersonInCharge={props.userPersonInCharge}
+                committeeId={props.committeeId}
                 deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
             />
         </View>

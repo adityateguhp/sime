@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Alert } from 'react-native';
 import { Subheading, Checkbox, Caption, Provider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,11 +9,13 @@ import {
     FETCH_TASKS_QUERY,
     DELETE_TASK,
     COMPLETED_TASK,
-    DELETE_ASSIGNED_TASK_BYTASK
+    DELETE_ASSIGNED_TASK_BYTASK,
+    FETCH_TASKS_CREATEDBY_QUERY
 } from '../../util/graphql';
 import { theme } from '../../constants/Theme';
 import TaskModal from './TaskModal';
 import LoadingModal from '../common/LoadingModal';
+import { SimeContext } from '../../context/SimePovider';
 
 const Task = props => {
 
@@ -23,6 +25,8 @@ const Task = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
+    const sime = useContext(SimeContext);
+
     const [visible, setVisible] = useState(false);
     const [due_date, setDue_date] = useState('');
     const [completed_date, setCompleted_date] = useState('');
@@ -31,6 +35,38 @@ const Task = props => {
         completed: props.task.completed,
         completed_date: props.task.completed_date
     });
+    const [committeeId, setCommitteId] = useState(' ');
+    const [userPersonInCharge, setUserPersonInCharge] = useState({
+        id: '',
+        order: '',
+        committee_id: ''
+    })
+
+    useEffect(() => {
+        if (props.committee) {
+            setCommitteId(props.committee.id)
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.committee])
+
+    useEffect(() => {
+        if (props.userPersonInCharge) {
+            setUserPersonInCharge({
+                id: props.userPersonInCharge.id,
+                order: props.userPersonInCharge.order,
+                committee_id: props.userPersonInCharge.committee_id
+            })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.userPersonInCharge])
+
+    const filterAssignedTask = props.assignedTasks.filter((e) => e.task_id === props.task.id)
+
+    const checkAssignedTask = filterAssignedTask.filter((e) => e.person_in_charge_id === userPersonInCharge.id)
 
     const completeTaskScreen = (proxy, result) => {
         const data = proxy.readQuery({
@@ -45,9 +81,19 @@ const Task = props => {
         props.completedTasksStateUpdate(result.data.completedTask);
     }
 
+    const completeCreatedByMeScreen = (proxy, result) => {
+        const data = proxy.readQuery({
+            query: FETCH_TASKS_CREATEDBY_QUERY,
+            variables: { createdBy: sime.user.id }
+        });
+        props.completedTasksStateUpdate(result.data.completedTask);
+        proxy.writeQuery({ query: FETCH_TASKS_CREATEDBY_QUERY, data,  variables: { createdBy: sime.user.id } });
+    }
+
+
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
-            props.taskScreen ? completeTaskScreen(proxy, result) : completeMyTaskScreen(result);
+            props.taskScreen ? completeTaskScreen(proxy, result) : props.createdByMe? completeCreatedByMeScreen(proxy, result) : completeMyTaskScreen(result);
         },
         onError(err) {
             console.log(err)
@@ -70,13 +116,24 @@ const Task = props => {
     }
 
     const deleteMyTaskScreen = () => {
-        deleteAssignedTaskByTask({ variables: { taskId: props.task.id }, update() { props.setDeleteCalled(false) } });
+        deleteAssignedTaskByTask({ variables: { taskId: props.task.id } });
         props.deleteTasksStateUpdate(props.task.id);
+    }
+
+    const deleteCreatedByMeScreen = (proxy) => {
+        const data = proxy.readQuery({
+            query: FETCH_TASKS_CREATEDBY_QUERY,
+             variables: { createdBy: sime.user.id }
+        });
+        props.tasks = props.tasks.filter((p) => p.id !== props.task.id);
+        props.deleteTasksStateUpdate(props.task.id);
+        deleteAssignedTaskByTask({ variables: { taskId: props.task.id } });
+        proxy.writeQuery({ query: FETCH_TASKS_CREATEDBY_QUERY, data,  variables: { createdBy: sime.user.id } });
     }
 
     const [deleteTask, { loading: loadingDelete }] = useMutation(DELETE_TASK, {
         update(proxy) {
-            props.taskScreen ? deleteTaskScreen(proxy) : deleteMyTaskScreen();
+            props.taskScreen ? deleteTaskScreen(proxy) : props.createdByMe? deleteCreatedByMeScreen(proxy) : deleteMyTaskScreen();
         },
         variables: {
             taskId: props.task.id
@@ -142,11 +199,17 @@ const Task = props => {
                 setDue_date(durationAsString(props.task.due_date, nowDate));
             }
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.task.due_date])
 
     useEffect(() => {
         if (props.task.completed_date !== '') {
             setCompleted_date(moment(props.task.completed_date).format('ddd, MMM D YYYY h:mm a'))
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.task.completed_date])
 
@@ -162,11 +225,26 @@ const Task = props => {
                     }
                 }}>
                     <View style={styles.checkTask}>
-                        <Checkbox
-                            onPress={onPressCheck}
-                            status={props.task.completed ? 'checked' : 'unchecked'}
-                            color="white"
-                            uncheckedColor="white" />
+                        {
+                            sime.user_type === "Organization"
+                                || userPersonInCharge.order === '1'
+                                || userPersonInCharge.order === '2'
+                                || userPersonInCharge.order === '3'
+                                || userPersonInCharge.order === '6' && userPersonInCharge.committee_id === committeeId
+                                || userPersonInCharge.order === '7' && userPersonInCharge.committee_id === committeeId
+                                || checkAssignedTask.length > 0 ?
+                                <Checkbox
+                                    onPress={onPressCheck}
+                                    status={props.task.completed ? 'checked' : 'unchecked'}
+                                    color="white"
+                                    uncheckedColor="white" />
+                                :
+                                <Checkbox
+                                    disabled={true}
+                                    status={props.task.completed ? 'checked' : 'unchecked'}
+                                    color="white"
+                                    uncheckedColor="white" />
+                        }
                     </View>
                     <TouchableCmp onPress={openModal}>
                         <View style={styles.task}>
@@ -185,7 +263,7 @@ const Task = props => {
                             <View style={styles.taskSub}>
                                 <View style={{ ...styles.people, ...{ opacity: props.task.completed ? 0.6 : 1 } }}>
                                     <Icon name="account-multiple" size={16} color="grey" />
-                                    <Caption style={{ marginLeft: 3 }}>{props.assignedTasks.length}</Caption>
+                                    <Caption style={{ marginLeft: 3 }}>{filterAssignedTask.length}</Caption>
                                 </View>
                             </View>
                         </View>
@@ -197,10 +275,14 @@ const Task = props => {
                 closeButton={closeModal}
                 taskId={props.task.id}
                 roadmapId={props.task.roadmap_id}
+                eventId={props.task.event_id}
+                projectId={props.task.project_id}
+                committeeId={committeeId}
                 name={props.task.name}
-                project_name={props.project_name}
                 assignedTasks={props.assignedTasks}
+                checkAssignedTask={checkAssignedTask}
                 personInCharges={props.personInCharges}
+                userPersonInCharge={userPersonInCharge}
                 committee={props.committee}
                 roadmap={props.roadmap}
                 createdBy={props.task.createdBy}

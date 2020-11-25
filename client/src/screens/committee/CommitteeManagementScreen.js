@@ -77,13 +77,19 @@ const CommitteeManagementScreen = ({ navigation }) => {
     if (committee) {
       setCommitteeVal(committee.getCommittee)
     }
+    return () => {
+      console.log("This will be logged on unmount");
+    }
   }, [committee])
 
   useEffect(() => {
     if (picInCommittee) {
-        setPicInCommittee(picInCommittee.getPersonInChargesInCommittee)
+      setPicInCommittee(picInCommittee.getPersonInChargesInCommittee)
     }
-}, [picInCommittee])
+    return () => {
+      console.log("This will be logged on unmount");
+    }
+  }, [picInCommittee])
 
 
   const [visible, setVisible] = useState(false);

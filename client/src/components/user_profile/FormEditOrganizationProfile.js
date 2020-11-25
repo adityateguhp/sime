@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
-import {Appbar, Portal, Text, Avatar } from 'react-native-paper';
+import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-picker';
@@ -98,17 +98,20 @@ const FormEditOrganizationProfile = props => {
                 picture: props.organization.picture,
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.organization])
 
     const [updateOrganization, { loading }] = useMutation(UPDATE_ORGANIZATION_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ORGANIZATION_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: { organizationId: sime.user.id }
             });
             props.updateOrganizationStateUpdate(result.data.updateOrganization);
             sime.setUser(result.data.updateOrganization)
-            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: {organizationId: sime.user.id}});
+            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: { organizationId: sime.user.id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -192,7 +195,7 @@ const FormEditOrganizationProfile = props => {
                                             errorText={errors.organization_name_error}
                                         />
                                     </View>
-                                   
+
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}

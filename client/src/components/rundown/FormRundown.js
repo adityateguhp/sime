@@ -107,7 +107,7 @@ const FormRundown = props => {
 
     const onChangeDate = (key, val, err) => {
         const year = (val.getFullYear() < 10 ? '0' : '') + val.getFullYear();
-        const mes = ((val.getMonth()+1) < 10 ? '0' : '') + (val.getMonth()+1);
+        const mes = ((val.getMonth() + 1) < 10 ? '0' : '') + (val.getMonth() + 1);
         const dia = (val.getDate() < 10 ? '0' : '') + val.getDate();;
         const date = year + "-" + mes + "-" + dia;
         setValues({ ...values, [key]: date, start_time: '', end_time: '' });
@@ -121,6 +121,9 @@ const FormRundown = props => {
                 start_date: props.event.start_date,
                 end_date: props.event.end_date,
             })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.event])
 

@@ -55,11 +55,11 @@ const AssignedToPicList = props => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: { roadmapId: sime.roadmap_id }
+                variables: { roadmapId: props.roadmapId }
             });
             data.getAssignedTasks = data.getAssignedTasks.filter((e) => e.id !== assignedCommitteeId);
             props.deleteAssignedTasksStateUpdate(assignedCommitteeId)
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: sime.roadmap_id } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
         },
         variables: {
             assignedId: assignedCommitteeId
@@ -70,18 +70,19 @@ const AssignedToPicList = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ASSIGNED_TASKS_QUERY,
-                variables: { roadmapId: sime.roadmap_id }
+                variables: { roadmapId: props.roadmapId }
             });
             data.getAssignedTasks = [result.data.assignedTask, ...data.getAssignedTasks];
             props.assignedTasksStateUpdate(result.data.assignedTask);
-            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: sime.roadmap_id } });
+            proxy.writeQuery({ query: FETCH_ASSIGNED_TASKS_QUERY, data, variables: { roadmapId: props.roadmapId } });
         },
         variables: {
             taskId: props.taskId,
+            staffId: props.staff_id,
             personInChargeId: props.person_in_charge_id,
-            projectId: sime.project_id,
-            eventId: sime.event_id,
-            roadmapId: sime.roadmap_id,
+            projectId: props.projectId,
+            eventId: props.eventId,
+            roadmapId: props.roadmapId,
         }
     });
 

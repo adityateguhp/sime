@@ -15,6 +15,7 @@ import Colors from '../../constants/Colors';
 import PersonInChargeChipContainer from './PersonInChargeChipContainer'
 import AssignedToModal from './AssignedToModal'
 import LoadingModal from '../common/LoadingModal';
+import { SimeContext } from '../../context/SimePovider';
 
 const TaskModal = props => {
     let TouchableCmp = TouchableOpacity;
@@ -22,6 +23,8 @@ const TaskModal = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+
+    const sime = useContext(SimeContext);
 
     const [visible, setVisible] = useState(false);
 
@@ -71,6 +74,9 @@ const TaskModal = props => {
                 priority: props.task.priority
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.task])
 
     useEffect(() => {
@@ -79,6 +85,9 @@ const TaskModal = props => {
                 start_date: props.roadmap.start_date,
                 end_date: props.roadmap.end_date,
             })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.roadmap])
 
@@ -107,6 +116,11 @@ const TaskModal = props => {
     useEffect(() => {
         if (organization) {
             setCreatedByName(organization.getOrganization.name)
+        } else {
+            setCreatedByName('-')
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [organization])
 
@@ -208,10 +222,39 @@ const TaskModal = props => {
                                             values.priority === "low" ? "#ffc916" : "#e2e2e2",
                             }
                         }}>
-                            <Appbar.Action icon="window-close" onPress={onSubmit} />
+                            {
+                                sime.user_type === "Organization"
+                                    || props.userPersonInCharge.order === '1'
+                                    || props.userPersonInCharge.order === '2'
+                                    || props.userPersonInCharge.order === '3'
+                                    || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                    || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId
+                                    || props.checkAssignedTask.length > 0 ?
+                                    <Appbar.Action icon="window-close" onPress={onSubmit} color="white" />
+                                    :
+                                    <Appbar.Action icon="window-close" onPress={() => { props.closeButton() }} color="white" />
+                            }
                             <Appbar.Content />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
-                            <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} onPress={() => onCheck()} />
+                            {
+                                sime.user_type === "Organization"
+                                    || props.userPersonInCharge.order === '1'
+                                    || props.userPersonInCharge.order === '2'
+                                    || props.userPersonInCharge.order === '3'
+                                    || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                    || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
+                                    <Appbar.Action icon="delete" onPress={props.deleteButton} color="white" /> : null}
+                            {
+                                sime.user_type === "Organization"
+                                    || props.userPersonInCharge.order === '1'
+                                    || props.userPersonInCharge.order === '2'
+                                    || props.userPersonInCharge.order === '3'
+                                    || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                    || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId
+                                    || props.checkAssignedTask.length > 0 ?
+                                    <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} color="white" onPress={() => onCheck()} />
+                                    :
+                                    <Appbar.Action icon={values.completed ? "checkbox-marked" : "checkbox-blank-outline"} color="white" disabled={true} />
+                            }
                         </Appbar>
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
@@ -219,27 +262,39 @@ const TaskModal = props => {
                         >
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
-                                    {taskNameInput ?
-                                        <View>
-                                            <TextInput
-                                                style={styles.input}
-                                                label='Task Name'
-                                                value={values.name}
-                                                onChangeText={(val) => onChange('name', val, 'task_name_error')}
-                                                error={errors.task_name_error ? true : false}
-                                                errorText={errors.task_name_error}
-                                                onBlur={onCloseTaskName}
-                                            />
-                                        </View>
-                                        :
-                                        <View style={styles.containerText}>
-                                            <TouchableCmp onPress={onClickTaskName}>
-                                                <View style={styles.edit}>
-                                                    <Title>{values.name}</Title>
-                                                    <Icon name="pencil" size={15} color='grey' style={{ marginLeft: 10, opacity: 0.5 }} />
+                                    {
+                                        sime.user_type === "Organization"
+                                            || props.userPersonInCharge.order === '1'
+                                            || props.userPersonInCharge.order === '2'
+                                            || props.userPersonInCharge.order === '3'
+                                            || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                            || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
+                                            taskNameInput ?
+                                                <View>
+                                                    <TextInput
+                                                        style={styles.input}
+                                                        label='Task Name'
+                                                        value={values.name}
+                                                        onChangeText={(val) => onChange('name', val, 'task_name_error')}
+                                                        error={errors.task_name_error ? true : false}
+                                                        errorText={errors.task_name_error}
+                                                        onBlur={onCloseTaskName}
+                                                    />
                                                 </View>
-                                            </TouchableCmp>
-                                        </View>}
+                                                :
+                                                <View style={styles.containerText}>
+                                                    <TouchableCmp onPress={onClickTaskName}>
+                                                        <View style={styles.edit}>
+                                                            <Title>{values.name}</Title>
+                                                            <Icon name="pencil" size={15} color='grey' style={{ marginLeft: 10, opacity: 0.5 }} />
+                                                        </View>
+                                                    </TouchableCmp>
+                                                </View>
+                                            :
+                                            <View style={styles.containerText}>
+                                                <Title>{values.name}</Title>
+                                            </View>
+                                    }
                                     <View style={styles.createdByView}>
                                         <Caption>Created by </Caption>
                                         <Caption style={{ fontWeight: "bold" }}>{createdByName + " "}</Caption>
@@ -248,29 +303,45 @@ const TaskModal = props => {
                                     <View style={styles.completedDateView}>
                                         {values.completed ? <Caption style={{ opacity: 0.6 }}>{"Completed on " + moment(values.completed_date).format('MMM D YYYY h:mm a')}</Caption> : null}
                                     </View>
-                                    {taskDescriptionInput ?
-                                        <View>
-                                            <TextInput
-                                                style={styles.input}
-                                                label='Description'
-                                                value={values.description}
-                                                onChangeText={(val) => onChange('description', val, '')}
-                                                onBlur={onCloseTaskDescription}
-                                                multiline={true}
-                                            />
-                                        </View>
-                                        :
-                                        <View>
-                                            <View style={styles.containerText}>
-                                                <TouchableCmp onPress={onClickTaskDescription}>
-                                                    <View style={styles.descriptionView}>
-                                                        {values.description ? <Paragraph style={{ fontSize: 15 }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: 15 }}>Add description</Paragraph>}
-                                                        <Icon name="pencil" size={15} color='grey' style={{ marginLeft: 10, marginTop: 5, opacity: 0.5 }} />
+                                    {
+                                        sime.user_type === "Organization"
+                                            || props.userPersonInCharge.order === '1'
+                                            || props.userPersonInCharge.order === '2'
+                                            || props.userPersonInCharge.order === '3'
+                                            || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                            || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
+                                            taskDescriptionInput ?
+                                                <View>
+                                                    <TextInput
+                                                        style={styles.input}
+                                                        label='Description'
+                                                        value={values.description}
+                                                        onChangeText={(val) => onChange('description', val, '')}
+                                                        onBlur={onCloseTaskDescription}
+                                                        multiline={true}
+                                                    />
+                                                </View>
+                                                :
+                                                <View>
+                                                    <View style={styles.containerText}>
+                                                        <TouchableCmp onPress={onClickTaskDescription}>
+                                                            <View style={styles.descriptionView}>
+                                                                {values.description ? <Paragraph style={{ fontSize: 15 }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: 15 }}>Add description</Paragraph>}
+                                                                <Icon name="pencil" size={15} color='grey' style={{ marginLeft: 10, marginTop: 5, opacity: 0.5 }} />
+                                                            </View>
+                                                        </TouchableCmp>
                                                     </View>
-                                                </TouchableCmp>
+                                                    <Divider />
+                                                </View>
+                                            :
+                                            <View>
+                                                <View style={styles.containerText}>
+                                                    <View style={styles.descriptionView}>
+                                                        {values.description ? <Paragraph style={{ fontSize: 15 }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: 15 }}>No description</Paragraph>}
+                                                    </View>
+                                                </View>
+                                                <Divider />
                                             </View>
-                                            <Divider />
-                                        </View>
                                     }
                                     <View style={styles.dateInputContainer}>
                                         <View style={styles.label}>
@@ -279,26 +350,44 @@ const TaskModal = props => {
                                                 Due date
                                             </Text>
                                         </View>
-                                        <View style={styles.buttonContainer}>
-                                            <Button
-                                                style={styles.button}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={showDateTimepicker}
-                                                mode="outlined"
-                                            >
-                                                {values.due_date ? due_date : 'SELECT DUE DATE'}
-                                            </Button>
-                                            {values.due_date ?
-                                                <Button
-                                                    style={{ marginRight: 3 }}
-                                                    icon="close"
-                                                    labelStyle={{ color: Colors.primaryColor }}
-                                                    onPress={() => onChangeDateTime('due_date', '', '')}
-                                                    mode="outlined"
-                                                    compact={true}
-                                                >
-                                                </Button> : null}
-                                        </View>
+                                        {
+                                            sime.user_type === "Organization"
+                                                || props.userPersonInCharge.order === '1'
+                                                || props.userPersonInCharge.order === '2'
+                                                || props.userPersonInCharge.order === '3'
+                                                || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                                || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
+                                                <View style={styles.buttonContainer}>
+                                                    <Button
+                                                        style={styles.button}
+                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        onPress={showDateTimepicker}
+                                                        mode="outlined"
+                                                    >
+                                                        {values.due_date ? due_date : 'SELECT DUE DATE'}
+                                                    </Button>
+                                                    {values.due_date ?
+                                                        <Button
+                                                            style={{ marginRight: 3 }}
+                                                            icon="close"
+                                                            labelStyle={{ color: Colors.primaryColor }}
+                                                            onPress={() => onChangeDateTime('due_date', '', '')}
+                                                            mode="outlined"
+                                                            compact={true}
+                                                        >
+                                                        </Button> : null}
+                                                </View>
+                                                :
+                                                <View style={styles.buttonContainer}>
+                                                    <Button
+                                                        style={styles.button}
+                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        mode="outlined"
+                                                    >
+                                                        {values.due_date ? due_date : 'NO DUE DATE'}
+                                                    </Button>
+                                                </View>
+                                        }
                                     </View>
                                     <View style={styles.inputContainer}>
                                         <View style={styles.label}>
@@ -307,47 +396,72 @@ const TaskModal = props => {
                                                 Priority
                                             </Text>
                                         </View>
-                                        <View style={styles.buttonContainer}>
-                                            <Button
-                                                style={{
-                                                    ...styles.button, ...{
-                                                        backgroundColor:
-                                                            values.priority === "low" ? "#ffc916" : "white",
-                                                    }
-                                                }}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={values.priority === 'low' ? () => onChange('priority', '', '') : () => onChange('priority', 'low', '')}
-                                                mode="outlined"
-                                            >
-                                                low
+                                        {
+                                            sime.user_type === "Organization"
+                                                || props.userPersonInCharge.order === '1'
+                                                || props.userPersonInCharge.order === '2'
+                                                || props.userPersonInCharge.order === '3'
+                                                || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                                || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
+                                                <View style={styles.buttonContainer}>
+                                                    <Button
+                                                        style={{
+                                                            ...styles.button, ...{
+                                                                backgroundColor:
+                                                                    values.priority === "low" ? "#ffc916" : "white",
+                                                            }
+                                                        }}
+                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        onPress={values.priority === 'low' ? () => onChange('priority', '', '') : () => onChange('priority', 'low', '')}
+                                                        mode="outlined"
+                                                    >
+                                                        low
                                             </Button>
-                                            <Button
-                                                style={{
-                                                    ...styles.button, ...{
-                                                        backgroundColor:
-                                                            values.priority === "medium" ? "#a3cd3b" : "white",
-                                                    }
-                                                }}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={values.priority === 'medium' ? () => onChange('priority', '', '') : () => onChange('priority', 'medium', '')}
-                                                mode="outlined"
-                                            >
-                                                medium
+                                                    <Button
+                                                        style={{
+                                                            ...styles.button, ...{
+                                                                backgroundColor:
+                                                                    values.priority === "medium" ? "#a3cd3b" : "white",
+                                                            }
+                                                        }}
+                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        onPress={values.priority === 'medium' ? () => onChange('priority', '', '') : () => onChange('priority', 'medium', '')}
+                                                        mode="outlined"
+                                                    >
+                                                        medium
                                             </Button>
-                                            <Button
-                                                style={{
-                                                    ...styles.button, ...{
-                                                        backgroundColor:
-                                                            values.priority === "high" ? "#ff4943" : "white",
-                                                    }
-                                                }}
-                                                labelStyle={{ color: Colors.primaryColor }}
-                                                onPress={values.priority === 'high' ? () => onChange('priority', '', '') : () => onChange('priority', 'high', '')}
-                                                mode="outlined"
-                                            >
-                                                high
+                                                    <Button
+                                                        style={{
+                                                            ...styles.button, ...{
+                                                                backgroundColor:
+                                                                    values.priority === "high" ? "#ff4943" : "white",
+                                                            }
+                                                        }}
+                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        onPress={values.priority === 'high' ? () => onChange('priority', '', '') : () => onChange('priority', 'high', '')}
+                                                        mode="outlined"
+                                                    >
+                                                        high
                                             </Button>
-                                        </View>
+                                                </View>
+                                                :
+                                                <View style={styles.buttonContainer}>
+                                                    <Button
+                                                        style={{
+                                                            ...styles.button, ...{
+                                                                backgroundColor:
+                                                                    values.priority === "high" ? "#ff4943" :
+                                                                        values.priority === "medium" ? "#a3cd3b" :
+                                                                            values.priority === "low" ? "#ffc916" : "#e2e2e2",
+                                                            }
+                                                        }}
+                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        mode="outlined"
+                                                    >
+                                                        {values.priority ? values.priority : "no status"}
+                                                    </Button>
+                                                </View>
+                                        }
                                     </View>
                                     <View style={styles.assignedLabel}>
                                         <View style={styles.label}>
@@ -361,20 +475,31 @@ const TaskModal = props => {
                                         {
                                             props.assignedTasks.length === 0 ? null :
                                                 props.assignedTasks.map((assigned) => (
-                                                    <View style={styles.chip}  key={assigned.id}>
+                                                    <View style={styles.chip} key={assigned.id}>
                                                         <PersonInChargeChipContainer
                                                             personInChargeId={assigned.person_in_charge_id}
                                                             assignedId={assigned.id}
                                                             taskId={assigned.task_id}
                                                             deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
                                                             roadmapId={props.roadmapId}
+                                                            userPersonInCharge={props.userPersonInCharge}
+                                                            committeeId={props.committeeId}
                                                         />
                                                     </View>
                                                 ))
                                         }
-                                        <View>
-                                            <Chip icon="plus" onPress={openModal}>ADD</Chip>
-                                        </View>
+                                        {
+                                            sime.user_type === "Organization"
+                                                || props.userPersonInCharge.order === '1'
+                                                || props.userPersonInCharge.order === '2'
+                                                || props.userPersonInCharge.order === '3'
+                                                || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
+                                                || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
+                                                <View>
+                                                    <Chip icon="plus" onPress={openModal}>ADD</Chip>
+                                                </View>
+                                                : null
+                                        }
                                     </View>
                                 </View>
                                 <Portal>
@@ -391,10 +516,11 @@ const TaskModal = props => {
                                 <AssignedToModal
                                     visible={visible}
                                     closeButton={closeModal}
-                                    project_name={props.project_name}
                                     priority={values.priority}
                                     taskId={props.taskId}
                                     roadmapId={props.roadmapId}
+                                    eventId={props.eventId}
+                                    projectId={props.projectId}
                                     personInCharges={props.personInCharges}
                                     committee={props.committee}
                                     assignedTasks={props.assignedTasks}

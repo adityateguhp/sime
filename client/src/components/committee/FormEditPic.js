@@ -94,6 +94,9 @@ const FormEditPic = props => {
             }
 
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.personInCharge])
 
     let checkPositions = [];
@@ -204,7 +207,7 @@ const FormEditPic = props => {
                                     />
                                 </View>
                                 <View>
-                                    {sime.order === '6' ||sime.order === '7' ?
+                                    {sime.order === '6' || sime.order === '7' ?
                                         <Dropdown
                                             useNativeDriver={true}
                                             label='Committee'

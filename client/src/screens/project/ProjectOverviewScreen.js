@@ -172,6 +172,9 @@ const ProjectOverviewScreen = ({ navigation }) => {
         picture: staffData.getStaff.picture
       })
     }
+    return () => {
+      console.log("This will be logged on unmount");
+    }
   }, [staffData])
 
   useEffect(() => {
@@ -179,6 +182,9 @@ const ProjectOverviewScreen = ({ navigation }) => {
       setPosition({
         name: positionData.getPosition.name
       })
+    }
+    return () => {
+      console.log("This will be logged on unmount");
     }
   }, [positionData])
 
@@ -189,6 +195,9 @@ const ProjectOverviewScreen = ({ navigation }) => {
         email: organizationData.getOrganization.email,
         picture: organizationData.getOrganization.picture
       })
+    }
+    return () => {
+      console.log("This will be logged on unmount");
     }
   }, [organizationData])
 
@@ -261,7 +270,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
           <List.Item
             title={staff.name ? staff.name : "-"}
             left={() => <Avatar.Image size={35} source={staff.picture ? { uri: staff.picture } : require('../../assets/avatar.png')} />}
-            onPress={headProjectData.getHeadProject? openModal : null}
+            onPress={headProjectData.getHeadProject ? openModal : null}
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Status</Subheading>

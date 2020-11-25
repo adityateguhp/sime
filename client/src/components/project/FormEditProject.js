@@ -142,17 +142,20 @@ const FormEditProject = props => {
                 organizationId: props.project.organization_id,
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.project])
 
     const [updateProject, { loading }] = useMutation(UPDATE_PROJECT_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: {organizationId: sime.user_type === 'Organization'? sime.user.id : sime.user.organization_id}
+                variables: { organizationId: sime.user_type === 'Organization' ? sime.user.id : sime.user.organization_id }
             });
             props.updateProjectsStateUpdate(result.data.updateProject);
             props.updateProjectStateUpdate(result.data.updateProject)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data,  variables: {organizationId: sime.user_type === 'Organization'? sime.user.id : sime.user.organization_id} });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user_type === 'Organization' ? sime.user.id : sime.user.organization_id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -206,7 +209,7 @@ const FormEditProject = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="Edit Project" />
-                            { sime.user_type === 'Organization' ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
+                            {sime.user_type === 'Organization' ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView

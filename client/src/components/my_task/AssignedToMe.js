@@ -3,12 +3,13 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, 
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import {
-    FETCH_ROADMAP_QUERY,
+    FETCH_COMMITTEE_QUERY,
     FETCH_TASK_QUERY,
     FETCH_EVENT_QUERY,
     FETCH_PROJECT_QUERY
 } from '../../util/graphql';
 import Task from '../task/Task';
+import CenterSpinnerSmall from '../common/CenterSpinnerSmall';
 
 const AssignedToMe = props => {
     let TouchableCmp = TouchableOpacity;
@@ -17,176 +18,53 @@ const AssignedToMe = props => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    const [taskValue, setTaskValue] = useState({
-        id: '',
-        name: '',
-        description: '',
-        completed: '',
-        due_date: '',
-        completed_date: '',
-        priority: '',
-        roadmap_id: '',
-        createdAt: '',
-        createdBy: ''
-    });
-    const [roadmapValue, setRoadmapValue] = useState({
-        id: '',
-        name: '',
-        event_id: '',
-        start_date: '',
-        end_date: '',
-        createdAt: ''
-    });
+    const [committeeValue, setCommitteeValue] = useState(null);
+    const [projectName, setProjectName] = useState('');
+    const [eventName, setEventName] = useState('');
+    const [roadmapName, setRoadmapName] = useState('');
+    const [committeeId, setCommiteeId] = useState('');
 
-    const [eventValue, setEventValue] = useState({
-        id: '',
-        name: '',
-        project_id: ''
-    });
-
-    const [projectValue, setProjectValue] = useState({
-        id: '',
-        name: '',
-        organization_id: ''
-    });
-
-    const { data: task, error: errorTask, loading: loadingTask, refetch: refetchTask } = useQuery(
-        FETCH_TASK_QUERY,
+    const [loadData, { data: committee, error: errorCommittee, loading: loadingCommittee }] = useLazyQuery(
+        FETCH_COMMITTEE_QUERY,
         {
-            variables: { taskId: props.taskId },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => {
-                if (task.getTask === null || props.deleteCalled) {
-                    setRoadmapValue({
-                        id: '',
-                        name: '',
-                        event_id: '',
-                        start_date: '',
-                        end_date: '',
-                        createdAt: ''
-                    });
-                } else {
-                    setTaskValue({
-                        id: task.getTask.id,
-                        name: task.getTask.name,
-                        description: task.getTask.description,
-                        completed: task.getTask.completed,
-                        due_date: task.getTask.due_date,
-                        completed_date: task.getTask.completed_date,
-                        priority: task.getTask.priority,
-                        roadmap_id: task.getTask.roadmap_id,
-                        createdAt: task.getTask.createdAt,
-                        createdBy: task.getTask.createdBy
-                    })
-                    loadRoadmapData();
-                    if (roadmap) {
-                        setRoadmapValue({
-                            id: roadmap.getRoadmap.id,
-                            name: roadmap.getRoadmap.name,
-                            event_id: roadmap.getRoadmap.event_id,
-                            start_date: roadmap.getRoadmap.start_date,
-                            end_date: roadmap.getRoadmap.end_date,
-                            createdAt: roadmap.getRoadmap.createdAt
-                        })
-                        loadEventData();
-                    }
-                }
-            }
-        });
-
-    const { data: project, error: errorProject, loading: loadingProject, refetch: refetchProject } = useQuery(
-        FETCH_PROJECT_QUERY,
-        {
-            variables: { projectId: props.projectId },
-            notifyOnNetworkStatusChange: true,
-            onCompleted: () => {
-                setProjectValue({
-                    id: project.getProject.id,
-                    name: project.getProject.name,
-                    organization_id: project.getProject.organization_id
-                })
-            }
-        });
-
-    const [loadRoadmapData, { data: roadmap, error: errorRoadmap, loading: loadingRoadmap }] = useLazyQuery(
-        FETCH_ROADMAP_QUERY,
-        {
-            variables: { roadmapId: taskValue.roadmap_id },
+            variables: { committeeId },
             notifyOnNetworkStatusChange: true
-        });
-
-    const [loadEventData, { data: event, error: errorEvent, loading: loadingEvent }] = useLazyQuery(
-        FETCH_EVENT_QUERY,
-        {
-            variables: { eventId: roadmapValue.event_id },
-            notifyOnNetworkStatusChange: true
-        });
-
-    useEffect(() => {
-        if (roadmap) {
-            setRoadmapValue({
-                id: roadmap.getRoadmap.id,
-                name: roadmap.getRoadmap.name,
-                event_id: roadmap.getRoadmap.event_id,
-                start_date: roadmap.getRoadmap.start_date,
-                end_date: roadmap.getRoadmap.end_date,
-                createdAt: roadmap.getRoadmap.createdAt
-            })
-            loadEventData();
         }
-    }, [roadmap])
+    );
 
     useEffect(() => {
-        if (event) {
-            setEventValue({
-                id: event.getEvent.id,
-                name: event.getEvent.name,
-                project_id: event.getEvent.project_id
-            })
+        if (props.project) {
+            setProjectName(props.project.name)
         }
-    }, [event])
-
-
-    const completedTasksStateUpdate = (e) => {
-        setTaskValue(e)
-    }
-
-    const deleteTaskStateUpdate = () => {
-        setTaskValue({
-            id: '',
-            name: '',
-            description: '',
-            completed: '',
-            due_date: '',
-            completed_date: '',
-            priority: '',
-            roadmap_id: '',
-            createdAt: '',
-            createdBy: ''
-        });
-    }
-
-    const deleteTasksStateUpdate = (e) => {
-        deleteTaskStateUpdate();
-        props.deleteStateUpdate(e);
-        props.onToggleSnackBarDelete();
-    }
-
-    const updateTasksStateUpdate = (e) => {
-        setTaskValue(e);
-        props.onToggleSnackBarUpdate();
-    }
-
-    const onRefresh = () => {
-        refetchTask();
-        refetchProject();
-    }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.project])
 
     useEffect(() => {
-        onRefresh();
-    }, [props.onRefresh]);
+        if (props.event) {
+            setEventName(props.event.name)
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.event])
 
-    if (task === undefined || taskValue.id === '') {
+    useEffect(() => {
+        if (props.roadmap) {
+            setRoadmapName(props.roadmap.name);
+            setCommiteeId(props.roadmap.committee_id);
+            loadData();
+            if (committee) {
+                setCommitteeValue(committee.getCommittee)
+            }
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.roadmap, committee])
+
+    if (props.task === null) {
         return null;
     }
 
@@ -194,29 +72,32 @@ const AssignedToMe = props => {
         <View style={styles.container}>
             <View style={styles.breadcrumbContainer}>
                 <TouchableCmp>
-                    <Text>{projectValue.name}</Text>
+                    <Text>{projectName}</Text>
                 </TouchableCmp>
                 <Text>{' > '}</Text>
                 <TouchableCmp>
-                    <Text>{eventValue.name}</Text>
+                    <Text>{eventName}</Text>
                 </TouchableCmp>
                 <Text>{' > '}</Text>
                 <TouchableCmp>
-                    <Text>{roadmapValue.name}</Text>
+                    <Text>{roadmapName}</Text>
                 </TouchableCmp>
             </View>
             <Task
-                project_name={projectValue.name}
+                tasks={props.tasks}
                 personInCharges={props.personInCharges}
-                committees={props.committees}
-                task={taskValue}
-                completedTasksStateUpdate={completedTasksStateUpdate}
-                deleteTasksStateUpdate={deleteTasksStateUpdate}
-                updateTasksStateUpdate={updateTasksStateUpdate}
-                roadmap={roadmapValue}
-                onRefresh={props.onRefresh}
+                userPersonInCharge={props.userPersonInCharge}
+                committee={committeeValue}
+                assignedTasks={props.assignedTasks}
+                task={props.task}
+                completedTasksStateUpdate={props.completedTasksStateUpdate}
+                deleteTasksStateUpdate={props.deleteTasksStateUpdate}
+                updateTasksStateUpdate={props.updateTasksStateUpdate}
+                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
+                roadmap={props.roadmap}
                 taskScreen={false}
-                setDeleteCalled={props.setDeleteCalled}
+                createdByMe={false}
             />
         </View>
     );
@@ -241,7 +122,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 15
     },
-    breadcrumbContainer:{
+    breadcrumbContainer: {
         flexDirection: 'row',
         alignItems: 'center'
     }

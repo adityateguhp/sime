@@ -113,6 +113,7 @@ const CreatedByMeScreen = ({ navigation }) => {
                     <CreatedByMeContainer
                         tasks={tasksCreatedByValue}
                         task={itemData.item}
+                        createdBy={itemData.item.createdBy}
                         onRefresh={onRefresh}
                         completedTasksStateUpdate={completedTasksStateUpdate}
                         deleteTasksStateUpdate={deleteTasksStateUpdate}

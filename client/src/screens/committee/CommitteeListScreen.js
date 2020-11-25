@@ -111,6 +111,9 @@ const CommitteeListScreen = ({ navigation }) => {
             }, []);
             setPersonInChargesValue(dataSource)
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [personInChargesValueTemp, personInCharges, setPersonInChargesValue])
 
 

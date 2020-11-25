@@ -99,7 +99,7 @@ const ProjectCard = props => {
                     >
                         <View>
                             <Card.Actions style={styles.cardAction}>
-                                <Status start_date={props.start_date} end_date={props.end_date} fontSize={wp(2.18)} />
+                                <Status start_date={props.start_date} end_date={props.end_date} fontSize={wp(1.8)} />
                             </Card.Actions>
                         </View>
                     </SkeletonContent>
@@ -153,7 +153,7 @@ const cardAction = [
 const styles = StyleSheet.create({
     project: {
         width: wp(45),
-        height: wp(100) > 350 ? wp(57.5) : wp(66),
+        height: wp(100) > 350 ? wp(56) : wp(66),
         margin: 7,
         elevation: 3
 

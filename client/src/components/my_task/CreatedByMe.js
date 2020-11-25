@@ -4,7 +4,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import {
     FETCH_PICS_QUERY,
-    FETCH_COMMITTEES_QUERY,
+    FETCH_COMMITTEE_QUERY,
 } from '../../util/graphql';
 import Task from '../task/Task';
 
@@ -14,78 +14,85 @@ const CreatedByMe = props => {
     if (Platform.OS === 'android' && Platform.Version >= 21) {
         TouchableCmp = TouchableNativeFeedback;
     }
+    const [committeeValue, setCommitteeValue] = useState(null);
+    const [projectName, setProjectName] = useState('');
+    const [eventName, setEventName] = useState('');
+    const [roadmapName, setRoadmapName] = useState('');
+    const [committeeId, setCommiteeId] = useState('');
 
-    const [personInChargesValue, setPersonInChargesValue] = useState([]);
-    const [committeesValue, setCommitteesValue] = useState([]);
-
-    const [loadPersonInChargesData, { data: personInCharges, error: errorPersonInCharges, loading: loadingPersonInCharges }] = useLazyQuery(
-        FETCH_PICS_QUERY,
+    const [loadData, { data: committee, error: errorCommittee, loading: loadingCommittee }] = useLazyQuery(
+        FETCH_COMMITTEE_QUERY,
         {
-            variables: { projectId: props.project.id },
-            notifyOnNetworkStatusChange: true
-        }
-    );
-
-    const [loadCommitteesData, { data: committees, error: errorCommittees, loading: loadingCommittees }] = useLazyQuery(
-        FETCH_COMMITTEES_QUERY,
-        {
-            variables: { projectId: props.project.id },
+            variables: { committeeId },
             notifyOnNetworkStatusChange: true
         }
     );
 
     useEffect(() => {
-        if (props.project.id) {
-            loadPersonInChargesData();
-            loadCommitteesData();
+        if (props.project) {
+            setProjectName(props.project.name)
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.project])
 
     useEffect(() => {
-        if (personInCharges) {
-            personInCharges.getPersonInCharges.sort(function (a, b) {
-                var textA = a.order;
-                var textB = b.order;
-
-                return textA.localeCompare(textB)
-            });
-            setPersonInChargesValue(personInCharges.getPersonInCharges)
+        if (props.event) {
+            setEventName(props.event.name)
         }
-    }, [personInCharges])
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.event])
 
     useEffect(() => {
-        if (committees) {
-            setCommitteesValue(committees.getPersonInCharges)
+        if (props.roadmap) {
+            setRoadmapName(props.roadmap.name);
+            setCommiteeId(props.roadmap.committee_id);
+            loadData();
+            if (committee) {
+                setCommitteeValue(committee.getCommittee)
+            }
         }
-    }, [committees])
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.roadmap, committee])
+    if (props.task === null) {
+        return null;
+    }
 
     return (
         <View style={styles.container}>
             <View style={styles.breadcrumbContainer}>
                 <TouchableCmp>
-                    <Text>{props.project.name}</Text>
+                    <Text>{projectName}</Text>
                 </TouchableCmp>
                 <Text>{' > '}</Text>
                 <TouchableCmp>
-                    <Text>{props.event.name}</Text>
+                    <Text>{eventName}</Text>
                 </TouchableCmp>
                 <Text>{' > '}</Text>
                 <TouchableCmp>
-                    <Text>{props.roadmap.name}</Text>
+                    <Text>{roadmapName}</Text>
                 </TouchableCmp>
             </View>
             <Task
-                project_name={props.project.name}
                 tasks={props.tasks}
-                personInCharges={personInChargesValue}
-                committees={committeesValue}
+                personInCharges={props.personInCharges}
+                userPersonInCharge={props.userPersonInCharge}
+                committee={committeeValue}
+                assignedTasks={props.assignedTasks}
                 task={props.task}
                 completedTasksStateUpdate={props.completedTasksStateUpdate}
                 deleteTasksStateUpdate={props.deleteTasksStateUpdate}
                 updateTasksStateUpdate={props.updateTasksStateUpdate}
+                assignedTasksStateUpdate={props.assignedTasksStateUpdate}
+                deleteAssignedTasksStateUpdate={props.deleteAssignedTasksStateUpdate}
                 roadmap={props.roadmap}
-                onRefresh={props.onRefresh}
-                taskScreen={true}
+                taskScreen={false}
+                createdByMe={true}
             />
         </View>
     );

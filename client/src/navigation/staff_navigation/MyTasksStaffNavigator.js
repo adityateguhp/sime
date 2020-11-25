@@ -55,7 +55,7 @@ export default function MyTasksStaffNavigator({ route, navigation }) {
         }
       }
       return () => {
-        console.log("This will be logged on unmount dashboard header pict");
+        console.log("This will be logged on unmount");
       }
     }, [sime.user, staff])
     return (

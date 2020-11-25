@@ -37,6 +37,9 @@ const FormEditCommittee = props => {
                 name: props.committee.name
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.committee])
 
     const [updateCommittee, { loading }] = useMutation(UPDATE_COMMITTEE_MUTATION, {

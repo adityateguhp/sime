@@ -55,6 +55,9 @@ const PicList = props => {
 
     useEffect(() => {
         if (personInCharge) setCommitteeVal(personInCharge.getPersonInCharge);
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [personInCharge])
 
     const [deleteAssignedTaskByPersonInCharge] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
@@ -185,7 +188,7 @@ const PicList = props => {
                 sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
                 sime.user_type === "Organization" ?
                 <Portal>
-                  <OptionModal
+                    <OptionModal
                         visible={visible}
                         closeModal={closeModal}
                         title={sime.staff_name}
@@ -227,7 +230,7 @@ const PicList = props => {
 
 const styles = StyleSheet.create({
     staffs: {
-        
+
         elevation: 3,
         backgroundColor: 'white',
     },

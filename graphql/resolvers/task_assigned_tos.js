@@ -40,12 +40,25 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async getAssignedTasksByStaff(_, { staffId }) {
+            try {
+                const assignedTask = await Task_assigned_to.find({ staff_id: staffId });
+                if (assignedTask) {
+                    return assignedTask;
+                } else {
+                    throw new Error('Not found');
+                }
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
     },
     Mutation: {
-        async assignedTask(_, { taskId, personInChargeId, projectId, eventId, roadmapId }, context) {
+        async assignedTask(_, { taskId, staffId, personInChargeId, projectId, eventId, roadmapId }, context) {
 
             const newAssign = new Task_assigned_to({
                 task_id: taskId,
+                staff_id: staffId,
                 person_in_charge_id: personInChargeId,
                 project_id: projectId,
                 event_id: eventId,

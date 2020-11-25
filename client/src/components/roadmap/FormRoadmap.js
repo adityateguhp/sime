@@ -94,13 +94,19 @@ const FormRoadmap = props => {
                 end_date: props.event.end_date,
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.event])
 
     useEffect(() => {
         if (sime.order === '6' || sime.order === '7') {
-            setValues({ ...values, committee_id: sime.userPicCommittee});       
-         }
-    },[props.openForm])
+            setValues({ ...values, committee_id: sime.userPicCommittee });
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.openForm])
 
     const [addRoadmap, { loading }] = useMutation(ADD_ROADMAP_MUTATION, {
         update(proxy, result) {

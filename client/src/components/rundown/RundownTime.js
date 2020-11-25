@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     },
     agenda: {
         marginLeft: 41,
+        marginRight: 10,
         marginBottom: 10
     }
 });

@@ -4,6 +4,10 @@ const task_assigned_to_Schema = new Schema({
     task_id:{
         type: Schema.Types.ObjectId,
         ref: 'tasks'
+    },
+    staff_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'staffs'
     }, 	
     person_in_charge_id:{
         type: Schema.Types.ObjectId,

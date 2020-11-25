@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl, ScrollView } from 'react-native';
 import { Divider, Provider, Text, Snackbar } from 'react-native-paper';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormTask from '../../components/task/FormTask';
@@ -14,6 +14,7 @@ import {
     FETCH_COMMITTEE_QUERY,
     FETCH_ROADMAP_QUERY,
     FETCH_ASSIGNED_TASKS_QUERY,
+    FETCH_PIC_QUERY
 } from '../../util/graphql';
 
 
@@ -43,6 +44,7 @@ const TaskScreen = ({ navigation }) => {
 
     const [tasksValue, setTasksValue] = useState([]);
     const [personInChargesValue, setPersonInChargesValue] = useState([]);
+    const [personInChargeValue, setPersonInChargeValue] = useState([]);
     const [committeeValue, setCommitteeValue] = useState(null);
     const [roadmapValue, setRoadmapValue] = useState(null);
     const [assignedTasksValue, setAssignedTasksValue] = useState([]);
@@ -64,6 +66,23 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
+    const [loadPic, { data: personInCharge, error: errorPersonInCharge, loading: loadingPersonInCharge}] = useLazyQuery(
+        FETCH_PIC_QUERY,
+        {
+            variables: { personInChargeId: sime.userPersonInChargeId },
+            notifyOnNetworkStatusChange: true
+        }
+    );
+
+    useEffect(()=>{
+        if(sime.user_type !== "Organization"){
+            loadPic();
+            if(personInCharge){
+                setPersonInChargeValue(personInCharge.getPersonInCharge)
+            }
+        }
+    },[sime.user_type, personInCharge])
+
     const { data: tasks, error: errorTasks, loading: loadingTasks, refetch } = useQuery(
         FETCH_TASKS_QUERY,
         {
@@ -81,7 +100,7 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
-   
+
 
     const { data: assignedTasks, error: errorAssignedTasks, loading: loadingAssignedTasks, refetch: refetchAssignedTasks } = useQuery(
         FETCH_ASSIGNED_TASKS_QUERY,
@@ -123,7 +142,7 @@ const TaskScreen = ({ navigation }) => {
 
     const onRefresh = () => {
         refetch();
-        refetchPersonInCharges();
+        refetchPersonInCharges();     
         refetchCommittee();
         refetchRoadmap();
         refetchAssignedTasks();
@@ -226,6 +245,11 @@ const TaskScreen = ({ navigation }) => {
         return <Text>errorAssignedTasks</Text>;
     }
 
+    if (errorPersonInCharge) {
+        console.error(errorPersonInCharge);
+        return <Text>errorPersonInCharge</Text>;
+    }
+
 
     if (tasksValue.length === 0) {
         return (
@@ -233,12 +257,18 @@ const TaskScreen = ({ navigation }) => {
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittee && loadingAssignedTasks}
+                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittee && loadingAssignedTasks && loadingPersonInCharge}
                         onRefresh={onRefresh} />
                 }
             >
                 <Text>No tasks found, let's add tasks!</Text>
-                <FABbutton Icon="plus" onPress={openForm} />
+                {  sime.user_type === "Organization"
+                    || sime.order === '1'
+                    || sime.order === '2'
+                    || sime.order === '3'
+                    || sime.order === '6' && sime.userPicCommittee === sime.committee_id
+                    || sime.order === '7' && sime.userPicCommittee === sime.committee_id ?
+                    <FABbutton Icon="plus" onPress={openForm} /> : null}
                 <FormTask
                     closeModalForm={closeModalForm}
                     visibleForm={visibleForm}
@@ -247,26 +277,26 @@ const TaskScreen = ({ navigation }) => {
                 />
                 <Snackbar
                     visible={visibleAdd}
-                 onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                  }}>
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
                     Task added!
-            </Snackbar>
+                        </Snackbar>
                 <Snackbar
                     visible={visibleDelete}
                     onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                  }}>
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
                     Task deleted!
-            </Snackbar>
+                        </Snackbar>
             </ScrollView>
         );
     }
@@ -276,7 +306,7 @@ const TaskScreen = ({ navigation }) => {
             <FlatList
                 refreshControl={
                     <RefreshControl
-                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittee}
+                        refreshing={loadingTasks && loadingPersonInCharges && loadingRoadmap && loadingCommittee && loadingPersonInCharge}
                         onRefresh={onRefresh} />
                 }
                 ListHeaderComponentStyle={styles.screen}
@@ -301,6 +331,7 @@ const TaskScreen = ({ navigation }) => {
                     <Task
                         tasks={tasksValue}
                         personInCharges={personInChargesValue}
+                        userPersonInCharge={personInChargeValue}
                         committee={committeeValue}
                         assignedTasks={assignedTasksValue}
                         task={itemData.item}
@@ -311,11 +342,18 @@ const TaskScreen = ({ navigation }) => {
                         deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
                         roadmap={roadmapValue}
                         taskScreen={true}
+                        createdByMe={false}
                     >
                     </Task>
                 )}
             />
-            <FABbutton Icon="plus" onPress={openForm} />
+            {  sime.user_type === "Organization"
+                || sime.order === '1'
+                || sime.order === '2'
+                || sime.order === '3'
+                || sime.order === '6' && sime.userPicCommittee === sime.committee_id
+                || sime.order === '7' && sime.userPicCommittee === sime.committee_id ?
+                <FABbutton Icon="plus" onPress={openForm} /> : null}
             <FormTask
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
@@ -324,26 +362,26 @@ const TaskScreen = ({ navigation }) => {
             />
             <Snackbar
                 visible={visibleAdd}
-             onDismiss={onDismissSnackBarAdd}
+                onDismiss={onDismissSnackBarAdd}
                 action={{
                     label: 'dismiss',
                     onPress: () => {
                         onDismissSnackBarAdd();
                     },
-                  }}>
+                }}>
                 Task added!
-            </Snackbar>
+                    </Snackbar>
             <Snackbar
                 visible={visibleDelete}
-               onDismiss={onDismissSnackBarDelete}
+                onDismiss={onDismissSnackBarDelete}
                 action={{
                     label: 'dismiss',
                     onPress: () => {
                         onDismissSnackBarDelete();
                     },
-                  }}>
+                }}>
                 Task deleted!
-            </Snackbar>
+                    </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
                 onDismiss={onDismissSnackBarUpdate}
@@ -352,9 +390,9 @@ const TaskScreen = ({ navigation }) => {
                     onPress: () => {
                         onDismissSnackBarUpdate();
                     },
-                  }}>
+                }}>
                 Task updated!
-            </Snackbar>
+                </Snackbar>
         </Provider>
 
     );

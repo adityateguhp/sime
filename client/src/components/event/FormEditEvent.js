@@ -99,7 +99,7 @@ const FormEditEvent = props => {
             if (response.customButton) {
                 setValues({ ...values, picture: '' });
             }
-            
+
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
 
             let data = {
@@ -149,6 +149,9 @@ const FormEditEvent = props => {
                 picture: props.event.picture,
             })
         }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
     }, [props.event])
 
     useEffect(() => {
@@ -157,6 +160,9 @@ const FormEditEvent = props => {
                 start_date: props.project.start_date,
                 end_date: props.project.end_date,
             })
+        }
+        return () => {
+            console.log("This will be logged on unmount");
         }
     }, [props.project])
 
