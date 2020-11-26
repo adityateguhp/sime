@@ -8,7 +8,7 @@ module.exports = {
   Query: {
     async getCommittees(_, {organizationId}, context) {
       try {
-        const committees = await Committee.find({ organization_id: organizationId }).sort({ name: 1 });
+        const committees = await Committee.find({ organization_id: organizationId }).sort({ name: 1, core: 1 });
         if (committees) {
           return committees;
         } else {
@@ -32,7 +32,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async addCommittee(_, { name, organizationId }, context) {
+    async addCommittee(_, { name, core, organizationId }, context) {
       const { valid, errors } = validateCommitteeInput(name);
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -40,6 +40,7 @@ module.exports = {
 
       const newCommittee = new Committee({
         name,
+        core,
         organization_id: organizationId,
         createdAt: new Date().toISOString()
       });
@@ -55,15 +56,7 @@ module.exports = {
           throw new UserInputError('Error', { errors });
         }
 
-        if (name.toLowerCase() === "core committee") {
-          throw new UserInputError('Core Committee is already exist', {
-            errors: {
-              committee: 'Core Committee is already exist'
-            }
-          })
-        }
-
-        const updatedCommittee = await Committee.findByIdAndUpdate({ _id: committeeId }, { name: name }, { new: true });
+        const updatedCommittee = await Committee.findByIdAndUpdate({ _id: committeeId }, { name: name}, { new: true });
 
         return updatedCommittee;
       } catch (err) {
@@ -73,6 +66,15 @@ module.exports = {
     async deleteCommittee(_, { committeeId }, context) {
       try {
         const committee = await Committee.findById(committeeId);
+
+        if (committee.core) {
+          throw new UserInputError("This committee can't be deleted", {
+            errors: {
+              committee: "This committee can't be deleted"
+            }
+          })
+        }
+       
         await committee.delete();
         return 'Committee deleted successfully';
       } catch (err) {

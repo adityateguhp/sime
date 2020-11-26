@@ -1,14 +1,12 @@
 const { model, Schema } = require('mongoose');
 
-const positionSchema = new Schema({	
+const departmentPositionSchema = new Schema({	
     name: String,
-    core: Boolean,
     organization_id: {
         type: Schema.Types.ObjectId,
         ref: 'organizations'
     },
-    createdAt: String,
-    order: String
+    createdAt: String
 });
 
-module.exports = model('Position', positionSchema);
+module.exports = model('Department_position', departmentPositionSchema);

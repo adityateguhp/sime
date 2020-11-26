@@ -1,4 +1,4 @@
-module.exports.validateRegisterOrganizationInput = (
+module.exports.validateRegisterStaffInput = (
     name,
     email,
     password,
@@ -6,7 +6,7 @@ module.exports.validateRegisterOrganizationInput = (
 ) => {
     const errors = {};
     if (name.trim() === '') {
-        errors.name = 'Organization name must not be empty';
+        errors.name = 'Name must not be empty';
     }
 
     if (email.trim() === '') {
@@ -89,7 +89,6 @@ module.exports.validateDepartmentInput = (name) => {
 
 module.exports.validateStaffInput = (
     name,
-    position_name,
     email,
     phone_number
 ) => {
@@ -97,11 +96,6 @@ module.exports.validateStaffInput = (
     if (name.trim() === '') {
         errors.name = 'Staff name must not be empty';
     }
-
-    if (position_name.trim() === '') {
-        errors.position_name = 'Position name must not be empty';
-    }
-
     if (email.trim() === '') {
         errors.email = 'Email address must not be empty';
     } else {
@@ -109,10 +103,6 @@ module.exports.validateStaffInput = (
         if (!email.match(regEx)) {
             errors.email = 'Ooops! We need a valid email address';
         }
-    }
-
-    if (phone_number.trim() === '') {
-        errors.phone_number = 'Phone number must not be empty';
     }
 
     return {
@@ -317,6 +307,20 @@ module.exports.validatePositionInput = (
         valid: Object.keys(errors).length < 1
     };
 };
+
+module.exports.validateDepartmentPositionInput = (
+    name
+) => {
+    const errors = {};
+    if (name.trim() === '') {
+        errors.name = 'Position name must not be empty';
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    };
+};
+
 
 module.exports.validateCommitteeInput = (
     name

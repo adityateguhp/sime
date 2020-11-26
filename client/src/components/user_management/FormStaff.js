@@ -22,22 +22,19 @@ const FormStaff = props => {
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
 
     const [errors, setErrors] = useState({
-        department_error: '',
         staff_name_error: '',
-        position_name_error: '',
         email_error: '',
-        phone_number_error: '',
     });
 
     const [values, setValues] = useState({
         name: '',
-        position_name: '',
+        department_position_id: '',
         department_id: '',
         email: '',
         phone_number: '',
         password: '12345678',
         picture: null,
-        organizationId: sime.user.id
+        organizationId: sime.user.organization_id
     });
 
     const options1 = {
@@ -106,7 +103,7 @@ const FormStaff = props => {
             props.addStaffsStateUpdate(result.data.addStaff)
             proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
             values.name = '';
-            values.position_name = '';
+            values.department_position_id = '';
             values.email = '';
             values.phone_number = '';
             values.picture = '';
@@ -114,19 +111,13 @@ const FormStaff = props => {
             props.closeModalForm();
         },
         onError(err) {
-            const departmenError = departmentValidator(values.department_id);
             const staffNameError = staffNameValidator(values.name);
-            const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
-            const phoneNumberError = phoneNumberValidator(values.phone_number);
-            if (departmenError || staffNameError || positionNameError || emailError || phoneNumberError) {
+            if ( staffNameError || emailError) {
                 setErrors({
                     ...errors,
-                    department_error: departmenError,
                     staff_name_error: staffNameError,
-                    position_name_error: positionNameError,
                     email_error: emailError,
-                    phone_number_error: phoneNumberError
                 })
                 return;
             }
@@ -217,8 +208,8 @@ const FormStaff = props => {
                                             style={styles.input}
                                             label='Position'
                                             returnKeyType="next"
-                                            value={values.position_name}
-                                            onChangeText={(val) => onChange('position_name', val, 'position_name_error')}
+                                            value={values.department_position_id}
+                                            onChangeText={(val) => onChange('department_position_id', val, 'position_name_error')}
                                             error={errors.position_name_error ? true : false}
                                             errorText={errors.position_name_error}
                                         />

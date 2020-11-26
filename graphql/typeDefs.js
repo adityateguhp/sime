@@ -3,11 +3,9 @@ const { gql } = require('apollo-server');
 module.exports = gql`
     type Organization {
         id: ID!
-        name: String!	
+        name: String
+        email: String	
         description: String
-        email: String!
-        token: String!
-        password: String!
         picture: String
         createdAt: String!
     }
@@ -20,12 +18,12 @@ module.exports = gql`
     type Staff {
         id: ID!
         name: String!
-        position_name: String!
-        organization_id: ID!
-        department_id: ID! 	
+        department_position_id: ID
+        organization_id: ID
+        department_id: ID 	
         email: String!
         token: String! 
-        phone_number: String!
+        phone_number: String
         password: String!
         picture: String
         createdAt: String!
@@ -55,6 +53,7 @@ module.exports = gql`
         id: ID!
         name: String!
         core: Boolean!
+        organization_id: ID!
         createdAt: String!
         order: String!
     }
@@ -62,6 +61,7 @@ module.exports = gql`
     type Committee {
         id: ID!
         name: String!
+        core: Boolean!
         organization_id: ID!
         createdAt: String!
     }
@@ -144,19 +144,32 @@ module.exports = gql`
         createdAt: String!
     }
 
+    type Department_position {
+        id: ID!
+        name: String!
+        organization_id: ID!
+        createdAt: String!
+    }
+
     type Query {
         getOrganization(organizationId: ID!): Organization
+        
         getDepartments(organizationId: ID!): [Department]
         getDepartment(departmentId: ID!): Department
+        
         getStaffs(organizationId: ID!): [Staff]
         getStaffsByDepartment(departmentId: ID!): [Staff]
         getStaff(staffId: ID!): Staff
+        
         getProjects(organizationId: ID!): [Project]
         getProject(projectId: ID!): Project
-        getPositions: [Position]
+        
+        getPositions(organizationId: ID!): [Position]
         getPosition(positionId: ID!): Position
+        
         getCommittees(organizationId: ID!): [Committee]
         getCommittee(committeeId: ID!): Committee
+        
         getPersonInCharges(projectId: ID!): [Person_in_charge]
         getPersonInChargesByStaff(staffId: ID!): [Person_in_charge]
         getPersonInChargesByOrganization(organizationId: ID!): [Person_in_charge]
@@ -164,49 +177,47 @@ module.exports = gql`
         getPersonInCharge(personInChargeId: ID!): Person_in_charge 
         getHeadProject(projectId: ID!, order: String!): Person_in_charge
         getPersonInChargesInCommittee(committeeId: ID!): [Person_in_charge] 
+        
         getEvents(projectId: ID!): [Event]
         getEvent(eventId: ID!): Event  
+        
         getExternals(eventId: ID!): [External]
         getExternal(externalId: ID!): External 
         getExternalByType(eventId: ID!, externalType: ID!): [External] 
         getExternalTypes: [ExternalType]
         getExternalType(exTypeId: ID!): ExternalType
+        
         getRoadmaps(eventId: ID!): [Roadmap]
         getRoadmap(roadmapId: ID!): Roadmap  
+        
         getRundowns(eventId: ID!): [Rundown]
         getRundown(rundownId: ID!): Rundown 
+        
         getTasks(roadmapId: ID!): [Task]
         getTasksCreatedBy(createdBy: ID!): [Task]
         getTask(taskId: ID!): Task
+        
         getAssignedTasks(roadmapId: ID!): [Task_assigned_to]
         getAssignedTask(assignedId: ID!): Task_assigned_to
         getAssignedTasksByPersonInCharge(personInChargeId: ID!): [Task_assigned_to]
         getAssignedTasksByStaff(staffId: ID!): [Task_assigned_to]
+        
+        getDepartmentPositions(organizationId: ID!): [Department_position]
+        getDepartmentPosition(departmentPositionId: ID!): Department_position
     }
     type Mutation {
-        registerOrganization(
-            name: String!
-            email: String!
-            password: String!
-            confirmPassword: String!
+       addOrganization(
+            name: String
+            email: String
             description: String
             picture: String): Organization!
-        
-        loginOrganization(email: String!, password: String!): Organization!
 
         updateOrganization(
             organizationId: ID!
-            name: String!
-            email: String!
+            name: String
+            email: String
             description: String
             picture: String): Organization!
-
-        updatePasswordOrganization( 
-            organizationId: ID!,
-            currentPassword: String!,
-            newPassword: String!,
-            confirmNewPassword: String!
-        ): Organization!
         
         addDepartment(name: String!, organizationId: ID!): Department!
         
@@ -216,24 +227,36 @@ module.exports = gql`
         
         loginStaff(email: String!, password: String!): Staff!
 
+        registerStaff(
+            name: String!,
+            email: String!,
+            password: String!,
+            confirmPassword: String!
+        ): Staff!
+
+        addOrganizationStaff(
+            staffId: ID!,
+            organizationId: ID!
+        ): Staff!
+
         addStaff(
             name: String!,
-            position_name: String!,
-            department_id: ID!, 	
+            department_position_id: ID,
+            department_id: ID, 	
             email: String!,
-            phone_number: String!,
+            phone_number: String,
             password: String!,
             picture: String,
-            organizationId: ID!
+            organizationId: ID
         ): Staff!
         
         updateStaff( 
             staffId: ID!,
             name: String!,
-            position_name: String!,	
-            department_id: ID!, 
+            department_position_id: ID,	
+            department_id: ID, 
             email: String!,
-            phone_number: String!,
+            phone_number: String,
             picture: String
         ): Staff!
         
@@ -294,13 +317,13 @@ module.exports = gql`
 
         deleteEvent(eventId: ID!): String!
 
-        addPosition(name: String!, core: Boolean!, order: String!): Position!
+        addPosition(name: String!, core: Boolean!, organizationId: ID!, order: String!): Position!
         
-        updatePosition(positionId: ID!, name: String!, core: Boolean!, order: String!): Position!
+        updatePosition(positionId: ID!, name: String!, core: Boolean!): Position!
         
         deletePosition(positionId: ID!): String!
 
-        addCommittee(name: String!, organizationId:ID!): Committee!
+        addCommittee(name: String!, core: Boolean!, organizationId:ID!): Committee!
         
         updateCommittee(committeeId: ID!, name: String!): Committee!
         
@@ -430,5 +453,20 @@ module.exports = gql`
         deleteAssignedTaskByTask(
             taskId: ID!
         ): String!
+
+        addDepartmentPosition(
+            name: String!
+            organizationId: ID!
+        ):Department_position!
+
+        updateDepartmentPosition(
+            departmentPositionId: ID!
+            name: String!
+        ):Department_position!
+
+        deleteDepartmentPosition(
+            departmentPositionId: ID!
+        ):String!
+
     }
 `;

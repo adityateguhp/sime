@@ -2,7 +2,10 @@ const { model, Schema } = require('mongoose');
 
 const staffSchema = new Schema({	
     name: String,
-    position_name: String,
+    department_position_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'department_positions'
+    },
     organization_id:{
         type: Schema.Types.ObjectId,
         ref: 'organizations'
@@ -15,6 +18,7 @@ const staffSchema = new Schema({
     phone_number: String,
     password: String,
     picture: String,
+    isAdmin: Boolean,
     createdAt: String
 });
 

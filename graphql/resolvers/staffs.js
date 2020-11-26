@@ -2,14 +2,14 @@ const { UserInputError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { validateStaffInput, validateUpdatePasswordInput, validateLoginInput } = require('../../util/validators');
+const { validateStaffInput, validateUpdatePasswordInput, validateLoginInput, validateRegisterStaffInput } = require('../../util/validators');
 const Staff = require('../../model/Staff');
 const { SECRET_KEY } = require('../../config')
 const checkAuth = require('../../util/check-auth');
 
 function generateToken(user) {
   return jwt.sign({
-    user_type: "staff",
+    user_type: user.isAdmin ? "Organization" : "Staff",
     id: user.id,
     name: user.name,
     email: user.email,
@@ -85,9 +85,66 @@ module.exports = {
         token
       }
     },
+    async registerStaff(_, { name, email, password, confirmPassword }, context, info) {
+      // validate user data
+      const { valid, errors } = validateRegisterStaffInput(name, email, password, confirmPassword);
+      if (!valid) {
+        throw new UserInputError('Errors', { errors })
+      }
+
+      // Make sure email doesnt already exist
+      const staff = await Staff.findOne({ email });
+      if (staff) {
+        throw new UserInputError('Email address is already exist', {
+          errors: {
+            email: 'This email address already exist'
+          }
+        })
+      }
+      // hash password and create an auth token
+      password = await bcrypt.hash(password, 12);
+
+      const newStaff = new Staff({
+        name,
+        department_position_id: '',
+        organization_id: '',
+        department_id: '',
+        email,
+        phone_number: '',
+        password,
+        picture: '',
+        isAdmin: true,
+        createdAt: new Date().toISOString()
+      });
+
+      const res = await newStaff.save();
+
+      const token = generateToken(res);
+
+      return {
+        ...res._doc,
+        id: res._id,
+        token
+      }
+    },
+    async addOrganizationStaff(_, {
+      staffId,
+      organizationId
+    }, context) {
+
+      const updatedStaff = await Staff.findByIdAndUpdate(
+        { _id: staffId },
+        {
+          organization_id: organizationId
+        },
+        { new: true });
+
+      return updatedStaff;
+
+    },
     async addStaff(_, {
       name,
-      position_name,
+      department_position_id,
       department_id,
       email,
       phone_number,
@@ -98,9 +155,7 @@ module.exports = {
       const { valid, errors } =
         validateStaffInput(
           name,
-          position_name,
-          email,
-          phone_number
+          email
         );
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -120,7 +175,7 @@ module.exports = {
 
       const newStaff = new Staff({
         name,
-        position_name,
+        department_position_id,
         organization_id: organizationId,
         department_id,
         email,
@@ -137,7 +192,7 @@ module.exports = {
     async updateStaff(_, {
       staffId,
       name,
-      position_name,
+      department_position_id,
       department_id,
       email,
       phone_number,
@@ -147,9 +202,7 @@ module.exports = {
         const { valid, errors } =
           validateStaffInput(
             name,
-            position_name,
-            email,
-            phone_number,
+            email
           );
         if (!valid) {
           throw new UserInputError('Error', { errors });
@@ -172,7 +225,7 @@ module.exports = {
           { _id: staffId },
           {
             name: name,
-            position_name: position_name,
+            department_position_id: department_position_id,
             department_id: department_id,
             email: email,
             phone_number: phone_number,
@@ -255,14 +308,14 @@ module.exports = {
     },
     async deleteStaffByDepartment(_, { departmentId }, context) {
       try {
-          const staff = await Staff.find({ department_id: departmentId });
-          staff.map((data) => {
-              data.deleteOne()
-          })
-          return 'Deleted successfully';
+        const staff = await Staff.find({ department_id: departmentId });
+        staff.map((data) => {
+          data.deleteOne()
+        })
+        return 'Deleted successfully';
       } catch (err) {
-          throw new Error(err);
+        throw new Error(err);
       }
-  },
+    },
   }
 };

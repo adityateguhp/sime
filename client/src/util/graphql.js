@@ -5,71 +5,24 @@ export const FETCH_ORGANIZATION_QUERY = gql`
     getOrganization(organizationId: $organizationId){
         id
         name
-        description
         email
+        description
         picture
         createdAt
   }
 }
 `;
 
-export const LOGIN_ORGANIZATION = gql`
-  mutation loginOrganization($email: String!, $password: String!) {
-    loginOrganization(email: $email, password: $password) {
+export const ADD_ORGANIZATION = gql`
+  mutation addOrganization($name: String, $email: String, $description: String, $picture: String!) {
+    addOrganization(name: $name, email: $email, description: $description, picture: $picture) {
       id
       name
       description
-      email
-      token
       picture
       createdAt
     }
   }
-`;
-
-export const LOGIN_STAFF = gql`
-  mutation loginStaff($email: String!, $password: String!) {
-    loginStaff(email: $email, password: $password) {
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    token
-    phone_number
-    picture
-    createdAt
-    }
-  }
-`;
-
-export const REGISTER_ORGANIZATION = gql`
-mutation registerOrganization(
-  $name: String!
-  $email: String!
-  $password: String!
-  $confirmPassword: String!
-  $description: String
-  $picture: String
-) {
-  registerOrganization(
-      name: $name
-      email: $email
-      password: $password
-      confirmPassword: $confirmPassword
-      description: $description
-      picture: $picture
-  ) {
-      id
-      name
-      description
-      email
-      token
-      picture
-      createdAt
-  }
-}
 `;
 
 export const UPDATE_ORGANIZATION_MUTATION = gql`
@@ -97,28 +50,247 @@ mutation updateOrganization(
 }
 `;
 
-export const UPDATE_PASSWORD_ORGANIZATION_MUTATION = gql`
+export const LOGIN_STAFF = gql`
+  mutation loginStaff($email: String!, $password: String!) {
+    loginStaff(email: $email, password: $password) {
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    token
+    phone_number
+    picture
+    createdAt
+    }
+  }
+`;
+
+export const REGISTER_STAFF = gql`
+mutation registerStaff(
+  $name: String!
+  $email: String!
+  $password: String!
+  $confirmPassword: String!
+) {
+  registerStaff(
+      name: $name
+      email: $email
+      password: $password
+      confirmPassword: $confirmPassword
+  ) {
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    token
+    phone_number
+    picture
+    createdAt
+  }
+}
+`;
+
+export const FETCH_STAFFS_QUERY = gql`
+  query($organizationId: ID!){
+    getStaffs(organizationId: $organizationId){
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_STAFFSBYDEPARTMENT_QUERY = gql`
+  query($departmentId: ID!) {
+    getStaffsByDepartment(departmentId: $departmentId){
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_STAFF_QUERY = gql`
+   query($staffId: ID!) {
+    getStaff(staffId: $staffId){
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  }
+`;
+
+export const ADD_STAFF_MUTATION = gql`
   mutation 
-  updatePasswordOrganization(
-    $organizationId: ID!,
+  addStaff(
+    $name: String!,
+    $department_position_id: String!,
+    $department_id: ID!, 	
+    $email: String!,
+    $phone_number: String!,
+    $password: String!,
+    $picture: String,
+    $organizationId: ID!
+  ) {
+  addStaff(
+    name: $name,
+    department_position_id: $department_position_id,
+    department_id: $department_id, 	
+    email: $email,
+    phone_number: $phone_number,
+    password: $password,
+    picture: $picture,
+    organizationId: $organizationId
+  ) {
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const ADD_ORGANIZATION_STAFF_MUTATION = gql`
+  mutation 
+  addOrganizationStaff(
+    $staffId: ID!,
+    $organizationId: ID!
+  ) {
+  addOrganizationStaff(
+    staffId: $staffId,
+    organizationId: $organizationId, 
+  ) {
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_STAFF_MUTATION = gql`
+  mutation 
+  updateStaff(
+    $staffId: ID!,
+    $name: String!,
+    $department_position_id: String!,
+    $department_id: ID!, 	
+    $email: String!,
+    $phone_number: String!,
+    $picture: String
+  ) {
+  updateStaff(
+    staffId: $staffId,
+    name: $name,
+    department_position_id: $department_position_id,
+    department_id: $department_id, 
+    email: $email,
+    phone_number: $phone_number,
+    picture: $picture
+  ) {
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
+  mutation 
+  updatePasswordStaff(
+    $staffId: ID!,
     $currentPassword: String!,
     $newPassword: String!,
     $confirmNewPassword: String!
   ) {
-  updatePasswordOrganization(
-    organizationId: $organizationId,
+  updatePasswordStaff(
+    staffId: $staffId,
     currentPassword: $currentPassword,
     newPassword: $newPassword,
     confirmNewPassword: $confirmNewPassword
   ) {
-      id
-      name
-      description
-      email
-      picture
-      createdAt
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
   }
   } 
+`;
+
+export const RESET_PASSWORD_STAFF_MUTATION = gql`
+  mutation 
+  resetPasswordStaff(
+    $staffId: ID!
+  ) {
+    resetPasswordStaff(
+    staffId: $staffId
+  ) {
+    id
+    name
+    department_position_id
+    organization_id
+    department_id 	
+    email
+    phone_number
+    picture
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_STAFF = gql`
+  mutation deleteStaff($staffId: ID!) {
+    deleteStaff(staffId: $staffId)
+  }
+`;
+
+export const DELETE_STAFF_BYDEPARTMENT = gql`
+  mutation deleteStaffByDepartment($departmentId: ID!) {
+    deleteStaffByDepartment(departmentId: $departmentId)
+  }
 `;
 
 
@@ -169,182 +341,6 @@ export const UPDATE_DEPARTMENT_MUTATION = gql`
 export const DELETE_DEPARTMENT = gql`
   mutation deleteDepartment($departmentId: ID!, $organizationId: ID!) {
     deleteDepartment(departmentId: $departmentId, organizationId: $organizationId)
-  }
-`;
-
-export const FETCH_STAFFS_QUERY = gql`
-  query($organizationId: ID!){
-    getStaffs(organizationId: $organizationId){
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  }
-`;
-
-export const FETCH_STAFFSBYDEPARTMENT_QUERY = gql`
-  query($departmentId: ID!) {
-    getStaffsByDepartment(departmentId: $departmentId){
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  }
-`;
-
-export const FETCH_STAFF_QUERY = gql`
-   query($staffId: ID!) {
-    getStaff(staffId: $staffId){
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  }
-`;
-
-export const ADD_STAFF_MUTATION = gql`
-  mutation 
-  addStaff(
-    $name: String!,
-    $position_name: String!,
-    $department_id: ID!, 	
-    $email: String!,
-    $phone_number: String!,
-    $password: String!,
-    $picture: String,
-    $organizationId: ID!
-  ) {
-  addStaff(
-    name: $name,
-    position_name: $position_name,
-    department_id: $department_id, 	
-    email: $email,
-    phone_number: $phone_number,
-    password: $password,
-    picture: $picture,
-    organizationId: $organizationId
-  ) {
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  } 
-`;
-
-export const UPDATE_STAFF_MUTATION = gql`
-  mutation 
-  updateStaff(
-    $staffId: ID!,
-    $name: String!,
-    $position_name: String!,
-    $department_id: ID!, 	
-    $email: String!,
-    $phone_number: String!,
-    $picture: String
-  ) {
-  updateStaff(
-    staffId: $staffId,
-    name: $name,
-    position_name: $position_name,
-    department_id: $department_id, 
-    email: $email,
-    phone_number: $phone_number,
-    picture: $picture
-  ) {
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  } 
-`;
-
-export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
-  mutation 
-  updatePasswordStaff(
-    $staffId: ID!,
-    $currentPassword: String!,
-    $newPassword: String!,
-    $confirmNewPassword: String!
-  ) {
-  updatePasswordStaff(
-    staffId: $staffId,
-    currentPassword: $currentPassword,
-    newPassword: $newPassword,
-    confirmNewPassword: $confirmNewPassword
-  ) {
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  } 
-`;
-
-export const RESET_PASSWORD_STAFF_MUTATION = gql`
-  mutation 
-  resetPasswordStaff(
-    $staffId: ID!
-  ) {
-    resetPasswordStaff(
-    staffId: $staffId
-  ) {
-    id
-    name
-    position_name
-    organization_id
-    department_id 	
-    email
-    phone_number
-    picture
-    createdAt
-  }
-  } 
-`;
-
-export const DELETE_STAFF = gql`
-  mutation deleteStaff($staffId: ID!) {
-    deleteStaff(staffId: $staffId)
-  }
-`;
-
-export const DELETE_STAFF_BYDEPARTMENT = gql`
-  mutation deleteStaffByDepartment($departmentId: ID!) {
-    deleteStaffByDepartment(departmentId: $departmentId)
   }
 `;
 
@@ -549,11 +545,12 @@ export const DELETE_EVENT = gql`
 `;
 
 export const FETCH_POSITIONS_QUERY = gql`
-  {
-    getPositions{
+  query($organizationId: ID!){
+    getPositions(organizationId: $organizationId){
     id
     name
     core
+    organization_id
     order
     createdAt
   }
@@ -566,6 +563,7 @@ export const FETCH_POSITION_QUERY = gql`
     id
     name
     core
+    organization_id
     order
     createdAt
   }
@@ -573,11 +571,12 @@ export const FETCH_POSITION_QUERY = gql`
 `;
 
 export const ADD_POSITION_MUTATION = gql`
-  mutation addPosition($name: String!, $core: Boolean!, $order: String!) {
-    addPosition(name: $name, core: $core, order: $order) {
+  mutation addPosition($name: String!, $core: Boolean!, $organizationId: ID!, $order: String!) {
+    addPosition(name: $name, core: $core, organizationId: $organizationId, order: $order) {
     id
     name
     core
+    organization_id
     order
     createdAt
   }
@@ -585,11 +584,12 @@ export const ADD_POSITION_MUTATION = gql`
 `;
 
 export const UPDATE_POSITION_MUTATION = gql`
-  mutation updatePosition($positionId: ID!, $name: String!, $core: Boolean!, $order: String!) {
-    updatePosition(positionId: $positionId, name: $name, core: $core, order: $order) {
+  mutation updatePosition($positionId: ID!, $name: String!, $core: Boolean!) {
+    updatePosition(positionId: $positionId, name: $name, core: $core) {
     id
     name
     core
+    organization_id
     order
     createdAt
   }
@@ -607,6 +607,7 @@ export const FETCH_COMMITTEES_QUERY = gql`
     getCommittees(organizationId: $organizationId){
       id
       name
+      core
       organization_id
       createdAt
   }
@@ -618,6 +619,7 @@ export const FETCH_COMMITTEE_QUERY = gql`
     getCommittee(committeeId: $committeeId){
       id
       name
+      core
       organization_id
       createdAt
   }
@@ -625,10 +627,11 @@ export const FETCH_COMMITTEE_QUERY = gql`
 `;
 
 export const ADD_COMMITTEE_MUTATION = gql`
-  mutation addCommittee($name: String!, $organizationId: ID!) {
-    addCommittee(name: $name, organizationId: $organizationId) {
+  mutation addCommittee($name: String!, $core:Boolean!, $organizationId: ID!) {
+    addCommittee(name: $name, core: $core, organizationId: $organizationId) {
       id
       name
+      core
       organization_id
       createdAt
   }
@@ -640,6 +643,7 @@ export const UPDATE_COMMITTEE_MUTATION = gql`
     updateCommittee(committeeId: $committeeId, name: $name) {
       id
       name
+      core
       organization_id
       createdAt
   }
@@ -1400,5 +1404,55 @@ export const DELETE_ASSIGNED_TASK_BYPIC = gql`
 export const DELETE_ASSIGNED_TASK_BYTASK = gql`
   mutation deleteAssignedTaskByTask($taskId: ID!) {
     deleteAssignedTaskByTask(taskId: $taskId)
+  }
+`;
+
+export const FETCH_DEPARTMENT_POSITIONS_QUERY = gql`
+  query($organizationId: ID!){
+    getDepartmentPositions(organizationId: $organizationId){
+    id
+    name
+    organization_id
+    createdAt
+  }
+  }
+`;
+
+export const FETCH_DEPARTMENT_POSITION_QUERY = gql`
+   query($departmentPositionId: ID!) {
+    getDepartmentPosition(departmentPositionId: $departmentPositionId){
+    id
+    name
+    organization_id
+    createdAt
+  }
+  }
+`;
+
+export const ADD_DEPARTMENT_POSITION_MUTATION = gql`
+  mutation addDepartmentPosition($name: String!, $organizationId: ID!) {
+    addDepartmentPosition(name: $name, organizationId: $organizationId) {
+    id
+    name
+    organization_id
+    createdAt
+  }
+  } 
+`;
+
+export const UPDATE_DEPARTMENT_POSITION_MUTATION = gql`
+  mutation updateDepartmentPosition($departmentPositionId: ID!, $name: String!) {
+    updateDepartmentPosition(departmentPositionId: $departmentPositionId, name: $name) {
+    id
+    name
+    organization_id
+    createdAt
+  }
+  } 
+`;
+
+export const DELETE_DEPARTMENT_POSITION = gql`
+  mutation deleteDepartmentPosition($departmentPositionId: ID!) {
+    deleteDepartmentPosition(departmentPositionId: $departmentPositionId)
   }
 `;

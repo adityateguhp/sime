@@ -21,15 +21,13 @@ const FormEditStaffDepartment = props => {
 
     const [errors, setErrors] = useState({
         staff_name_error: '',
-        position_name_error: '',
-        email_error: '',
-        phone_number_error: '',
+        email_error: ''
     });
 
     const [values, setValues] = useState({
         staffId: '',
         name: '',
-        position_name: '',
+        department_position_id: '',
         department_id: '',
         email: '',
         phone_number: '',
@@ -98,7 +96,7 @@ const FormEditStaffDepartment = props => {
             setValues({
                 staffId: props.staff.id,
                 name: props.staff.name,
-                position_name: props.staff.position_name,
+                department_position_id: props.staff.department_position_id,
                 department_id: props.staff.department_id,
                 email: props.staff.email,
                 phone_number: props.staff.phone_number,
@@ -124,16 +122,12 @@ const FormEditStaffDepartment = props => {
         },
         onError(err) {
             const staffNameError = staffNameValidator(values.name);
-            const positionNameError = positionNameValidator(values.position_name);
             const emailError = emailValidator(values.email);
-            const phoneNumberError = phoneNumberValidator(values.phone_number);
-            if (staffNameError || positionNameError || emailError || phoneNumberError) {
+            if (staffNameError || emailError ) {
                 setErrors({
                     ...errors,
                     staff_name_error: staffNameError,
-                    position_name_error: positionNameError,
-                    email_error: emailError,
-                    phone_number_error: phoneNumberError
+                    email_error: emailError
                 })
                 return;
             }
@@ -212,8 +206,8 @@ const FormEditStaffDepartment = props => {
                                             style={styles.input}
                                             label='Position'
                                             returnKeyType="next"
-                                            value={values.position_name}
-                                            onChangeText={(val) => onChange('position_name', val, 'position_name_error')}
+                                            value={values.department_position_id}
+                                            onChangeText={(val) => onChange('department_position_id', val, 'position_name_error')}
                                             error={errors.position_name_error ? true : false}
                                             errorText={errors.position_name_error}
                                         />

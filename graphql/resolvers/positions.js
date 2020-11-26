@@ -1,14 +1,13 @@
-const { AuthenticationError, UserInputError } = require('apollo-server');
+const { UserInputError } = require('apollo-server');
 
 const { validatePositionInput } = require('../../util/validators');
 const Position = require('../../model/Position');
-const checkAuth = require('../../util/check-auth');
 
 module.exports = {
   Query: {
-    async getPositions(_, args, context) {
+    async getPositions(_, {organizationId}, context) {
       try {
-        const positions = await Position.find().sort({order: 1});
+        const positions = await Position.find({organization_id: organizationId}).sort({order: 1});
         if (positions) {
           return positions;
         } else {
@@ -32,7 +31,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async addPosition(_, { name, core, order }, context) {
+    async addPosition(_, { name, core, organizationId, order }, context) {
       const { valid, errors } = validatePositionInput(name, core);
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -40,6 +39,7 @@ module.exports = {
       const newPosition = new Position({
         name,
         core,
+        organization_id: organizationId,
         order,
         createdAt: new Date().toISOString()
       });
@@ -48,13 +48,23 @@ module.exports = {
 
       return position;
     },
-    async updatePosition(_, { positionId, name, core, order }, context) {
+    async updatePosition(_, { positionId, name, core }, context) {
       try {
         const { valid, errors } = validatePositionInput(name, core);
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }
-        const updatedPosition = await Position.findByIdAndUpdate({ _id: positionId }, { name: name, core: core, order: order }, { new: true });
+
+        const position = await Position.findById(positionId);
+        if(position.order<'9' && core === false){
+          throw new UserInputError("Core value can't be changed for this position", {
+            errors: {
+              position: "Core value can't be changed for this position"
+            }
+          })
+        }
+        
+        const updatedPosition = await Position.findByIdAndUpdate({ _id: positionId }, { name: name, core: core }, { new: true });
 
         return updatedPosition;
       } catch (err) {
@@ -64,8 +74,15 @@ module.exports = {
     async deletePosition(_, { positionId }, context) {
       try {
         const position = await Position.findById(positionId);
+        if(position.order<'9'){
+            throw new UserInputError("This position can't be deleted", {
+              errors: {
+                position: "This position can't be deleted"
+              }
+            })
+        }
         await position.delete();
-        return 'Department deleted successfully';
+        return 'Position deleted successfully';
       } catch (err) {
         throw new Error(err);
       }
