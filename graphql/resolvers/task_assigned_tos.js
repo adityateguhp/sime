@@ -85,7 +85,7 @@ module.exports = {
                 assign.map((data) => {
                     data.deleteOne()
                 })
-                return 'Deleted successfully';
+                return assign;
             } catch (err) {
                 throw new Error(err);
             }

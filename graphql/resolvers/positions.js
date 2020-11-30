@@ -7,7 +7,7 @@ module.exports = {
   Query: {
     async getPositions(_, {organizationId}, context) {
       try {
-        const positions = await Position.find({organization_id: organizationId}).sort({order: 1});
+        const positions = await Position.find({organization_id: organizationId}).sort({core: -1, order: 1});
         if (positions) {
           return positions;
         } else {
@@ -56,7 +56,7 @@ module.exports = {
         }
 
         const position = await Position.findById(positionId);
-        if(position.order<'9' && core === false){
+        if(position.order<'6' && core === false || position.order>'6' && position.order<'9' && core === true){
           throw new UserInputError("Core value can't be changed for this position", {
             errors: {
               position: "Core value can't be changed for this position"

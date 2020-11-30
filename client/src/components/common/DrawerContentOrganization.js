@@ -126,16 +126,16 @@ const DrawerContentOrganization = props => {
                     )}
                     label="User Management"
                     onPress={() => {
-                        props.navigation.navigate('Users Management')
+                        props.navigation.navigate('User Management')
                     }}
                 />
                 <DrawerItem
                     icon={({ color, size }) => (
                         <Icon name="account-multiple-outline" color={color} size={size} />
                     )}
-                    label="Committee"
+                    label="Committee Management"
                     onPress={() => {
-                        props.navigation.navigate('Committees Management')
+                        props.navigation.navigate('Committee Management')
                     }}
                 />
                 <DrawerItem

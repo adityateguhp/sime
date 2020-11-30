@@ -19,7 +19,7 @@ const TopTabUsersManagement = createMaterialTopTabNavigator();
 function TopTabUsersManagements() {
   return (
     <TopTabUsersManagement.Navigator
-      initialRouteName="Staff List"
+      initialRouteName="Staffs"
       backBehavior="none"
       tabBarOptions={{
         activeTintColor: Colors.secondaryColor,
@@ -52,7 +52,7 @@ export default function UsersManagementNavigator({ route, navigation }) {
       }}
     >
       <UsersManagementStack.Screen
-        name="Users Management"
+        name="User Management"
         component={TopTabUsersManagements}
         options={{
           headerLeft: () => (

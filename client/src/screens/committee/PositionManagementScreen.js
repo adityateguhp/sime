@@ -5,20 +5,20 @@ import { Provider, Text, Snackbar, List, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FABbutton from '../../components/common/FABbutton';
-import FormDepartmentPosition from '../../components/user_management/FormDepartmentPosition';
-import FormEditDepartmentPosition from '../../components/user_management/FormEditDepartmentPosition';
-import DepartmentPositionList from '../../components/user_management/DepartmentPositionList';
+import FormPosition from '../../components/committee/FormPosition';
+import FormEditPosition from '../../components/committee/FormEditPosition';
+import PositionList from '../../components/committee/PositionList';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import {
-    FETCH_DEPARTMENT_POSITIONS_QUERY,
-    FETCH_DEPARTMENT_POSITION_QUERY,
-    DELETE_DEPARTMENT_POSITION
+    FETCH_POSITIONS_QUERY,
+    FETCH_POSITION_QUERY,
+    DELETE_POSITION
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
 
-const DepartmentPositionsScreen = ({ navigation }) => {
+const PositionManagementScreen = ({ navigation }) => {
     const sime = useContext(SimeContext);
 
     const [visibleDelete, setVisibleDelete] = useState(false);
@@ -41,24 +41,24 @@ const DepartmentPositionsScreen = ({ navigation }) => {
 
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
-    const [departmentPositionsValue, setDepartmentPositionsValue] = useState([]);
-    const [departmentPositionValue, setDepartmentPositionValue] = useState(null);
+    const [positionsValue, setPositionsValue] = useState([]);
+    const [positionValue, setPositionValue] = useState(null);
 
-    const { data: departmentPositions, error: error1, loading: loading1, refetch } = useQuery(
-        FETCH_DEPARTMENT_POSITIONS_QUERY,
+    const { data: positions, error: error1, loading: loading1, refetch } = useQuery(
+        FETCH_POSITIONS_QUERY,
         {
             variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                setDepartmentPositionsValue(departmentPositions.getDepartmentPositions)
+                setPositionsValue(positions.getPositions)
             }
         }
     );
 
-    const [loadExistData, { called, data: departmentPosition, error: error2 }] = useLazyQuery(
-        FETCH_DEPARTMENT_POSITION_QUERY,
+    const [loadExistData, { called, data: position, error: error2 }] = useLazyQuery(
+        FETCH_POSITION_QUERY,
         {
-            variables: { departmentPositionId: sime.department_position_id },
+            variables: { positionId: sime.position_id },
         });
 
 
@@ -67,11 +67,11 @@ const DepartmentPositionsScreen = ({ navigation }) => {
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     useEffect(() => {
-        if (departmentPosition) setDepartmentPositionValue(departmentPosition.getDepartmentPosition);
+        if (position) setPositionValue(position.getPosition);
         return () => {
             console.log("This will be logged on unmount");
         }
-    }, [departmentPosition])
+    }, [position])
 
 
     const closeModal = () => {
@@ -88,8 +88,8 @@ const DepartmentPositionsScreen = ({ navigation }) => {
 
     const longPressHandler = (name, id) => {
         setVisible(true);
-        sime.setDepartment_position_name(name);
-        sime.setDepartment_position_id(id)
+        sime.setPosition_name(name);
+        sime.setPosition_id(id)
         loadExistData();
     }
 
@@ -102,21 +102,21 @@ const DepartmentPositionsScreen = ({ navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const departmentPositionId = sime.department_position_id;
+    const positionId = sime.position_id;
     const organizationId = sime.user.organization_id;
 
-    const [deleteDepartmentPosition, { loading: loadingDelete }] = useMutation(DELETE_DEPARTMENT_POSITION, {
+    const [deletePosition, { loading: loadingDelete }] = useMutation(DELETE_POSITION, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENT_POSITIONS_QUERY,
+                query: FETCH_POSITIONS_QUERY,
                 variables: { organizationId }
             });
-            departmentPositions.getDepartmentPositions = departmentPositions.getDepartmentPositions.filter((d) => d.id !== departmentPositionId);
-            deleteDepartmentPositionsStateUpdate(departmentPositionId);
-            proxy.writeQuery({ query: FETCH_DEPARTMENT_POSITIONS_QUERY, data, variables: { organizationId } });
+            positions.getPositions = positions.getPositions.filter((d) => d.id !== positionId);
+            deletePositionsStateUpdate(positionId);
+            proxy.writeQuery({ query: FETCH_POSITIONS_QUERY, data, variables: { organizationId } });
         },
         variables: {
-            departmentPositionId
+            positionId
         }
     });
 
@@ -128,51 +128,57 @@ const DepartmentPositionsScreen = ({ navigation }) => {
             {
                 text: 'Yes',
                 style: 'destructive',
-                onPress: deleteDepartmentPosition
+                onPress: deletePosition
             }
         ]);
     };
 
-    const addDepartmentPositionsStateUpdate = (e) => {
-        const temp = [e, ...departmentPositionsValue];
+    const addPositionsStateUpdate = (e) => {
+        const temp = [e, ...positionsValue];
         temp.sort(function (a, b) {
-            var textA = a.name.toUpperCase();
-            var textB = b.name.toUpperCase();
+            var textA = a.order
+            var textB = b.order
 
-            return textA.localeCompare(textB)
+            var coreA = a.core;
+            var coreB = b.core;
+
+            return coreB - coreA || textA - textB
         })
-        setDepartmentPositionsValue(temp);
+        setPositionsValue(temp);
         onToggleSnackBarAdd();
     }
 
-    const deleteDepartmentPositionsStateUpdate = (e) => {
-        const temp = [...departmentPositionsValue];
+    const deletePositionsStateUpdate = (e) => {
+        const temp = [...positionsValue];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e);
         temp.splice(index, 1);
-        setDepartmentPositionsValue(temp);
+        setPositionsValue(temp);
         onToggleSnackBarDelete();
     }
 
-    const updateDepartmentPositionsStateUpdate = (e) => {
-        const temp = [...departmentPositionsValue];
+    const updatePositionsStateUpdate = (e) => {
+        const temp = [...positionsValue];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
         temp[index] = e
         temp.sort(function (a, b) {
-            var textA = a.name.toUpperCase();
-            var textB = b.name.toUpperCase();
+            var textA = a.order
+            var textB = b.order
 
-            return textA.localeCompare(textB)
+            var coreA = a.core;
+            var coreB = b.core;
+
+            return coreB - coreA || textA - textB
         })
-        setDepartmentPositionsValue(temp);
+        setPositionsValue(temp);
         onToggleSnackBarUpdate();
     }
 
-    const updateDepartmentPositionStateUpdate = (e) => {
-        setDepartmentPositionValue(e)
+    const updatePositionStateUpdate = (e) => {
+        setPositionValue(e)
     }
 
     const onRefresh = () => {
@@ -203,7 +209,7 @@ const DepartmentPositionsScreen = ({ navigation }) => {
         <Provider theme={theme}>
              <FlatList
                 style={styles.screen}
-                data={departmentPositionsValue}
+                data={positionsValue}
                 refreshControl={
                     <RefreshControl
                         refreshing={loading1}
@@ -211,8 +217,9 @@ const DepartmentPositionsScreen = ({ navigation }) => {
                 }
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
-                    <DepartmentPositionList
+                    <PositionList
                         name={itemData.item.name}
+                        core={itemData.item.core}
                         onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
                     />
                 )}
@@ -220,25 +227,25 @@ const DepartmentPositionsScreen = ({ navigation }) => {
             <OptionModal
                 visible={visible}
                 closeModal={closeModal}
-                title={sime.department_position_name}
+                title={sime.position_name}
                 openFormEdit={openFormEdit}
                 deleteHandler={deleteHandler}
             />
             <FABbutton Icon="plus" onPress={openForm} />
-            <FormDepartmentPosition
+            <FormPosition
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
-                addDepartmentPositionsStateUpdate={addDepartmentPositionsStateUpdate}
+                addPositionsStateUpdate={addPositionsStateUpdate}
             />
-            <FormEditDepartmentPosition
+            <FormEditPosition
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
-                position={departmentPositionValue}
+                position={positionValue}
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
-                updateDepartmentPositionsStateUpdate={updateDepartmentPositionsStateUpdate}
-                updateDepartmentPositionStateUpdate={updateDepartmentPositionStateUpdate}
+                updatePositionsStateUpdate={updatePositionsStateUpdate}
+                updatePositionStateUpdate={updatePositionStateUpdate}
             />
             <Snackbar
                 visible={visibleAdd}
@@ -292,4 +299,4 @@ const styles = StyleSheet.create({
 
 
 
-export default DepartmentPositionsScreen;
+export default PositionManagementScreen;

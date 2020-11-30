@@ -105,7 +105,7 @@ const FormEditPic = props => {
             if (position.id === personInCharge.position_id
                 && sime.project_id === personInCharge.project_id
                 && values.committeeId === personInCharge.committee_id
-                && position.order < '7'
+                && position.order < '8'
             ) {
                 checkPositions.push(position.id)
             } else {

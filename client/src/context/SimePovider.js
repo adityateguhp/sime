@@ -18,6 +18,7 @@ const SimeProvider = (props) => {
   const [staff_name, setStaff_name] = useState('');
   const [staff_id, setStaff_id] = useState('');
   const [position_id, setPosition_id] = useState('');
+  const [position_name, setPosition_name] = useState('');
   const [committee_id, setCommittee_id] = useState('');
   const [committee_name, setCommittee_name] = useState('');
   const [external_id, setExternal_id] = useState('');
@@ -48,6 +49,7 @@ const SimeProvider = (props) => {
         staff_name,
         staff_id,
         position_id,
+        position_name,
         committee_id,
         committee_name,
         external_id,
@@ -75,6 +77,7 @@ const SimeProvider = (props) => {
         setStaff_name,
         setStaff_id,
         setPosition_id,
+        setPosition_name,
         setCommittee_id,
         setCommittee_name,
         setExternal_id,

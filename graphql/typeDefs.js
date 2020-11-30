@@ -457,7 +457,7 @@ module.exports = gql`
 
         deleteAssignedTaskByPersonInCharge(
             personInChargeId: ID!
-        ): String!
+        ): [Task_assigned_to]
 
         deleteAssignedTaskByTask(
             taskId: ID!

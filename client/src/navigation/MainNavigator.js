@@ -17,7 +17,7 @@ import ProjectNavigator from './organization_navigation/ProjectNavigator'
 import ProjectStaffNavigator from './staff_navigation/ProjectStaffNavigator'
 import DashboardNavigator from './organization_navigation/DashboardNavigator'
 import DashboardStaffNavigator from './staff_navigation/DashboardStaffNavigator'
-import UsersManagementNavigator from './organization_navigation/UsersManagementNavigator'
+import UserManagementNavigator from './organization_navigation/UserManagementNavigator'
 import OrganizationProfileNavigator from './organization_navigation/OrganizationProfileNavigator'
 import StaffProfileNavigator from './staff_navigation/StaffProfileNavigator'
 import StaffAdminProfileNavigator from './organization_navigation/StaffAdminProfileNavigator'
@@ -192,14 +192,14 @@ export default function MainNavigator() {
               }}
             />
             <Drawer.Screen
-              name="Users Management"
-              component={UsersManagementNavigator}
+              name="User Management"
+              component={UserManagementNavigator}
               options={{
                 gestureEnabled: false,
               }}
             />
             <Drawer.Screen
-              name="Committees Management"
+              name="Committee Management"
               component={CommitteeManagementNavigator}
               options={{
                 gestureEnabled: false,
