@@ -89,12 +89,20 @@ module.exports.validateDepartmentInput = (name) => {
 
 module.exports.validateStaffInput = (
     name,
+    department_id,
+    department_position_id,
     email,
     phone_number
 ) => {
     const errors = {};
     if (name.trim() === '') {
         errors.name = 'Staff name must not be empty';
+    }
+    if (department_id.trim() === '') {
+        errors.department_id = 'Department must not be empty';
+    }
+    if (department_position_id.trim() === '') {
+        errors.department_position_id = 'Position must not be empty';
     }
     if (email.trim() === '') {
         errors.email = 'Email address must not be empty';
@@ -103,6 +111,10 @@ module.exports.validateStaffInput = (
         if (!email.match(regEx)) {
             errors.email = 'Ooops! We need a valid email address';
         }
+    }
+
+    if (phone_number.trim() === '') {
+        errors.phone_number = 'Phone number must not be empty';
     }
 
     return {
@@ -290,18 +302,13 @@ module.exports.validateExternalTypeInput = (name) => {
 
 
 module.exports.validatePositionInput = (
-    name,
-    core
+    name
 ) => {
     const errors = {};
     if (name.trim() === '') {
         errors.name = 'Position name must not be empty';
     }
-
-    if (core === null) {
-        errors.start_date = 'Core status must not be empty';
-    }
-
+    
     return {
         errors,
         valid: Object.keys(errors).length < 1
@@ -345,7 +352,7 @@ module.exports.validatePersonInChargeInput = (
     }
     if (committeId.trim() === '') {
         errors.committeId = 'Committee must not be empty';
-    } 
+    }
     if (positionId.trim() === '') {
         errors.positionId = 'Position must not be empty';
     }

@@ -26,7 +26,7 @@ export default function OrganizationProfileNavigator({ route, navigation }) {
       <OrganizationProfileStack.Screen name="Organization Profile" component={OrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Profile Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
           </View>),
         headerLeft: () => (
           <HeaderButtons HeaderButtonComponent={HeaderButton}>

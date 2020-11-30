@@ -11,8 +11,6 @@ module.exports = {
         const positions = await Department_position.find({organization_id: organizationId}).sort({order: 1});
         if (positions) {
           return positions;
-        } else {
-          throw new Error('Positions not found');
         }
       } catch (err) {
         throw new Error(err);
@@ -23,8 +21,6 @@ module.exports = {
         const position = await Department_position.findById(departmentPositionId);
         if (position) {
           return position;
-        } else {
-          throw new Error('Position not found');
         }
       } catch (err) {
         throw new Error(err);

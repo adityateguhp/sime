@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List } from 'react-native-paper';
+import { Avatar, List, Chip } from 'react-native-paper';
+import Colors from '../../constants/Colors';
 
 const StaffList = props => {
     let TouchableCmp = TouchableOpacity;
@@ -17,6 +18,11 @@ const StaffList = props => {
                     title={props.name}
                     description={props.email}
                     left={() => <Avatar.Image size={50} source={props.picture ? { uri: props.picture } : require('../../assets/avatar.png')} />}
+                    right={() => props.isAdmin ?
+                        <View style={{ alignSelf: "center" }}>
+                            <Chip mode="outlined" style={{borderColor: Colors.primaryColor}} textStyle={{color: Colors.secondaryColor}}>Admin</Chip>
+                        </View>
+                        : null}
                 />
             </View>
         </TouchableCmp>
@@ -26,7 +32,7 @@ const StaffList = props => {
 
 const styles = StyleSheet.create({
     staff: {
-        marginLeft: 10,
+        marginHorizontal: 10,
         marginTop: 3
     },
     wrap: {

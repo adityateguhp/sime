@@ -21,7 +21,7 @@ const FormDepartment = props => {
 
     const [values, setValues] = useState({
         name: '',
-        organizationId: sime.user.id
+        organizationId: sime.user.organization_id
     });
 
     const onChange = (key, val, err) => {
@@ -33,11 +33,11 @@ const FormDepartment = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_DEPARTMENTS_QUERY,
-                variables: {organizationId: sime.user.id}
+                variables: {organizationId: sime.user.organization_id}
             });
             data.getDepartments = [result.data.addDepartment, ...data.getDepartments];
             props.addDepartmentsStateUpdate(result.data.addDepartment);
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.id} });
+            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: {organizationId: sime.user.organization_id} });
             values.name = '';
             props.closeModalForm();
         },

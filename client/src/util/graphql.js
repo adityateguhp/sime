@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+//ORGANIZATION
+
 export const FETCH_ORGANIZATION_QUERY = gql`
    query($organizationId: ID!){
     getOrganization(organizationId: $organizationId){
@@ -8,18 +10,23 @@ export const FETCH_ORGANIZATION_QUERY = gql`
         email
         description
         picture
+        address
+        phone_number
         createdAt
   }
 }
 `;
 
 export const ADD_ORGANIZATION = gql`
-  mutation addOrganization($name: String, $email: String, $description: String, $picture: String!) {
-    addOrganization(name: $name, email: $email, description: $description, picture: $picture) {
+  mutation addOrganization($name: String, $email: String, $description: String, $picture: String, $address: String, $phone_number:String) {
+    addOrganization(name: $name, email: $email, description: $description, picture: $picture, address: $address, phone_number: $phone_number) {
       id
       name
+      email
       description
       picture
+      address
+      phone_number
       createdAt
     }
   }
@@ -32,6 +39,8 @@ mutation updateOrganization(
   $email: String!
   $description: String
   $picture: String
+  $address: String
+  $phone_number:String
 ) {
   updateOrganization(
       organizationId: $organizationId
@@ -39,16 +48,23 @@ mutation updateOrganization(
       email: $email
       description: $description
       picture: $picture
+      address: $address
+      phone_number: $phone_number
   ) {
       id
       name
       description
       email
       picture
+      address
+      phone_number
       createdAt
   }
 }
 `;
+
+
+//STAFF
 
 export const LOGIN_STAFF = gql`
   mutation loginStaff($email: String!, $password: String!) {
@@ -62,6 +78,7 @@ export const LOGIN_STAFF = gql`
     token
     phone_number
     picture
+    isAdmin
     createdAt
     }
   }
@@ -89,6 +106,7 @@ mutation registerStaff(
     token
     phone_number
     picture
+    isAdmin
     createdAt
   }
 }
@@ -105,13 +123,14 @@ export const FETCH_STAFFS_QUERY = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   }
 `;
 
 export const FETCH_STAFFSBYDEPARTMENT_QUERY = gql`
-  query($departmentId: ID!) {
+  query($departmentId: ID) {
     getStaffsByDepartment(departmentId: $departmentId){
     id
     name
@@ -121,6 +140,7 @@ export const FETCH_STAFFSBYDEPARTMENT_QUERY = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   }
@@ -137,6 +157,7 @@ export const FETCH_STAFF_QUERY = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   }
@@ -146,13 +167,14 @@ export const ADD_STAFF_MUTATION = gql`
   mutation 
   addStaff(
     $name: String!,
-    $department_position_id: String!,
-    $department_id: ID!, 	
+    $department_position_id: ID,
+    $department_id: ID, 	
     $email: String!,
-    $phone_number: String!,
+    $phone_number: String,
     $password: String!,
     $picture: String,
-    $organizationId: ID!
+    $organizationId: ID!,
+    $isAdmin: Boolean!
   ) {
   addStaff(
     name: $name,
@@ -162,7 +184,8 @@ export const ADD_STAFF_MUTATION = gql`
     phone_number: $phone_number,
     password: $password,
     picture: $picture,
-    organizationId: $organizationId
+    organizationId: $organizationId,
+    isAdmin: $isAdmin
   ) {
     id
     name
@@ -172,6 +195,7 @@ export const ADD_STAFF_MUTATION = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   } 
@@ -195,6 +219,7 @@ export const ADD_ORGANIZATION_STAFF_MUTATION = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   } 
@@ -205,11 +230,12 @@ export const UPDATE_STAFF_MUTATION = gql`
   updateStaff(
     $staffId: ID!,
     $name: String!,
-    $department_position_id: String!,
-    $department_id: ID!, 	
+    $department_position_id: ID,
+    $department_id: ID, 	
     $email: String!,
-    $phone_number: String!,
-    $picture: String
+    $phone_number: String,
+    $picture: String,
+    $isAdmin: Boolean!
   ) {
   updateStaff(
     staffId: $staffId,
@@ -218,7 +244,8 @@ export const UPDATE_STAFF_MUTATION = gql`
     department_id: $department_id, 
     email: $email,
     phone_number: $phone_number,
-    picture: $picture
+    picture: $picture,
+    isAdmin: $isAdmin
   ) {
     id
     name
@@ -228,6 +255,7 @@ export const UPDATE_STAFF_MUTATION = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   } 
@@ -255,6 +283,7 @@ export const UPDATE_PASSWORD_STAFF_MUTATION = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   } 
@@ -276,6 +305,7 @@ export const RESET_PASSWORD_STAFF_MUTATION = gql`
     email
     phone_number
     picture
+    isAdmin
     createdAt
   }
   } 
@@ -294,6 +324,8 @@ export const DELETE_STAFF_BYDEPARTMENT = gql`
 `;
 
 
+//DEPARTMENT
+
 export const FETCH_DEPARTMENTS_QUERY = gql`
    query($organizationId: ID!){
     getDepartments(organizationId: $organizationId){
@@ -306,7 +338,7 @@ export const FETCH_DEPARTMENTS_QUERY = gql`
 `;
 
 export const FETCH_DEPARTMENT_QUERY = gql`
-   query($departmentId: ID!) {
+   query($departmentId: ID) {
     getDepartment(departmentId: $departmentId){
     id
     name
@@ -343,6 +375,9 @@ export const DELETE_DEPARTMENT = gql`
     deleteDepartment(departmentId: $departmentId, organizationId: $organizationId)
   }
 `;
+
+
+//PROJECT
 
 export const FETCH_PROJECTS_QUERY = gql`
 query($organizationId: ID!){
@@ -439,6 +474,9 @@ export const DELETE_PROJECT = gql`
     deleteProject(projectId: $projectId)
   }
 `;
+
+
+//EVENT
 
 export const FETCH_EVENTS_QUERY = gql`
   query($projectId: ID!) {
@@ -544,6 +582,9 @@ export const DELETE_EVENT = gql`
   }
 `;
 
+
+//POSITION
+
 export const FETCH_POSITIONS_QUERY = gql`
   query($organizationId: ID!){
     getPositions(organizationId: $organizationId){
@@ -602,6 +643,9 @@ export const DELETE_POSITION = gql`
   }
 `;
 
+
+//COMMITTEE
+
 export const FETCH_COMMITTEES_QUERY = gql`
    query($organizationId: ID!){
     getCommittees(organizationId: $organizationId){
@@ -655,6 +699,9 @@ export const DELETE_COMMITTEE = gql`
     deleteCommittee(committeeId: $committeeId)
   }
 `;
+
+
+//PIC
 
 export const FETCH_PICS_QUERY = gql`
   query($projectId: ID!){
@@ -809,6 +856,9 @@ export const DELETE_PIC_BYSTAFF = gql`
   }
 `;
 
+
+//EXTERNAL_TYPE
+
 export const FETCH_EXTERNALTYPES_QUERY = gql`
   {
     getExternalTypes{
@@ -827,6 +877,9 @@ export const FETCH_EXTERNALTYPE_QUERY = gql`
   }
 `;
 
+
+//EXTERNAL
+
 export const FETCH_EXTERNALS_QUERY = gql`
   query($eventId: ID!){
     getExternals(eventId: $eventId){
@@ -843,6 +896,7 @@ export const FETCH_EXTERNALS_QUERY = gql`
   }
   }
 `;
+
 
 export const FETCH_EXTERNAL_QUERY = gql`
    query($externalId: ID!) {
@@ -950,6 +1004,9 @@ export const DELETE_EXTERNAL = gql`
   }
 `;
 
+
+//ROADMAP
+
 export const FETCH_ROADMAPS_QUERY = gql`
   query($eventId: ID!) {
     getRoadmaps(eventId: $eventId){
@@ -1041,6 +1098,9 @@ export const DELETE_ROADMAP = gql`
     deleteRoadmap(roadmapId: $roadmapId)
   }
 `;
+
+
+//RUNDOWN
 
 export const FETCH_RUNDOWNS_QUERY = gql`
   query($eventId: ID!) {
@@ -1144,6 +1204,8 @@ export const DELETE_RUNDOWN = gql`
   }
 `;
 
+
+//TASK
 
 export const FETCH_TASKS_QUERY = gql`
   query($roadmapId: ID!) {
@@ -1310,6 +1372,9 @@ export const COMPLETED_TASK = gql`
   }
 `;
 
+
+//TASK_ASSIGNED_TO
+
 export const FETCH_ASSIGNED_TASKS_QUERY = gql`
   query($roadmapId: ID!){
     getAssignedTasks(roadmapId: $roadmapId){
@@ -1407,8 +1472,11 @@ export const DELETE_ASSIGNED_TASK_BYTASK = gql`
   }
 `;
 
+
+//DEPARTMENT_POSITION
+
 export const FETCH_DEPARTMENT_POSITIONS_QUERY = gql`
-  query($organizationId: ID!){
+  query($organizationId: ID){
     getDepartmentPositions(organizationId: $organizationId){
     id
     name

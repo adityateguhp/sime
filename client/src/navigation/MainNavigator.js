@@ -20,6 +20,7 @@ import DashboardStaffNavigator from './staff_navigation/DashboardStaffNavigator'
 import UsersManagementNavigator from './organization_navigation/UsersManagementNavigator'
 import OrganizationProfileNavigator from './organization_navigation/OrganizationProfileNavigator'
 import StaffProfileNavigator from './staff_navigation/StaffProfileNavigator'
+import StaffAdminProfileNavigator from './organization_navigation/StaffAdminProfileNavigator'
 import StaffOrganizationProfileNavigator from './staff_navigation/StaffOrganizationProfileNavigator'
 import MyTasksStaffNavigator from './staff_navigation/MyTasksStaffNavigator'
 import MyTasksNavigator from './organization_navigation/MyTasksNavigator'
@@ -177,6 +178,13 @@ export default function MainNavigator() {
               component={BottomTabs}
             />
             <Drawer.Screen
+              name="Staff Profile"
+              component={StaffAdminProfileNavigator}
+              options={{
+                gestureEnabled: false,
+              }}
+            />
+            <Drawer.Screen
               name="Organization Profile"
               component={OrganizationProfileNavigator}
               options={{
@@ -190,7 +198,7 @@ export default function MainNavigator() {
                 gestureEnabled: false,
               }}
             />
-             <Drawer.Screen
+            <Drawer.Screen
               name="Committees Management"
               component={CommitteeManagementNavigator}
               options={{

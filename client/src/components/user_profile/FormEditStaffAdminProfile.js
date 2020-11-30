@@ -9,13 +9,13 @@ import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
 import { staffNameValidator, positionValidator, emailValidator, phoneNumberValidator, departmentValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENT_POSITION_QUERY, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY, UPDATE_STAFF_MUTATION, FETCH_DEPARTMENT_POSITION_QUERY, FETCH_DEPARTMENT_QUERY } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import LoadingModal from '../common/LoadingModal';
 import { theme } from '../../constants/Theme';
 
-const FormEditStaff = props => {
+const FormEditStaffProfile = props => {
 
     const sime = useContext(SimeContext);
 
@@ -29,12 +29,6 @@ const FormEditStaff = props => {
         department_error: ''
     });
 
-    const adminValue = [
-        { value: true, label: "Yes" },
-        { value: false, label: "No" }
-    ]
-
-
     const [values, setValues] = useState({
         staffId: '',
         name: '',
@@ -43,8 +37,7 @@ const FormEditStaff = props => {
         email: '',
         phone_number: '',
         picture: null,
-        organizationId: '',
-        isAdmin: false
+        organizationId: ''
     });
 
     const checkPosition = props.positions.find((e) => e.id === values.department_position_id)
@@ -81,7 +74,6 @@ const FormEditStaff = props => {
             if (response.customButton) {
                 setValues({ ...values, picture: '' });
             }
-
             let apiUrl = 'https://api.cloudinary.com/v1_1/sime/image/upload';
 
             let data = {
@@ -129,12 +121,12 @@ const FormEditStaff = props => {
     const [updateStaff, { loading }] = useMutation(UPDATE_STAFF_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_STAFFS_QUERY,
-                variables: { organizationId: sime.user.organization_id }
+                query: FETCH_STAFF_QUERY,
+                variables: { staffId: sime.user.id }
             });
-            props.updateStaffsStateUpdate(result.data.updateStaff);
             props.updateStaffStateUpdate(result.data.updateStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
+            sime.setUser(result.data.updateStaff)
+            proxy.writeQuery({ query: FETCH_STAFF_QUERY, data, variables: { staffId: sime.user.id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -143,7 +135,7 @@ const FormEditStaff = props => {
             const phoneNumberError = phoneNumberValidator(values.phone_number);
             const positionError = positionValidator(values.department_position_id);
             const departmentError = departmentValidator(values.department_id);
-            if (staffNameError || emailError || phoneNumberError || positionError || departmentError) {
+            if ( staffNameError || emailError || phoneNumberError || positionError || departmentError ) {
                 setErrors({
                     ...errors,
                     staff_name_error: staffNameError,
@@ -199,7 +191,7 @@ const FormEditStaff = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeModalForm} />
                             <Appbar.Content title="Edit Staff" />
-                            {sime.user.id === values.staffId ? null : <Appbar.Action icon="delete" onPress={props.deleteButton} />}
+                            {props.deleteButtonVisible ? <Appbar.Action icon="delete" onPress={props.deleteButton} /> : null}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <KeyboardAvoidingView
@@ -213,7 +205,7 @@ const FormEditStaff = props => {
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture ? { uri: values.picture } : require('../../assets/avatar.png')} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
                                     </View>
-                                    <View style={errors.staff_name_error ? null : styles.inputStyle}>
+                                    <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Name'
@@ -250,7 +242,7 @@ const FormEditStaff = props => {
                                         />
                                         {errors.position_error ? <Text style={styles.error}>{errors.position_error}</Text> : null}
                                     </View>
-                                    <View style={errors.email_error ? null : styles.inputStyle}>
+                                    <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
@@ -275,15 +267,6 @@ const FormEditStaff = props => {
                                             error={errors.phone_number_error ? true : false}
                                             errorText={errors.phone_number_error}
                                             keyboardType="phone-pad"
-                                        />
-                                    </View>
-                                    <View style={styles.inputStyle}>
-                                        <Dropdown
-                                            label='Admin'
-                                            value={values.isAdmin}
-                                            data={adminValue}
-                                            onChangeText={(val) => onChange('isAdmin', val, '')}
-                                            useNativeDriver={true}
                                         />
                                     </View>
                                 </View>
@@ -342,4 +325,5 @@ const styles = StyleSheet.create({
 });
 
 
-export default FormEditStaff;
+export default FormEditStaffProfile
+    ;

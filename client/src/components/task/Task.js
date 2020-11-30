@@ -279,7 +279,7 @@ const Task = props => {
                 projectId={props.task.project_id}
                 committeeId={committeeId}
                 name={props.task.name}
-                assignedTasks={props.assignedTasks}
+                assignedTasks={filterAssignedTask}
                 checkAssignedTask={checkAssignedTask}
                 personInCharges={props.personInCharges}
                 userPersonInCharge={userPersonInCharge}

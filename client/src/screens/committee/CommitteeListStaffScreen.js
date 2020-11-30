@@ -15,11 +15,6 @@ import {
     FETCH_STAFFS_QUERY,
     FETCH_POSITIONS_QUERY,
     FETCH_PICS_QUERY,
-    DELETE_COMMITTEE,
-    FETCH_COMMITTEE_QUERY,
-    FETCH_PICS_IN_COMMITTEE_QUERY,
-    DELETE_PIC_BYCOMMITTEE,
-    DELETE_ASSIGNED_TASK_BYPIC,
     FETCH_PICS_BYSTAFF_PROJECT_QUERY
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
@@ -78,6 +73,7 @@ const CommitteeListStaffScreen = ({ navigation }) => {
     const { data: positions, error: errorPositions, loading: loadingPositions, refetch: refetchPositions } = useQuery(
         FETCH_POSITIONS_QUERY,
         {
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setPositionValue(positions.getPositions) }
         }
@@ -275,11 +271,11 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                 }
             >
                 <Text>No commitees found, let's add commitees!</Text>
-                { sime.order === '1'
-                    || sime.order === '2'
-                    || sime.order === '3'
-                    || sime.order === '6'
-                    || sime.order === '7' ?
+                { sime.user_type === 'Staff' && sime.order === '1'
+                    || sime.user_type === 'Staff' && sime.order === '2'
+                    || sime.user_type === 'Staff' && sime.order === '3'
+                    || sime.user_type === 'Staff' && sime.order === '6'
+                    || sime.user_type === 'Staff' && sime.order === '7' ?
                     <FABbutton Icon="plus" onPress={openForm} /> : null}
                 <FormPic
                     closeModalForm={closeModalForm}
@@ -356,11 +352,11 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                     <View style={{ marginTop: 7 }}></View>
                 )}
             />
-            { sime.order === '1'
-                || sime.order === '2'
-                || sime.order === '3'
-                || sime.order === '6'
-                || sime.order === '7' ?
+            { sime.user_type === 'Staff' && sime.order === '1'
+                || sime.user_type === 'Staff' && sime.order === '2'
+                || sime.user_type === 'Staff' && sime.order === '3'
+                || sime.user_type === 'Staff' && sime.order === '6'
+                || sime.user_type === 'Staff' && sime.order === '7' ?
                 <FABbutton Icon="plus" onPress={openForm} /> : null}
             <FormPic
                 openForm={openForm}

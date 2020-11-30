@@ -17,7 +17,7 @@ import { useLazyQuery } from '@apollo/react-hooks';
 
 import { AuthContext } from '../../context/auth';
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY } from '../../util/graphql';
 
 
 const DrawerContentOrganization = props => {
@@ -33,41 +33,43 @@ const DrawerContentOrganization = props => {
 
     const [userId, setUserId] = useState(null)
 
+    const [userOrganizationId, setUserOrganizationId] = useState(null)
+
     const [userData, setUserData] = useState({
         id: '',
         name: '',
         email: '',
-        picture: ''
+        picture: '',
     })
 
-    const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
-        FETCH_ORGANIZATION_QUERY, {
+    const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+        FETCH_STAFF_QUERY, {
         variables: {
-            organizationId: userId
+            staffId: userId
         }
     });
 
     useEffect(() => {
         if (sime.user) {
             setUserId(sime.user.id)
-            sime.setUser_type(sime.user.__typename)
+            if (sime.user.user_type) {
+                sime.setUser_type(sime.user.user_type)
+            }
             loadData();
-            if (organization) {
+            if (staff) {
                 setUserData({
-                    id: organization.getOrganization.id,
-                    name: organization.getOrganization.name,
-                    email: organization.getOrganization.email,
-                    picture: organization.getOrganization.picture
+                    id: staff.getStaff.id,
+                    name: staff.getStaff.name,
+                    email: staff.getStaff.email,
+                    picture: staff.getStaff.picture
                 })
-                sime.setUser(organization.getOrganization)
-                sime.setUser_type(organization.getOrganization.__typename)
+                sime.setUser(staff.getStaff)
             }
         }
         return () => {
             console.log("This will be logged on unmount");
         }
-    }, [sime.user, organization])
-
+    }, [sime.user, staff])
 
     return (
         <DrawerContentScrollView {...props}>
@@ -89,7 +91,7 @@ const DrawerContentOrganization = props => {
                             }}
                         >
                             <Avatar.Image
-                                source={userData.picture? { uri: userData.picture } : require('../../assets/avatar.png')}
+                                source={userData.picture ? { uri: userData.picture } : require('../../assets/avatar.png')}
                                 size={60}
                             />
                         </TouchableOpacity>
@@ -104,6 +106,16 @@ const DrawerContentOrganization = props => {
                     )}
                     label="Profile"
                     onPress={() => {
+                        props.navigation.navigate('Staff Profile')
+                    }}
+                />
+
+                <DrawerItem
+                    icon={({ color, size }) => (
+                        <Icon name="office-building" color={color} size={size} />
+                    )}
+                    label="My Organization"
+                    onPress={() => {
                         props.navigation.navigate('Organization Profile')
                     }}
                 />
@@ -117,7 +129,7 @@ const DrawerContentOrganization = props => {
                         props.navigation.navigate('Users Management')
                     }}
                 />
-                  <DrawerItem
+                <DrawerItem
                     icon={({ color, size }) => (
                         <Icon name="account-multiple-outline" color={color} size={size} />
                     )}

@@ -53,7 +53,7 @@ const CommitteeListScreen = ({ navigation }) => {
     const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
-            variables: { organizationId: sime.user.id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setCommitteesValue(committees.getCommittees) }
         }
@@ -62,7 +62,7 @@ const CommitteeListScreen = ({ navigation }) => {
     const { data: staffs, error: errorStaffs, loading: loadingStaffs, refetch: refetchStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
-            variables: { organizationId: sime.user.id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setStaffsValue(staffs.getStaffs) }
         }
@@ -71,6 +71,7 @@ const CommitteeListScreen = ({ navigation }) => {
     const { data: positions, error: errorPositions, loading: loadingPositions, refetch: refetchPositions } = useQuery(
         FETCH_POSITIONS_QUERY,
         {
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setPositionValue(positions.getPositions) }
         }

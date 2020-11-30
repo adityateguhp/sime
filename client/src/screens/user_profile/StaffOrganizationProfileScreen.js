@@ -66,7 +66,7 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                     </Paragraph>
                     <Divider />
                     <Title style={styles.titleInfo}>
-                        description
+                        Description
                 </Title>
                     <Paragraph>
                         {organization.getOrganization.description}

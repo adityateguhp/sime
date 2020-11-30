@@ -54,7 +54,7 @@ const RoadmapScreen = ({ route, navigation }) => {
     const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
         FETCH_COMMITTEES_QUERY,
         {
-            variables: { organizationId: sime.user_type === "Organization" ? sime.user.id : sime.user.organization_id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setCommitteesValue(committees.getCommittees) }
         }
@@ -288,11 +288,11 @@ const RoadmapScreen = ({ route, navigation }) => {
             >
                 <Text>No roadmaps found, let's add roadmaps!</Text>
                 {  sime.user_type === "Organization"
-                    || sime.order === '1'
-                    || sime.order === '2'
-                    || sime.order === '3'
-                    || sime.order === '6'
-                    || sime.order === '7' ?
+                    || sime.user_type === 'Staff' && sime.order === '1'
+                    || sime.user_type === 'Staff' && sime.order === '2'
+                    || sime.user_type === 'Staff' && sime.order === '3'
+                    || sime.user_type === 'Staff' && sime.order === '6'
+                    || sime.user_type === 'Staff' && sime.order === '7' ?
                     <FABbutton Icon="plus" onPress={openForm} /> : null}
                 <FormRoadmap
                     closeModalForm={closeModalForm}
@@ -364,11 +364,11 @@ const RoadmapScreen = ({ route, navigation }) => {
                 deleteHandler={deleteHandler}
             />
             {  sime.user_type === "Organization"
-                || sime.order === '1'
-                || sime.order === '2'
-                || sime.order === '3'
-                || sime.order === '6'
-                || sime.order === '7' ?
+                || sime.user_type === 'Staff' && sime.order === '1'
+                || sime.user_type === 'Staff' && sime.order === '2'
+                || sime.user_type === 'Staff' && sime.order === '3'
+                || sime.user_type === 'Staff' && sime.order === '6'
+                || sime.user_type === 'Staff' && sime.order === '7' ?
                 <FABbutton Icon="plus" onPress={openForm} /> : null}
             <FormRoadmap
                 closeModalForm={closeModalForm}

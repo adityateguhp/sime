@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, ScrollView, View, RefreshControl } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider } from 'react-native-paper';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
@@ -8,11 +8,12 @@ import {
     FETCH_PIC_QUERY,
     FETCH_STAFF_QUERY,
     FETCH_DEPARTMENT_QUERY,
+    FETCH_DEPARTMENT_POSITION_QUERY,
     FETCH_POSITION_QUERY,
     FETCH_COMMITTEE_QUERY
 } from '../../util/graphql';
 
-const PersonInChargeProfileScreen = ({ route }) => {
+const PersonInChargeProfileScreen = ({ route, navigation }) => {
 
     const [personInCharge, setPersonInCharge] = useState({
         staff_id: '',
@@ -25,7 +26,7 @@ const PersonInChargeProfileScreen = ({ route }) => {
         email: '',
         phone_number: '',
         picture: '',
-        position_name: '',
+        department_position_id: '',
         department_id: ''
     });
 
@@ -41,13 +42,18 @@ const PersonInChargeProfileScreen = ({ route }) => {
         name: ''
     });
 
+    const [departmentPosition, setDepartmentPosition] = useState({
+        name: ''
+    });
+
     const picId = route.params?.personInChargeId;
 
-    const { data: personInChargeData, error: error1, loading: loading1 } = useQuery(
+    const { data: personInChargeData, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_PIC_QUERY, {
         variables: {
             personInChargeId: picId
         },
+        notifyOnNetworkStatusChange: true,
         onCompleted: () => {
             setPersonInCharge({
                 position_id: personInChargeData.getPersonInCharge.position_id,
@@ -65,17 +71,6 @@ const PersonInChargeProfileScreen = ({ route }) => {
         FETCH_STAFF_QUERY, {
         variables: {
             staffId: personInCharge.staff_id
-        },
-        onCompleted: () => {
-            setStaff({
-                name: staffData.getStaff.name,
-                email: staffData.getStaff.email,
-                phone_number: staffData.getStaff.phone_number,
-                picture: staffData.getStaff.picture,
-                department_id: staffData.getStaff.department_id,
-                position_name: staffData.getStaff.position_name
-            })
-            loadDepartmentData();
         }
     });
 
@@ -83,11 +78,13 @@ const PersonInChargeProfileScreen = ({ route }) => {
         FETCH_DEPARTMENT_QUERY, {
         variables: {
             departmentId: staff.department_id
-        },
-        onCompleted: () => {
-            setDepartment({
-                name: departmentData.getDepartment.name
-            })
+        }
+    });
+
+    const [loadDepartmentPositionData, { called: called5, data: departmentPositionData, error: error6, loading: loading6 }] = useLazyQuery(
+        FETCH_DEPARTMENT_POSITION_QUERY, {
+        variables: {
+            departmentPositionId: staff.department_position_id
         }
     });
 
@@ -95,11 +92,6 @@ const PersonInChargeProfileScreen = ({ route }) => {
         FETCH_POSITION_QUERY, {
         variables: {
             positionId: personInCharge.position_id
-        },
-        onCompleted: () => {
-            setPosition({
-                name: positionData.getPosition.name
-            })
         }
     });
 
@@ -107,13 +99,112 @@ const PersonInChargeProfileScreen = ({ route }) => {
         FETCH_COMMITTEE_QUERY, {
         variables: {
             committeeId: personInCharge.committee_id
-        },
-        onCompleted: () => {
-            setCommittee({
-                name: committeeData.getCommittee.name
-            })
         }
     });
+
+    useEffect(() => {
+        if (staffData) {
+            setStaff({
+                name: staffData.getStaff.name,
+                email: staffData.getStaff.email,
+                phone_number: staffData.getStaff.phone_number,
+                picture: staffData.getStaff.picture,
+                department_id: staffData.getStaff.department_id,
+                department_position_id: staffData.getStaff.department_position_id
+            })
+            loadDepartmentData();
+            loadDepartmentPositionData();
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [staffData])
+
+
+    useEffect(() => {
+        if (departmentData) {
+            if (departmentData.getDepartment) {
+                setDepartment({
+                    name: departmentData.getDepartment.name
+                })
+            } else {
+                setDepartment({
+                    name: ''
+                })
+            }
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [departmentData])
+
+
+    useEffect(() => {
+        if (departmentPositionData) {
+            if (departmentPositionData.getDepartmentPosition) {
+                setDepartmentPosition({
+                    name: departmentPositionData.getDepartmentPosition.name
+                })
+            } else {
+                setDepartmentPosition({
+                    name: ''
+                })
+            }
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [departmentPositionData])
+
+
+    useEffect(() => {
+        if (positionData) {
+            if (positionData.getPosition) {
+                setPosition({
+                    name: positionData.getPosition.name
+                })
+            } else {
+                setPosition({
+                    name: ''
+                })
+            }
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [positionData])
+
+
+    useEffect(() => {
+        if (committeeData) {
+            if (committeeData.getCommittee) {
+                setCommittee({
+                    name: committeeData.getCommittee.name
+                })
+            } else {
+                setCommittee({
+                    name: ''
+                })
+            }
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [committeeData])
+
+
+    const onRefresh = () => {
+        refetch();
+    };
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            onRefresh();
+        });
+
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     if (error1) {
         console.error(error1);
@@ -136,9 +227,15 @@ const PersonInChargeProfileScreen = ({ route }) => {
     }
 
     if (called4 && error5) {
-        console.error(error4);
-        return <Text>Error 4</Text>;
+        console.error(error5);
+        return <Text>Error 5</Text>;
     }
+
+    if (called5 && error6) {
+        console.error(error6);
+        return <Text>Error 6</Text>;
+    }
+
 
     if (loading1) {
         return <CenterSpinner />;
@@ -160,11 +257,22 @@ const PersonInChargeProfileScreen = ({ route }) => {
         return <CenterSpinner />;
     }
 
+    if (loading6) {
+        return <CenterSpinner />;
+    }
+
     return (
-        <ScrollView style={styles.screen}>
+        <ScrollView
+            style={styles.screen}
+            refreshControl={
+                <RefreshControl
+                    refreshing={loading1 && loading2 && loading3 && loading4 && loading5 && loading6}
+                    onRefresh={onRefresh} />
+            }
+        >
             <View style={styles.profilePicture}>
                 <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.picture ? { uri: staff.picture } : require('../../assets/avatar.png')} />
-                <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{staff.name}</Headline>
+                <Headline style={{ marginHorizontal: 15 }} numberOfLines={1} ellipsizeMode='tail'>{staff.name}</Headline>
             </View>
             <Divider />
             <View style={styles.profileDetails}>
@@ -186,7 +294,7 @@ const PersonInChargeProfileScreen = ({ route }) => {
                     Position in {department.name}
                 </Title>
                 <Paragraph>
-                    {staff.position_name}
+                    {departmentPosition.name}
                 </Paragraph>
                 <Divider />
                 <Title style={styles.titleInfo}>

@@ -12,8 +12,6 @@ module.exports = {
         const departments = await Department.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ name: 1 });
         if (departments) {
           return departments;
-        } else {
-          throw new Error('Departments not found');
         }
       } catch (err) {
         throw new Error(err);
@@ -24,8 +22,6 @@ module.exports = {
         const department = await Department.findById(departmentId);
         if (department) {
           return department;
-        } else {
-          throw new Error('Department not found');
         }
       } catch (err) {
         throw new Error(err);

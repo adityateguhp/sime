@@ -17,12 +17,15 @@ module.exports = {
     }
   },
   Mutation: {
-    async addOrganization(_, { name, description, picture }, context, info) {
+    async addOrganization(_, { name, email, description, picture, address, phone_number }, context, info) {
 
       const newOrganization = new Organization({
         name,
+        email,
         description,
         picture,
+        address,
+        phone_number,
         createdAt: new Date().toISOString()
       });
 
@@ -33,16 +36,22 @@ module.exports = {
     async updateOrganization(_, {
       organizationId,
       name,
+      email,
       description,
-      picture
+      picture,
+      address,
+      phone_number
     }, context) {
 
       const updatedOrganization = await Organization.findByIdAndUpdate(
         { _id: organizationId },
         {
           name: name,
+          email: email,
           description: description,
-          picture: picture
+          picture: picture,
+          address: address,
+          phone_number: phone_number
         },
         { new: true });
 

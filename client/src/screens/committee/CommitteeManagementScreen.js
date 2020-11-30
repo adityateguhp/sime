@@ -54,7 +54,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
   const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
     FETCH_COMMITTEES_QUERY,
     {
-      variables: { organizationId: sime.user.id },
+      variables: { organizationId: sime.user.organization_id },
       notifyOnNetworkStatusChange: true,
       onCompleted: () => { setCommitteesValue(committees.getCommittees) }
     }
@@ -185,7 +185,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
     update(proxy) {
       const data = proxy.readQuery({
         query: FETCH_COMMITTEES_QUERY,
-        variables: { organizationId: sime.user.id },
+        variables: { organizationId: sime.user.organization_id },
       });
       data.getCommittees = data.getCommittees.filter((d) => d.id !== committeeId);
       deleteCommitteesStateUpdate(committeeId);
@@ -196,7 +196,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
         variables: { committeeId }
       })
       deleteAssignedTaskByPersonInChargeHandler();
-      proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: sime.user.id } });
+      proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: sime.user.organization_id } });
     },
     variables: {
       committeeId
@@ -279,6 +279,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
         renderItem={itemData => (
           <CommitteeCard
             name={itemData.item.name}
+            core={itemData.item.core}
             onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
           />
         )}

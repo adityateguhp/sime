@@ -31,7 +31,7 @@ const FormPic = props => {
         positionId: '',
         committeeId: '',
         projectId: sime.project_id,
-        organizationId: sime.user_type === "Organization" ? sime.user.id : sime.user.organization_id,
+        organizationId: sime.user.organization_id,
         order: ''
     });
 
@@ -57,7 +57,7 @@ const FormPic = props => {
 
     let coreCommittee = null
     props.committees.map((committee) => {
-        if (committee.name === "Core Committee") {
+        if (committee.core) {
             coreCommittee = committee.id
         } else {
             return null
@@ -78,7 +78,7 @@ const FormPic = props => {
     };
 
     useEffect(() => {
-        if (sime.order === '6' || sime.order === '7') {
+        if (sime.user_type === 'Staff' && sime.order === '6' || sime.user_type === 'Staff' && sime.order === '7') {
             setValues({ ...values, committeeId: sime.userPicCommittee, positionId: '', staffId: '' });
             const pos = props.positions.filter((e) => e.core === false);
             setPositionsFiltered(pos)
@@ -114,7 +114,7 @@ const FormPic = props => {
             if (position.id === personInCharge.position_id
                 && sime.project_id === personInCharge.project_id
                 && values.committeeId === personInCharge.committee_id
-                && position.name !== "Member"
+                && position.order < '7'
             ) {
                 checkPositions.push(position.id)
             } else {
@@ -216,7 +216,7 @@ const FormPic = props => {
                                     {errors.staff_error ? <Text style={styles.error}>{errors.staff_error}</Text> : null}
                                 </View>
                                 <View>
-                                    {sime.order === '6' || sime.order === '7' ?
+                                    {sime.user_type === 'Staff' && sime.order === '6' || sime.user_type === 'Staff' && sime.order === '7' ?
                                         <Dropdown
                                             useNativeDriver={true}
                                             label='Committee'

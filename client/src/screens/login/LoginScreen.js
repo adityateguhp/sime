@@ -11,7 +11,7 @@ import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
 import { AuthContext } from '../../context/auth';
-import { LOGIN_ORGANIZATION, LOGIN_STAFF } from '../../util/graphql';
+import { LOGIN_STAFF } from '../../util/graphql';
 
 const LoginScreen = ({ navigation }) => {
   const { login } = useContext(AuthContext);
@@ -26,21 +26,7 @@ const LoginScreen = ({ navigation }) => {
     setValues({ ...values, [key]: val });
   };
 
-  const [loginOrganization, { loading }] = useMutation(LOGIN_ORGANIZATION, {
-    update(_,
-      {
-        data: { loginOrganization: userData }
-      }
-    ) {
-      login(userData);
-    },
-    onError(err) {
-      loginStaff();
-    },
-    variables: values
-  });
-
-  const [loginStaff] = useMutation(LOGIN_STAFF, {
+  const [loginStaff, { loading }] = useMutation(LOGIN_STAFF, {
     update(_,
       {
         data: { loginStaff: userData }
@@ -56,7 +42,7 @@ const LoginScreen = ({ navigation }) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    loginOrganization();
+    loginStaff();
   };
 
 

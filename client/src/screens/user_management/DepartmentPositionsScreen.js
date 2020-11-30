@@ -1,18 +1,19 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Text, Snackbar } from 'react-native-paper';
+import { Provider, Text, Snackbar, List, Divider } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FABbutton from '../../components/common/FABbutton';
-import FormDepartment from '../../components/user_management/FormDepartment';
-import FormEditDepartment from '../../components/user_management/FormEditDepartment';
-import DepartmentCard from '../../components/user_management/DepartmentCard';
+import FormDepartmentPosition from '../../components/user_management/FormDepartmentPosition';
+import FormEditDepartmentPosition from '../../components/user_management/FormEditDepartmentPosition';
+import DepartmentPositionList from '../../components/user_management/DepartmentPositionList';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import {
-    FETCH_DEPARTMENTS_QUERY,
-    DELETE_DEPARTMENT,
-    FETCH_DEPARTMENT_QUERY
+    FETCH_DEPARTMENT_POSITIONS_QUERY,
+    FETCH_DEPARTMENT_POSITION_QUERY,
+    DELETE_DEPARTMENT_POSITION
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
@@ -40,45 +41,37 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
-    const [departmentsValue, setDepartmentsValue] = useState([]);
-    const [departmentVal, setDepartmentVal] = useState(null);
+    const [departmentPositionsValue, setDepartmentPositionsValue] = useState([]);
+    const [departmentPositionValue, setDepartmentPositionValue] = useState(null);
 
-    const { data: departments, error: error1, loading: loading1, refetch } = useQuery(
-        FETCH_DEPARTMENTS_QUERY,
+    const { data: departmentPositions, error: error1, loading: loading1, refetch } = useQuery(
+        FETCH_DEPARTMENT_POSITIONS_QUERY,
         {
             variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                setDepartmentsValue(departments.getDepartments)
+                setDepartmentPositionsValue(departmentPositions.getDepartmentPositions)
             }
         }
     );
 
-    const [loadExistData, { called, data: department, error: error2 }] = useLazyQuery(
-        FETCH_DEPARTMENT_QUERY,
+    const [loadExistData, { called, data: departmentPosition, error: error2 }] = useLazyQuery(
+        FETCH_DEPARTMENT_POSITION_QUERY,
         {
-            variables: { departmentId: sime.department_id },
+            variables: { departmentPositionId: sime.department_position_id },
         });
 
-    const selectItemHandler = (name, id) => {
-        navigation.navigate('Staff List in Department', {
-            departmentName: name,
-            departmentId: id
-        })
-        sime.setDepartment_id(id);
-        sime.setDepartment_name(name);
-    };
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
 
     useEffect(() => {
-        if (department) setDepartmentVal(department.getDepartment);
+        if (departmentPosition) setDepartmentPositionValue(departmentPosition.getDepartmentPosition);
         return () => {
             console.log("This will be logged on unmount");
         }
-    }, [department])
+    }, [departmentPosition])
 
 
     const closeModal = () => {
@@ -95,8 +88,8 @@ const DepartmentsScreen = ({ navigation }) => {
 
     const longPressHandler = (name, id) => {
         setVisible(true);
-        sime.setDepartment_name(name);
-        sime.setDepartment_id(id)
+        sime.setDepartment_position_name(name);
+        sime.setDepartment_position_id(id)
         loadExistData();
     }
 
@@ -109,62 +102,61 @@ const DepartmentsScreen = ({ navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const departmentId = sime.department_id;
+    const departmentPositionId = sime.department_position_id;
     const organizationId = sime.user.organization_id;
 
-    const [deleteDepartment, { loading: loadingDelete }] = useMutation(DELETE_DEPARTMENT, {
+    const [deleteDepartmentPosition, { loading: loadingDelete }] = useMutation(DELETE_DEPARTMENT_POSITION, {
         update(proxy) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY,
+                query: FETCH_DEPARTMENT_POSITIONS_QUERY,
                 variables: { organizationId }
             });
-            departments.getDepartments = departments.getDepartments.filter((d) => d.id !== departmentId);
-            deleteDepartmentsStateUpdate(departmentId);
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId } });
+            departmentPositions.getDepartmentPositions = departmentPositions.getDepartmentPositions.filter((d) => d.id !== departmentPositionId);
+            deleteDepartmentPositionsStateUpdate(departmentPositionId);
+            proxy.writeQuery({ query: FETCH_DEPARTMENT_POSITIONS_QUERY, data, variables: { organizationId } });
         },
         variables: {
-            departmentId,
-            organizationId
+            departmentPositionId
         }
     });
 
     const deleteHandler = () => {
         closeModal();
         closeModalFormEdit();
-        Alert.alert('Are you sure?', 'Do you really want to delete this department?', [
+        Alert.alert('Are you sure?', 'Do you really want to delete this position?', [
             { text: 'No', style: 'default' },
             {
                 text: 'Yes',
                 style: 'destructive',
-                onPress: deleteDepartment
+                onPress: deleteDepartmentPosition
             }
         ]);
     };
 
-    const addDepartmentsStateUpdate = (e) => {
-        const temp = [e, ...departmentsValue];
+    const addDepartmentPositionsStateUpdate = (e) => {
+        const temp = [e, ...departmentPositionsValue];
         temp.sort(function (a, b) {
             var textA = a.name.toUpperCase();
             var textB = b.name.toUpperCase();
 
             return textA.localeCompare(textB)
         })
-        setDepartmentsValue(temp);
+        setDepartmentPositionsValue(temp);
         onToggleSnackBarAdd();
     }
 
-    const deleteDepartmentsStateUpdate = (e) => {
-        const temp = [...departmentsValue];
+    const deleteDepartmentPositionsStateUpdate = (e) => {
+        const temp = [...departmentPositionsValue];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e);
         temp.splice(index, 1);
-        setDepartmentsValue(temp);
+        setDepartmentPositionsValue(temp);
         onToggleSnackBarDelete();
     }
 
-    const updateDepartmentsStateUpdate = (e) => {
-        const temp = [...departmentsValue];
+    const updateDepartmentPositionsStateUpdate = (e) => {
+        const temp = [...departmentPositionsValue];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
@@ -175,12 +167,12 @@ const DepartmentsScreen = ({ navigation }) => {
 
             return textA.localeCompare(textB)
         })
-        setDepartmentsValue(temp);
+        setDepartmentPositionsValue(temp);
         onToggleSnackBarUpdate();
     }
 
-    const updateDepartmentStateUpdate = (e) => {
-        setDepartmentVal(e)
+    const updateDepartmentPositionStateUpdate = (e) => {
+        setDepartmentPositionValue(e)
     }
 
     const onRefresh = () => {
@@ -207,97 +199,46 @@ const DepartmentsScreen = ({ navigation }) => {
         return <Text>Error</Text>;
     }
 
-    if (departmentsValue.length === 0) {
-        return (
-            <Provider theme={theme}>
-                <ScrollView
-                    contentContainerStyle={styles.content}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={loading1}
-                            onRefresh={onRefresh} />
-                    }
-                >
-                    <Text>No departments found, let's add departments!</Text>
-                    <FABbutton Icon="plus" onPress={openForm} />
-                    <FormDepartment
-                        closeModalForm={closeModalForm}
-                        visibleForm={visibleForm}
-                        closeButton={closeModalForm}
-                        addDepartmentsStateUpdate={addDepartmentsStateUpdate}
-                    />
-                    <Snackbar
-                        visible={visibleAdd}
-                        onDismiss={onDismissSnackBarAdd}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarAdd();
-                            },
-                        }}
-                    >
-                        Department added!
-            </Snackbar>
-                    <Snackbar
-                        visible={visibleDelete}
-                        onDismiss={onDismissSnackBarDelete}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarDelete();
-                            },
-                        }}
-                    >
-                        Department deleted!
-            </Snackbar>
-                </ScrollView>
-            </Provider>
-        );
-    }
-
     return (
         <Provider theme={theme}>
-            <FlatList
+             <FlatList
                 style={styles.screen}
+                data={departmentPositionsValue}
                 refreshControl={
                     <RefreshControl
                         refreshing={loading1}
                         onRefresh={onRefresh} />
                 }
-                data={departmentsValue}
                 keyExtractor={item => item.id}
                 renderItem={itemData => (
-                    <DepartmentCard
+                    <DepartmentPositionList
                         name={itemData.item.name}
-                        onSelect={() => { selectItemHandler(itemData.item.name, itemData.item.id) }}
-                        onDelete={() => { deleteHandler() }}
                         onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
-                    >
-                    </DepartmentCard>
+                    />
                 )}
             />
             <OptionModal
                 visible={visible}
                 closeModal={closeModal}
-                title={sime.department_name}
+                title={sime.department_position_name}
                 openFormEdit={openFormEdit}
                 deleteHandler={deleteHandler}
             />
             <FABbutton Icon="plus" onPress={openForm} />
-            <FormDepartment
+            <FormDepartmentPosition
                 closeModalForm={closeModalForm}
                 visibleForm={visibleForm}
                 closeButton={closeModalForm}
-                addDepartmentsStateUpdate={addDepartmentsStateUpdate}
+                addDepartmentPositionsStateUpdate={addDepartmentPositionsStateUpdate}
             />
-            <FormEditDepartment
+            <FormEditDepartmentPosition
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
-                department={departmentVal}
+                position={departmentPositionValue}
                 deleteButton={deleteHandler}
                 closeButton={closeModalFormEdit}
-                updateDepartmentsStateUpdate={updateDepartmentsStateUpdate}
-                updateDepartmentStateUpdate={updateDepartmentStateUpdate}
+                updateDepartmentPositionsStateUpdate={updateDepartmentPositionsStateUpdate}
+                updateDepartmentPositionStateUpdate={updateDepartmentPositionStateUpdate}
             />
             <Snackbar
                 visible={visibleAdd}
@@ -308,7 +249,7 @@ const DepartmentsScreen = ({ navigation }) => {
                         onDismissSnackBarAdd();
                     },
                 }}>
-                Department added!
+                Position added!
             </Snackbar>
             <Snackbar
                 visible={visibleUpdate}
@@ -319,7 +260,7 @@ const DepartmentsScreen = ({ navigation }) => {
                         onDismissSnackBarUpdate();
                     },
                 }}>
-                Department updated!
+                Position updated!
             </Snackbar>
             <Snackbar
                 visible={visibleDelete}
@@ -330,7 +271,7 @@ const DepartmentsScreen = ({ navigation }) => {
                         onDismissSnackBarDelete();
                     },
                 }}>
-                Department deleted!
+                Position deleted!
             </Snackbar>
             <LoadingModal loading={loadingDelete} />
         </Provider>

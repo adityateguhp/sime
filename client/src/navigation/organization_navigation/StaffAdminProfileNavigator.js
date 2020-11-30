@@ -5,14 +5,14 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Text } from 'react-native-paper';
 
 import HeaderButton from '../../components/common/HeaderButton';
-import StaffOrganizationProfileScreen from '../../screens/user_profile/StaffOrganizationProfileScreen';
+import StaffAdminIndividualProfileScreen from '../../screens/user_profile/StaffAdminIndividualProfileScreen';
 import Colors from '../../constants/Colors';
 
-const StaffOrganizationProfileStack = createStackNavigator();
+const StaffAdminIndividualProfileStack = createStackNavigator();
 
-export default function StaffOrganizationProfileNavigator({ route, navigation }) {
+export default function StaffAdminProfileNavigator({ route, navigation }) {
   return (
-    <StaffOrganizationProfileStack.Navigator
+    <StaffAdminIndividualProfileStack.Navigator
       screenOptions={{
         headerStyle: {
           backgroundColor: Colors.primaryColor,
@@ -23,10 +23,10 @@ export default function StaffOrganizationProfileNavigator({ route, navigation })
         }
       }}
     >
-      <StaffOrganizationProfileStack.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
+      <StaffAdminIndividualProfileStack.Screen name="Staff Profile" component={StaffAdminIndividualProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Profile Information</Text>
           </View>),
         headerLeft: () => (
           <HeaderButtons HeaderButtonComponent={HeaderButton}>
@@ -38,6 +38,6 @@ export default function StaffOrganizationProfileNavigator({ route, navigation })
         )
       }} />
 
-    </StaffOrganizationProfileStack.Navigator>
+    </StaffAdminIndividualProfileStack.Navigator>
   );
 }

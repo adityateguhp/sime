@@ -55,7 +55,7 @@ const FormEditPic = props => {
 
     let coreCommittee = null
     props.committees.map((committee) => {
-        if (committee.name === "Core Committee") {
+        if (committee.core) {
             coreCommittee = committee.id
         } else {
             return null
@@ -84,7 +84,7 @@ const FormEditPic = props => {
                 committeeId: props.personInCharge.committee_id,
                 order: props.personInCharge.order
             })
-            const div = props.committees.find((d) => d.name === "Core Committee");
+            const div = props.committees.find((d) => d.core === true);
             if (div.id === props.personInCharge.committee_id) {
                 const pos = props.positions.filter((p) => p.core === true);
                 setPositionsFiltered(pos)
@@ -105,7 +105,7 @@ const FormEditPic = props => {
             if (position.id === personInCharge.position_id
                 && sime.project_id === personInCharge.project_id
                 && values.committeeId === personInCharge.committee_id
-                && position.name !== "Member"
+                && position.order < '7'
             ) {
                 checkPositions.push(position.id)
             } else {
@@ -207,7 +207,7 @@ const FormEditPic = props => {
                                     />
                                 </View>
                                 <View>
-                                    {sime.order === '6' || sime.order === '7' ?
+                                    {sime.user_type === 'Staff' && sime.order === '6' || sime.user_type === 'Staff' && sime.order === '7' ?
                                         <Dropdown
                                             useNativeDriver={true}
                                             label='Committee'

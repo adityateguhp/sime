@@ -29,7 +29,9 @@ const FormEditOrganizationProfile = props => {
         name: '',
         description: '',
         email: '',
-        picture: null
+        picture: null,
+        address: '',
+        phone_number: ''
     });
 
     const options1 = {
@@ -96,6 +98,8 @@ const FormEditOrganizationProfile = props => {
                 email: props.organization.email,
                 description: props.organization.description,
                 picture: props.organization.picture,
+                address: props.organization.address,
+                phone_number: props.organization.phone_number
             })
         }
         return () => {
@@ -107,11 +111,11 @@ const FormEditOrganizationProfile = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ORGANIZATION_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
             props.updateOrganizationStateUpdate(result.data.updateOrganization);
             sime.setUser(result.data.updateOrganization)
-            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             props.closeModalForm();
         },
         onError(err) {
@@ -175,7 +179,7 @@ const FormEditOrganizationProfile = props => {
                         <KeyboardAvoidingView
                             style={{ flex: 1 }}
                             behavior="padding"
-                            keyboardVerticalOffset={hp(36)}
+                            keyboardVerticalOffset={hp(26)}
                         >
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
@@ -215,6 +219,28 @@ const FormEditOrganizationProfile = props => {
                                     <View style={styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
+                                            label='Phone Number'
+                                            returnKeyType="done"
+                                            value={values.phone_number}
+                                            onChangeText={(val) => onChange('phone_number', val, '')}
+                                            keyboardType="phone-pad"
+                                        />
+                                    </View>
+
+                                    <View style={styles.inputStyle}>
+                                        <TextInput
+                                            style={styles.input}
+                                            label='Address'
+                                            returnKeyType="done"
+                                            multiline={true}
+                                            value={values.address}
+                                            onChangeText={(val) => onChange('address', val, '')}
+                                        />
+                                    </View>
+
+                                    <View style={styles.inputStyle}>
+                                        <TextInput
+                                            style={styles.input}
                                             label='Description'
                                             returnKeyType="done"
                                             multiline={true}
@@ -234,7 +260,7 @@ const FormEditOrganizationProfile = props => {
 };
 
 const modalFormWidth = wp(100);
-const modalFormHeight = hp(70);
+const modalFormHeight = hp(80);
 
 const styles = StyleSheet.create({
     appbar: {

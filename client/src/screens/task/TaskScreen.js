@@ -263,11 +263,11 @@ const TaskScreen = ({ navigation }) => {
             >
                 <Text>No tasks found, let's add tasks!</Text>
                 {  sime.user_type === "Organization"
-                    || sime.order === '1'
-                    || sime.order === '2'
-                    || sime.order === '3'
-                    || sime.order === '6' && sime.userPicCommittee === sime.committee_id
-                    || sime.order === '7' && sime.userPicCommittee === sime.committee_id ?
+                    || sime.user_type === 'Staff' && sime.order === '1'
+                    || sime.user_type === 'Staff' && sime.order === '2'
+                    || sime.user_type === 'Staff' && sime.order === '3'
+                    || sime.user_type === 'Staff' && sime.order === '6' && sime.userPicCommittee === sime.committee_id
+                    || sime.user_type === 'Staff' && sime.order === '7' && sime.userPicCommittee === sime.committee_id ?
                     <FABbutton Icon="plus" onPress={openForm} /> : null}
                 <FormTask
                     closeModalForm={closeModalForm}
@@ -348,11 +348,11 @@ const TaskScreen = ({ navigation }) => {
                 )}
             />
             {  sime.user_type === "Organization"
-                || sime.order === '1'
-                || sime.order === '2'
-                || sime.order === '3'
-                || sime.order === '6' && sime.userPicCommittee === sime.committee_id
-                || sime.order === '7' && sime.userPicCommittee === sime.committee_id ?
+                || sime.user_type === 'Staff' && sime.order === '1'
+                || sime.user_type === 'Staff' && sime.order === '2'
+                || sime.user_type === 'Staff' && sime.order === '3'
+                || sime.user_type === 'Staff' && sime.order === '6' && sime.userPicCommittee === sime.committee_id
+                || sime.user_type === 'Staff' && sime.order === '7' && sime.userPicCommittee === sime.committee_id ?
                 <FABbutton Icon="plus" onPress={openForm} /> : null}
             <FormTask
                 closeModalForm={closeModalForm}

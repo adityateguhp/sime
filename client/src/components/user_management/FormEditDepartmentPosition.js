@@ -8,20 +8,19 @@ import { useMutation } from '@apollo/react-hooks';
 import { departmentNameValidator } from '../../util/validator';
 import TextInput from '../common/TextInput';
 import { SimeContext } from '../../context/SimePovider'
-import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
+import { UPDATE_DEPARTMENT_POSITION_MUTATION, FETCH_DEPARTMENT_POSITIONS_QUERY } from '../../util/graphql';
 import LoadingModal from '../common/LoadingModal';
 
 const FormEditDepartment = props => {
     const sime = useContext(SimeContext);
 
     const [errors, setErrors] = useState({
-        department_name_error: '',
+        position_name_error: '',
     });
 
     const [values, setValues] = useState({
-        departmentId: '',
-        name: '',
-        organizationId: ''
+        departmentPositionId: '',
+        name: ''
     });
 
     const onChange = (key, val, err) => {
@@ -30,33 +29,32 @@ const FormEditDepartment = props => {
     };
 
     useEffect(() => {
-        if (props.department) {
+        if (props.position) {
             setValues({
-                departmentId: props.department.id,
-                name: props.department.name,
-                organizationId: props.department.organization_id
+                departmentPositionId: props.position.id,
+                name: props.position.name
             })
         }
         return () => {
             console.log("This will be logged on unmount");
         }
-    }, [props.department])
+    }, [props.position])
 
-    const [updateDepartment, { loading }] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
+    const [updateDepartmentPosition, { loading }] = useMutation(UPDATE_DEPARTMENT_POSITION_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY,
+                query: FETCH_DEPARTMENT_POSITIONS_QUERY,
                 variables: { organizationId: sime.user.organization_id }
             });
-            props.updateDepartmentsStateUpdate(result.data.updateDepartment)
-            props.updateDepartmentStateUpdate(result.data.updateDepartment)
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
+            props.updateDepartmentPositionsStateUpdate(result.data.updateDepartmentPosition)
+            props.updateDepartmentPositionStateUpdate(result.data.updateDepartmentPosition)
+            proxy.writeQuery({ query: FETCH_DEPARTMENT_POSITIONS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             props.closeModalForm();
         },
         onError() {
-            const departementNameError = departmentNameValidator(values.name);
-            if (departementNameError) {
-                setErrors({ ...errors, department_name_error: departementNameError })
+            const positionError = positionNameValidator(values.name);
+            if (positionError) {
+                setErrors({ ...errors, position_name_error: positionError })
             }
         },
         variables: values
@@ -64,7 +62,7 @@ const FormEditDepartment = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        updateDepartment();
+        updateDepartmentPosition();
     };
 
     const [keyboardSpace, setKeyboarSpace] = useState(0);
@@ -97,20 +95,20 @@ const FormEditDepartment = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title={"Edit Department"} />
+                            <Appbar.Content title={"Edit Position"} />
                             <Appbar.Action icon="delete" onPress={props.deleteButton} />
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <ScrollView>
                             <View style={styles.formViewStyle}>
                                 <View style={styles.inputStyle}>
-                                    <TextInput
+                                <TextInput
                                         style={styles.input}
-                                        label='Department Name'
+                                        label='Position Name'
                                         value={values.name}
-                                        onChangeText={(val) => onChange('name', val, 'department_name_error')}
-                                        error={errors.department_name_error ? true : false}
-                                        errorText={errors.department_name_error}
+                                        onChangeText={(val) => onChange('name', val, 'position_name_error')}
+                                        error={errors.position_name_error? true : false}
+                                        errorText={errors.position_name_error}
                                     />
                                 </View>
                             </View>

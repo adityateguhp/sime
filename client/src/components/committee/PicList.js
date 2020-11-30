@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption, Provider, Portal, Text } from 'react-native-paper';
+import { Avatar, List, Caption, Provider, Portal, Text, Chip } from 'react-native-paper';
 import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';;
 
 import {
@@ -18,6 +18,7 @@ import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import LoadingModal from '../common/LoadingModal';
 import OptionModal from '../common/OptionModal';
+import Colors from '../../constants/Colors';
 
 const PicList = props => {
     let TouchableCmp = TouchableOpacity;
@@ -165,11 +166,11 @@ const PicList = props => {
         <Provider theme={theme}>
             <TouchableCmp
                 onPress={() => { selectItemHandler() }}
-                onLongPress={sime.order === '1' && sime.userPersonInChargeId !== props.person_in_charge_id ||
-                    sime.order === '2' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' ||
-                    sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
-                    sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
-                    sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
+                onLongPress={sime.user_type === 'Staff' && sime.order === '1' && sime.userPersonInChargeId !== props.person_in_charge_id ||
+                    sime.user_type === 'Staff' && sime.order === '2' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' ||
+                    sime.user_type === 'Staff' && sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
+                    sime.user_type === 'Staff' && sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
+                    sime.user_type === 'Staff' && sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
                     sime.user_type === "Organization" ? () => { longPressHandler(props.person_in_charge_id, props.staff_id, staff.getStaff.name) } : null}
                 useForeground>
                 <View style={styles.wrap}>
@@ -178,14 +179,19 @@ const PicList = props => {
                         title={staff.getStaff.name}
                         description={<Caption>{position.getPosition.name}</Caption>}
                         left={() => <Avatar.Image size={50} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
+                        right={() => staff.getStaff.isAdmin ?
+                            <View style={{ alignSelf: "center" }}>
+                                <Chip mode="outlined" style={{borderColor: Colors.primaryColor}} textStyle={{color: Colors.secondaryColor}}>Admin</Chip>
+                            </View>
+                            : null}
                     />
                 </View>
             </TouchableCmp>
-            {sime.order === '1' && sime.userPersonInChargeId !== props.person_in_charge_id ||
-                sime.order === '2' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' ||
-                sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
-                sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
-                sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
+            {sime.user_type === 'Staff' && sime.order === '1' && sime.userPersonInChargeId !== props.person_in_charge_id ||
+                sime.user_type === 'Staff' && sime.order === '2' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' ||
+                sime.user_type === 'Staff' && sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
+                sime.user_type === 'Staff' && sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
+                sime.user_type === 'Staff' && sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
                 sime.user_type === "Organization" ?
                 <Portal>
                     <OptionModal

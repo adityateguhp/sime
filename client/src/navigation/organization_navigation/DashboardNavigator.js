@@ -5,7 +5,7 @@ import { Avatar } from 'react-native-paper';
 import { useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY } from '../../util/graphql';
 import DashboardScreen from '../../screens/dashboard/DashboardScreen';
 import Colors from '../../constants/Colors';
 
@@ -16,10 +16,11 @@ export default function DashboardNavigator({ route, navigation }) {
   const [userId, setUserId] = useState(null)
   const [userPict, setUserPict] = useState('')
 
-  const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
-    FETCH_ORGANIZATION_QUERY, {
+ 
+  const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+    FETCH_STAFF_QUERY, {
     variables: {
-      organizationId: userId
+      staffId: userId
     }
   });
 
@@ -27,14 +28,15 @@ export default function DashboardNavigator({ route, navigation }) {
     if (sime.user) {
       setUserId(sime.user.id)
       loadData();
-      if (organization) {
-        setUserPict(organization.getOrganization.picture)
+      if (staff) {
+        setUserPict(staff.getStaff.picture)
       }
     }
     return () => {
       console.log("This will be logged on unmount");
     }
-  }, [sime.user, organization])
+  }, [sime.user, staff])
+
   return (
     <DashboardStack.Navigator
       screenOptions={{

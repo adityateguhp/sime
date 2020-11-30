@@ -21,7 +21,7 @@ module.exports = {
   Query: {
     async getStaffs(_, { organizationId }, context) {
       try {
-        const staffs = await Staff.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ name: 1 });
+        const staffs = await Staff.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ isAdmin: -1, name: 1 });
         if (staffs) {
           return staffs;
         } else {
@@ -33,7 +33,7 @@ module.exports = {
     },
     async getStaffsByDepartment(_, { departmentId }, context) {
       try {
-        const staffs = await Staff.find({ department_id: departmentId }).collation({ locale: "en" }).sort({ name: 1 });
+        const staffs = await Staff.find({ department_id: departmentId }).collation({ locale: "en" }).sort({ isAdmin: -1, name: 1 });
         if (staffs) {
           return staffs;
         } else {
@@ -106,9 +106,6 @@ module.exports = {
 
       const newStaff = new Staff({
         name,
-        department_position_id: '',
-        organization_id: '',
-        department_id: '',
         email,
         phone_number: '',
         password,
@@ -150,12 +147,16 @@ module.exports = {
       phone_number,
       password,
       picture,
-      organizationId
+      organizationId,
+      isAdmin
     }, context) {
       const { valid, errors } =
         validateStaffInput(
           name,
-          email
+          department_id,
+          department_position_id,
+          email,
+          phone_number
         );
       if (!valid) {
         throw new UserInputError('Error', { errors });
@@ -182,6 +183,7 @@ module.exports = {
         phone_number,
         password,
         picture,
+        isAdmin,
         createdAt: new Date().toISOString()
       });
 
@@ -196,13 +198,17 @@ module.exports = {
       department_id,
       email,
       phone_number,
-      picture
+      picture,
+      isAdmin
     }, context) {
       try {
         const { valid, errors } =
           validateStaffInput(
             name,
-            email
+            department_id,
+            department_position_id,
+            email,
+            phone_number
           );
         if (!valid) {
           throw new UserInputError('Error', { errors });
@@ -229,7 +235,8 @@ module.exports = {
             department_id: department_id,
             email: email,
             phone_number: phone_number,
-            picture: picture
+            picture: picture,
+            isAdmin: isAdmin
           },
           { new: true });
 

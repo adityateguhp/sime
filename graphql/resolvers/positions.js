@@ -32,7 +32,7 @@ module.exports = {
   },
   Mutation: {
     async addPosition(_, { name, core, organizationId, order }, context) {
-      const { valid, errors } = validatePositionInput(name, core);
+      const { valid, errors } = validatePositionInput(name);
       if (!valid) {
         throw new UserInputError('Error', { errors });
       }
@@ -50,7 +50,7 @@ module.exports = {
     },
     async updatePosition(_, { positionId, name, core }, context) {
       try {
-        const { valid, errors } = validatePositionInput(name, core);
+        const { valid, errors } = validatePositionInput(name);
         if (!valid) {
           throw new UserInputError('Error', { errors });
         }

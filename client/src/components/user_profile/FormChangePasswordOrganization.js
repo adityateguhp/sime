@@ -24,7 +24,7 @@ const FormChangePasswordOrganization = props => {
     });
 
     const [values, setValues] = useState({
-        organizationId: sime.user.id,
+        organizationId: sime.user.organization_id,
         currentPassword: '',
         newPassword: '',
         confirmNewPassword: ''
@@ -39,9 +39,9 @@ const FormChangePasswordOrganization = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_ORGANIZATION_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
-            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_ORGANIZATION_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             values.currentPassword = ''
             values.newPassword = ''
             values.confirmNewPassword = ''

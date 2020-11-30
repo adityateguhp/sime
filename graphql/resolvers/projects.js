@@ -54,7 +54,6 @@ module.exports = {
       const newProject = new Project({
         name,
         description,
-
         start_date,
         end_date,
         organization_id: organizationId,
@@ -90,7 +89,6 @@ module.exports = {
           {
             name,
             description,
-    
             start_date,
             end_date,
             picture,

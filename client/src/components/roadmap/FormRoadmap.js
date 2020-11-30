@@ -100,7 +100,7 @@ const FormRoadmap = props => {
     }, [props.event])
 
     useEffect(() => {
-        if (sime.order === '6' || sime.order === '7') {
+        if (sime.user_type === 'Staff' && sime.order === '6' || sime.user_type === 'Staff' && sime.order === '7') {
             setValues({ ...values, committee_id: sime.userPicCommittee });
         }
         return () => {
@@ -221,7 +221,7 @@ const FormRoadmap = props => {
                                     />
                                 </View>
                                 <View>
-                                    {sime.order === '6' || sime.order === '7' ?
+                                    {sime.user_type === 'Staff' && sime.order === '6' || sime.user_type === 'Staff' && sime.order === '7' ?
                                         <Dropdown
                                             useNativeDriver={true}
                                             label='Committee'

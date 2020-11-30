@@ -9,7 +9,6 @@ import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
 import HeaderButton from '../../components/common/HeaderButton';
 import FormEditOrganizationProfile from '../../components/user_profile/FormEditOrganizationProfile';
-import FormChangePasswordOrganization from '../../components/user_profile/FormChangePasswordOrganization';
 import CenterSpinner from '../../components/common/CenterSpinner';
 
 const OrganizationProfileScreen = ({ route, navigation }) => {
@@ -19,12 +18,11 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
     const [organizationVal, setOrganizationVal] = useState(null);
     const [visibleMenu, setVisibleMenu] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
-    const [visibleFormPassword, setVisibleFormPassword] = useState(false);
 
     const { data: organization, error: error1, loading: loading1, refetch: refetchOrganization } = useQuery(
         FETCH_ORGANIZATION_QUERY, {
         variables: {
-            organizationId: sime.user.id
+            organizationId: sime.user.organization_id
         },
         notifyOnNetworkStatusChange: true,
         onCompleted: () => {
@@ -48,18 +46,9 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const closeModalFormPassword = () => {
-        setVisibleFormPassword(false);
-    }
-
     const openFormEdit = () => {
         closeMenu();
         setVisibleFormEdit(true);
-    }
-
-    const openFormPassword = () => {
-        closeMenu();
-        setVisibleFormPassword(true);
     }
 
     const updateOrganizationStateUpdate = (e) => {
@@ -82,8 +71,7 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                         </HeaderButtons>
                     }
                 >
-                    <Menu.Item onPress={openFormEdit} title="Edit Profile" />
-                    <Menu.Item onPress={openFormPassword} title="Change Password" />
+                    <Menu.Item onPress={openFormEdit} title="Edit Organization Profile" />
                 </Menu>)
         });
     }, [navigation, visibleMenu]);
@@ -122,7 +110,7 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
             >
                 <View style={styles.profilePicture}>
                     <Avatar.Image style={{ marginBottom: 10 }} size={150} source={organization.getOrganization.picture ? { uri: organization.getOrganization.picture } : require('../../assets/avatar.png')} />
-                    <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{organization.getOrganization.name}</Headline>
+                    <Headline style={{ marginHorizontal: 15 }} numberOfLines={1} ellipsizeMode='tail'>{organization.getOrganization.name}</Headline>
                 </View>
                 <Divider />
                 <View style={styles.profileDetails}>
@@ -134,7 +122,21 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                     </Paragraph>
                     <Divider />
                     <Title style={styles.titleInfo}>
-                        description
+                        Phone Number
+                </Title>
+                    <Paragraph>
+                        {organization.getOrganization.phone_number}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Address
+                </Title>
+                    <Paragraph>
+                        {organization.getOrganization.address}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Description
                 </Title>
                     <Paragraph>
                         {organization.getOrganization.description}
@@ -148,11 +150,6 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                 closeButton={closeModalFormEdit}
                 organization={organizationVal}
                 updateOrganizationStateUpdate={updateOrganizationStateUpdate}
-            />
-            <FormChangePasswordOrganization
-                closeModalForm={closeModalFormPassword}
-                visibleForm={visibleFormPassword}
-                closeButton={closeModalFormPassword}
             />
             <Snackbar
                 visible={visibleUpdate}

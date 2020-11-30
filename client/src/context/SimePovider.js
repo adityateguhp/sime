@@ -7,6 +7,8 @@ const SimeProvider = (props) => {
   const [user_type, setUser_type] = useState(null);
   const [department_id, setDepartment_id] = useState('');
   const [department_name, setDepartment_name] = useState('');
+  const [department_position_id, setDepartment_position_id] = useState('');
+  const [department_position_name, setDepartment_position_name] = useState('');
   const [project_id, setProject_id] = useState('');
   const [project_name, setProject_name] = useState('');
   const [event_id, setEvent_id] = useState('');
@@ -35,6 +37,8 @@ const SimeProvider = (props) => {
         user_type,
         department_id,
         department_name,
+        department_position_id,
+        department_position_name,
         project_id,
         project_name,
         event_id,
@@ -60,6 +64,8 @@ const SimeProvider = (props) => {
         setUser_type,
         setDepartment_id,
         setDepartment_name,
+        setDepartment_position_id,
+        setDepartment_position_name,
         setProject_id,
         setProject_name,
         setEvent_id,

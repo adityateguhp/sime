@@ -2,18 +2,20 @@ const { gql } = require('apollo-server');
 
 module.exports = gql`
     type Organization {
-        id: ID!
+        id: ID
         name: String
         email: String	
         description: String
         picture: String
-        createdAt: String!
+        address: String
+        phone_number: String
+        createdAt: String
     }
     type Department {
-        id: ID!
-        name: String!
-        organization_id: ID!
-        createdAt: String!
+        id: ID
+        name: String
+        organization_id: ID
+        createdAt: String
     }
     type Staff {
         id: ID!
@@ -26,6 +28,7 @@ module.exports = gql`
         phone_number: String
         password: String!
         picture: String
+        isAdmin: Boolean!
         createdAt: String!
     }
     type Project {
@@ -145,20 +148,20 @@ module.exports = gql`
     }
 
     type Department_position {
-        id: ID!
-        name: String!
-        organization_id: ID!
-        createdAt: String!
+        id: ID
+        name: String
+        organization_id: ID
+        createdAt: String
     }
 
     type Query {
         getOrganization(organizationId: ID!): Organization
         
         getDepartments(organizationId: ID!): [Department]
-        getDepartment(departmentId: ID!): Department
+        getDepartment(departmentId: ID): Department
         
         getStaffs(organizationId: ID!): [Staff]
-        getStaffsByDepartment(departmentId: ID!): [Staff]
+        getStaffsByDepartment(departmentId: ID): [Staff]
         getStaff(staffId: ID!): Staff
         
         getProjects(organizationId: ID!): [Project]
@@ -202,22 +205,26 @@ module.exports = gql`
         getAssignedTasksByPersonInCharge(personInChargeId: ID!): [Task_assigned_to]
         getAssignedTasksByStaff(staffId: ID!): [Task_assigned_to]
         
-        getDepartmentPositions(organizationId: ID!): [Department_position]
-        getDepartmentPosition(departmentPositionId: ID!): Department_position
+        getDepartmentPositions(organizationId: ID): [Department_position]
+        getDepartmentPosition(departmentPositionId: ID): Department_position
     }
     type Mutation {
        addOrganization(
             name: String
             email: String
             description: String
-            picture: String): Organization!
+            picture: String
+            address: String
+            phone_number: String): Organization!
 
         updateOrganization(
             organizationId: ID!
-            name: String
-            email: String
+            name: String!
+            email: String!
             description: String
-            picture: String): Organization!
+            picture: String
+            address: String
+            phone_number: String): Organization!
         
         addDepartment(name: String!, organizationId: ID!): Department!
         
@@ -247,7 +254,8 @@ module.exports = gql`
             phone_number: String,
             password: String!,
             picture: String,
-            organizationId: ID
+            organizationId: ID!,
+            isAdmin: Boolean!
         ): Staff!
         
         updateStaff( 
@@ -257,7 +265,8 @@ module.exports = gql`
             department_id: ID, 
             email: String!,
             phone_number: String,
-            picture: String
+            picture: String,
+            isAdmin: Boolean!
         ): Staff!
         
         updatePasswordStaff( 

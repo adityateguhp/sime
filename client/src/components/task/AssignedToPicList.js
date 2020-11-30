@@ -1,16 +1,16 @@
 import React, { useState, useContext } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
-import { Avatar, List, Caption, Provider, Divider, Text } from 'react-native-paper';
+import { Avatar, List, Caption, Provider, Divider, Text, Chip } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { 
-    FETCH_STAFF_QUERY, 
-    FETCH_POSITION_QUERY, 
-    DELETE_ASSIGNED_TASK, 
-    FETCH_ASSIGNED_TASKS_QUERY, 
-    ASSIGNED_TASK_MUTATION 
+import {
+    FETCH_STAFF_QUERY,
+    FETCH_POSITION_QUERY,
+    DELETE_ASSIGNED_TASK,
+    FETCH_ASSIGNED_TASKS_QUERY,
+    ASSIGNED_TASK_MUTATION
 } from '../../util/graphql';
 import CenterSpinner from '../common/CenterSpinner';
 import { theme } from '../../constants/Theme';
@@ -86,12 +86,12 @@ const AssignedToPicList = props => {
         }
     });
 
-    const onPressDeleteAssignedTask =  () => {
+    const onPressDeleteAssignedTask = () => {
         deleteAssignedTask();
         setSelected(false);
     }
 
-    const onPressAssignedTask =  (event) => {
+    const onPressAssignedTask = (event) => {
         event.preventDefault();
         assignedTask();
         setSelected(true);
@@ -135,8 +135,13 @@ const AssignedToPicList = props => {
                         style={styles.staffs}
                         title={staff.getStaff.name}
                         description={<Caption>{position.getPosition.name}</Caption>}
-                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
-                        right={assignedCommitteeId || selected ? () => <Icon style={{ alignSelf: "center" }} name="check" size={25} color={Colors.primaryColor} /> : null}
+                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
+                        right={() =>
+                            <View style={{ alignSelf: "center", flexDirection: 'row' }}>
+                                {staff.getStaff.isAdmin ? <Chip mode="outlined" style={{ borderColor: Colors.primaryColor, marginRight: 10 }} textStyle={{ color: Colors.secondaryColor }}>Admin</Chip> : null}
+                                {assignedCommitteeId || selected ? <Icon style={{ alignSelf: "center" }} name="check" size={25} color={Colors.primaryColor} /> : null}
+                            </View>
+                        }
                     />
                     <Divider />
                 </View>

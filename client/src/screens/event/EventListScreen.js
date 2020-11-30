@@ -218,7 +218,7 @@ const EventListScreen = ({ route, navigation }) => {
                 }
             >
                 <Text>No events found, let's add events!</Text>
-                { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ?
+                { sime.user_type === "Organization" || sime.user_type === 'Staff' && sime.order === '1' || sime.user_type === 'Staff' && sime.order === '2' || sime.user_type === 'Staff' && sime.order === '3' ?
                     <FABbutton Icon="plus" onPress={openForm} />
                     : null
                 }
@@ -280,7 +280,7 @@ const EventListScreen = ({ route, navigation }) => {
                     </EventCard>
                 )}
             />
-            { sime.user_type === "Organization" || sime.order === '1' || sime.order === '2' || sime.order === '3' ?
+            { sime.user_type === "Organization" || sime.user_type === 'Staff' && sime.order === '1' || sime.user_type === 'Staff' && sime.order === '2' || sime.user_type === 'Staff' && sime.order === '3' ?
                 <Provider theme={theme}>
                     <OptionModal
                         visible={visible}

@@ -53,7 +53,7 @@ const ProjectListScreen = ({ navigation }) => {
     const { data: projects, error: error1, loading: loading1, refetch } = useQuery(
         FETCH_PROJECTS_QUERY,
         {
-            variables: { organizationId: sime.user.id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => { setProjectsValue(projects.getProjects) }
         }
@@ -111,11 +111,11 @@ const ProjectListScreen = ({ navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
             projects.getProjects = projects.getProjects.filter((p) => p.id !== projectId);
             deleteProjectsStateUpdate(projectId)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id }, });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.organization_id }, });
         },
         variables: {
             projectId

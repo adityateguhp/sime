@@ -15,14 +15,11 @@ const CommitteeCard = props => {
 
     return (
         <View>
-            <TouchableCmp onLongPress={props.name === "Core Committee" ? null : props.onLongPress}>
+            <TouchableCmp onLongPress={props.onLongPress}>
                 <Card style={styles.event}>
                     <Card.Title
                         title={props.name}
                         left={() => <Avatar.Text size={45} label={label} style={{ backgroundColor: Colors.primaryColor }} />}
-                        right={props.name === "Core Committee" ? null : ({ color, size }) => (
-                            <Icon name="pencil" size={size} color={color} style={{ marginHorizontal: 10, opacity: 0.5 }} />
-                        )}
                     />
                 </Card >
             </TouchableCmp>

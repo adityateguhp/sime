@@ -6,7 +6,7 @@ import { Avatar } from 'react-native-paper';
 import { useLazyQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY } from '../../util/graphql';
 import CreatedByMeScreen from '../../screens/my_task/CreatedByMeScreen';
 import Colors from '../../constants/Colors';
 
@@ -36,27 +36,27 @@ export default function MyTasksNavigator({ route, navigation }) {
     const sime = useContext(SimeContext);
     const [userId, setUserId] = useState(null)
     const [userPict, setUserPict] = useState('')
-  
-    
-  const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
-    FETCH_ORGANIZATION_QUERY, {
-    variables: {
-      organizationId: userId
-    }
-  });
-
-  useEffect(() => {
-    if (sime.user) {
-      setUserId(sime.user.id)
-      loadData();
-      if (organization) {
-        setUserPict(organization.getOrganization.picture)
+ 
+    const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+      FETCH_STAFF_QUERY, {
+      variables: {
+        staffId: userId
       }
-    }
-    return () => {
-      console.log("This will be logged on unmount");
-    }
-  }, [sime.user, organization])
+    });
+  
+    useEffect(() => {
+      if (sime.user) {
+        setUserId(sime.user.id)
+        loadData();
+        if (staff) {
+          setUserPict(staff.getStaff.picture)
+        }
+      }
+      return () => {
+        console.log("This will be logged on unmount");
+      }
+    }, [sime.user, staff])
+  
     return (
       <MyTasksStack.Navigator
         screenOptions={{

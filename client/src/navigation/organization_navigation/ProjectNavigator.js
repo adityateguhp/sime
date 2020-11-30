@@ -6,7 +6,7 @@ import { Avatar, Text} from 'react-native-paper';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_ORGANIZATION_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
+import { FETCH_STAFF_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
 import ProjectListScreen from '../../screens/project/ProjectListScreen';
 import ProjectOverviewScreen from '../../screens/project/ProjectOverviewScreen';
 import CommitteeListScreen from '../../screens/committee/CommitteeListScreen';
@@ -77,12 +77,27 @@ export default function ProjectNavigator({ route, navigation }) {
   const [userPict, setUserPict] = useState('')
   const [committeeName, setCommitteeName] = useState('')
 
-  const [loadData, { data: organization, error: error1, loading: loading1 }] = useLazyQuery(
-    FETCH_ORGANIZATION_QUERY, {
+
+  const [loadData, { data: staff, error: error1, loading: loading1 }] = useLazyQuery(
+    FETCH_STAFF_QUERY, {
     variables: {
-      organizationId: userId
+      staffId: userId
     }
   });
+
+  useEffect(() => {
+    if (sime.user) {
+      setUserId(sime.user.id)
+      loadData();
+      if (staff) {
+        setUserPict(staff.getStaff.picture)
+      }
+    }
+    return () => {
+      console.log("This will be logged on unmount");
+    }
+  }, [sime.user, staff])
+
 
   const [loadCommittee, { data: committee, error: errorCommittee, loading: loadingCommittee}] = useLazyQuery(
     FETCH_COMMITTEE_QUERY,
@@ -90,19 +105,6 @@ export default function ProjectNavigator({ route, navigation }) {
         variables: { committeeId: sime.committee_id }
     }
 );
-
-  useEffect(() => {
-    if (sime.user) {
-      setUserId(sime.user.id)
-      loadData();
-      if (organization) {
-        setUserPict(organization.getOrganization.picture)
-      }
-    }
-    return () => {
-      console.log("This will be logged on unmount");
-    }
-  }, [sime.user, organization])
 
   useEffect(() => {
     if (sime.committee_id) {

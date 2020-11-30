@@ -10,7 +10,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import TextInput from '../common/TextInput';
 import { taskNameValidator } from '../../util/validator';
-import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION, FETCH_STAFF_QUERY, FETCH_ORGANIZATION_QUERY } from '../../util/graphql';
+import { FETCH_TASKS_QUERY, UPDATE_TASK_MUTATION, FETCH_STAFF_QUERY } from '../../util/graphql';
 import Colors from '../../constants/Colors';
 import PersonInChargeChipContainer from './PersonInChargeChipContainer'
 import AssignedToModal from './AssignedToModal'
@@ -92,14 +92,7 @@ const TaskModal = props => {
     }, [props.roadmap])
 
     const [createdByName, setCreatedByName] = useState(null)
-
-    const [loadOrganization, { data: organization, error: errorOrganization, loading: loadingOrganization }] = useLazyQuery(
-        FETCH_ORGANIZATION_QUERY, {
-        variables: {
-            organizationId: props.createdBy
-        }
-    });
-
+    
     const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
         FETCH_STAFF_QUERY, {
         variables: {
@@ -109,20 +102,10 @@ const TaskModal = props => {
             setCreatedByName(staff.getStaff.name)
         },
         onError: () => {
-            loadOrganization();
+            setCreatedByName('-')
         }
     });
 
-    useEffect(() => {
-        if (organization) {
-            setCreatedByName(organization.getOrganization.name)
-        } else {
-            setCreatedByName('-')
-        }
-        return () => {
-            console.log("This will be logged on unmount");
-        }
-    }, [organization])
 
     const updateTaskScreen = (proxy, result) => {
         const data = proxy.readQuery({

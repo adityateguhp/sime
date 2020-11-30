@@ -1,27 +1,26 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Keyboard, ScrollView } from 'react-native';
 import { Appbar, Portal } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useMutation } from '@apollo/react-hooks';
 
-import { departmentNameValidator } from '../../util/validator';
+import { positionNameValidator } from '../../util/validator';
+import { FETCH_DEPARTMENT_POSITIONS_QUERY, ADD_DEPARTMENT_POSITION_MUTATION } from '../../util/graphql';
 import TextInput from '../common/TextInput';
 import { SimeContext } from '../../context/SimePovider'
-import { UPDATE_DEPARTMENT_MUTATION, FETCH_DEPARTMENTS_QUERY } from '../../util/graphql';
 import LoadingModal from '../common/LoadingModal';
 
-const FormEditDepartment = props => {
+const FormDepartmentPosition = props => {
     const sime = useContext(SimeContext);
 
     const [errors, setErrors] = useState({
-        department_name_error: '',
+        position_name_error: '',
     });
 
     const [values, setValues] = useState({
-        departmentId: '',
         name: '',
-        organizationId: ''
+        organizationId: sime.user.organization_id
     });
 
     const onChange = (key, val, err) => {
@@ -29,34 +28,22 @@ const FormEditDepartment = props => {
         setErrors({ ...errors, [err]: '' })
     };
 
-    useEffect(() => {
-        if (props.department) {
-            setValues({
-                departmentId: props.department.id,
-                name: props.department.name,
-                organizationId: props.department.organization_id
-            })
-        }
-        return () => {
-            console.log("This will be logged on unmount");
-        }
-    }, [props.department])
-
-    const [updateDepartment, { loading }] = useMutation(UPDATE_DEPARTMENT_MUTATION, {
+    const [addDepartmentPosition, { loading }] = useMutation(ADD_DEPARTMENT_POSITION_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
-                query: FETCH_DEPARTMENTS_QUERY,
-                variables: { organizationId: sime.user.organization_id }
+                query: FETCH_DEPARTMENT_POSITIONS_QUERY,
+                variables: {organizationId: sime.user.organization_id}
             });
-            props.updateDepartmentsStateUpdate(result.data.updateDepartment)
-            props.updateDepartmentStateUpdate(result.data.updateDepartment)
-            proxy.writeQuery({ query: FETCH_DEPARTMENTS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
+            data.getDepartmentPositions = [result.data.addDepartmentPosition, ...data.getDepartmentPositions];
+            props.addDepartmentPositionsStateUpdate(result.data.addDepartmentPosition);
+            proxy.writeQuery({ query: FETCH_DEPARTMENT_POSITIONS_QUERY, data, variables: {organizationId: sime.user.organization_id} });
+            values.name = '';
             props.closeModalForm();
         },
         onError() {
-            const departementNameError = departmentNameValidator(values.name);
-            if (departementNameError) {
-                setErrors({ ...errors, department_name_error: departementNameError })
+            const positionError = positionNameValidator(values.name);
+            if (positionError) {
+                setErrors({ ...errors, position_name_error: positionError })
             }
         },
         variables: values
@@ -64,7 +51,7 @@ const FormEditDepartment = props => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        updateDepartment();
+        addDepartmentPosition();
     };
 
     const [keyboardSpace, setKeyboarSpace] = useState(0);
@@ -97,20 +84,19 @@ const FormEditDepartment = props => {
                     <View style={styles.formView}>
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
-                            <Appbar.Content title={"Edit Department"} />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
-                            <Appbar.Action icon="check" onPress={onSubmit} />
+                            <Appbar.Content title="New Position" />
+                            <Appbar.Action icon="check" onPress={onSubmit}/>
                         </Appbar>
                         <ScrollView>
                             <View style={styles.formViewStyle}>
                                 <View style={styles.inputStyle}>
                                     <TextInput
                                         style={styles.input}
-                                        label='Department Name'
+                                        label='Position Name'
                                         value={values.name}
-                                        onChangeText={(val) => onChange('name', val, 'department_name_error')}
-                                        error={errors.department_name_error ? true : false}
-                                        errorText={errors.department_name_error}
+                                        onChangeText={(val) => onChange('name', val, 'position_name_error')}
+                                        error={errors.position_name_error? true : false}
+                                        errorText={errors.position_name_error}
                                     />
                                 </View>
                             </View>
@@ -151,4 +137,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default FormEditDepartment;
+export default FormDepartmentPosition;

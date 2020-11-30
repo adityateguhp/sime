@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.error,
     paddingHorizontal: 4,
-    paddingTop: 4,
+    paddingTop: 15,
   },
 });
 

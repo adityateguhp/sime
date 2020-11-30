@@ -39,8 +39,7 @@ const FormEditProject = props => {
         description: '',
         start_date: '',
         end_date: '',
-        picture: null,
-        organizationId: ''
+        picture: null
     });
 
     const [showStartDate, setShowStartDate] = useState(false);
@@ -139,7 +138,6 @@ const FormEditProject = props => {
                 start_date: props.project.start_date,
                 end_date: props.project.end_date,
                 picture: props.project.picture,
-                organizationId: props.project.organization_id,
             })
         }
         return () => {
@@ -151,11 +149,11 @@ const FormEditProject = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: { organizationId: sime.user_type === 'Organization' ? sime.user.id : sime.user.organization_id }
+                variables: { organizationId: sime.user.organization_id }
             });
             props.updateProjectsStateUpdate(result.data.updateProject);
             props.updateProjectStateUpdate(result.data.updateProject)
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user_type === 'Organization' ? sime.user.id : sime.user.organization_id } });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             props.closeModalForm();
         },
         onError(err) {

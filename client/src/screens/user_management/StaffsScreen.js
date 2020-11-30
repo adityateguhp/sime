@@ -16,6 +16,7 @@ import {
     DELETE_STAFF,
     FETCH_STAFF_QUERY,
     FETCH_DEPARTMENTS_QUERY,
+    FETCH_DEPARTMENT_POSITIONS_QUERY,
     DELETE_PIC_BYSTAFF,
     DELETE_ASSIGNED_TASK_BYPIC,
     FETCH_PICS_BYSTAFF_QUERY,
@@ -65,11 +66,12 @@ const StaffsScreen = ({ navigation }) => {
     const [departmentsValue, setDepartmentsValue] = useState([]);
     const [staffVal, setStaffVal] = useState(null);
     const [commiteesVal, setCommitteesVal] = useState([])
+    const [departmentPositionsValue, setDepartmentPositionsValue] = useState([]);
 
     const { data: staffs, error: error1, loading: loading1, refetch: refetchStaffs } = useQuery(
         FETCH_STAFFS_QUERY,
         {
-            variables: { organizationId: sime.user.id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setStaffsValue(staffs.getStaffs)
@@ -80,10 +82,21 @@ const StaffsScreen = ({ navigation }) => {
     const { data: departments, error: error3, loading: loading3, refetch: refetchDepartments } = useQuery(
         FETCH_DEPARTMENTS_QUERY,
         {
-            variables: { organizationId: sime.user.id },
+            variables: { organizationId: sime.user.organization_id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setDepartmentsValue(departments.getDepartments)
+            }
+        }
+    );
+
+    const { data: departmentPositions, error: error5, loading: loading5, refetch: refetchPositions } = useQuery(
+        FETCH_DEPARTMENT_POSITIONS_QUERY,
+        {
+            variables: { organizationId: sime.user.organization_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setDepartmentPositionsValue(departmentPositions.getDepartmentPositions)
             }
         }
     );
@@ -102,13 +115,15 @@ const StaffsScreen = ({ navigation }) => {
 
 
 
-    const selectItemHandler = (id, department_id) => {
+    const selectItemHandler = (id, department_id, department_position_id) => {
         navigation.navigate('Staff Profile', {
             staffId: id,
-            departmentId: department_id
+            departmentId: department_id,
+            positionId: department_position_id
         });
         sime.setStaff_id(id);
-        sime.setDepartment_id(department_id)
+        sime.setDepartment_id(department_id);
+        sime.setDepartment_position_id(department_position_id);
     };
 
     const [visible, setVisible] = useState(false);
@@ -119,14 +134,14 @@ const StaffsScreen = ({ navigation }) => {
         if (staff) setStaffVal(staff.getStaff);
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [staff])
 
     useEffect(() => {
         if (committeeByStaff) setCommitteesVal(committeeByStaff.getPersonInChargesByStaff);
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [committeeByStaff])
 
     const closeModal = () => {
@@ -141,11 +156,12 @@ const StaffsScreen = ({ navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (name, id, department_id) => {
+    const longPressHandler = (name, id, department_id, department_position_id) => {
         setVisible(true);
         sime.setStaff_name(name);
         sime.setStaff_id(id);
-        sime.setDepartment_id(department_id)
+        sime.setDepartment_id(department_id);
+        sime.setDepartment_position_id(department_position_id)
         loadExistData();
         loadCommitteeData();
     }
@@ -177,28 +193,28 @@ const StaffsScreen = ({ navigation }) => {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
 
             });
             staffs.getStaffs = staffs.getStaffs.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
             deletePersonInChargeByDepartment({ variables: { staffId } })
             deleteAssignedTaskByPersonInChargeHandler();
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
         },
         variables: {
             staffId
         }
     });
 
-    const [resetPassword, {loading: loadingResetPassword}] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
+    const [resetPassword, { loading: loadingResetPassword }] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
             onToggleSnackBarResetPassword();
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
         },
         variables: {
             staffId
@@ -247,7 +263,10 @@ const StaffsScreen = ({ navigation }) => {
             var textA = a.name.toUpperCase();
             var textB = b.name.toUpperCase();
 
-            return textA.localeCompare(textB)
+            var adminA = a.isAdmin;
+            var adminB = b.isAdmin;
+
+            return adminB - adminA || textA.localeCompare(textB)
         })
         setStaffsValue(temp);
         onToggleSnackBarAdd();
@@ -273,7 +292,10 @@ const StaffsScreen = ({ navigation }) => {
             var textA = a.name.toUpperCase();
             var textB = b.name.toUpperCase();
 
-            return textA.localeCompare(textB)
+            var adminA = a.isAdmin;
+            var adminB = b.isAdmin;
+
+            return adminB - adminA || textA.localeCompare(textB)
         })
         setStaffsValue(temp);
         onToggleSnackBarUpdate();
@@ -286,6 +308,7 @@ const StaffsScreen = ({ navigation }) => {
     const onRefresh = () => {
         refetchStaffs();
         refetchDepartments();
+        refetchPositions();
     };
 
     useEffect(() => {
@@ -317,13 +340,18 @@ const StaffsScreen = ({ navigation }) => {
         return <Text>Error</Text>;
     }
 
+    if (error5) {
+        console.error(error5);
+        return <Text>Error</Text>;
+    }
+
     if (staffsValue.length === 0) {
         return (
             <ScrollView
                 contentContainerStyle={styles.content}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1 && loading3}
+                        refreshing={loading1 && loading3 && loading5}
                         onRefresh={onRefresh} />
                 }
             >
@@ -368,7 +396,7 @@ const StaffsScreen = ({ navigation }) => {
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1 && loading3}
+                        refreshing={loading1 && loading3 && loading5}
                         onRefresh={onRefresh} />
                 }
                 data={staffsValue}
@@ -378,9 +406,10 @@ const StaffsScreen = ({ navigation }) => {
                         name={itemData.item.name}
                         email={itemData.item.email}
                         picture={itemData.item.picture}
+                        isAdmin={itemData.item.isAdmin}
                         onDelete={() => { deleteHandler() }}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_id) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id, itemData.item.department_position_id) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_id, itemData.item.department_position_id ) }}
                     >
                     </StaffList>
                 )}
@@ -394,24 +423,40 @@ const StaffsScreen = ({ navigation }) => {
                     onBackButtonPress={closeModal}
                     onBackdropPress={closeModal}
                     statusBarTranslucent>
-                    <View style={styles.modalView}>
-                        <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.staff_name}</Title>
-                        <TouchableCmp onPress={openFormEdit}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Edit</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={resetPasswordHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Reset password</Text>
-                            </View>
-                        </TouchableCmp>
-                        <TouchableCmp onPress={deleteHandler}>
-                            <View style={styles.textView}>
-                                <Text style={styles.text}>Delete</Text>
-                            </View>
-                        </TouchableCmp>
-                    </View>
+                    {sime.staff_id !== sime.user.id ?
+                        <View style={styles.modalView}>
+                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.staff_name}</Title>
+                            <TouchableCmp onPress={openFormEdit}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Edit</Text>
+                                </View>
+                            </TouchableCmp>
+                            <TouchableCmp onPress={resetPasswordHandler}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Reset password</Text>
+                                </View>
+                            </TouchableCmp>
+                            <TouchableCmp onPress={deleteHandler}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Delete</Text>
+                                </View>
+                            </TouchableCmp>
+                        </View>
+                        :
+                        <View style={styles.modalAdminView}>
+                            <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.staff_name}</Title>
+                            <TouchableCmp onPress={openFormEdit}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Edit</Text>
+                                </View>
+                            </TouchableCmp>
+                            <TouchableCmp onPress={resetPasswordHandler}>
+                                <View style={styles.textView}>
+                                    <Text style={styles.text}>Reset password</Text>
+                                </View>
+                            </TouchableCmp>
+                        </View>
+                    }
                 </Modal>
             </Portal>
             <FABbutton Icon="plus" onPress={openForm} />
@@ -421,17 +466,19 @@ const StaffsScreen = ({ navigation }) => {
                 closeButton={closeModalForm}
                 addStaffsStateUpdate={addStaffsStateUpdate}
                 departments={departmentsValue}
+                positions={departmentPositionsValue}
             />
             <FormEditStaff
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
                 staff={staffVal}
                 departments={departmentsValue}
+                positions={departmentPositionsValue}
                 deleteButton={deleteHandler}
-                deleteButtonVisible={true}
                 closeButton={closeModalFormEdit}
                 updateStaffStateUpdate={updateStaffStateUpdate}
                 updateStaffsStateUpdate={updateStaffsStateUpdate}
+                visible={visible}
             />
             <Snackbar
                 visible={visibleAdd}
@@ -486,6 +533,7 @@ const StaffsScreen = ({ navigation }) => {
 
 const modalMenuWidth = wp(77);
 const modalMenuHeight = wp(46.5);
+const modalAdminMenuHeight = wp(35);
 
 const styles = StyleSheet.create({
     screen: {
@@ -500,6 +548,13 @@ const styles = StyleSheet.create({
     modalView: {
         backgroundColor: 'white',
         height: modalMenuHeight,
+        width: modalMenuWidth,
+        alignSelf: 'center',
+        justifyContent: 'flex-start',
+    },
+    modalAdminView: {
+        backgroundColor: 'white',
+        height: modalAdminMenuHeight,
         width: modalMenuWidth,
         alignSelf: 'center',
         justifyContent: 'flex-start',

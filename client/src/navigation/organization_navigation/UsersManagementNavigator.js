@@ -9,6 +9,7 @@ import HeaderButton from '../../components/common/HeaderButton';
 import DepartmentsScreen from '../../screens/user_management/DepartmentsScreen';
 import StaffsScreen from '../../screens/user_management/StaffsScreen';
 import StaffsInDepartmentScreen from '../../screens/user_management/StaffsInDepartmentScreen';
+import DepartmentPositionsScreen from '../../screens/user_management/DepartmentPositionsScreen';
 import StaffProfileScreen from '../../screens/user_management/StaffProfileScreen';
 import Colors from '../../constants/Colors';
 
@@ -30,6 +31,7 @@ function TopTabUsersManagements() {
     >
       <TopTabUsersManagement.Screen name="Staffs" component={StaffsScreen} />
       <TopTabUsersManagement.Screen name="Departments" component={DepartmentsScreen} />
+      <TopTabUsersManagement.Screen name="Positions" component={DepartmentPositionsScreen} />
     </TopTabUsersManagement.Navigator>
   );
 }

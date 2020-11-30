@@ -39,7 +39,7 @@ const FormProject = props => {
         start_date: '',
         end_date: '',
         picture: null,
-        organizationId: sime.user.id
+        organizationId: sime.user.organization_id
     });
 
     const [showStartDate, setShowStartDate] = useState(false);
@@ -133,11 +133,11 @@ const FormProject = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
             data.getProjects = [result.data.addProject, ...data.getProjects];
             props.addProjectsStateUpdate(result.data.addProject);
-            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             values.name = '';
             values.description = '';
             values.start_date = '';

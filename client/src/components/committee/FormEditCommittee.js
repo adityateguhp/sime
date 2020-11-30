@@ -46,23 +46,17 @@ const FormEditCommittee = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_COMMITTEES_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
             props.updateCommitteesStateUpdate(result.data.updateCommittee)
             props.updateCommitteeStateUpdate(result.data.updateCommittee)
-            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             props.closeModalForm();
         },
         onError(err) {
             const committeeNameError = committeeNameValidator(values.name);
             if (committeeNameError) {
                 setErrors({ ...errors, committee_name_error: committeeNameError })
-            }
-            if (err.graphQLErrors[0].extensions.exception.errors) {
-                setErrors({
-                    ...errors,
-                    committee_name_error: 'Core Committee is already exist'
-                })
             }
         },
         variables: values

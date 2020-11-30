@@ -11,7 +11,7 @@ import Header from '../../components/common/Header';
 import Button from '../../components/common/Button';
 import TextInput from '../../components/common/TextInput';
 import { theme } from '../../constants/Theme';
-import { REGISTER_ORGANIZATION, ADD_COMMITTEE_MUTATION } from '../../util/graphql';
+import { REGISTER_STAFF, ADD_ORGANIZATION, ADD_ORGANIZATION_STAFF_MUTATION, ADD_COMMITTEE_MUTATION, ADD_POSITION_MUTATION } from '../../util/graphql';
 
 const RegisterScreen = ({ navigation }) => {
     const [errors, setErrors] = useState({});
@@ -20,54 +20,148 @@ const RegisterScreen = ({ navigation }) => {
         name: '',
         email: '',
         password: '',
-        confirmPassword: '',
+        confirmPassword: ''
+    });
+
+    const [organizationValue] = useState({
+        name: '',
+        email: '',
         description: '',
-        picture: ''
+        picture: '',
+        address: '', 
+        phone_number: ''
     });
 
     const [committeeValues, setCommitteeValues] = useState([
         {
-            name: 'Core Committee',
+            name: 'Panitia Inti',
+            core: true,
             organizationId: ''
         },
         {
-            name: 'Funding Subcommittee',
+            name: 'Sie Keuangan',
+            core: false,
             organizationId: ''
         },
         {
-            name: 'Secretariat Subcommittee',
+            name: 'Sie Acara & Lomba ',
+            core: false,
             organizationId: ''
         },
         {
-            name: 'Program Subcommittee',
+            name: 'Sie Perlengkapan & Transportasi',
+            core: false,
             organizationId: ''
         },
         {
-            name: 'Food Subcommittee',
+            name: 'Sie Konsumsi & Penerima Tamu',
+            core: false,
             organizationId: ''
         },
         {
-            name: 'Security Subcommittee',
+            name: 'Sie Humas, Dokumentasi & Publikasi',
+            core: false,
             organizationId: ''
         },
         {
-            name: 'Publication & Documentation Subcommittee',
+            name: 'Sie Sponsorship dan Kerjasama',
+            core: false,
             organizationId: ''
         },
         {
-            name: 'Equipment & Transportation Subcommittee',
+            name: 'Sie Keamanan',
+            core: false,
             organizationId: ''
         },
     ]);
+
+
+    const [positionValues, setPositionValues] = useState([
+        {
+            name: 'Ketua',
+            core: true,
+            organizationId: '',
+            order: '1'
+        },
+        {
+            name: 'Wakil Ketua',
+            core: true,
+            organizationId: '',
+            order: '2'
+        },
+        {
+            name: 'Sekretaris',
+            core: true,
+            organizationId: '',
+            order: '3'
+        },
+        {
+            name: 'Bendahara',
+            core: true,
+            organizationId: '',
+            order: '4'
+        },
+        {
+            name: 'Wakil Bendahara',
+            core: true,
+            organizationId: '',
+            order: '5'
+        },
+        {
+            name: 'Koordinator',
+            core: false,
+            organizationId: '',
+            order: '6'
+        },
+        {
+            name: 'Wakil Koordinator',
+            core: false,
+            organizationId: '',
+            order: '7'
+        },
+        {
+            name: 'Anggota',
+            core: false,
+            organizationId: '',
+            order: '8'
+        },
+    ]);
+
+    const [organizationStaffValue, setOrganizationStaffValue] = useState({
+        staffId: '',
+        organizationId: ''
+    });
 
     const onChange = (key, val) => {
         setValues({ ...values, [key]: val });
         setErrors('')
     };
 
+    const [registerStaff, { loading }] = useMutation(REGISTER_STAFF, {
+        update(_, result) {
+
+            setOrganizationStaffValue({ ...organizationStaffValue, staffId: result.data.registerStaff.id });
+            addOrganization();
+        },
+        onError(err) {
+            setErrors(err.graphQLErrors[0].extensions.exception.errors);
+        },
+        variables: values
+    });
+
+    const [addOrganization, { loading: loading3 }] = useMutation(ADD_ORGANIZATION, {
+        update(_, result) {
+            updateCommitteeFieldChanged('organizationId', result.data.addOrganization.id);
+            updatePositionFieldChanged('organizationId', result.data.addOrganization.id);
+            setOrganizationStaffValue({ ...organizationStaffValue, organizationId: result.data.addOrganization.id });
+            addOrganizationStaff();
+        },
+        variables: organizationValue
+    });
+
     const [addCommittee, { loading: loading2 }] = useMutation(ADD_COMMITTEE_MUTATION);
 
-    const updateFieldChanged = (name, value) => {
+    const updateCommitteeFieldChanged = (name, value) => {
         let newArr = committeeValues.map((item) => {
             return { ...item, [name]: value };
         });
@@ -77,25 +171,33 @@ const RegisterScreen = ({ navigation }) => {
         })
     };
 
-    const [registerOrganization, { loading }] = useMutation(REGISTER_ORGANIZATION, {
-        update(_, result) {
+    const [addPosition, { loading: loading5 }] = useMutation(ADD_POSITION_MUTATION);
+
+    const updatePositionFieldChanged = (name, value) => {
+        let newArr = positionValues.map((item) => {
+            return { ...item, [name]: value };
+        });
+        setPositionValues(newArr);
+        newArr.map((data) => {
+            addPosition(({ variables: data }))
+        })
+    };
+
+    const [addOrganizationStaff, { loading: loading4 }] = useMutation(ADD_ORGANIZATION_STAFF_MUTATION, {
+        update() {
             navigation.dispatch(
                 CommonActions.reset({
-                   index: 0,
-                   routes: [{ name: "Register Completed" }],
-               })
-           );
-           updateFieldChanged('organizationId', result.data.registerOrganization.id);
+                    index: 0,
+                    routes: [{ name: "Register Completed" }],
+                })
+            );
         },
-        onError(err) {
-            setErrors(err.graphQLErrors[0].extensions.exception.errors);
-        },
-        variables: values
+        variables: organizationStaffValue
     });
 
     const onSubmit = (event) => {
         event.preventDefault();
-        registerOrganization();
+        registerStaff();
     };
 
     return (
@@ -142,17 +244,17 @@ const RegisterScreen = ({ navigation }) => {
                         onChangeText={(val) => onChange('confirmPassword', val)}
                         secureTextEntry
                     />
-                    
+
                     {Object.keys(errors).length > 0 && (
                         <View style={styles.errorContainer}>
                             <List.Section style={styles.errorSection}>
                                 {Object.values(errors).map((value) => (
-                                    <List.Item 
-                                    key={value} 
-                                    title={value} 
-                                    titleStyle={styles.errorItem} 
-                                    titleNumberOfLines={2}
-                                    left={() => <List.Icon color={theme.colors.error} style={{margin:0}} icon="alert-circle" />}
+                                    <List.Item
+                                        key={value}
+                                        title={value}
+                                        titleStyle={styles.errorItem}
+                                        titleNumberOfLines={2}
+                                        left={() => <List.Icon color={theme.colors.error} style={{ margin: 0 }} icon="alert-circle" />}
                                     />
                                 ))}
                             </List.Section>
@@ -199,7 +301,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center'
     },
-    errorSection:{
+    errorSection: {
         borderStyle: 'solid',
         borderWidth: 1,
         width: wp(100),
@@ -208,7 +310,7 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.error,
         marginTop: 12
     },
-    errorHeader:{
+    errorHeader: {
         fontSize: 16,
         color: theme.colors.error,
         fontWeight: 'bold',
@@ -216,7 +318,7 @@ const styles = StyleSheet.create({
         marginLeft: 15,
         marginBottom: 5
     },
-    errorItem:{
+    errorItem: {
         fontSize: 14,
         color: theme.colors.error
     }

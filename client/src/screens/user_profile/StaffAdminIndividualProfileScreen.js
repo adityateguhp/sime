@@ -4,8 +4,8 @@ import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Snackbar, 
 import { useQuery } from '@apollo/react-hooks';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
-import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY, FETCH_DEPARTMENT_POSITION_QUERY } from '../../util/graphql';
-import FormEditStaffProfile from '../../components/user_profile/FormEditStaffProfile';
+import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY, FETCH_DEPARTMENTS_QUERY, FETCH_DEPARTMENT_POSITIONS_QUERY, FETCH_DEPARTMENT_POSITION_QUERY } from '../../util/graphql';
+import FormEditStaffAdminProfile from '../../components/user_profile/FormEditStaffAdminProfile';
 import FormChangePasswordStaff from '../../components/user_profile/FormChangePasswordStaff';
 import { SimeContext } from '../../context/SimePovider';
 import { theme } from '../../constants/Theme';
@@ -22,6 +22,8 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
     const [visibleFormPassword, setVisibleFormPassword] = useState(false);
     const [departmenName, setDepartmentName] = useState('');
     const [positionName, setPositionName] = useState('');
+    const [departmentsValue, setDepartmentsValue] = useState([]);
+    const [positionsValue, setPositionsValue] = useState([]);
 
     const { data: staff, error: error1, loading: loading1, refetch: refetchStaff } = useQuery(
         FETCH_STAFF_QUERY, {
@@ -49,6 +51,17 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
         notifyOnNetworkStatusChange: true,
     });
 
+    const { data: departments, error: error3, loading: loading3, refetch: refetchDepartments } = useQuery(
+        FETCH_DEPARTMENTS_QUERY,
+        {
+            variables: { organizationId: sime.user.organization_id },
+            notifyOnNetworkStatusChange: true,
+            onCompleted: () => {
+                setDepartmentsValue(departments.getDepartments)
+            }
+        }
+    );
+
     const { data: position, error: error4, loading: loading4, refetch: refetchPosition } = useQuery(
         FETCH_DEPARTMENT_POSITION_QUERY, {
         variables: {
@@ -60,6 +73,17 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
           }else{
               setPositionName('')
           }
+        },
+        notifyOnNetworkStatusChange: true,
+    });
+
+    const { data: positions, error: error5, loading: loading5, refetch: refetchPositions } = useQuery(
+        FETCH_DEPARTMENT_POSITIONS_QUERY, {
+        variables: {
+            organizationId: sime.user.organization_id
+        },
+        onCompleted: () => {
+              setPositionsValue(positions.getDepartmentPositions)
         },
         notifyOnNetworkStatusChange: true,
     });
@@ -123,6 +147,8 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
     const onRefresh = () => {
         refetchStaff();
         refetchDepartment();
+        refetchDepartments();
+        refetchPositions();
         refetchPosition();
     };
 
@@ -145,9 +171,19 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
         return <Text>Error 2</Text>;
     }
 
+    if (error3) {
+        console.error(error3);
+        return <Text>Error 3</Text>;
+    }
+
     if (error4) {
         console.error(error4);
         return <Text>Error 4</Text>;
+    }
+
+    if (error5) {
+        console.error(error5);
+        return <Text>Error 5</Text>;
     }
 
     if (loading1) {
@@ -158,7 +194,15 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
         return <CenterSpinner />;
     }
 
+    if (loading3) {
+        return <CenterSpinner />;
+    }
+
     if (loading4) {
+        return <CenterSpinner />;
+    }
+
+    if (loading5) {
         return <CenterSpinner />;
     }
 
@@ -168,7 +212,7 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
                 style={styles.screen}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading1 && loading2 && loading4}
+                        refreshing={loading1 && loading2 && loading3 && loading4 && loading5}
                         onRefresh={onRefresh} />
                 }
             >
@@ -208,11 +252,13 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
                 </View>
                 <Divider style={{ marginBottom: 20 }} />
             </ScrollView>
-            <FormEditStaffProfile
+            <FormEditStaffAdminProfile
                 closeModalForm={closeModalFormEdit}
                 visibleForm={visibleFormEdit}
                 closeButton={closeModalFormEdit}
                 staff={staffVal}
+                departments={departmentsValue}
+                positions={positionsValue}
                 updateStaffStateUpdate={updateStaffStateUpdate}
             />
             <FormChangePasswordStaff

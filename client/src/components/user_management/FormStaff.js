@@ -4,19 +4,19 @@ import { Appbar, Portal, Text, Avatar } from 'react-native-paper';
 import Modal from "react-native-modal";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-picker';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import Colors from '../../constants/Colors';
-import { staffNameValidator, positionNameValidator, emailValidator, phoneNumberValidator, departmentValidator } from '../../util/validator';
-import { FETCH_STAFFS_QUERY, ADD_STAFF_MUTATION } from '../../util/graphql';
+import { staffNameValidator, positionValidator, emailValidator, phoneNumberValidator, departmentValidator } from '../../util/validator';
+import { FETCH_STAFFS_QUERY, ADD_STAFF_MUTATION,  } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import TextInput from '../common/TextInput';
 import { theme } from '../../constants/Theme';
 import LoadingModal from '../common/LoadingModal';
 
 const FormStaff = props => {
- 
+
     const sime = useContext(SimeContext);
 
     // const [keyboardSpace, setKeyboarSpace] = useState(0);
@@ -24,7 +24,15 @@ const FormStaff = props => {
     const [errors, setErrors] = useState({
         staff_name_error: '',
         email_error: '',
+        position_error: '',
+        phone_number_error: '',
+        department_error: ''
     });
+
+    const adminValue = [
+        { value: true, label: "Yes" },
+        { value: false, label: "No" }
+    ]
 
     const [values, setValues] = useState({
         name: '',
@@ -34,7 +42,8 @@ const FormStaff = props => {
         phone_number: '',
         password: '12345678',
         picture: null,
-        organizationId: sime.user.organization_id
+        organizationId: sime.user.organization_id,
+        isAdmin: false
     });
 
     const options1 = {
@@ -97,11 +106,11 @@ const FormStaff = props => {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFS_QUERY,
-                variables: { organizationId: sime.user.id }
+                variables: { organizationId: sime.user.organization_id }
             });
             data.getStaffs = [result.data.addStaff, ...data.getStaffs];
             props.addStaffsStateUpdate(result.data.addStaff)
-            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.id } });
+            proxy.writeQuery({ query: FETCH_STAFFS_QUERY, data, variables: { organizationId: sime.user.organization_id } });
             values.name = '';
             values.department_position_id = '';
             values.email = '';
@@ -113,11 +122,17 @@ const FormStaff = props => {
         onError(err) {
             const staffNameError = staffNameValidator(values.name);
             const emailError = emailValidator(values.email);
-            if ( staffNameError || emailError) {
+            const phoneNumberError = phoneNumberValidator(values.phone_number);
+            const positionError = positionValidator(values.department_position_id);
+            const departmentError = departmentValidator(values.department_id);
+            if (staffNameError || emailError || phoneNumberError || positionError || departmentError) {
                 setErrors({
                     ...errors,
                     staff_name_error: staffNameError,
                     email_error: emailError,
+                    department_error: departmentError,
+                    phone_number_error: phoneNumberError,
+                    position_error: positionError
                 })
                 return;
             }
@@ -176,8 +191,19 @@ const FormStaff = props => {
                             <ScrollView>
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
-                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture? { uri: values.picture } : require('../../assets/avatar.png')} />
+                                        <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture ? { uri: values.picture } : require('../../assets/avatar.png')} />
                                         <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
+                                    </View>
+                                    <View style={errors.staff_name_error ? null : styles.inputStyle}>
+                                        <TextInput
+                                            style={styles.input}
+                                            label='Name'
+                                            returnKeyType="next"
+                                            value={values.name}
+                                            onChangeText={(val) => onChange('name', val, 'staff_name_error')}
+                                            error={errors.staff_name_error ? true : false}
+                                            errorText={errors.staff_name_error}
+                                        />
                                     </View>
                                     <View>
                                         <Dropdown
@@ -192,29 +218,20 @@ const FormStaff = props => {
                                         />
                                         {errors.department_error ? <Text style={styles.error}>{errors.department_error}</Text> : null}
                                     </View>
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
-                                            label='Name'
-                                            returnKeyType="next"
-                                            value={values.name}
-                                            onChangeText={(val) => onChange('name', val, 'staff_name_error')}
-                                            error={errors.staff_name_error ? true : false}
-                                            errorText={errors.staff_name_error}
-                                        />
-                                    </View>
-                                    <View style={styles.inputStyle}>
-                                        <TextInput
-                                            style={styles.input}
+                                    <View>
+                                        <Dropdown
                                             label='Position'
-                                            returnKeyType="next"
                                             value={values.department_position_id}
-                                            onChangeText={(val) => onChange('department_position_id', val, 'position_name_error')}
-                                            error={errors.position_name_error ? true : false}
-                                            errorText={errors.position_name_error}
+                                            data={props.positions}
+                                            valueExtractor={({ id }) => id}
+                                            labelExtractor={({ name }) => name}
+                                            onChangeText={(val) => onChange('department_position_id', val, 'position_error')}
+                                            useNativeDriver={true}
+                                            error={errors.position_error}
                                         />
+                                        {errors.position_error ? <Text style={styles.error}>{errors.position_error}</Text> : null}
                                     </View>
-                                    <View style={styles.inputStyle}>
+                                    <View style={errors.email_error ? null : styles.inputStyle}>
                                         <TextInput
                                             style={styles.input}
                                             label='Email Address'
@@ -239,6 +256,15 @@ const FormStaff = props => {
                                             error={errors.phone_number_error ? true : false}
                                             errorText={errors.phone_number_error}
                                             keyboardType="phone-pad"
+                                        />
+                                    </View>
+                                    <View style={styles.inputStyle}>
+                                        <Dropdown
+                                            label='Admin'
+                                            value={values.isAdmin}
+                                            data={adminValue}
+                                            onChangeText={(val) => onChange('isAdmin', val, '')}
+                                            useNativeDriver={true}
                                         />
                                     </View>
                                 </View>

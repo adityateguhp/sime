@@ -53,7 +53,9 @@ const DrawerContentStaff = props => {
     useEffect(() => {
         if (sime.user) {
             setUserId(sime.user.id)
-            sime.setUser_type(sime.user.__typename)
+            if(sime.user.user_type){
+                sime.setUser_type(sime.user.user_type)
+            }
             loadData();
             if (staff) {
                 setUserData({
@@ -63,7 +65,6 @@ const DrawerContentStaff = props => {
                     picture: staff.getStaff.picture
                 })
                 sime.setUser(staff.getStaff)
-                sime.setUser_type(staff.getStaff.__typename)
             }
         }
         return () => {
@@ -114,7 +115,7 @@ const DrawerContentStaff = props => {
                     icon={({ color, size }) => (
                         <Icon name="office-building" color={color} size={size} />
                     )}
-                    label="Your Organization"
+                    label="My Organization"
                     onPress={() => {
                         props.navigation.navigate('Staff Organization Profile')
                     }}
