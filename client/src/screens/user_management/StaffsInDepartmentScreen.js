@@ -62,7 +62,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
 
     const [staffsValue, setStaffsValue] = useState([]);
     const [staffVal, setStaffVal] = useState(null);
-    const [commiteesVal, setCommitteesVal] = useState([])
+    // const [commiteesVal, setCommitteesVal] = useState([])
     const [departmentPositionsValue, setDepartmentPositionsValue] = useState([]);
 
     const departmentId = route.params?.departmentId;
@@ -96,11 +96,11 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             variables: { staffId: sime.staff_id },
         });
 
-    const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4 }] = useLazyQuery(
-        FETCH_PICS_BYSTAFF_QUERY,
-        {
-            variables: { staffId: sime.staff_id },
-        });
+    // const [loadCommitteeData, { called: called2, data: committeeByStaff, error: error4 }] = useLazyQuery(
+    //     FETCH_PICS_BYSTAFF_QUERY,
+    //     {
+    //         variables: { staffId: sime.staff_id },
+    //     });
 
         const selectItemHandler = (id, department_id, department_position_id) => {
             navigation.navigate('Staff Profile', {
@@ -121,12 +121,12 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
           }
     }, [staff])
 
-    useEffect(() => {
-        if (committeeByStaff) setCommitteesVal(committeeByStaff.getPersonInChargesByStaff);
-        return () => {
-            console.log("This will be logged on unmount");
-          }
-    }, [committeeByStaff])
+    // useEffect(() => {
+    //     if (committeeByStaff) setCommitteesVal(committeeByStaff.getPersonInChargesByStaff);
+    //     return () => {
+    //         console.log("This will be logged on unmount");
+    //       }
+    // }, [committeeByStaff])
 
     const closeModal = () => {
         setVisible(false);
@@ -146,7 +146,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         sime.setStaff_id(id);
         sime.setDepartment_position_id(department_position_id);
         loadExistData();
-        loadCommitteeData();
+        // loadCommitteeData();
     }
 
     const openForm = () => {
@@ -158,17 +158,17 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const [deleteAssignedTaskByPersonInCharge] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
+    // const [deleteAssignedTaskByPersonInCharge] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
 
-    const deleteAssignedTaskByPersonInChargeHandler = () => {
-        commiteesVal.map((committee) => {
-            deleteAssignedTaskByPersonInCharge(({
-                variables: { personInChargeId: committee.id },
-            }))
-        })
-    };
+    // const deleteAssignedTaskByPersonInChargeHandler = () => {
+    //     commiteesVal.map((committee) => {
+    //         deleteAssignedTaskByPersonInCharge(({
+    //             variables: { personInChargeId: committee.id },
+    //         }))
+    //     })
+    // };
 
-    const [deletePersonInChargeByDepartment] = useMutation(DELETE_PIC_BYSTAFF);
+    // const [deletePersonInChargeByDepartment] = useMutation(DELETE_PIC_BYSTAFF);
 
     const [deleteStaff, { loading: loadingDelete }] = useMutation(DELETE_STAFF, {
         update(proxy) {
@@ -178,8 +178,8 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             });
             staffs.getStaffsByDepartment = staffs.getStaffsByDepartment.filter((s) => s.id !== staffId);
             deleteStaffsStateUpdate(staffId);
-            deletePersonInChargeByDepartment({ variables: { staffId } })
-            deleteAssignedTaskByPersonInChargeHandler();
+            // deletePersonInChargeByDepartment({ variables: { staffId } })
+            // deleteAssignedTaskByPersonInChargeHandler();
             proxy.writeQuery({ query: FETCH_STAFFSBYDEPARTMENT_QUERY, data, variables: { departmentId } });
         },
         variables: {
@@ -209,21 +209,21 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
             {
                 text: 'Yes',
                 style: 'destructive',
-                onPress: confirmToDeleteAll
-            }
-        ]);
-    };
-
-    const confirmToDeleteAll = () => {
-        Alert.alert('Wait... are you really sure?', "By deleting this staff, it's also delete all related to this staff", [
-            { text: 'Cancel', style: 'default' },
-            {
-                text: 'Agree',
-                style: 'destructive',
                 onPress: deleteStaff
             }
         ]);
     };
+
+    // const confirmToDeleteAll = () => {
+    //     Alert.alert('Wait... are you really sure?', "By deleting this staff, it's also delete all related to this staff", [
+    //         { text: 'Cancel', style: 'default' },
+    //         {
+    //             text: 'Agree',
+    //             style: 'destructive',
+    //             onPress: deleteStaff
+    //         }
+    //     ]);
+    // };
 
     const resetPasswordHandler = () => {
         closeModal();
@@ -309,10 +309,10 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         return <Text>Error</Text>;
     }
 
-    if (called2 & error4) {
-        console.error(error2);
-        return <Text>Error</Text>;
-    }
+    // if (called2 & error4) {
+    //     console.error(error2);
+    //     return <Text>Error</Text>;
+    // }
 
     if (error5) {
         console.error(error5);

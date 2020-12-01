@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, Provider, Divider, Text, Chip } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -37,19 +37,88 @@ const AssignedToPicList = props => {
 
     const [selected, setSelected] = useState(false);
 
-    const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
+    const [staffValue, setStaffValue] = useState({
+        name: '',
+        picture: '',
+        isAdmin: false,
+        email: '',
+        phone_number: ''
+    })
+
+    const [positionName, setPositionName] = useState('')
+
+    const { data: staff, error: errorStaff, loading: loadingStaff, refetch: refetchStaff } = useQuery(
         FETCH_STAFF_QUERY,
         {
-            variables: { staffId: props.staff_id }
+            variables: { staffId: props.staff_id },
+            onCompleted: () => {
+                if (staff.getStaff) {
+                    setStaffValue({
+                        name: staff.getStaff.name,
+                        picture: staff.getStaff.picture,
+                        isAdmin: staff.getStaff.isAdmin,
+                        email: staff.getStaff.email,
+                        phone_number: staff.getStaff.phone_number
+                    })
+                } else {
+                    setStaffValue({
+                        name: '[staff not found]',
+                        picture: '',
+                        isAdmin: false,
+                        email: '',
+                        phone_number: ''
+                    })
+                }
+            }
         }
     );
 
-    const { data: position, error: errorPosition, loading: loadingPosition } = useQuery(
+    useEffect(() => {
+        if (staff) {
+            if (staff.getStaff) {
+                setStaffValue({
+                    name: staff.getStaff.name,
+                    picture: staff.getStaff.picture,
+                    isAdmin: staff.getStaff.isAdmin,
+                    email: staff.getStaff.email,
+                    phone_number: staff.getStaff.phone_number
+                })
+            } else {
+                setStaffValue({
+                    name: '[staff not found]',
+                    picture: '',
+                    isAdmin: false,
+                    email: '',
+                    phone_number: ''
+                })
+            }
+        }
+    }, [staff])
+
+    const { data: position, error: errorPosition, loading: loadingPosition, refetch: refetchPosition } = useQuery(
         FETCH_POSITION_QUERY,
         {
-            variables: { positionId: props.position_id }
+            variables: { positionId: props.position_id },
+            onCompleted: () => {
+                if (position.getPosition) {
+                    setPositionName(position.getPosition.name)
+                } else {
+                    setPositionName('[position not found]')
+                }
+            }
         }
     );
+
+    useEffect(() => {
+        if (position) {
+            if (position.getPosition) {
+                setPositionName(position.getPosition.name)
+            } else {
+                setPositionName('[position not found]')
+            }
+        }
+    }, [position])
+
 
     const [deleteAssignedTask] = useMutation(DELETE_ASSIGNED_TASK, {
         update(proxy) {
@@ -133,12 +202,12 @@ const AssignedToPicList = props => {
                     <List.Item
                         onPress={assignedCommitteeId || selected ? deleteHandler : onPressAssignedTask}
                         style={styles.staffs}
-                        title={staff.getStaff.name}
-                        description={<Caption>{position.getPosition.name}</Caption>}
-                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
+                        title={staffValue.name}
+                        description={<Caption>{positionName}</Caption>}
+                        left={() => <Avatar.Image size={50} source={staffValue.picture ? { uri: staffValue.picture } : require('../../assets/avatar.png')} />}
                         right={() =>
                             <View style={{ alignSelf: "center", flexDirection: 'row' }}>
-                                {staff.getStaff.isAdmin ? <Chip mode="outlined" style={{ borderColor: Colors.primaryColor, marginRight: 10 }} textStyle={{ color: Colors.secondaryColor }}>Admin</Chip> : null}
+                                {staffValue.isAdmin ? <Chip mode="outlined" style={{ borderColor: Colors.primaryColor, marginRight: 10 }} textStyle={{ color: Colors.secondaryColor }}>Admin</Chip> : null}
                                 {assignedCommitteeId || selected ? <Icon style={{ alignSelf: "center" }} name="check" size={25} color={Colors.primaryColor} /> : null}
                             </View>
                         }

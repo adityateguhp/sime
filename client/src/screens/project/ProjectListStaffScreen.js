@@ -243,7 +243,7 @@ const ProjectListStaffScreen = ({ navigation }) => {
 }
 
 const modalMenuWidth = wp(77);
-const modalMenuHeight = wp(35);
+const modalMenuHeight = wp(25);
 
 
 const styles = StyleSheet.create({

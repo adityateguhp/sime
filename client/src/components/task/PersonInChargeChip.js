@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Image } from 'react-native';
 import { Chip, Text } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -17,10 +17,37 @@ const PersonInChargeChip = props => {
 
     const sime = useContext(SimeContext);
 
-    const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
+    const [staffValue, setStaffValue] = useState({
+        name: '',
+        picture: '',
+        isAdmin: false,
+        email: '',
+        phone_number: ''
+    })
+
+    const { data: staff, error: errorStaff, loading: loadingStaff, refetch: refetchStaff } = useQuery(
         FETCH_STAFF_QUERY,
         {
-            variables: { staffId: props.staffId }
+            variables: { staffId: props.staffId },
+            onCompleted: () => {
+                if (staff.getStaff) {
+                    setStaffValue({
+                        name: staff.getStaff.name,
+                        picture: staff.getStaff.picture,
+                        isAdmin: staff.getStaff.isAdmin,
+                        email: staff.getStaff.email,
+                        phone_number: staff.getStaff.phone_number
+                    })
+                } else {
+                    setStaffValue({
+                        name: '[staff not found]',
+                        picture: '',
+                        isAdmin: false,
+                        email: '',
+                        phone_number: ''
+                    })
+                }
+            }
         }
     );
 
@@ -67,9 +94,9 @@ const PersonInChargeChip = props => {
             || props.userPersonInCharge.order === '3'
             || props.userPersonInCharge.order === '6' && props.userPersonInCharge.committee_id === props.committeeId
             || props.userPersonInCharge.order === '7' && props.userPersonInCharge.committee_id === props.committeeId ?
-            <Chip avatar={<Image source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />} onClose={deleteHandler}>{staff.getStaff.name}</Chip>
+            <Chip avatar={<Image source={staffValue.picture ? { uri: staffValue.picture } : require('../../assets/avatar.png')} />} onClose={deleteHandler}>{staffValue.name}</Chip>
             :
-            <Chip avatar={<Image source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />} >{staff.getStaff.name}</Chip>
+            <Chip avatar={<Image source={staffValue.picture ? { uri: staffValue.picture } : require('../../assets/avatar.png')} />} >{staffValue.name}</Chip>
     );
 };
 

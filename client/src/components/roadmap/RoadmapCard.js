@@ -44,7 +44,11 @@ const RoadmapCard = props => {
             variables: { committeeId: props.committeeId },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
+                if(committee.getCommittee){
                 setCommitteeName(committee.getCommittee.name)
+                }else{
+                setCommitteeName('[committee not found]')
+                }
             }
         }
     );

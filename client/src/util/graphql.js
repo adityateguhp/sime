@@ -1454,6 +1454,12 @@ export const ASSIGNED_TASK_MUTATION = gql`
   } 
 `;
 
+export const UPDATE_STAFF_ASSIGNED_TASK_MUTATION = gql`
+  mutation updateStaffAssignedTask($personInChargeId: ID!, $staffId:ID!) {
+    updateStaffAssignedTask(personInChargeId: $personInChargeId, staffId: $staffId) 
+  } 
+`;
+
 export const DELETE_ASSIGNED_TASK = gql`
   mutation deleteAssignedTask($assignedId: ID!) {
     deleteAssignedTask(assignedId: $assignedId)

@@ -110,7 +110,11 @@ export default function ProjectNavigator({ route, navigation }) {
     if (sime.committee_id) {
       loadCommittee();
       if (committee) {
-        setCommitteeName(committee.getCommittee.name)
+        if(committee.getCommittee){
+          setCommitteeName(committee.getCommittee.name)
+        }else{
+          setCommitteeName('[committee not found]')
+        }
       }
     }
     return () => {

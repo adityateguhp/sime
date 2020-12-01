@@ -21,7 +21,8 @@ const FormCommittee = props => {
 
     const [values, setValues] = useState({
         name: '',
-        organizationId: sime.user.organization_id
+        organizationId: sime.user.organization_id,
+        core: false
     });
 
     const onChange = (key, val, err) => {

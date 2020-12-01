@@ -126,7 +126,13 @@ const TaskScreen = ({ navigation }) => {
         {
             variables: { committeeId: sime.committee_id },
             notifyOnNetworkStatusChange: true,
-            onCompleted: () => { setCommitteeValue(committee.getCommittee) }
+            onCompleted: () => { 
+                if(committee.getCommittee){
+                    setCommitteeValue(committee.getCommittee)
+                }else{
+                    setCommitteeValue(sime.committee_id)
+                }
+            }
         }
     );
 

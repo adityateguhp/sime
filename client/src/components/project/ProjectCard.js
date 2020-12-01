@@ -50,7 +50,7 @@ const ProjectCard = props => {
                 onLongPress={sime.user_type === 'Organization' || headProject === sime.user.id ? props.onLongPress : null} useForeground>
                 <Card style={styles.project}>
                     <SkeletonContent
-                        isLoading={props.loading && loading2}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardCover}
                     >
@@ -60,7 +60,7 @@ const ProjectCard = props => {
                     </SkeletonContent>
 
                     <SkeletonContent
-                        isLoading={props.loading && loading2}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardTitle}
                     >
@@ -76,7 +76,7 @@ const ProjectCard = props => {
                     </SkeletonContent>
 
                     <SkeletonContent
-                        isLoading={props.loading && loading2}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardContent}
                     >
@@ -93,7 +93,7 @@ const ProjectCard = props => {
                     </SkeletonContent>
 
                     <SkeletonContent
-                        isLoading={props.loading && loading2}
+                        isLoading={props.loading}
                         containerStyle={styles.SkletonContainer}
                         layout={cardAction}
                     >

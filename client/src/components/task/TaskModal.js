@@ -99,10 +99,12 @@ const TaskModal = props => {
             staffId: props.createdBy
         },
         onCompleted: () => {
-            setCreatedByName(staff.getStaff.name)
-        },
-        onError: () => {
-            setCreatedByName('-')
+            if(staff.getStaff){
+                setCreatedByName(staff.getStaff.name)
+            }else{
+                setCreatedByName('-')
+            }
+            
         }
     });
 

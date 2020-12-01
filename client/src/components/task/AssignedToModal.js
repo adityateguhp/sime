@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, FlatList } from 'react-native';
 import { Portal, Appbar } from 'react-native-paper';
 import Modal from "react-native-modal";
@@ -16,6 +16,27 @@ const AssignedToModal = props => {
     }
 
     const sime = useContext(SimeContext);
+
+    const [committeeValue, setCommitteValue] = useState({
+        name: '',
+        id: ''
+    })
+
+    useEffect(()=>{
+        if(props.committee){
+            if(props.committee.id){
+                setCommitteValue({
+                    name: props.committee.name,
+                    id: props.committee.id
+                })
+            }else{
+                setCommitteValue({
+                    name: '[committee not found]',
+                    id: props.committee
+                })
+            }
+        }
+    },[props.committee])
 
     return (
         <Portal>
@@ -42,8 +63,8 @@ const AssignedToModal = props => {
                         </Appbar>
                         <View style={styles.formViewStyle}>
                             <AssignedToSeparator
-                                name={props.committee.name}
-                                committeeId={props.committee.id}
+                                name={committeeValue.name}
+                                committeeId={committeeValue.id}
                                 personInCharges={props.personInCharges}
                                 assignedTasks={props.assignedTasks}
                                 taskId={props.taskId}

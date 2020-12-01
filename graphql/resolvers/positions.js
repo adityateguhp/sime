@@ -10,8 +10,6 @@ module.exports = {
         const positions = await Position.find({organization_id: organizationId}).sort({core: -1, order: 1});
         if (positions) {
           return positions;
-        } else {
-          throw new Error('Positions not found');
         }
       } catch (err) {
         throw new Error(err);
@@ -22,8 +20,6 @@ module.exports = {
         const position = await Position.findById(positionId);
         if (position) {
           return position;
-        } else {
-          throw new Error('Position not found');
         }
       } catch (err) {
         throw new Error(err);

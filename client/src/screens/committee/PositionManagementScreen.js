@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Text, Snackbar, List, Divider } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { Provider, Text, Snackbar, Title, Portal } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Modal from "react-native-modal";
 
 import FABbutton from '../../components/common/FABbutton';
 import FormPosition from '../../components/committee/FormPosition';
@@ -19,6 +20,13 @@ import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
 
 const PositionManagementScreen = ({ navigation }) => {
+    let TouchableCmp = TouchableOpacity;
+
+    if (Platform.OS === 'android' && Platform.Version >= 21) {
+        TouchableCmp = TouchableNativeFeedback;
+    }
+
+    
     const sime = useContext(SimeContext);
 
     const [visibleDelete, setVisibleDelete] = useState(false);
@@ -65,7 +73,7 @@ const PositionManagementScreen = ({ navigation }) => {
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
     const [visibleFormEdit, setVisibleFormEdit] = useState(false);
-
+    const [order, setOrder] = useState('');
     useEffect(() => {
         if (position) setPositionValue(position.getPosition);
         return () => {
@@ -86,10 +94,11 @@ const PositionManagementScreen = ({ navigation }) => {
         setVisibleFormEdit(false);
     }
 
-    const longPressHandler = (name, id) => {
+    const longPressHandler = (name, id, order) => {
         setVisible(true);
         sime.setPosition_name(name);
         sime.setPosition_id(id)
+        setOrder(order)
         loadExistData();
     }
 
@@ -136,8 +145,8 @@ const PositionManagementScreen = ({ navigation }) => {
     const addPositionsStateUpdate = (e) => {
         const temp = [e, ...positionsValue];
         temp.sort(function (a, b) {
-            var textA = a.order
-            var textB = b.order
+            var textA = a.order;
+            var textB = b.order;
 
             var coreA = a.core;
             var coreB = b.core;
@@ -165,8 +174,8 @@ const PositionManagementScreen = ({ navigation }) => {
         }).indexOf(e.id);
         temp[index] = e
         temp.sort(function (a, b) {
-            var textA = a.order
-            var textB = b.order
+            var textA = a.order;
+            var textB = b.order;
 
             var coreA = a.core;
             var coreB = b.core;
@@ -207,7 +216,7 @@ const PositionManagementScreen = ({ navigation }) => {
 
     return (
         <Provider theme={theme}>
-             <FlatList
+            <FlatList
                 style={styles.screen}
                 data={positionsValue}
                 refreshControl={
@@ -220,17 +229,41 @@ const PositionManagementScreen = ({ navigation }) => {
                     <PositionList
                         name={itemData.item.name}
                         core={itemData.item.core}
-                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.order) }}
                     />
                 )}
             />
-            <OptionModal
-                visible={visible}
-                closeModal={closeModal}
-                title={sime.position_name}
-                openFormEdit={openFormEdit}
-                deleteHandler={deleteHandler}
-            />
+            {
+                order < '9' ?
+                    <Portal>
+                        <Modal
+                            useNativeDriver={true}
+                            isVisible={visible}
+                            animationIn="zoomIn"
+                            animationOut="zoomOut"
+                            onBackButtonPress={closeModal}
+                            onBackdropPress={closeModal}
+                            statusBarTranslucent>
+                            <View style={styles.modalView}>
+                                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.position_name}</Title>
+                                <TouchableCmp onPress={openFormEdit}>
+                                    <View style={styles.textView}>
+                                        <Text style={styles.text}>Edit</Text>
+                                    </View>
+                                </TouchableCmp>
+                            </View>
+                        </Modal>
+                    </Portal>
+                    :
+                    <OptionModal
+                        visible={visible}
+                        closeModal={closeModal}
+                        title={sime.position_name}
+                        openFormEdit={openFormEdit}
+                        deleteHandler={deleteHandler}
+                    />
+            }
+
             <FABbutton Icon="plus" onPress={openForm} />
             <FormPosition
                 closeModalForm={closeModalForm}
@@ -285,16 +318,42 @@ const PositionManagementScreen = ({ navigation }) => {
     );
 }
 
+const modalMenuWidth = wp(77);
+const modalMenuHeight = wp(25);
+
 const styles = StyleSheet.create({
-    screen: {
-        marginTop: 5
-    },
-    content: {
-        flex: 1,
-        backgroundColor: 'white',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+  screen: {
+    marginTop: 5
+  },
+  content: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalView: {
+    backgroundColor: 'white',
+    height: modalMenuHeight,
+    width: modalMenuWidth,
+    alignSelf: 'center',
+    justifyContent: 'flex-start',
+  },
+  textView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginBottom: 5
+  },
+  text: {
+    marginLeft: wp(5.6),
+    fontSize: wp(3.65)
+  },
+  content: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 });
 
 

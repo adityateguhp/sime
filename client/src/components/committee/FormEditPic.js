@@ -7,7 +7,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { Dropdown } from 'react-native-material-dropdown-v2';
 
 import { staffValidator, positionValidator, committeeValidator } from '../../util/validator';
-import { FETCH_PICS_QUERY, UPDATE_PIC_MUTATION } from '../../util/graphql';
+import { FETCH_PICS_QUERY, UPDATE_PIC_MUTATION, UPDATE_STAFF_ASSIGNED_TASK_MUTATION } from '../../util/graphql';
 import { SimeContext } from '../../context/SimePovider'
 import { theme } from '../../constants/Theme';
 import LoadingModal from '../common/LoadingModal';
@@ -99,6 +99,26 @@ const FormEditPic = props => {
         }
     }, [props.personInCharge])
 
+    let checkStaffs = [];
+    props.personInCharges.map((personInCharge) =>
+        props.staffs.map((staff) => {
+            if (staff.id !== values.staffId && staff.id === personInCharge.staff_id && sime.project_id === personInCharge.project_id) {
+                checkStaffs.push(staff.id);
+            } else {
+                return null
+            }
+            return null;
+        }))
+
+    let filteredStaffs = []
+    props.staffs.map((staff) => {
+        if (checkStaffs.indexOf(staff.id) > -1) {
+            return null
+        } else {
+            filteredStaffs.push(staff)
+        }
+    })
+
     let checkPositions = [];
     props.personInCharges.map((personInCharge) =>
         positionsFiltered.map((position) => {
@@ -128,12 +148,26 @@ const FormEditPic = props => {
         }
     })
 
+    const checkPosition = props.positions.find((e) => e.id === values.positionId)
+
+    const checkStaff = props.staffs.find((e) => e.id === values.staffId)
+
+    const checkCommittee = props.committees.find((e) => e.id === values.committeeId)
+
+    const [updateStaffAssignedTask, { loading: loading2 }] = useMutation(UPDATE_STAFF_ASSIGNED_TASK_MUTATION);
+
     const [updatePersonInCharge, { loading }] = useMutation(UPDATE_PIC_MUTATION, {
         update(proxy, result) {
             const data = proxy.readQuery({
                 query: FETCH_PICS_QUERY,
                 variables: { projectId: sime.project_id }
             });
+            updateStaffAssignedTask({
+                variables: {
+                    personInChargeId: result.data.updatePersonInCharge.id,
+                    staffId: result.data.updatePersonInCharge.staff_id
+                }
+            })
             props.updatePersonInChargesStateUpdate(result.data.updatePersonInCharge);
             props.updatePersonInChargeStateUpdate(result.data.updatePersonInCharge);
             proxy.writeQuery({ query: FETCH_PICS_QUERY, data, variables: { projectId: sime.project_id } });
@@ -199,12 +233,14 @@ const FormEditPic = props => {
                                     <Dropdown
                                         useNativeDriver={true}
                                         label='Staff'
-                                        disabled={true}
-                                        value={values.staffId}
-                                        data={props.staffs}
+                                        value={checkStaff ? values.staffId : ''}
+                                        data={filteredStaffs}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}
+                                        onChangeText={(val) => onChange('staffId', val, 'staff_error')}
+                                        error={errors.staff_error}
                                     />
+                                    {errors.staff_error ? <Text style={styles.error}>{errors.staff_error}</Text> : null}
                                 </View>
                                 <View>
                                     {sime.user_type === 'Staff' && sime.order === '6' || sime.user_type === 'Staff' && sime.order === '7' ?
@@ -212,7 +248,7 @@ const FormEditPic = props => {
                                             useNativeDriver={true}
                                             label='Committee'
                                             disabled={true}
-                                            value={values.committeeId}
+                                            value={checkCommittee ? values.committeeId : ''}
                                             data={props.committees}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
@@ -220,7 +256,7 @@ const FormEditPic = props => {
                                         <Dropdown
                                             useNativeDriver={true}
                                             label='Committee'
-                                            value={values.committeeId}
+                                            value={checkCommittee ? values.committeeId : ''}
                                             data={props.committees}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
@@ -233,7 +269,7 @@ const FormEditPic = props => {
                                     <Dropdown
                                         useNativeDriver={true}
                                         label='Position'
-                                        value={values.positionId}
+                                        value={checkPosition ? values.positionId : ''}
                                         data={filteredPositions}
                                         valueExtractor={({ id }) => id}
                                         labelExtractor={({ name }) => name}

@@ -29,19 +29,87 @@ const PicList = props => {
 
     const sime = useContext(SimeContext);
 
-    const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
+    const [staffValue, setStaffValue] = useState({
+        name: '',
+        picture: '',
+        isAdmin: false,
+        email: '',
+        phone_number: ''
+    })
+
+    const [positionName, setPositionName] = useState('')
+
+    const { data: staff, error: errorStaff, loading: loadingStaff, refetch: refetchStaff } = useQuery(
         FETCH_STAFF_QUERY,
         {
-            variables: { staffId: props.staff_id }
+            variables: { staffId: props.staff_id },
+            onCompleted: () => {
+                if (staff.getStaff) {
+                    setStaffValue({
+                        name: staff.getStaff.name,
+                        picture: staff.getStaff.picture,
+                        isAdmin: staff.getStaff.isAdmin,
+                        email: staff.getStaff.email,
+                        phone_number: staff.getStaff.phone_number
+                    })
+                } else {
+                    setStaffValue({
+                        name: '[staff not found]',
+                        picture: '',
+                        isAdmin: false,
+                        email: '',
+                        phone_number: ''
+                    })
+                }
+            }
         }
     );
 
-    const { data: position, error: errorPosition, loading: loadingPosition } = useQuery(
+    useEffect(() => {
+        if (staff) {
+            if (staff.getStaff) {
+                setStaffValue({
+                    name: staff.getStaff.name,
+                    picture: staff.getStaff.picture,
+                    isAdmin: staff.getStaff.isAdmin,
+                    email: staff.getStaff.email,
+                    phone_number: staff.getStaff.phone_number
+                })
+            } else {
+                setStaffValue({
+                    name: '[staff not found]',
+                    picture: '',
+                    isAdmin: false,
+                    email: '',
+                    phone_number: ''
+                })
+            }
+        }
+    }, [staff])
+
+    const { data: position, error: errorPosition, loading: loadingPosition, refetch: refetchPosition } = useQuery(
         FETCH_POSITION_QUERY,
         {
-            variables: { positionId: props.position_id }
+            variables: { positionId: props.position_id },
+            onCompleted: () => {
+                if (position.getPosition) {
+                    setPositionName(position.getPosition.name)
+                } else {
+                    setPositionName('[position not found]')
+                }
+            }
         }
     );
+
+    useEffect(() => {
+        if (position) {
+            if (position.getPosition) {
+                setPositionName(position.getPosition.name)
+            } else {
+                setPositionName('[position not found]')
+            }
+        }
+    }, [position])
 
     const [loadExistData, { called, data: personInCharge, error: errorCommittee }] = useLazyQuery(
         FETCH_PIC_QUERY,
@@ -138,29 +206,15 @@ const PicList = props => {
         ]);
     };
 
+    useEffect(() => {
+        refetchStaff();
+        refetchPosition();
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [props.onRefresh]);
 
-    if (errorStaff) {
-        console.error(errorStaff);
-        return <Text>errorStaff</Text>;
-    }
-
-    if (errorPosition) {
-        console.error(errorPosition);
-        return <Text>errorPosition</Text>;
-    }
-
-    if (called & errorCommittee) {
-        console.error(errorCommittee);
-        return <Text>errorCommittee</Text>;
-    }
-
-    if (loadingStaff) {
-        return <CenterSpinnerSmall />;
-    }
-
-    if (loadingPosition) {
-        return <CenterSpinnerSmall />;
-    }
+    console.log(positionName)
 
     return (
         <Provider theme={theme}>
@@ -171,17 +225,17 @@ const PicList = props => {
                     sime.user_type === 'Staff' && sime.order === '3' && sime.userPersonInChargeId !== props.person_in_charge_id && props.order !== '1' && props.order !== '2' ||
                     sime.user_type === 'Staff' && sime.order === '6' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id ||
                     sime.user_type === 'Staff' && sime.order === '7' && sime.userPersonInChargeId !== props.person_in_charge_id && sime.userPicCommittee === props.committee_id && props.order !== '6' ||
-                    sime.user_type === "Organization" ? () => { longPressHandler(props.person_in_charge_id, props.staff_id, staff.getStaff.name) } : null}
+                    sime.user_type === "Organization" ? () => { longPressHandler(props.person_in_charge_id, props.staff_id, staffValue.name) } : null}
                 useForeground>
                 <View style={styles.wrap}>
                     <List.Item
                         style={styles.staffs}
-                        title={staff.getStaff.name}
-                        description={<Caption>{position.getPosition.name}</Caption>}
-                        left={() => <Avatar.Image size={50} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />}
-                        right={() => staff.getStaff.isAdmin ?
+                        title={staffValue.name}
+                        description={<Caption>{positionName}</Caption>}
+                        left={() => <Avatar.Image size={50} source={staffValue.picture ? { uri: staffValue.picture } : require('../../assets/avatar.png')} />}
+                        right={() => staffValue.isAdmin ?
                             <View style={{ alignSelf: "center" }}>
-                                <Chip mode="outlined" style={{borderColor: Colors.primaryColor}} textStyle={{color: Colors.secondaryColor}}>Admin</Chip>
+                                <Chip mode="outlined" style={{ borderColor: Colors.primaryColor }} textStyle={{ color: Colors.secondaryColor }}>Admin</Chip>
                             </View>
                             : null}
                     />
@@ -216,19 +270,20 @@ const PicList = props => {
                     />
                     <LoadingModal loading={loadingDelete} />
                 </Portal> : null}
-            <ProfileModal
-                visible={visibleProfileModal}
-                onBackButtonPress={closeProfileModal}
-                onBackdropPress={closeProfileModal}
-                name={staff.getStaff.name}
-                position_name={position.getPosition.name}
-                email={staff.getStaff.email}
-                phone_number={staff.getStaff.phone_number}
-                picture={staff.getStaff.picture}
-                positionName={true}
-                onPressInfo={props.onSelect}
-                onPressIn={closeProfileModal}
-            />
+            {staffValue.name !== '[staff not found]' ?
+                <ProfileModal
+                    visible={visibleProfileModal}
+                    onBackButtonPress={closeProfileModal}
+                    onBackdropPress={closeProfileModal}
+                    name={staffValue.name}
+                    position_name={positionName}
+                    email={staffValue.email}
+                    phone_number={staffValue.phone_number}
+                    picture={staffValue.picture}
+                    positionName={true}
+                    onPressInfo={props.onSelect}
+                    onPressIn={closeProfileModal}
+                /> : null}
         </Provider>
     );
 };

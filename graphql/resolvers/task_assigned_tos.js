@@ -70,6 +70,14 @@ module.exports = {
 
             return assign;
         },
+        async updateStaffAssignedTask(_, { personInChargeId, staffId }, context) {
+            try {
+                await Task_assigned_to.updateMany({person_in_charge_id: personInChargeId}, {staff_id: staffId}, { new: true })
+                return "Updated"
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
         async deleteAssignedTask(_, { assignedId }, context) {
             try {
                 const assign = await Task_assigned_to.findById(assignedId);
@@ -85,7 +93,7 @@ module.exports = {
                 assign.map((data) => {
                     data.deleteOne()
                 })
-                return assign;
+                return 'Deleted successfully';
             } catch (err) {
                 throw new Error(err);
             }

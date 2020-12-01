@@ -66,6 +66,20 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                     </Paragraph>
                     <Divider />
                     <Title style={styles.titleInfo}>
+                        Phone Number
+                </Title>
+                    <Paragraph>
+                        {organization.getOrganization.phone_number}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
+                        Address
+                </Title>
+                    <Paragraph>
+                        {organization.getOrganization.address}
+                    </Paragraph>
+                    <Divider />
+                    <Title style={styles.titleInfo}>
                         Description
                 </Title>
                     <Paragraph>

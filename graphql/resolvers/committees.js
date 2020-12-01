@@ -8,12 +8,10 @@ module.exports = {
   Query: {
     async getCommittees(_, {organizationId}, context) {
       try {
-        const committees = await Committee.find({ organization_id: organizationId }).sort({ name: 1, core: 1 });
+        const committees = await Committee.find({ organization_id: organizationId }).sort({ core: -1, name: 1  });
         if (committees) {
           return committees;
-        } else {
-          throw new Error('Committees not found');
-        }
+        } 
       } catch (err) {
         throw new Error(err);
       }
@@ -23,8 +21,6 @@ module.exports = {
         const committee = await Committee.findById(committeeId);
         if (committee) {
           return committee;
-        } else {
-          throw new Error('Committee not found');
         }
       } catch (err) {
         throw new Error(err);

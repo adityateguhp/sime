@@ -18,12 +18,8 @@ const PositionList = props => {
                 <Card style={styles.position}>
                     <Card.Title
                         title={props.name}
+                        subtitle={props.core? "Panitia Inti" : "Non Panitia Inti"}
                         left={() => <Avatar.Text size={45} label={label} style={{backgroundColor: Colors.primaryColor}}/>}
-                        right={() => 
-                            <View style={{ alignSelf: "center" }}>
-                                <Chip mode="outlined" style={{borderColor: Colors.primaryColor, marginRight: 10}} textStyle={{color: Colors.primaryColor}}>{props.core? "Panitia Inti" : "Non Panitia Inti"}</Chip>
-                            </View>
-                            }
                     />
                 </Card >
             </TouchableCmp>

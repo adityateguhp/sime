@@ -338,6 +338,7 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                             onSelect={selectItemHandler}
                             deletePersonInChargesStateUpdate={deletePersonInChargesStateUpdate}
                             updatePersonInChargesStateUpdate={updatePersonInChargesStateUpdate}
+                            onRefresh={onRefresh}
                         />
                     )
                 }
@@ -345,6 +346,8 @@ const CommitteeListStaffScreen = ({ navigation }) => {
                     ({ section: { committee_id } }) => (
                         <CommitteeContainer
                             committee_id={committee_id}
+                            onRefresh={onRefresh}
+
                         />
                     )
                 }

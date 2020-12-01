@@ -25,6 +25,8 @@ const FormEditCommittee = props => {
         name: ''
     });
 
+    const [core, setCore ] = useState(false)
+
     const onChange = (key, val, err) => {
         setValues({ ...values, [key]: val });
         setErrors({ ...errors, [err]: '' })
@@ -36,6 +38,7 @@ const FormEditCommittee = props => {
                 committeeId: props.committee.id,
                 name: props.committee.name
             })
+            setCore(props.committee.core)
         }
         return () => {
             console.log("This will be logged on unmount");
@@ -98,7 +101,7 @@ const FormEditCommittee = props => {
                         <Appbar style={styles.appbar}>
                             <Appbar.Action icon="window-close" onPress={props.closeButton} />
                             <Appbar.Content title="Edit Committee" />
-                            <Appbar.Action icon="delete" onPress={props.deleteButton} />
+                            {core? null : <Appbar.Action icon="delete" onPress={props.deleteButton} />}
                             <Appbar.Action icon="check" onPress={onSubmit} />
                         </Appbar>
                         <ScrollView>

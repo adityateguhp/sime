@@ -451,13 +451,18 @@ module.exports = gql`
             roadmapId: ID!
         ): Task_assigned_to!
 
+        updateStaffAssignedTask(
+            personInChargeId: ID!
+            staffId: ID!
+        ): String!
+
         deleteAssignedTask(
             assignedId: ID!
         ): String!
 
         deleteAssignedTaskByPersonInCharge(
             personInChargeId: ID!
-        ): [Task_assigned_to]
+        ): String!
 
         deleteAssignedTaskByTask(
             taskId: ID!

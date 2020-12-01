@@ -3,6 +3,7 @@ import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, View, RefreshControl, SectionList, ScrollView } from 'react-native';
 import { Provider, Text, Snackbar, FAB } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormPic from '../../components/committee/FormPic';
@@ -87,7 +88,7 @@ const CommitteeListScreen = ({ navigation }) => {
                     var textA = a.order;
                     var textB = b.order;
 
-                    return textA.localeCompare(textB)
+                    return textA - textB
                 });
                 setPersonInChargesValueTemp(personInCharges.getPersonInCharges)
             }
@@ -141,7 +142,7 @@ const CommitteeListScreen = ({ navigation }) => {
             var textA = a.order;
             var textB = b.order;
 
-            return textA.localeCompare(textB)
+            return textA - textB
         });
         setPersonInChargesValueTemp(temp)
         let dataSource = temp.reduce(function (sections, item) {
@@ -197,7 +198,7 @@ const CommitteeListScreen = ({ navigation }) => {
             var textA = a.order;
             var textB = b.order;
 
-            return textA.localeCompare(textB)
+            return textA - textB
         });
         setPersonInChargesValueTemp(temp);
         onToggleSnackBarUpdate();
@@ -316,6 +317,7 @@ const CommitteeListScreen = ({ navigation }) => {
                             onSelect={selectItemHandler}
                             deletePersonInChargesStateUpdate={deletePersonInChargesStateUpdate}
                             updatePersonInChargesStateUpdate={updatePersonInChargesStateUpdate}
+                            onRefresh={onRefresh}
                         />
                     )
                 }
@@ -323,6 +325,7 @@ const CommitteeListScreen = ({ navigation }) => {
                     ({ section: { committee_id } }) => (
                         <CommitteeContainer
                             committee_id={committee_id}
+                            onRefresh={onRefresh}
                         />
                     )
                 }

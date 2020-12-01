@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { FlatList, Alert, StyleSheet, View, RefreshControl } from 'react-native';
-import { Provider, Text, Snackbar, FAB } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FlatList, Alert, StyleSheet, View, TouchableOpacity, TouchableNativeFeedback, Platform, RefreshControl } from 'react-native';
+import { Provider, Text, Snackbar, Title, Portal } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Modal from "react-native-modal";
 
 import FormEditCommittee from '../../components/committee/FormEditCommittee';
 import FormCommittee from '../../components/committee/FormCommittee';
@@ -23,6 +24,11 @@ import FABbutton from '../../components/common/FABbutton';
 import Colors from '../../constants/Colors';
 
 const CommitteeManagementScreen = ({ navigation }) => {
+  let TouchableCmp = TouchableOpacity;
+
+  if (Platform.OS === 'android' && Platform.Version >= 21) {
+      TouchableCmp = TouchableNativeFeedback;
+  }
 
   const sime = useContext(SimeContext);
 
@@ -49,7 +55,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
 
   const [committeesValue, setCommitteesValue] = useState([]);
   const [committeeVal, setCommitteeVal] = useState(null);
-  const [picInCommitteeVal, setPicInCommittee] = useState(null);
+  // const [picInCommitteeVal, setPicInCommittee] = useState(null);
 
   const { data: committees, error: errorCommittees, loading: loadingCommittees, refetch: refetchCommittees } = useQuery(
     FETCH_COMMITTEES_QUERY,
@@ -67,11 +73,11 @@ const CommitteeManagementScreen = ({ navigation }) => {
       variables: { committeeId: sime.committee_id }
     });
 
-  const [loadPicData, { called: called2, data: picInCommittee, error: error3 }] = useLazyQuery(
-    FETCH_PICS_IN_COMMITTEE_QUERY,
-    {
-      variables: { committeeId: sime.committee_id }
-    });
+  // const [loadPicData, { called: called2, data: picInCommittee, error: error3 }] = useLazyQuery(
+  //   FETCH_PICS_IN_COMMITTEE_QUERY,
+  //   {
+  //     variables: { committeeId: sime.committee_id }
+  //   });
 
   useEffect(() => {
     if (committee) {
@@ -82,20 +88,21 @@ const CommitteeManagementScreen = ({ navigation }) => {
     }
   }, [committee])
 
-  useEffect(() => {
-    if (picInCommittee) {
-      setPicInCommittee(picInCommittee.getPersonInChargesInCommittee)
-    }
-    return () => {
-      console.log("This will be logged on unmount");
-    }
-  }, [picInCommittee])
+  // useEffect(() => {
+  //   if (picInCommittee) {
+  //     setPicInCommittee(picInCommittee.getPersonInChargesInCommittee)
+  //   }
+  //   return () => {
+  //     console.log("This will be logged on unmount");
+  //   }
+  // }, [picInCommittee])
 
 
   const [visible, setVisible] = useState(false);
   const [visibleFormCommittee, setVisibleFormCommittee] = useState(false);
   const [visibleFormEditCommittee, setVisibleFormEditCommittee] = useState(false);
-
+  const [core, setCore] = useState(false)
+  
   const closeModal = () => {
     setVisible(false);
   }
@@ -108,12 +115,13 @@ const CommitteeManagementScreen = ({ navigation }) => {
     setVisibleFormEditCommittee(false);
   }
 
-  const longPressHandler = (id, name) => {
+  const longPressHandler = (id, name, core) => {
     setVisible(true);
     sime.setCommittee_name(name)
     sime.setCommittee_id(id)
+    setCore(core)
     loadExistData();
-    loadPicData();
+    // loadPicData();
   }
 
   const openFormCommittee = () => {
@@ -128,10 +136,13 @@ const CommitteeManagementScreen = ({ navigation }) => {
   const addCommitteesStateUpdate = (e) => {
     const temp = [e, ...committeesValue];
     temp.sort(function (a, b) {
-      var textA = a.name.toUpperCase();
+       var textA = a.name.toUpperCase();
       var textB = b.name.toUpperCase();
+      
+      var coreA = a.core;
+      var coreB = b.core;
 
-      return textA.localeCompare(textB)
+      return coreB - coreA || textA.localeCompare(textB)
     })
     setCommitteesValue(temp);
     onToggleSnackBarAddCommittee();
@@ -154,10 +165,13 @@ const CommitteeManagementScreen = ({ navigation }) => {
     }).indexOf(e.id);
     temp[index] = e
     temp.sort(function (a, b) {
-      var textA = a.name.toUpperCase();
+       var textA = a.name.toUpperCase();
       var textB = b.name.toUpperCase();
+      
+      var coreA = a.core;
+      var coreB = b.core;
 
-      return textA.localeCompare(textB)
+      return coreB - coreA || textA.localeCompare(textB)
     })
     setCommitteesValue(temp);
     onToggleSnackBarUpdateCommittee();
@@ -169,17 +183,17 @@ const CommitteeManagementScreen = ({ navigation }) => {
 
   const committeeId = sime.committee_id;
 
-  const [deleteAssignedTaskByPersonInCharge] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
+  // const [deleteAssignedTaskByPersonInCharge] = useMutation(DELETE_ASSIGNED_TASK_BYPIC);
 
-  const deleteAssignedTaskByPersonInChargeHandler = () => {
-    picInCommitteeVal.map((pic) => {
-      deleteAssignedTaskByPersonInCharge(({
-        variables: { personInChargeId: pic.id },
-      }))
-    })
-  };
+  // const deleteAssignedTaskByPersonInChargeHandler = () => {
+  //   picInCommitteeVal.map((pic) => {
+  //     deleteAssignedTaskByPersonInCharge(({
+  //       variables: { personInChargeId: pic.id },
+  //     }))
+  //   })
+  // };
 
-  const [deletePersonInChargeByCommittee] = useMutation(DELETE_PIC_BYCOMMITTEE);
+  // const [deletePersonInChargeByCommittee] = useMutation(DELETE_PIC_BYCOMMITTEE);
 
   const [deleteCommittee, { loading: loadingDelete }] = useMutation(DELETE_COMMITTEE, {
     update(proxy) {
@@ -189,13 +203,13 @@ const CommitteeManagementScreen = ({ navigation }) => {
       });
       data.getCommittees = data.getCommittees.filter((d) => d.id !== committeeId);
       deleteCommitteesStateUpdate(committeeId);
-      deletePersonInChargeByCommittee({
-        update() {
-          onRefresh();
-        },
-        variables: { committeeId }
-      })
-      deleteAssignedTaskByPersonInChargeHandler();
+      // deletePersonInChargeByCommittee({
+      //   update() {
+      //     onRefresh();
+      //   },
+      //   variables: { committeeId }
+      // })
+      // deleteAssignedTaskByPersonInChargeHandler();
       proxy.writeQuery({ query: FETCH_COMMITTEES_QUERY, data, variables: { organizationId: sime.user.organization_id } });
     },
     variables: {
@@ -225,21 +239,21 @@ const CommitteeManagementScreen = ({ navigation }) => {
       {
         text: 'Yes',
         style: 'destructive',
-        onPress: confirmToDeleteAll
-      }
-    ]);
-  };
-
-  const confirmToDeleteAll = () => {
-    Alert.alert('Wait... are you really sure?', "By deleting this committee, it's also delete all person in charge inside this committee and all related to the person in charge", [
-      { text: 'Cancel', style: 'default' },
-      {
-        text: 'Agree',
-        style: 'destructive',
         onPress: deleteCommittee
       }
     ]);
   };
+
+  // const confirmToDeleteAll = () => {
+  //   Alert.alert('Wait... are you really sure?', "By deleting this committee, it's also delete all person in charge inside this committee and all related to the person in charge", [
+  //     { text: 'Cancel', style: 'default' },
+  //     {
+  //       text: 'Agree',
+  //       style: 'destructive',
+  //       onPress: deleteCommittee
+  //     }
+  //   ]);
+  // };
 
   if (errorCommittees) {
     console.error(errorCommittees);
@@ -252,10 +266,10 @@ const CommitteeManagementScreen = ({ navigation }) => {
     return <Text>Error</Text>;
   }
 
-  if (called2 & error3) {
-    console.error(error3);
-    return <Text>Error3</Text>;
-  }
+  // if (called2 & error3) {
+  //   console.error(error3);
+  //   return <Text>Error3</Text>;
+  // }
 
   if (committeesValue.length === 0) {
     return (
@@ -280,17 +294,41 @@ const CommitteeManagementScreen = ({ navigation }) => {
           <CommitteeCard
             name={itemData.item.name}
             core={itemData.item.core}
-            onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
+            onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name, itemData.item.core) }}
           />
         )}
       />
-      <OptionModal
-        visible={visible}
-        closeModal={closeModal}
-        title={sime.committee_name}
-        openFormEdit={openFormEditCommittee}
-        deleteHandler={deleteHandler}
-      />
+      {
+        core ?
+          <Portal>
+            <Modal
+              useNativeDriver={true}
+              isVisible={visible}
+              animationIn="zoomIn"
+              animationOut="zoomOut"
+              onBackButtonPress={closeModal}
+              onBackdropPress={closeModal}
+              statusBarTranslucent>
+              <View style={styles.modalView}>
+                <Title style={{ marginTop: wp(4), marginHorizontal: wp(5), marginBottom: 5, fontSize: wp(4.86) }} numberOfLines={1} ellipsizeMode='tail'>{sime.committee_name}</Title>
+                <TouchableCmp onPress={openFormEditCommittee}>
+                  <View style={styles.textView}>
+                    <Text style={styles.text}>Edit</Text>
+                  </View>
+                </TouchableCmp>
+              </View>
+            </Modal>
+          </Portal>
+          :
+          <OptionModal
+            visible={visible}
+            closeModal={closeModal}
+            title={sime.committee_name}
+            openFormEdit={openFormEditCommittee}
+            deleteHandler={deleteHandler}
+          />
+      }
+
       <FABbutton Icon="plus" onPress={openFormCommittee} />
       <FormCommittee
         closeModalForm={closeModalFormCommittee}
@@ -348,6 +386,9 @@ const CommitteeManagementScreen = ({ navigation }) => {
   );
 }
 
+const modalMenuWidth = wp(77);
+const modalMenuHeight = wp(25);
+
 const styles = StyleSheet.create({
   screen: {
     marginTop: 5
@@ -357,7 +398,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+  modalView: {
+    backgroundColor: 'white',
+    height: modalMenuHeight,
+    width: modalMenuWidth,
+    alignSelf: 'center',
+    justifyContent: 'flex-start',
+  },
+  textView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginBottom: 5
+  },
+  text: {
+    marginLeft: wp(5.6),
+    fontSize: wp(3.65)
+  },
+  content: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 });
 
 

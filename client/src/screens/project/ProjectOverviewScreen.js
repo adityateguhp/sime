@@ -101,7 +101,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
     },
     notifyOnNetworkStatusChange: true,
     onCompleted: () => {
-      if (headProjectData.getHeadProject === null) {
+      if (!headProjectData.getHeadProject) {
         setStaff(
           {
             name: '',
@@ -124,17 +124,36 @@ const ProjectOverviewScreen = ({ navigation }) => {
         loadStaffData();
         loadPositionData();
         if (staffData) {
-          setStaff({
-            name: staffData.getStaff.name,
-            email: staffData.getStaff.email,
-            phone_number: staffData.getStaff.phone_number,
-            picture: staffData.getStaff.picture
-          })
+          if (staffData.getStaff) {
+            setStaff({
+              name: staffData.getStaff.name,
+              email: staffData.getStaff.email,
+              phone_number: staffData.getStaff.phone_number,
+              picture: staffData.getStaff.picture
+            })
+          } else {
+            setStaff(
+              {
+                name: '',
+                email: '',
+                phone_number: '',
+                picture: ''
+              }
+            );
+          }
         }
         if (positionData) {
-          setPosition({
-            name: positionData.getPosition.name
-          })
+          if (positionData.getPosition) {
+            setPosition({
+              name: positionData.getPosition.name
+            })
+          } else {
+            setPosition(
+              {
+                name: ''
+              }
+            )
+          }
         }
       }
     }
@@ -165,12 +184,23 @@ const ProjectOverviewScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (staffData) {
-      setStaff({
-        name: staffData.getStaff.name,
-        email: staffData.getStaff.email,
-        phone_number: staffData.getStaff.phone_number,
-        picture: staffData.getStaff.picture
-      })
+      if (staffData.getStaff) {
+        setStaff({
+          name: staffData.getStaff.name,
+          email: staffData.getStaff.email,
+          phone_number: staffData.getStaff.phone_number,
+          picture: staffData.getStaff.picture
+        })
+      } else {
+        setStaff(
+          {
+            name: '',
+            email: '',
+            phone_number: '',
+            picture: ''
+          }
+        );
+      }
     }
     return () => {
       console.log("This will be logged on unmount");
@@ -179,9 +209,17 @@ const ProjectOverviewScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (positionData) {
-      setPosition({
-        name: positionData.getPosition.name
-      })
+      if (positionData.getPosition) {
+        setPosition({
+          name: positionData.getPosition.name
+        })
+      } else {
+        setPosition(
+          {
+            name: ''
+          }
+        )
+      }
     }
     return () => {
       console.log("This will be logged on unmount");
@@ -298,7 +336,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
         </View>
       </ScrollView>
       {
-        headProjectData.getHeadProject ?
+        headProjectData.getHeadProject && staff.name ?
           <ProfileModal
             visible={visible}
             onBackButtonPress={closeModal}

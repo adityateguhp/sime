@@ -24,8 +24,6 @@ module.exports = {
         const staffs = await Staff.find({ organization_id: organizationId }).collation({ locale: "en" }).sort({ isAdmin: -1, name: 1 });
         if (staffs) {
           return staffs;
-        } else {
-          throw new Error('Staffs not found');
         }
       } catch (err) {
         throw new Error(err);
@@ -36,8 +34,6 @@ module.exports = {
         const staffs = await Staff.find({ department_id: departmentId }).collation({ locale: "en" }).sort({ isAdmin: -1, name: 1 });
         if (staffs) {
           return staffs;
-        } else {
-          throw new Error('Staffs not found');
         }
       } catch (err) {
         throw new Error(err);
@@ -48,8 +44,6 @@ module.exports = {
         const staff = await Staff.findById(staffId);
         if (staff) {
           return staff;
-        } else {
-          throw new Error('Staff not found');
         }
       } catch (err) {
         throw new Error(err);
