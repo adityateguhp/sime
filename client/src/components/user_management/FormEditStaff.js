@@ -227,7 +227,7 @@ const FormEditStaff = props => {
                                     <View>
                                         <Dropdown
                                             label='Department'
-                                            value={!checkDepartment? '' : values.department_id}
+                                            value={!checkDepartment ? '' : values.department_id}
                                             data={props.departments}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
@@ -240,7 +240,7 @@ const FormEditStaff = props => {
                                     <View>
                                         <Dropdown
                                             label='Position'
-                                            value={!checkPosition? '' : values.department_position_id}
+                                            value={!checkPosition ? '' : values.department_position_id}
                                             data={props.positions}
                                             valueExtractor={({ id }) => id}
                                             labelExtractor={({ name }) => name}
@@ -281,6 +281,7 @@ const FormEditStaff = props => {
                                         <Dropdown
                                             label='Admin'
                                             value={values.isAdmin}
+                                            disabled={sime.user.id === values.staffId ? true : false}
                                             data={adminValue}
                                             onChangeText={(val) => onChange('isAdmin', val, '')}
                                             useNativeDriver={true}

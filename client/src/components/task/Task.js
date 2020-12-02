@@ -87,13 +87,13 @@ const Task = props => {
             variables: { createdBy: sime.user.id }
         });
         props.completedTasksStateUpdate(result.data.completedTask);
-        proxy.writeQuery({ query: FETCH_TASKS_CREATEDBY_QUERY, data,  variables: { createdBy: sime.user.id } });
+        proxy.writeQuery({ query: FETCH_TASKS_CREATEDBY_QUERY, data, variables: { createdBy: sime.user.id } });
     }
 
 
     const [completedTask, { loading }] = useMutation(COMPLETED_TASK, {
         update(proxy, result) {
-            props.taskScreen ? completeTaskScreen(proxy, result) : props.createdByMe? completeCreatedByMeScreen(proxy, result) : completeMyTaskScreen(result);
+            props.taskScreen ? completeTaskScreen(proxy, result) : props.createdByMe ? completeCreatedByMeScreen(proxy, result) : completeMyTaskScreen(result);
         },
         onError(err) {
             console.log(err)
@@ -123,17 +123,17 @@ const Task = props => {
     const deleteCreatedByMeScreen = (proxy) => {
         const data = proxy.readQuery({
             query: FETCH_TASKS_CREATEDBY_QUERY,
-             variables: { createdBy: sime.user.id }
+            variables: { createdBy: sime.user.id }
         });
         props.tasks = props.tasks.filter((p) => p.id !== props.task.id);
         props.deleteTasksStateUpdate(props.task.id);
         deleteAssignedTaskByTask({ variables: { taskId: props.task.id } });
-        proxy.writeQuery({ query: FETCH_TASKS_CREATEDBY_QUERY, data,  variables: { createdBy: sime.user.id } });
+        proxy.writeQuery({ query: FETCH_TASKS_CREATEDBY_QUERY, data, variables: { createdBy: sime.user.id } });
     }
 
     const [deleteTask, { loading: loadingDelete }] = useMutation(DELETE_TASK, {
         update(proxy) {
-            props.taskScreen ? deleteTaskScreen(proxy) : props.createdByMe? deleteCreatedByMeScreen(proxy) : deleteMyTaskScreen();
+            props.taskScreen ? deleteTaskScreen(proxy) : props.createdByMe ? deleteCreatedByMeScreen(proxy) : deleteMyTaskScreen();
         },
         variables: {
             taskId: props.task.id
@@ -215,9 +215,14 @@ const Task = props => {
 
     return (
         <Provider theme={theme}>
-            <View style={styles.container}>
+            <View style={{
+                ...styles.container, ...{
+                    borderTopLeftRadius: props.radiusTopZero ? 0 : 4,
+                }
+            }}>
                 <View style={{
                     ...styles.taskContainer, ...{
+                        borderTopLeftRadius: props.radiusTopZero ? 0 : 4,
                         backgroundColor:
                             props.task.priority === "high" ? "#ff4943" :
                                 props.task.priority === "medium" ? "#a3cd3b" :
@@ -247,7 +252,11 @@ const Task = props => {
                         }
                     </View>
                     <TouchableCmp onPress={openModal}>
-                        <View style={styles.task}>
+                        <View style={{
+                            ...styles.task, ...{
+                                borderTopRightRadius: props.radiusTopZero ? 0 : 4
+                            }
+                        }}>
                             <View>
                                 <Subheading style={{ ...styles.nameTask, ...{ textDecorationLine: props.task.completed ? 'line-through' : 'none', opacity: props.task.completed ? 0.6 : 1 } }}>{props.task.name}</Subheading>
                                 {props.task.completed ?
@@ -302,16 +311,20 @@ const Task = props => {
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 5,
+        marginBottom: 5,
         marginHorizontal: 10,
         backgroundColor: 'white',
         elevation: 3,
-        borderRadius: 4
+        borderBottomLeftRadius: 4,
+        borderTopRightRadius: 4,
+        borderBottomRightRadius: 4
     },
     taskContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 4
+        borderBottomLeftRadius: 4,
+        borderTopRightRadius: 4,
+        borderBottomRightRadius: 4
     },
     task: {
         flex: 1,
@@ -319,7 +332,6 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingVertical: 10,
         borderBottomRightRadius: 4,
-        borderTopRightRadius: 4
     },
     taskSub: {
         flexDirection: 'row',

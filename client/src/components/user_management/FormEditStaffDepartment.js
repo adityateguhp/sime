@@ -262,6 +262,7 @@ const FormEditStaffDepartment = props => {
                                         <Dropdown
                                             label='Admin'
                                             value={values.isAdmin}
+                                            disabled={sime.user.id === values.staffId ? true : false}
                                             data={adminValue}
                                             onChangeText={(val) => onChange('isAdmin', val, '')}
                                             useNativeDriver={true}

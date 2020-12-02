@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Text } from 'react-native';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {
     FETCH_COMMITTEE_QUERY,
@@ -10,6 +12,7 @@ import {
 } from '../../util/graphql';
 import Task from '../task/Task';
 import CenterSpinnerSmall from '../common/CenterSpinnerSmall';
+import Colors from '../../constants/Colors';
 
 const AssignedToMe = props => {
     let TouchableCmp = TouchableOpacity;
@@ -71,17 +74,13 @@ const AssignedToMe = props => {
     return (
         <View style={styles.container}>
             <View style={styles.breadcrumbContainer}>
-                <TouchableCmp>
-                    <Text>{projectName}</Text>
-                </TouchableCmp>
-                <Text>{' > '}</Text>
-                <TouchableCmp>
-                    <Text>{eventName}</Text>
-                </TouchableCmp>
-                <Text>{' > '}</Text>
-                <TouchableCmp>
-                    <Text>{roadmapName}</Text>
-                </TouchableCmp>
+                <View style={styles.breadcrumb}>
+                    <Button color={Colors.primaryColor} labelStyle={{ fontSize: 12 }} uppercase={false} mode="text" compact={true} onPress={()=>{}} >{projectName}</Button>
+                    <Icon name="chevron-right" size={16} color="grey" />
+                    <Button color={Colors.primaryColor} labelStyle={{ fontSize: 12 }} uppercase={false} mode="text" compact={true} onPress={()=>{}} >{eventName}</Button>
+                    <Icon name="chevron-right" size={16} color="grey" />
+                    <Button color={Colors.primaryColor} labelStyle={{ fontSize: 12 }} uppercase={false} mode="text" compact={true} onPress={()=>{}} >{roadmapName}</Button>
+                </View>
             </View>
             <Task
                 tasks={props.tasks}
@@ -98,6 +97,7 @@ const AssignedToMe = props => {
                 roadmap={props.roadmap}
                 taskScreen={false}
                 createdByMe={false}
+                radiusTopZero={true}
             />
         </View>
     );
@@ -122,10 +122,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 15
     },
-    breadcrumbContainer: {
+    breadcrumb: {
         flexDirection: 'row',
         alignItems: 'center'
-    }
+    },
+    breadcrumbContainer: {
+        marginTop: 10,
+        marginHorizontal: 10,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+        backgroundColor: "white",
+        elevation: 3
+    },
 });
 
 

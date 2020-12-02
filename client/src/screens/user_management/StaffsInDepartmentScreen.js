@@ -381,7 +381,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                         picture={itemData.item.picture}
                         isAdmin={itemData.item.isAdmin}
                         onDelete={() => { deleteHandler() }}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id, itemData.item.department_position_id) }}
                         onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_position_id) }}
                     >
                     </StaffList>

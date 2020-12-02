@@ -175,35 +175,35 @@ const AssignedToMeContainer = props => {
     }, [props.onRefresh]);
 
     if (loadingAssignedTasks) {
-        return null
+        
     }
 
     if (loadingEvent) {
-        return null
+        
     }
 
     if (loadingPersonInCharge) {
-        return null
+        
     }
 
     if (loadingPersonInCharges) {
-        return null
+        
     }
 
     if (loadingProject) {
-        return null
+        
     }
 
     if (loadingRoadmap) {
-        return null
+        
     }
 
     if (loadingTask) {
-        return null
+        
     }
 
     if (loadingTasks) {
-        return null
+        
     }
 
     return (

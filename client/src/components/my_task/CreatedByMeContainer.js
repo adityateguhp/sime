@@ -118,8 +118,6 @@ const CreatedByMeContainer = props => {
         setAssignedTasksValue([e, ...assignedTasksValue]);
     }
 
-    console.log(personInChargeValue)
-
     const onRefresh = () => {
         refetchRoadmap();
         refetchPersonInCharges();
@@ -136,27 +134,27 @@ const CreatedByMeContainer = props => {
     }, [props.onRefresh]);
 
     if (loadingAssignedTasks) {
-        return null
+        
     }
 
     if (loadingEvent) {
-        return null
+        
     }
 
     if (loading1) {
-        return null
+        
     }
 
     if (loadingPersonInCharges) {
-        return null
+        
     }
 
     if (loadingProject) {
-        return null
+        
     }
 
     if (loadingRoadmap) {
-        return null
+        
     }
 
     return (

@@ -29,8 +29,6 @@ const CommitteeContainer = props => {
         }
     );
 
-    console.log(committee)
-
     useEffect(() => {
         refetchCommittee();
         return () => {

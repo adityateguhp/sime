@@ -214,8 +214,6 @@ const PicList = props => {
         }
     }, [props.onRefresh]);
 
-    console.log(positionName)
-
     return (
         <Provider theme={theme}>
             <TouchableCmp
