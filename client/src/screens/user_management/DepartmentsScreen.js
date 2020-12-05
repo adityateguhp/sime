@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Text, Snackbar } from 'react-native-paper';
+import { Provider, Text, Snackbar, Portal } from 'react-native-paper';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormDepartment from '../../components/user_management/FormDepartment';
@@ -226,30 +226,32 @@ const DepartmentsScreen = ({ navigation }) => {
                         closeButton={closeModalForm}
                         addDepartmentsStateUpdate={addDepartmentsStateUpdate}
                     />
-                    <Snackbar
-                        visible={visibleAdd}
-                        onDismiss={onDismissSnackBarAdd}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarAdd();
-                            },
-                        }}
-                    >
-                        Department added!
+                    <Portal>
+                        <Snackbar
+                            visible={visibleAdd}
+                            onDismiss={onDismissSnackBarAdd}
+                            action={{
+                                label: 'dismiss',
+                                onPress: () => {
+                                    onDismissSnackBarAdd();
+                                },
+                            }}
+                        >
+                            Department added!
             </Snackbar>
-                    <Snackbar
-                        visible={visibleDelete}
-                        onDismiss={onDismissSnackBarDelete}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarDelete();
-                            },
-                        }}
-                    >
-                        Department deleted!
+                        <Snackbar
+                            visible={visibleDelete}
+                            onDismiss={onDismissSnackBarDelete}
+                            action={{
+                                label: 'dismiss',
+                                onPress: () => {
+                                    onDismissSnackBarDelete();
+                                },
+                            }}
+                        >
+                            Department deleted!
             </Snackbar>
+                    </Portal>
                 </ScrollView>
             </Provider>
         );
@@ -299,39 +301,41 @@ const DepartmentsScreen = ({ navigation }) => {
                 updateDepartmentsStateUpdate={updateDepartmentsStateUpdate}
                 updateDepartmentStateUpdate={updateDepartmentStateUpdate}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Department added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Department added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Department updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Department updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Department deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Department deleted!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );

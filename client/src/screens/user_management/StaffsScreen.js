@@ -364,28 +364,30 @@ const StaffsScreen = ({ navigation }) => {
                     addStaffsStateUpdate={addStaffsStateUpdate}
                     departments={departmentsValue}
                 />
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarAdd();
-                        },
-                    }}>
-                    Staff added!
+                <Portal>
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        Staff added!
             </Snackbar>
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarDelete();
-                        },
-                    }}>
-                    Staff deleted!
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        Staff deleted!
             </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -409,7 +411,7 @@ const StaffsScreen = ({ navigation }) => {
                         isAdmin={itemData.item.isAdmin}
                         onDelete={() => { deleteHandler() }}
                         onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.department_id, itemData.item.department_position_id) }}
-                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_id, itemData.item.department_position_id ) }}
+                        onLongPress={() => { longPressHandler(itemData.item.name, itemData.item.id, itemData.item.department_id, itemData.item.department_position_id) }}
                     >
                     </StaffList>
                 )}
@@ -480,51 +482,53 @@ const StaffsScreen = ({ navigation }) => {
                 updateStaffsStateUpdate={updateStaffsStateUpdate}
                 visible={visible}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Staff added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Staff added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Staff updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Staff updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Staff deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Staff deleted!
             </Snackbar>
-            <Snackbar
-                visible={visibleResetPassword}
-                onDismiss={onDismissSnackBarResetPassword}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarResetPassword();
-                    },
-                }}
-            >
-                Staff account password has been reset!
+                <Snackbar
+                    visible={visibleResetPassword}
+                    onDismiss={onDismissSnackBarResetPassword}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarResetPassword();
+                        },
+                    }}
+                >
+                    Staff account password has been reset!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
             <LoadingModal loading={loadingResetPassword} />
         </Provider>

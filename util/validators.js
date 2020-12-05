@@ -33,7 +33,7 @@ module.exports.validateRegisterStaffInput = (
     };
 };
 
-module.exports.validateUpdateOrganizationInput = (
+module.exports.validateOrganizationInput = (
     name,
     email
 ) => {
@@ -55,6 +55,7 @@ module.exports.validateUpdateOrganizationInput = (
         valid: Object.keys(errors).length < 1
     };
 };
+
 
 module.exports.validateLoginInput = (email, password) => {
     const errors = {};

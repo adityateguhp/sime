@@ -8,7 +8,7 @@ import { theme } from '../../constants/Theme';
 import CenterSpinner from '../../components/common/CenterSpinner';
 import { SimeContext } from '../../context/SimePovider';
 
-const OrganizationProfileScreen = ({ route, navigation }) => {
+const StaffOrganizationProfileScreen = ({ route, navigation }) => {
     
     const sime = useContext(SimeContext);
     
@@ -111,4 +111,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default OrganizationProfileScreen;
+export default StaffOrganizationProfileScreen;

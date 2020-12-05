@@ -210,8 +210,8 @@ module.exports = gql`
     }
     type Mutation {
        addOrganization(
-            name: String
-            email: String
+            name: String!
+            email: String!
             description: String
             picture: String
             address: String

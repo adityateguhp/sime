@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, RefreshControl, View, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
-import { Surface, Text, Title, Button, Snackbar, Provider } from 'react-native-paper';
+import { Surface, Text, Title, Button, Snackbar, Divider, Portal } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AssignedToMeContainer from '../../components/my_task/AssignedToMeContainer';
@@ -147,10 +147,9 @@ const DashboardScreen = ({ navigation }) => {
     refetchAssignedStaff();
   };
 
-  const selectItemHandler = (id, name, picture) => {
+  const selectItemHandler = (id, name) => {
     navigation.navigate('Project Menu', {
-      projectName: name,
-      projectCoverImage: picture
+      projectName: name
     }
     );
     sime.setProject_id(id);
@@ -188,6 +187,7 @@ const DashboardScreen = ({ navigation }) => {
 
   return (
     <ScrollView
+      style={styles.content}
       refreshControl={
         <RefreshControl
           refreshing={loading1 && loading2 && loading3}
@@ -197,19 +197,20 @@ const DashboardScreen = ({ navigation }) => {
 
       <Surface style={styles.container}>
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-          <Icon name="chart-donut" size={30} color={Colors.primaryColor} />
-          <Title style={{ marginLeft: 10 }}>Projects progress</Title>
+          <Icon name="chart-donut" size={25} color={Colors.primaryColor} />
+          <Title style={{ marginLeft: 10, fontSize: 18 }}>Projects progress</Title>
         </View>
         <ProjectPieChart projects={projectsValue} />
       </Surface>
 
       <Surface style={styles.containerRecent}>
+        <Divider style={{ marginBottom: 5, marginHorizontal: 10 }} />
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-            <Icon name="folder-multiple" size={30} color={Colors.primaryColor} />
-            <Title style={{ marginLeft: 10 }}>Recently added project</Title>
+            <Icon name="folder-multiple" size={25} color={Colors.primaryColor} />
+            <Title style={{ marginLeft: 10, fontSize: 18 }}>Recently added project</Title>
           </View>
-          <Button labelStyle={{ fontWeight: "bold" }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllProjectHandler() }}>See All</Button>
+          <Button labelStyle={{ fontWeight: "bold", fontSize: 12 }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllProjectHandler() }}>See All</Button>
         </View>
         {
           projectsValue.length !== 0 ?
@@ -224,18 +225,20 @@ const DashboardScreen = ({ navigation }) => {
       </Surface>
 
       <Surface style={styles.containerRecent}>
+        <Divider style={{ marginBottom: 5, marginHorizontal: 10 }} />
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-            <Icon name="account-arrow-left" size={30} color={Colors.primaryColor} />
-            <Title style={{ marginLeft: 10 }}>Tasks assigned to me</Title>
+            <Icon name="account-arrow-left" size={25} color={Colors.primaryColor} />
+            <Title style={{ marginLeft: 10, fontSize: 18 }}>Tasks assigned to me</Title>
           </View>
-          <Button labelStyle={{ fontWeight: "bold" }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
+          <Button labelStyle={{ fontWeight: "bold", fontSize: 12 }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
         </View>
         {
           assignedStaff.length !== 0 ?
-            <View style={{ marginHorizontal: 15, marginBottom: 15 }}>
+            <View style={{ marginBottom: 15, marginTop: 5 }}>
               {assignedStaff.slice(0, 2).map((data) => (
                 <AssignedToMeContainer
+                  projectBreadcrumb={true}
                   taskId={data.task_id}
                   projectId={data.project_id}
                   eventId={data.event_id}
@@ -245,30 +248,33 @@ const DashboardScreen = ({ navigation }) => {
                   onRefresh={onRefresh}
                   onToggleSnackBarDelete={onToggleSnackBarDelete}
                   onToggleSnackBarUpdate={onToggleSnackBarUpdate}
+                  navigation={navigation}
                 />
               ))}
             </View>
             :
             <View style={styles.contentText}>
-              <Text>No tasks found, let's add tasks!</Text>
+              <Text>No tasks found</Text>
             </View>
         }
       </Surface>
 
       <Surface style={styles.containerRecent}>
+        <Divider style={{ marginBottom: 5, marginHorizontal: 10 }} />
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-            <Icon name="shape-square-plus" size={30} color={Colors.primaryColor} />
-            <Title style={{ marginLeft: 10 }}>Tasks created by me</Title>
+            <Icon name="shape-square-plus" size={25} color={Colors.primaryColor} />
+            <Title style={{ marginLeft: 10, fontSize: 18 }}>Tasks created by me</Title>
           </View>
-          <Button labelStyle={{ fontWeight: "bold" }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
+          <Button labelStyle={{ fontWeight: "bold", fontSize: 12 }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
         </View>
         {
           tasksCreatedByValue.length !== 0 ?
-            <View style={{ marginHorizontal: 15, marginBottom: 15 }}>
+            <View style={{ marginBottom: 35, marginTop: 5 }}>
               {tasksCreatedByValue.slice(0, 2).map((data) => (
                 <CreatedByMeContainer
                   key={data.id}
+                  projectBreadcrumb={true}
                   tasks={tasksCreatedByValue}
                   task={data}
                   createdBy={data.createdBy}
@@ -276,38 +282,40 @@ const DashboardScreen = ({ navigation }) => {
                   completedTasksStateUpdate={completedTasksStateUpdate}
                   deleteTasksStateUpdate={deleteTasksStateUpdate}
                   updateTasksStateUpdate={updateTasksStateUpdate}
+                  navigation={navigation}
                 />
               ))}
             </View>
             :
-            <View style={styles.contentText}>
-              <Text>No tasks found, let's add tasks!</Text>
+            <View style={{ ...styles.contentText, ...{ marginBottom: 50 } }}>
+              <Text>No tasks found</Text>
             </View>
         }
       </Surface>
-
-      <Snackbar
-        visible={visibleUpdate}
-        onDismiss={onDismissSnackBarUpdate}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarUpdate();
-          },
-        }}>
-        Task updated!
+      <Portal>
+        <Snackbar
+          visible={visibleUpdate}
+          onDismiss={onDismissSnackBarUpdate}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarUpdate();
+            },
+          }}>
+          Task updated!
             </Snackbar>
-      <Snackbar
-        visible={visibleDelete}
-        onDismiss={onDismissSnackBarDelete}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarDelete();
-          },
-        }}>
-        Task deleted!
+        <Snackbar
+          visible={visibleDelete}
+          onDismiss={onDismissSnackBarDelete}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarDelete();
+            },
+          }}>
+          Task deleted!
             </Snackbar>
+      </Portal>
     </ScrollView>
   );
 }
@@ -336,17 +344,17 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   containerRecent: {
-    elevation: 3,
     marginTop: 20,
   },
   content: {
-    flex: 1,
+    backgroundColor: 'white'
   },
   contentText: {
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 30
+    marginBottom: 30,
+    marginTop: 30
   },
 });
 

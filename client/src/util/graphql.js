@@ -18,7 +18,7 @@ export const FETCH_ORGANIZATION_QUERY = gql`
 `;
 
 export const ADD_ORGANIZATION = gql`
-  mutation addOrganization($name: String, $email: String, $description: String, $picture: String, $address: String, $phone_number:String) {
+  mutation addOrganization($name: String!, $email: String!, $description: String, $picture: String, $address: String, $phone_number:String) {
     addOrganization(name: $name, email: $email, description: $description, picture: $picture, address: $address, phone_number: $phone_number) {
       id
       name

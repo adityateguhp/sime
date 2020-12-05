@@ -134,31 +134,32 @@ const CreatedByMeContainer = props => {
     }, [props.onRefresh]);
 
     if (loadingAssignedTasks) {
-        
+
     }
 
     if (loadingEvent) {
-        
+
     }
 
     if (loading1) {
-        
+
     }
 
     if (loadingPersonInCharges) {
-        
+
     }
 
     if (loadingProject) {
-        
+
     }
 
     if (loadingRoadmap) {
-        
+
     }
 
     return (
         <CreatedByMe
+            projectBreadcrumb={props.projectBreadcrumb}
             tasks={props.tasks}
             task={props.task}
             roadmap={roadmapValue}
@@ -173,6 +174,7 @@ const CreatedByMeContainer = props => {
             updateTasksStateUpdate={props.updateTasksStateUpdate}
             deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
             assignedTasksStateUpdate={assignedTasksStateUpdate}
+            navigation={props.navigation}
         />
     );
 };

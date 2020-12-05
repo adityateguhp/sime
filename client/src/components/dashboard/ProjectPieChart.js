@@ -28,9 +28,9 @@ const ProjectPieChart = props => {
         }
     })
 
-    const preparing = (preparingCounter.length / props.projects.length).toFixed(1) * 100
-    const active = (activeCounter.length / props.projects.length).toFixed(1) * 100
-    const completed = (completedCounter.length / props.projects.length).toFixed(1) * 100
+    const preparing = (preparingCounter.length / props.projects.length).toFixed(2) * 100
+    const active = (activeCounter.length / props.projects.length).toFixed(2) * 100
+    const completed = (completedCounter.length / props.projects.length).toFixed(2) * 100
 
     const graphicData = [
         { y: preparing, x: preparing + "%" },

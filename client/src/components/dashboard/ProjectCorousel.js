@@ -30,7 +30,7 @@ export default class ProjectCorousel extends Component {
                 start_date={item.start_date}
                 end_date={item.end_date}
                 picture={item.picture}
-                onSelect={() => { this.props.selectItemHandler(item.id, item.name, item.picture) }}
+                onSelect={() => { this.props.selectItemHandler(item.id, item.name) }}
                 loading={this.props.loading}
             >
             </ProjectCard>
@@ -44,7 +44,7 @@ export default class ProjectCorousel extends Component {
             <View>
                 <Carousel
                     ref={(c) => this.carousel = c}
-                    data={this.props.projects.slice(0, 5)}
+                    data={this.props.projects.slice(0, 3)}
                     renderItem={this._renderItem}
                     sliderWidth={SLIDER_WIDTH}
                     itemWidth={ITEM_WIDTH}
@@ -53,10 +53,9 @@ export default class ProjectCorousel extends Component {
                     onSnapToItem={(index) => this.setState({ index })}
                     useScrollView={false}
                     activeSlideAlignment="start"
-                    loop={true}
                 />
                 <Pagination
-                    dotsLength={this.props.projects.slice(0, 5).length}
+                    dotsLength={this.props.projects.slice(0, 3).length}
                     carouselRef={(c) => this.carousel = c}
                     activeDotIndex={this.state.index}
                     dotStyle={{

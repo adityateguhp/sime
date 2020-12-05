@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Alert, StyleSheet, ScrollView, View, RefreshControl, SectionList } from 'react-native';
 import moment from 'moment';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { Provider, Text, Snackbar } from 'react-native-paper';
+import { Provider, Text, Snackbar, Portal } from 'react-native-paper';
 
 import FABbutton from '../../components/common/FABbutton';
 import RundownContainer from '../../components/rundown/RundownContainer';
@@ -306,67 +306,69 @@ const RundownScreen = ({ navigation }) => {
           addRundownsStateUpdate={addRundownsStateUpdate}
           event={eventVal}
         />
-        <Snackbar
-          visible={visibleAdd}
-          onDismiss={onDismissSnackBarAdd}
-          action={{
-            label: 'dismiss',
-            onPress: () => {
-              onDismissSnackBarAdd();
-            },
-          }}
-        >
-          Agenda added!
+        <Portal>
+          <Snackbar
+            visible={visibleAdd}
+            onDismiss={onDismissSnackBarAdd}
+            action={{
+              label: 'dismiss',
+              onPress: () => {
+                onDismissSnackBarAdd();
+              },
+            }}
+          >
+            Agenda added!
             </Snackbar>
-        <Snackbar
-          visible={visibleDelete}
-          onDismiss={onDismissSnackBarDelete}
-          action={{
-            label: 'dismiss',
-            onPress: () => {
-              onDismissSnackBarDelete();
-            },
-          }}
-        >
-          Agenda deleted!
+          <Snackbar
+            visible={visibleDelete}
+            onDismiss={onDismissSnackBarDelete}
+            action={{
+              label: 'dismiss',
+              onPress: () => {
+                onDismissSnackBarDelete();
+              },
+            }}
+          >
+            Agenda deleted!
             </Snackbar>
+        </Portal>
       </ScrollView>
     );
   }
 
   return (
     <Provider theme={theme}>
-     
-        <SectionList
-          refreshControl={
-            <RefreshControl
-              refreshing={loadingRundowns && loadingEvent}
-              onRefresh={onRefresh} />
-          }
-          sections={rundownsVal}
-          keyExtractor={(item, index) => item.id + index}
-          renderItem={
-            ({ item, index, section }) => (
-              <RundownTime
-                key={index}
-                start_time={moment(item.start_time).format('LT')}
-                end_time={moment(item.end_time).format('LT')}
-                agenda={item.agenda}
-                details={item.details}
-                onLongPress={() => { longPressHandler(item.agenda, item.id) }}
-              />
-            )
-          }
-          renderSectionHeader={
-            ({ section: { date } }) => (
-              <RundownContainer key={date} date={moment(date).format('dddd, MMM D YYYY')} />
-            )
-          }
-          ListFooterComponent={()=>(
-            <View style={{marginTop: 7}}></View>
-          )}
-        />
-      
+
+      <SectionList
+        refreshControl={
+          <RefreshControl
+            refreshing={loadingRundowns && loadingEvent}
+            onRefresh={onRefresh} />
+        }
+        sections={rundownsVal}
+        keyExtractor={(item, index) => item.id + index}
+        renderItem={
+          ({ item, index, section }) => (
+            <RundownTime
+              key={index}
+              start_time={moment(item.start_time).format('LT')}
+              end_time={moment(item.end_time).format('LT')}
+              agenda={item.agenda}
+              details={item.details}
+              onLongPress={() => { longPressHandler(item.agenda, item.id) }}
+            />
+          )
+        }
+        renderSectionHeader={
+          ({ section: { date } }) => (
+            <RundownContainer key={date} date={moment(date).format('dddd, MMM D YYYY')} />
+          )
+        }
+        ListFooterComponent={() => (
+          <View style={{ marginTop: 7 }}></View>
+        )}
+      />
+
       <OptionModal
         visible={visible}
         closeModal={closeModal}
@@ -392,42 +394,44 @@ const RundownScreen = ({ navigation }) => {
         updateRundownsStateUpdate={updateRundownsStateUpdate}
         event={eventVal}
       />
-      <Snackbar
-        visible={visibleAdd}
-        onDismiss={onToggleSnackBarAdd}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onToggleSnackBarAdd();
-          },
-        }}
-      >
-        Agenda added!
+      <Portal>
+        <Snackbar
+          visible={visibleAdd}
+          onDismiss={onToggleSnackBarAdd}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onToggleSnackBarAdd();
+            },
+          }}
+        >
+          Agenda added!
             </Snackbar>
-      <Snackbar
-        visible={visibleUpdate}
-        onDismiss={onDismissSnackBarUpdate}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarUpdate();
-          },
-        }}
-      >
-        Agenda updated!
+        <Snackbar
+          visible={visibleUpdate}
+          onDismiss={onDismissSnackBarUpdate}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarUpdate();
+            },
+          }}
+        >
+          Agenda updated!
             </Snackbar>
-      <Snackbar
-        visible={visibleDelete}
-        onDismiss={onDismissSnackBarDelete}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarDelete();
-          },
-        }}
-      >
-        Agenda deleted!
+        <Snackbar
+          visible={visibleDelete}
+          onDismiss={onDismissSnackBarDelete}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarDelete();
+            },
+          }}
+        >
+          Agenda deleted!
             </Snackbar>
+      </Portal>
       <LoadingModal loading={loadingDelete} />
     </Provider>
   );

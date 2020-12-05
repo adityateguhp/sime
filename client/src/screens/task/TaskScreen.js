@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl, ScrollView } from 'react-native';
-import { Divider, Provider, Text, Snackbar } from 'react-native-paper';
+import { Divider, Provider, Text, Snackbar, Portal } from 'react-native-paper';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -66,7 +66,7 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
-    const [loadPic, { data: personInCharge, error: errorPersonInCharge, loading: loadingPersonInCharge}] = useLazyQuery(
+    const [loadPic, { data: personInCharge, error: errorPersonInCharge, loading: loadingPersonInCharge }] = useLazyQuery(
         FETCH_PIC_QUERY,
         {
             variables: { personInChargeId: sime.userPersonInChargeId },
@@ -74,14 +74,14 @@ const TaskScreen = ({ navigation }) => {
         }
     );
 
-    useEffect(()=>{
-        if(sime.user_type !== "Organization"){
+    useEffect(() => {
+        if (sime.user_type !== "Organization") {
             loadPic();
-            if(personInCharge){
+            if (personInCharge) {
                 setPersonInChargeValue(personInCharge.getPersonInCharge)
             }
         }
-    },[sime.user_type, personInCharge])
+    }, [sime.user_type, personInCharge])
 
     const { data: tasks, error: errorTasks, loading: loadingTasks, refetch } = useQuery(
         FETCH_TASKS_QUERY,
@@ -126,10 +126,10 @@ const TaskScreen = ({ navigation }) => {
         {
             variables: { committeeId: sime.committee_id },
             notifyOnNetworkStatusChange: true,
-            onCompleted: () => { 
-                if(committee.getCommittee){
+            onCompleted: () => {
+                if (committee.getCommittee) {
                     setCommitteeValue(committee.getCommittee)
-                }else{
+                } else {
                     setCommitteeValue(sime.committee_id)
                 }
             }
@@ -148,7 +148,7 @@ const TaskScreen = ({ navigation }) => {
 
     const onRefresh = () => {
         refetch();
-        refetchPersonInCharges();     
+        refetchPersonInCharges();
         refetchCommittee();
         refetchRoadmap();
         refetchAssignedTasks();
@@ -281,28 +281,30 @@ const TaskScreen = ({ navigation }) => {
                     closeButton={closeModalForm}
                     addTasksStateUpdate={addTasksStateUpdate}
                 />
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarAdd();
-                        },
-                    }}>
-                    Task added!
+                <Portal>
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        Task added!
                         </Snackbar>
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarDelete();
-                        },
-                    }}>
-                    Task deleted!
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        Task deleted!
                         </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -366,39 +368,41 @@ const TaskScreen = ({ navigation }) => {
                 closeButton={closeModalForm}
                 addTasksStateUpdate={addTasksStateUpdate}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Task added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Task added!
                     </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Task deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Task deleted!
                     </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Task updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Task updated!
                 </Snackbar>
+            </Portal>
         </Provider>
 
     );

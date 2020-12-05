@@ -26,7 +26,7 @@ const PositionManagementScreen = ({ navigation }) => {
         TouchableCmp = TouchableNativeFeedback;
     }
 
-    
+
     const sime = useContext(SimeContext);
 
     const [visibleDelete, setVisibleDelete] = useState(false);
@@ -280,39 +280,41 @@ const PositionManagementScreen = ({ navigation }) => {
                 updatePositionsStateUpdate={updatePositionsStateUpdate}
                 updatePositionStateUpdate={updatePositionStateUpdate}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Position added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Position added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Position updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Position updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Position deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Position deleted!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );
@@ -322,38 +324,38 @@ const modalMenuWidth = wp(77);
 const modalMenuHeight = wp(25);
 
 const styles = StyleSheet.create({
-  screen: {
-    marginTop: 5
-  },
-  content: {
-    flex: 1,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  modalView: {
-    backgroundColor: 'white',
-    height: modalMenuHeight,
-    width: modalMenuWidth,
-    alignSelf: 'center',
-    justifyContent: 'flex-start',
-  },
-  textView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-start",
-    marginBottom: 5
-  },
-  text: {
-    marginLeft: wp(5.6),
-    fontSize: wp(3.65)
-  },
-  content: {
-    flex: 1,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
+    screen: {
+        marginTop: 5
+    },
+    content: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    modalView: {
+        backgroundColor: 'white',
+        height: modalMenuHeight,
+        width: modalMenuWidth,
+        alignSelf: 'center',
+        justifyContent: 'flex-start',
+    },
+    textView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "flex-start",
+        marginBottom: 5
+    },
+    text: {
+        marginLeft: wp(5.6),
+        fontSize: wp(3.65)
+    },
+    content: {
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
 });
 
 

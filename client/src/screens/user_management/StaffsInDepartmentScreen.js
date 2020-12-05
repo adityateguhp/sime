@@ -102,13 +102,13 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
     //         variables: { staffId: sime.staff_id },
     //     });
 
-        const selectItemHandler = (id, department_id, department_position_id) => {
-            navigation.navigate('Staff Profile', {
-                staffId: id,
-                departmentId: department_id,
-                positionId: department_position_id
-            });
-        };
+    const selectItemHandler = (id, department_id, department_position_id) => {
+        navigation.navigate('Staff Profile', {
+            staffId: id,
+            departmentId: department_id,
+            positionId: department_position_id
+        });
+    };
 
     const [visible, setVisible] = useState(false);
     const [visibleForm, setVisibleForm] = useState(false);
@@ -118,7 +118,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         if (staff) setStaffVal(staff.getStaff);
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [staff])
 
     // useEffect(() => {
@@ -187,7 +187,7 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
         }
     });
 
-    const [resetPassword, {loading: loadingResetPassword}] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
+    const [resetPassword, { loading: loadingResetPassword }] = useMutation(RESET_PASSWORD_STAFF_MUTATION, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_STAFFSBYDEPARTMENT_QUERY,
@@ -337,28 +337,30 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                     closeButton={closeModalForm}
                     addStaffsStateUpdate={addStaffsStateUpdate}
                 />
-                <Snackbar
-                    visible={visibleAdd}
-                 onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                  }}>
-                    Staff added!
+                <Portal>
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        Staff added!
             </Snackbar>
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                  }}>
-                    Staff deleted!
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        Staff deleted!
             </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -451,51 +453,53 @@ const StaffsinDepartmentScreen = ({ route, navigation }) => {
                 updateStaffsStateUpdate={updateStaffsStateUpdate}
                 positions={departmentPositionsValue}
             />
-            <Snackbar
-                visible={visibleAdd}
-             onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                  }}>
-                Staff added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Staff added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                  }}>
-                Staff updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Staff updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-               onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                  }}>
-                Staff deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Staff deleted!
             </Snackbar>
-            <Snackbar
-                visible={visibleResetPassword}
-                onDismiss={onDismissSnackBarResetPassword}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarResetPassword();
-                            },
-                          }}
-            >
-                Staff account password has been reset!
+                <Snackbar
+                    visible={visibleResetPassword}
+                    onDismiss={onDismissSnackBarResetPassword}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarResetPassword();
+                        },
+                    }}
+                >
+                    Staff account password has been reset!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
             <LoadingModal loading={loadingResetPassword} />
         </Provider>

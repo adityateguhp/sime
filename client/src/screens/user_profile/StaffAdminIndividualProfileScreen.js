@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useContext, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, RefreshControl } from 'react-native';
-import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Snackbar, Menu } from 'react-native-paper';
+import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Snackbar, Menu, Portal } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -24,6 +24,15 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
     const [positionName, setPositionName] = useState('');
     const [departmentsValue, setDepartmentsValue] = useState([]);
     const [positionsValue, setPositionsValue] = useState([]);
+    const [departmentPositionId, setDepartmentPositionId] = useState('')
+    const [departmentId, setDepartmentId] = useState('')
+
+    useEffect(() => {
+        if (sime.user) {
+            setDepartmentPositionId(sime.user.department_position_id)
+            setDepartmentId(sime.user.department_id)
+        }
+    }, [sime.user])
 
     const { data: staff, error: error1, loading: loading1, refetch: refetchStaff } = useQuery(
         FETCH_STAFF_QUERY, {
@@ -39,14 +48,17 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
     const { data: department, error: error2, loading: loading2, refetch: refetchDepartment } = useQuery(
         FETCH_DEPARTMENT_QUERY, {
         variables: {
-            departmentId: sime.user.department_id
+            departmentId
         },
         onCompleted: () => {
-          if(department.getDepartment){
-              setDepartmentName(department.getDepartment.name)
-          }else{
+            if (department.getDepartment) {
+                setDepartmentName(department.getDepartment.name)
+            } else {
+                setDepartmentName('')
+            }
+        },
+        onError: () => {
             setDepartmentName('')
-          }
         },
         notifyOnNetworkStatusChange: true,
     });
@@ -58,21 +70,24 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
                 setDepartmentsValue(departments.getDepartments)
-            }
+            },
         }
     );
 
     const { data: position, error: error4, loading: loading4, refetch: refetchPosition } = useQuery(
         FETCH_DEPARTMENT_POSITION_QUERY, {
         variables: {
-            departmentPositionId: sime.user.department_position_id
+            departmentPositionId
         },
         onCompleted: () => {
-          if(position.getDepartmentPosition){
-              setPositionName(position.getDepartmentPosition.name)
-          }else{
-              setPositionName('')
-          }
+            if (position.getDepartmentPosition) {
+                setPositionName(position.getDepartmentPosition.name)
+            } else {
+                setPositionName('')
+            }
+        },
+        onError: () => {
+            setPositionName('')
         },
         notifyOnNetworkStatusChange: true,
     });
@@ -83,7 +98,7 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
             organizationId: sime.user.organization_id
         },
         onCompleted: () => {
-              setPositionsValue(positions.getDepartmentPositions)
+            setPositionsValue(positions.getDepartmentPositions)
         },
         notifyOnNetworkStatusChange: true,
     });
@@ -176,16 +191,6 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
         return <Text>Error 3</Text>;
     }
 
-    if (error4) {
-        console.error(error4);
-        return <Text>Error 4</Text>;
-    }
-
-    if (error5) {
-        console.error(error5);
-        return <Text>Error 5</Text>;
-    }
-
     if (loading1) {
         return <CenterSpinner />;
     }
@@ -266,17 +271,19 @@ const StaffIndividualProfileScreen = ({ navigation }) => {
                 visibleForm={visibleFormPassword}
                 closeButton={closeModalFormPassword}
             />
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Profile updated!
+            <Portal>
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Profile updated!
             </Snackbar>
+            </Portal>
         </Provider>
     );
 }

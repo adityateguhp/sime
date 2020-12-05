@@ -125,6 +125,7 @@ export default function DashboardNavigator({ route, navigation }) {
   }, [sime.committee_id, committee])
 
   var hour = new Date().getHours();
+
   return (
     <DashboardStack.Navigator
       screenOptions={{
@@ -135,7 +136,6 @@ export default function DashboardNavigator({ route, navigation }) {
         headerTitleStyle: {
           fontWeight: 'bold',
         },
-        headerTitle: "Good " + (hour < 12 && "Morning " || hour < 18 && "Afternoon " || "Evening ") + userName + "!"
       }}
     >
       <DashboardStack.Screen
@@ -155,6 +155,7 @@ export default function DashboardNavigator({ route, navigation }) {
               />
             </TouchableOpacity>
           ),
+          title: "Good " + (hour < 12 && "Morning " || hour < 18 && "Afternoon " || "Evening ") + userName + "!"
         }}
       />
       <DashboardStack.Screen name="Project Menu" component={TopTabProjects} options={({ route }) => ({ title: route.params?.projectName })} />

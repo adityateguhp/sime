@@ -14,6 +14,7 @@ import { theme } from '../../constants/Theme';
 import { REGISTER_STAFF, ADD_ORGANIZATION, ADD_ORGANIZATION_STAFF_MUTATION, ADD_COMMITTEE_MUTATION, ADD_POSITION_MUTATION } from '../../util/graphql';
 
 const RegisterScreen = ({ navigation }) => {
+
     const [errors, setErrors] = useState({});
 
     const [values, setValues] = useState({
@@ -23,176 +24,31 @@ const RegisterScreen = ({ navigation }) => {
         confirmPassword: ''
     });
 
-    const [organizationValue] = useState({
-        name: '',
-        email: '',
-        description: '',
-        picture: '',
-        address: '', 
-        phone_number: ''
-    });
-
-    const [committeeValues, setCommitteeValues] = useState([
-        {
-            name: 'Panitia Inti',
-            core: true,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Keuangan',
-            core: false,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Acara & Lomba ',
-            core: false,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Perlengkapan & Transportasi',
-            core: false,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Konsumsi & Penerima Tamu',
-            core: false,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Humas, Dokumentasi & Publikasi',
-            core: false,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Sponsorship dan Kerjasama',
-            core: false,
-            organizationId: ''
-        },
-        {
-            name: 'Sie Keamanan',
-            core: false,
-            organizationId: ''
-        },
-    ]);
-
-
-    const [positionValues, setPositionValues] = useState([
-        {
-            name: 'Ketua',
-            core: true,
-            organizationId: '',
-            order: '1'
-        },
-        {
-            name: 'Wakil Ketua',
-            core: true,
-            organizationId: '',
-            order: '2'
-        },
-        {
-            name: 'Sekretaris',
-            core: true,
-            organizationId: '',
-            order: '3'
-        },
-        {
-            name: 'Bendahara',
-            core: true,
-            organizationId: '',
-            order: '4'
-        },
-        {
-            name: 'Wakil Bendahara',
-            core: true,
-            organizationId: '',
-            order: '5'
-        },
-        {
-            name: 'Koordinator',
-            core: false,
-            organizationId: '',
-            order: '6'
-        },
-        {
-            name: 'Wakil Koordinator',
-            core: false,
-            organizationId: '',
-            order: '7'
-        },
-        {
-            name: 'Anggota',
-            core: false,
-            organizationId: '',
-            order: '8'
-        },
-    ]);
-
-    const [organizationStaffValue, setOrganizationStaffValue] = useState({
-        staffId: '',
-        organizationId: ''
-    });
-
     const onChange = (key, val) => {
         setValues({ ...values, [key]: val });
         setErrors('')
     };
 
     const [registerStaff, { loading }] = useMutation(REGISTER_STAFF, {
-        update(_, result) {
-
-            setOrganizationStaffValue({ ...organizationStaffValue, staffId: result.data.registerStaff.id });
-            addOrganization();
+        update(_, {
+            data: { registerStaff: userData }
+        }) {
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{
+                        name: "Register Organization",
+                        params: {
+                            staff_id: userData.id
+                        }
+                    }],
+                })
+            );
         },
         onError(err) {
             setErrors(err.graphQLErrors[0].extensions.exception.errors);
         },
         variables: values
-    });
-
-    const [addOrganization, { loading: loading3 }] = useMutation(ADD_ORGANIZATION, {
-        update(_, result) {
-            updateCommitteeFieldChanged('organizationId', result.data.addOrganization.id);
-            updatePositionFieldChanged('organizationId', result.data.addOrganization.id);
-            setOrganizationStaffValue({ ...organizationStaffValue, organizationId: result.data.addOrganization.id });
-            addOrganizationStaff();
-        },
-        variables: organizationValue
-    });
-
-    const [addCommittee, { loading: loading2 }] = useMutation(ADD_COMMITTEE_MUTATION);
-
-    const updateCommitteeFieldChanged = (name, value) => {
-        let newArr = committeeValues.map((item) => {
-            return { ...item, [name]: value };
-        });
-        setCommitteeValues(newArr);
-        newArr.map((data) => {
-            addCommittee(({ variables: data }))
-        })
-    };
-
-    const [addPosition, { loading: loading5 }] = useMutation(ADD_POSITION_MUTATION);
-
-    const updatePositionFieldChanged = (name, value) => {
-        let newArr = positionValues.map((item) => {
-            return { ...item, [name]: value };
-        });
-        setPositionValues(newArr);
-        newArr.map((data) => {
-            addPosition(({ variables: data }))
-        })
-    };
-
-    const [addOrganizationStaff, { loading: loading4 }] = useMutation(ADD_ORGANIZATION_STAFF_MUTATION, {
-        update() {
-            navigation.dispatch(
-                CommonActions.reset({
-                    index: 0,
-                    routes: [{ name: "Register Completed" }],
-                })
-            );
-        },
-        variables: organizationStaffValue
     });
 
     const onSubmit = (event) => {
@@ -208,7 +64,7 @@ const RegisterScreen = ({ navigation }) => {
                     <Header>Create Account</Header>
 
                     <TextInput
-                        label="Organization Name"
+                        label="Name"
                         returnKeyType="next"
                         value={values.name}
                         error={errors.name ? true : false}

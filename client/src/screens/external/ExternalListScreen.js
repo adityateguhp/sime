@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Text, Snackbar } from 'react-native-paper';
+import { Provider, Text, Snackbar, Portal } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -72,7 +72,7 @@ const ExternalListScreen = ({ navigation }) => {
         if (external) setExternalVal(external.getExternal);
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [external])
 
 
@@ -220,28 +220,30 @@ const ExternalListScreen = ({ navigation }) => {
                     closeButton={closeModalForm}
                     addExternalsStateUpdate={addExternalsStateUpdate}
                 />
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarAdd();
-                        },
-                    }}>
-                    External added!
+                <Portal>
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        External added!
             </Snackbar>
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarDelete();
-                        },
-                    }}>
-                    External deleted!
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        External deleted!
             </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -298,39 +300,41 @@ const ExternalListScreen = ({ navigation }) => {
                 updateExternalStateUpdate={updateExternalStateUpdate}
                 updateExternalsStateUpdate={updateExternalsStateUpdate}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                External added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    External added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                External updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    External updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                External deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    External deleted!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );

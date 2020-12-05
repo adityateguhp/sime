@@ -229,28 +229,30 @@ const EventListScreen = ({ route, navigation }) => {
                     addEventsStateUpdate={addEventsStateUpdate}
                     project={projectValue}
                 />
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarDelete();
-                        },
-                    }}>
-                    Event deleted!
+                <Portal>
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        Event deleted!
             </Snackbar>
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarAdd();
-                        },
-                    }}>
-                    Event added!
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        Event added!
             </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -307,42 +309,44 @@ const EventListScreen = ({ route, navigation }) => {
                         updateEventStateUpdate={updateEventStateUpdate}
                         project={projectValue}
                     />
-                    <Snackbar
-                        visible={visibleDelete}
-                        onDismiss={onDismissSnackBarDelete}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarDelete();
-                            },
-                        }}
-                    >
-                        Event deleted!
+                    <Portal>
+                        <Snackbar
+                            visible={visibleDelete}
+                            onDismiss={onDismissSnackBarDelete}
+                            action={{
+                                label: 'dismiss',
+                                onPress: () => {
+                                    onDismissSnackBarDelete();
+                                },
+                            }}
+                        >
+                            Event deleted!
                     </Snackbar>
-                    <Snackbar
-                        visible={visibleAdd}
-                        onDismiss={onDismissSnackBarAdd}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarAdd();
-                            },
-                        }}
-                    >
-                        Event added!
+                        <Snackbar
+                            visible={visibleAdd}
+                            onDismiss={onDismissSnackBarAdd}
+                            action={{
+                                label: 'dismiss',
+                                onPress: () => {
+                                    onDismissSnackBarAdd();
+                                },
+                            }}
+                        >
+                            Event added!
                     </Snackbar>
-                    <Snackbar
-                        visible={visibleUpdate}
-                        onDismiss={onDismissSnackBarUpdate}
-                        action={{
-                            label: 'dismiss',
-                            onPress: () => {
-                                onDismissSnackBarUpdate();
-                            },
-                        }}
-                    >
-                        Event updated!
+                        <Snackbar
+                            visible={visibleUpdate}
+                            onDismiss={onDismissSnackBarUpdate}
+                            action={{
+                                label: 'dismiss',
+                                onPress: () => {
+                                    onDismissSnackBarUpdate();
+                                },
+                            }}
+                        >
+                            Event updated!
                     </Snackbar>
+                    </Portal>
                     <LoadingModal loading={loadingDelete} />
                 </Provider> : null}
         </Provider>

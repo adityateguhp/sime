@@ -1,4 +1,5 @@
-
+const { UserInputError } = require('apollo-server');
+const { validateOrganizationInput } = require('../../util/validators');
 const Organization = require('../../model/Organization');
 
 module.exports = {
@@ -18,6 +19,12 @@ module.exports = {
   },
   Mutation: {
     async addOrganization(_, { name, email, description, picture, address, phone_number }, context, info) {
+
+      const { valid, errors } = validateOrganizationInput(name, email);
+
+      if (!valid) {
+        throw new UserInputError('Error', { errors });
+      }
 
       const newOrganization = new Organization({
         name,
@@ -42,6 +49,12 @@ module.exports = {
       address,
       phone_number
     }, context) {
+
+      const { valid, errors } = validateOrganizationInput(name, email);
+
+      if (!valid) {
+        throw new UserInputError('Error', { errors });
+      }
 
       const updatedOrganization = await Organization.findByIdAndUpdate(
         { _id: organizationId },

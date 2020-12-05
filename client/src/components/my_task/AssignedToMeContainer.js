@@ -175,39 +175,40 @@ const AssignedToMeContainer = props => {
     }, [props.onRefresh]);
 
     if (loadingAssignedTasks) {
-        
+
     }
 
     if (loadingEvent) {
-        
+
     }
 
     if (loadingPersonInCharge) {
-        
+
     }
 
     if (loadingPersonInCharges) {
-        
+
     }
 
     if (loadingProject) {
-        
+
     }
 
     if (loadingRoadmap) {
-        
+
     }
 
     if (loadingTask) {
-        
+
     }
 
     if (loadingTasks) {
-        
+
     }
 
     return (
         <AssignedToMe
+            projectBreadcrumb={props.projectBreadcrumb}
             personInCharges={personInChargesValue}
             userPersonInCharge={personInChargeValue}
             project={projectValue}
@@ -222,6 +223,7 @@ const AssignedToMeContainer = props => {
             updateTasksStateUpdate={updateTasksStateUpdate}
             assignedTasksStateUpdate={assignedTasksStateUpdate}
             deleteAssignedTasksStateUpdate={deleteAssignedTasksStateUpdate}
+            navigation={props.navigation}
         />
     );
 };

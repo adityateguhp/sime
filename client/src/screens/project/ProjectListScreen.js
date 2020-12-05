@@ -40,10 +40,9 @@ const ProjectListScreen = ({ navigation }) => {
 
     const [projectsValue, setProjectsValue] = useState([]);
 
-    const selectItemHandler = (id, name, picture) => {
+    const selectItemHandler = (id, name) => {
         navigation.navigate('Project Menu', {
             projectName: name,
-            projectCoverImage: picture
         }
         );
         sime.setProject_id(id);
@@ -207,28 +206,30 @@ const ProjectListScreen = ({ navigation }) => {
                     closeButton={closeModalForm}
                     addProjectsStateUpdate={addProjectsStateUpdate}
                 />
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarDelete();
-                        },
-                    }}>
-                    Project deleted!
+                <Portal>
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        Project deleted!
                 </Snackbar>
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarAdd();
-                        },
-                    }}>
-                    Project added!
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        Project added!
             </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -252,7 +253,7 @@ const ProjectListScreen = ({ navigation }) => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.picture) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
                         loading={loading1}
                     >
@@ -285,39 +286,41 @@ const ProjectListScreen = ({ navigation }) => {
                 updateProjectsStateUpdate={updateProjectsStateUpdate}
                 updateProjectStateUpdate={updateProjectStateUpdate}
             />
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Project deleted!
+            <Portal>
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Project deleted!
             </Snackbar>
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Project added!
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Project added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Project updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Project updated!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );

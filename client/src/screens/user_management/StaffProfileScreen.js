@@ -12,10 +12,22 @@ const StaffProfileScreen = ({ route, navigation }) => {
     const [staffVal, setStaffVal] = useState(null);
     const [departmenName, setDepartmentName] = useState('');
     const [positionName, setPositionName] = useState('');
+    const [departmentPositionId, setDepartmentPositionId] = useState('')
+    const [departmentId, setDepartmentId] = useState('')
+
+    useEffect(() => {
+        if (route.params?.departmentId) {
+            setDepartmentId(route.params?.departmentId)
+        }
+    }, [route.params?.departmentId])
+
+    useEffect(() => {
+        if (route.params?.positionId) {
+            setDepartmentPositionId(route.params?.positionId)
+        }
+    }, [route.params?.positionId])
 
     const sId = route.params?.staffId;
-    const dId = route.params?.departmentId;
-    const pId = route.params?.positionId;
 
     const { data: staff, error: error1, loading: loading1, refetch: refetchStaff } = useQuery(
         FETCH_STAFF_QUERY, {
@@ -31,7 +43,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
     const { data: department, error: error2, loading: loading2, refetch: refetchDepartment } = useQuery(
         FETCH_DEPARTMENT_QUERY, {
         variables: {
-            departmentId: dId
+            departmentId
         },
         onCompleted: () => {
           if(department.getDepartment){
@@ -40,13 +52,16 @@ const StaffProfileScreen = ({ route, navigation }) => {
             setDepartmentName('')
           }
         },
+        onError: () => {
+            setDepartmentName('')
+        },
         notifyOnNetworkStatusChange: true,
     });
 
     const { data: position, error: error4, loading: loading4, refetch: refetchPosition } = useQuery(
         FETCH_DEPARTMENT_POSITION_QUERY, {
         variables: {
-            departmentPositionId: pId
+            departmentPositionId
         },
         onCompleted: () => {
           if(position.getDepartmentPosition){
@@ -54,6 +69,9 @@ const StaffProfileScreen = ({ route, navigation }) => {
           }else{
               setPositionName('')
           }
+        },
+        onError: () => {
+            setPositionName('')
         },
         notifyOnNetworkStatusChange: true,
     });
@@ -99,16 +117,6 @@ const StaffProfileScreen = ({ route, navigation }) => {
     if (error1) {
         console.error(error1);
         return <Text>Error 1</Text>;
-    }
-
-    if (error2) {
-        console.error(error2);
-        return <Text>Error 2</Text>;
-    }
-
-    if (error4) {
-        console.error(error4);
-        return <Text>Error 4</Text>;
     }
 
     if (loading1) {

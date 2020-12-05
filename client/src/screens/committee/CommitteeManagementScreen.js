@@ -27,7 +27,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
   let TouchableCmp = TouchableOpacity;
 
   if (Platform.OS === 'android' && Platform.Version >= 21) {
-      TouchableCmp = TouchableNativeFeedback;
+    TouchableCmp = TouchableNativeFeedback;
   }
 
   const sime = useContext(SimeContext);
@@ -102,7 +102,7 @@ const CommitteeManagementScreen = ({ navigation }) => {
   const [visibleFormCommittee, setVisibleFormCommittee] = useState(false);
   const [visibleFormEditCommittee, setVisibleFormEditCommittee] = useState(false);
   const [core, setCore] = useState(false)
-  
+
   const closeModal = () => {
     setVisible(false);
   }
@@ -136,9 +136,9 @@ const CommitteeManagementScreen = ({ navigation }) => {
   const addCommitteesStateUpdate = (e) => {
     const temp = [e, ...committeesValue];
     temp.sort(function (a, b) {
-       var textA = a.name.toUpperCase();
+      var textA = a.name.toUpperCase();
       var textB = b.name.toUpperCase();
-      
+
       var coreA = a.core;
       var coreB = b.core;
 
@@ -165,9 +165,9 @@ const CommitteeManagementScreen = ({ navigation }) => {
     }).indexOf(e.id);
     temp[index] = e
     temp.sort(function (a, b) {
-       var textA = a.name.toUpperCase();
+      var textA = a.name.toUpperCase();
       var textB = b.name.toUpperCase();
-      
+
       var coreA = a.core;
       var coreB = b.core;
 
@@ -345,42 +345,44 @@ const CommitteeManagementScreen = ({ navigation }) => {
         updateCommitteeStateUpdate={updateCommitteeStateUpdate}
         updateCommitteesStateUpdate={updateCommitteesStateUpdate}
       />
-      <Snackbar
-        visible={visibleAddCommittee}
-        onDismiss={onDismissSnackBarAddCommittee}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarAddCommittee();
-          },
-        }}
-      >
-        Committee added!
+      <Portal>
+        <Snackbar
+          visible={visibleAddCommittee}
+          onDismiss={onDismissSnackBarAddCommittee}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarAddCommittee();
+            },
+          }}
+        >
+          Committee added!
             </Snackbar>
-      <Snackbar
-        visible={visibleUpdateCommittee}
-        onDismiss={onDismissSnackBarUpdateCommittee}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarUpdateCommittee();
-          },
-        }}
-      >
-        Committee updated!
+        <Snackbar
+          visible={visibleUpdateCommittee}
+          onDismiss={onDismissSnackBarUpdateCommittee}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarUpdateCommittee();
+            },
+          }}
+        >
+          Committee updated!
             </Snackbar>
-      <Snackbar
-        visible={visibleDeleteCommittee}
-        onDismiss={onDismissSnackBarDeleteCommittee}
-        action={{
-          label: 'dismiss',
-          onPress: () => {
-            onDismissSnackBarDeleteCommittee();
-          },
-        }}
-      >
-        Committee deleted!
+        <Snackbar
+          visible={visibleDeleteCommittee}
+          onDismiss={onDismissSnackBarDeleteCommittee}
+          action={{
+            label: 'dismiss',
+            onPress: () => {
+              onDismissSnackBarDeleteCommittee();
+            },
+          }}
+        >
+          Committee deleted!
             </Snackbar>
+      </Portal>
       <LoadingModal loading={loadingDelete} />
     </Provider>
   );

@@ -217,12 +217,15 @@ const Task = props => {
         <Provider theme={theme}>
             <View style={{
                 ...styles.container, ...{
-                    borderTopLeftRadius: props.radiusTopZero ? 0 : 4,
+                    borderTopLeftRadius: props.radiusZero ? 0 : 4,
+                    borderBottomLeftRadius: props.radiusZero ? 0 : 4,
+                    marginVertical: props.radiusZero ? 0 : 5,
                 }
             }}>
                 <View style={{
                     ...styles.taskContainer, ...{
-                        borderTopLeftRadius: props.radiusTopZero ? 0 : 4,
+                        borderTopLeftRadius: props.radiusZero ? 0 : 4,
+                        borderBottomLeftRadius: props.radiusZero ? 0 : 4,
                         backgroundColor:
                             props.task.priority === "high" ? "#ff4943" :
                                 props.task.priority === "medium" ? "#a3cd3b" :
@@ -254,7 +257,8 @@ const Task = props => {
                     <TouchableCmp onPress={openModal}>
                         <View style={{
                             ...styles.task, ...{
-                                borderTopRightRadius: props.radiusTopZero ? 0 : 4
+                                borderTopRightRadius: props.radiusZero ? 0 : 4,
+                                borderBottomRightRadius: props.radiusZero ? 0 : 4,
                             }
                         }}>
                             <View>
@@ -311,7 +315,6 @@ const Task = props => {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 5,
         marginHorizontal: 10,
         backgroundColor: 'white',
         elevation: 3,

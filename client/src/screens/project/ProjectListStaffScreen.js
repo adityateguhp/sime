@@ -31,10 +31,9 @@ const ProjectListStaffScreen = ({ navigation }) => {
     const onDismissSnackBarUpdate = () => setVisibleUpdate(false);
 
 
-    const selectItemHandler = (id, name, picture) => {
+    const selectItemHandler = (id, name) => {
         navigation.navigate('Project Menu', {
-            projectName: name,
-            projectCoverImage: picture
+            projectName: name
         }
         );
         sime.setProject_id(id);
@@ -88,7 +87,7 @@ const ProjectListStaffScreen = ({ navigation }) => {
         if (project) setProjectVal(project.getProject);
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [project])
 
     const closeModal = () => {
@@ -192,7 +191,7 @@ const ProjectListStaffScreen = ({ navigation }) => {
                         start_date={itemData.item.start_date}
                         end_date={itemData.item.end_date}
                         picture={itemData.item.picture}
-                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name, itemData.item.picture) }}
+                        onSelect={() => { selectItemHandler(itemData.item.id, itemData.item.name) }}
                         onLongPress={() => { longPressHandler(itemData.item.id, itemData.item.name) }}
                         loading={loading1}
                     >
@@ -227,17 +226,19 @@ const ProjectListStaffScreen = ({ navigation }) => {
                 updateProjectsStateUpdate={updateProjectsStateUpdate}
                 updateProjectStateUpdate={updateProjectStateUpdate}
             />
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Project updated!
+            <Portal>
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Project updated!
         </Snackbar>
+            </Portal>
         </Provider>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useContext, useEffect } from 'react';
 import { StyleSheet, ScrollView, RefreshControl, View } from 'react-native';
-import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Menu, Snackbar } from 'react-native-paper';
+import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Menu, Snackbar, Portal } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -151,17 +151,19 @@ const OrganizationProfileScreen = ({ route, navigation }) => {
                 organization={organizationVal}
                 updateOrganizationStateUpdate={updateOrganizationStateUpdate}
             />
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Profile updated!
+            <Portal>
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Profile updated!
             </Snackbar>
+            </Portal>
         </Provider>
     );
 }

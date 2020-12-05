@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Text, Snackbar, List, Divider } from 'react-native-paper';
+import { Provider, Text, Snackbar, Portal, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -201,7 +201,7 @@ const DepartmentPositionsScreen = ({ navigation }) => {
 
     return (
         <Provider theme={theme}>
-             <FlatList
+            <FlatList
                 style={styles.screen}
                 data={departmentPositionsValue}
                 refreshControl={
@@ -240,39 +240,41 @@ const DepartmentPositionsScreen = ({ navigation }) => {
                 updateDepartmentPositionsStateUpdate={updateDepartmentPositionsStateUpdate}
                 updateDepartmentPositionStateUpdate={updateDepartmentPositionStateUpdate}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Position added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Position added!
             </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Position updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Position updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Position deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Position deleted!
             </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );

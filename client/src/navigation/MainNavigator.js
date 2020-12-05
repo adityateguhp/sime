@@ -10,6 +10,7 @@ import { SimeContext } from '../context/SimePovider';
 import { AuthContext } from '../context/auth';
 import LoginScreen from '../screens/login/LoginScreen';
 import RegisterScreen from '../screens/login/RegisterScreen';
+import RegisterOrganizationScreen from '../screens/login/RegisterOrganizationScreen';
 import RegisterCompletedScreen from '../screens/login/RegisterCompletedScreen';
 import DrawerContentOrganization from '../components/common/DrawerContentOrganization';
 import DrawerContentStaff from '../components/common/DrawerContentStaff';
@@ -249,6 +250,13 @@ export default function MainNavigator() {
             <Main.Screen
               name="Register"
               component={RegisterScreen}
+              options={{
+                title: ""
+              }}
+            />
+            <Main.Screen
+              name="Register Organization"
+              component={RegisterOrganizationScreen}
               options={{
                 title: ""
               }}

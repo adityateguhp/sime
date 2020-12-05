@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StyleSheet, FlatList, RefreshControl } from 'react-native';
-import { Provider, Text, Snackbar } from 'react-native-paper';
+import { StyleSheet, SectionList, View, RefreshControl } from 'react-native';
+import { Provider, Text, Snackbar, Portal } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 
 import { SimeContext } from '../../context/SimePovider';
 import CreatedByMeContainer from '../../components/my_task/CreatedByMeContainer';
+import MyTaskContainer from '../../components/my_task/MyTaskContainer';
 import { theme } from '../../constants/Theme';
 import {
     FETCH_TASKS_CREATEDBY_QUERY,
@@ -28,6 +29,7 @@ const CreatedByMeScreen = ({ navigation }) => {
 
 
     const [tasksCreatedByValue, setTasksCreatedByValue] = useState([]);
+    const [tasksCreatedByValueTemp, setTasksCreatedByValueTemp] = useState([]);
 
     const { data: tasksCreatedBy, error: error2, loading: loading2, refetch } = useQuery(
         FETCH_TASKS_CREATEDBY_QUERY,
@@ -35,12 +37,35 @@ const CreatedByMeScreen = ({ navigation }) => {
             variables: { createdBy: sime.user.id },
             notifyOnNetworkStatusChange: true,
             onCompleted: () => {
-                setTasksCreatedByValue(tasksCreatedBy.getTasksCreatedBy)
+                setTasksCreatedByValueTemp(tasksCreatedBy.getTasksCreatedBy)
             }
         });
 
+    useEffect(() => {
+        if (tasksCreatedByValueTemp) {
+            let dataSource = tasksCreatedByValueTemp.reduce(function (sections, item) {
+
+                let section = sections.find(section => section.project_id === item.project_id);
+
+                if (!section) {
+                    section = { project_id: item.project_id, data: [] };
+                    sections.push(section);
+                }
+
+                section.data.push(item);
+
+                return sections;
+
+            }, []);
+            setTasksCreatedByValue(dataSource)
+        }
+        return () => {
+            console.log("This will be logged on unmount");
+        }
+    }, [tasksCreatedByValueTemp])
+
     const completedTasksStateUpdate = (e) => {
-        const temp = [...tasksCreatedByValue];
+        const temp = [...tasksCreatedByValueTemp];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
@@ -51,21 +76,36 @@ const CreatedByMeScreen = ({ navigation }) => {
         temp.sort(function (x, y) {
             return Number(x.completed) - Number(y.completed);
         });
-        setTasksCreatedByValue(temp)
+        setTasksCreatedByValueTemp(temp)
     }
 
     const deleteTasksStateUpdate = (e) => {
-        const temp = [...tasksCreatedByValue];
+        const temp = [...tasksCreatedByValueTemp];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e);
         temp.splice(index, 1);
-        setTasksCreatedByValue(temp);
+        setTasksCreatedByValueTemp(temp);
+        let dataSource = temp.reduce(function (sections, item) {
+
+            let section = sections.find(section => section.project_id === item.project_id);
+
+            if (!section) {
+                section = { project_id: item.project_id, data: [] };
+                sections.push(section);
+            }
+
+            section.data.push(item);
+
+            return sections;
+
+        }, []);
+        setTasksCreatedByValue(dataSource)
         onToggleSnackBarDelete();
     }
 
     const updateTasksStateUpdate = (e) => {
-        const temp = [...tasksCreatedByValue];
+        const temp = [...tasksCreatedByValueTemp];
         const index = temp.map(function (item) {
             return item.id
         }).indexOf(e.id);
@@ -76,7 +116,7 @@ const CreatedByMeScreen = ({ navigation }) => {
         temp.sort(function (x, y) {
             return Number(x.completed) - Number(y.completed);
         });
-        setTasksCreatedByValue(temp);
+        setTasksCreatedByValueTemp(temp);
         onToggleSnackBarUpdate();
     }
 
@@ -100,49 +140,65 @@ const CreatedByMeScreen = ({ navigation }) => {
 
     return (
         <Provider theme={theme}>
-            <FlatList
-                style={styles.screen}
+            <SectionList
                 refreshControl={
                     <RefreshControl
                         refreshing={loading2}
                         onRefresh={onRefresh} />
                 }
-                data={tasksCreatedByValue}
-                keyExtractor={item => item.id}
-                renderItem={itemData => (
-                    <CreatedByMeContainer
-                        tasks={tasksCreatedByValue}
-                        task={itemData.item}
-                        createdBy={itemData.item.createdBy}
-                        onRefresh={onRefresh}
-                        completedTasksStateUpdate={completedTasksStateUpdate}
-                        deleteTasksStateUpdate={deleteTasksStateUpdate}
-                        updateTasksStateUpdate={updateTasksStateUpdate}
-                    />
+                sections={tasksCreatedByValue}
+                keyExtractor={(item, index) => item.id + index}
+                renderItem={
+                    ({ item, index, section }) => (
+                        <CreatedByMeContainer
+                            tasks={tasksCreatedByValue}
+                            task={item}
+                            createdBy={item.createdBy}
+                            onRefresh={onRefresh}
+                            completedTasksStateUpdate={completedTasksStateUpdate}
+                            deleteTasksStateUpdate={deleteTasksStateUpdate}
+                            updateTasksStateUpdate={updateTasksStateUpdate}
+                            navigation={navigation}
+                        />
+                    )
+                }
+                renderSectionHeader={
+                    ({ section: { project_id } }) => (
+                        <MyTaskContainer
+                            project_id={project_id}
+                            onRefresh={onRefresh}
+                            navigation={navigation}
+                        />
+                    )
+                }
+                ListFooterComponent={() => (
+                    <View style={{ marginTop: 7 }}></View>
                 )}
             />
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                  }}>
-                Task updated!
+            <Portal>
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Task updated!
             </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-               onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                  }}>
-                Task deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Task deleted!
             </Snackbar>
+            </Portal>
         </Provider>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
-import { Provider, Text, Snackbar } from 'react-native-paper';
+import { Provider, Text, Snackbar, Portal } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 
 import FABbutton from '../../components/common/FABbutton';
@@ -113,7 +113,7 @@ const RoadmapScreen = ({ route, navigation }) => {
         if (roadmap) setRoadmapVal(roadmap.getRoadmap);
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [roadmap])
 
     useEffect(() => {
@@ -134,7 +134,7 @@ const RoadmapScreen = ({ route, navigation }) => {
         }
         return () => {
             console.log("This will be logged on unmount");
-          }
+        }
     }, [committeesFilterTemp, personInCharges, setCommitteesFilter])
 
 
@@ -303,28 +303,30 @@ const RoadmapScreen = ({ route, navigation }) => {
                     addRoadmapsStateUpdate={addRoadmapsStateUpdate}
                     event={eventVal}
                 />
-                <Snackbar
-                    visible={visibleAdd}
-                    onDismiss={onDismissSnackBarAdd}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarAdd();
-                        },
-                    }}>
-                    Roadmap added!
+                <Portal>
+                    <Snackbar
+                        visible={visibleAdd}
+                        onDismiss={onDismissSnackBarAdd}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarAdd();
+                            },
+                        }}>
+                        Roadmap added!
                         </Snackbar>
-                <Snackbar
-                    visible={visibleDelete}
-                    onDismiss={onDismissSnackBarDelete}
-                    action={{
-                        label: 'dismiss',
-                        onPress: () => {
-                            onDismissSnackBarDelete();
-                        },
-                    }}>
-                    Roadmap deleted!
+                    <Snackbar
+                        visible={visibleDelete}
+                        onDismiss={onDismissSnackBarDelete}
+                        action={{
+                            label: 'dismiss',
+                            onPress: () => {
+                                onDismissSnackBarDelete();
+                            },
+                        }}>
+                        Roadmap deleted!
                         </Snackbar>
+                </Portal>
             </ScrollView>
         );
     }
@@ -391,39 +393,41 @@ const RoadmapScreen = ({ route, navigation }) => {
                 updateRoadmapStateUpdate={updateRoadmapStateUpdate}
                 event={eventVal}
             />
-            <Snackbar
-                visible={visibleAdd}
-                onDismiss={onDismissSnackBarAdd}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarAdd();
-                    },
-                }}>
-                Roadmap added!
+            <Portal>
+                <Snackbar
+                    visible={visibleAdd}
+                    onDismiss={onDismissSnackBarAdd}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarAdd();
+                        },
+                    }}>
+                    Roadmap added!
                     </Snackbar>
-            <Snackbar
-                visible={visibleUpdate}
-                onDismiss={onDismissSnackBarUpdate}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarUpdate();
-                    },
-                }}>
-                Roadmap updated!
+                <Snackbar
+                    visible={visibleUpdate}
+                    onDismiss={onDismissSnackBarUpdate}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarUpdate();
+                        },
+                    }}>
+                    Roadmap updated!
                     </Snackbar>
-            <Snackbar
-                visible={visibleDelete}
-                onDismiss={onDismissSnackBarDelete}
-                action={{
-                    label: 'dismiss',
-                    onPress: () => {
-                        onDismissSnackBarDelete();
-                    },
-                }}>
-                Roadmap deleted!
+                <Snackbar
+                    visible={visibleDelete}
+                    onDismiss={onDismissSnackBarDelete}
+                    action={{
+                        label: 'dismiss',
+                        onPress: () => {
+                            onDismissSnackBarDelete();
+                        },
+                    }}>
+                    Roadmap deleted!
                     </Snackbar>
+            </Portal>
             <LoadingModal loading={loadingDelete} />
         </Provider>
     );
