@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform }
 import { Avatar, List, Card } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Colors from '../../constants/Colors';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const DepartmentPositionList = props => {
     let TouchableCmp = TouchableOpacity;

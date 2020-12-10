@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, List, Caption, Provider, Portal, Text, Chip } from 'react-native-paper';
 import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';;
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import {
     FETCH_STAFF_QUERY,

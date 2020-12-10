@@ -105,5 +105,27 @@ module.exports = {
         throw new Error(err);
       }
     },
+    async deleteRoadmapByProject(_, { projectId }, context) {
+      try {
+        const roadmap = await Roadmap.find({ project_id: projectId });
+        roadmap.map((data) => {
+          data.deleteOne()
+        })
+        return 'Deleted successfully';
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async deleteRoadmapByEvent(_, { eventId }, context) {
+      try {
+        const roadmap = await Roadmap.find({ event_id: eventId });
+        roadmap.map((data) => {
+          data.deleteOne()
+        })
+        return 'Deleted successfully';
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
   }
 };

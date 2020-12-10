@@ -92,19 +92,19 @@ const TaskModal = props => {
     }, [props.roadmap])
 
     const [createdByName, setCreatedByName] = useState(null)
-    
+
     const { data: staff, error: errorStaff, loading: loadingStaff } = useQuery(
         FETCH_STAFF_QUERY, {
         variables: {
             staffId: props.createdBy
         },
         onCompleted: () => {
-            if(staff.getStaff){
+            if (staff.getStaff) {
                 setCreatedByName(staff.getStaff.name)
-            }else{
+            } else {
                 setCreatedByName('-')
             }
-            
+
         }
     });
 
@@ -311,7 +311,7 @@ const TaskModal = props => {
                                                     <View style={styles.containerText}>
                                                         <TouchableCmp onPress={onClickTaskDescription}>
                                                             <View style={styles.descriptionView}>
-                                                                {values.description ? <Paragraph style={{ fontSize: 15 }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: 15 }}>Add description</Paragraph>}
+                                                                {values.description ? <Paragraph style={{ fontSize: wp(3.6) }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: wp(3.6) }}>Add description</Paragraph>}
                                                                 <Icon name="pencil" size={15} color='grey' style={{ marginLeft: 10, marginTop: 5, opacity: 0.5 }} />
                                                             </View>
                                                         </TouchableCmp>
@@ -322,7 +322,7 @@ const TaskModal = props => {
                                             <View>
                                                 <View style={styles.containerText}>
                                                     <View style={styles.descriptionView}>
-                                                        {values.description ? <Paragraph style={{ fontSize: 15 }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: 15 }}>No description</Paragraph>}
+                                                        {values.description ? <Paragraph style={{ fontSize: wp(3.6) }}>{values.description}</Paragraph> : <Paragraph style={{ color: Colors.secondaryColor, opacity: 0.6, fontSize: wp(3.6) }}>No description</Paragraph>}
                                                     </View>
                                                 </View>
                                                 <Divider />
@@ -330,7 +330,7 @@ const TaskModal = props => {
                                     }
                                     <View style={styles.dateInputContainer}>
                                         <View style={styles.label}>
-                                            <Icon name="calendar" size={25} color={Colors.primaryColor} />
+                                            <Icon name="calendar" size={wp(6)} color={Colors.primaryColor} />
                                             <Text style={styles.text}>
                                                 Due date
                                             </Text>
@@ -345,7 +345,7 @@ const TaskModal = props => {
                                                 <View style={styles.buttonContainer}>
                                                     <Button
                                                         style={styles.button}
-                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                         onPress={showDateTimepicker}
                                                         mode="outlined"
                                                     >
@@ -355,7 +355,7 @@ const TaskModal = props => {
                                                         <Button
                                                             style={{ marginRight: 3 }}
                                                             icon="close"
-                                                            labelStyle={{ color: Colors.primaryColor }}
+                                                            labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                             onPress={() => onChangeDateTime('due_date', '', '')}
                                                             mode="outlined"
                                                             compact={true}
@@ -366,7 +366,7 @@ const TaskModal = props => {
                                                 <View style={styles.buttonContainer}>
                                                     <Button
                                                         style={styles.button}
-                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                         mode="outlined"
                                                     >
                                                         {values.due_date ? due_date : 'NO DUE DATE'}
@@ -376,7 +376,7 @@ const TaskModal = props => {
                                     </View>
                                     <View style={styles.inputContainer}>
                                         <View style={styles.label}>
-                                            <Icon name="alert-box" size={25} color={Colors.primaryColor} />
+                                            <Icon name="alert-box" size={wp(6)} color={Colors.primaryColor} />
                                             <Text style={styles.text}>
                                                 Priority
                                             </Text>
@@ -396,7 +396,7 @@ const TaskModal = props => {
                                                                     values.priority === "low" ? "#ffc916" : "white",
                                                             }
                                                         }}
-                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                         onPress={values.priority === 'low' ? () => onChange('priority', '', '') : () => onChange('priority', 'low', '')}
                                                         mode="outlined"
                                                     >
@@ -409,7 +409,7 @@ const TaskModal = props => {
                                                                     values.priority === "medium" ? "#a3cd3b" : "white",
                                                             }
                                                         }}
-                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                         onPress={values.priority === 'medium' ? () => onChange('priority', '', '') : () => onChange('priority', 'medium', '')}
                                                         mode="outlined"
                                                     >
@@ -422,7 +422,7 @@ const TaskModal = props => {
                                                                     values.priority === "high" ? "#ff4943" : "white",
                                                             }
                                                         }}
-                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                         onPress={values.priority === 'high' ? () => onChange('priority', '', '') : () => onChange('priority', 'high', '')}
                                                         mode="outlined"
                                                     >
@@ -440,7 +440,7 @@ const TaskModal = props => {
                                                                             values.priority === "low" ? "#ffc916" : "#e2e2e2",
                                                             }
                                                         }}
-                                                        labelStyle={{ color: Colors.primaryColor }}
+                                                        labelStyle={{ color: Colors.primaryColor, fontSize: wp(3.4) }}
                                                         mode="outlined"
                                                     >
                                                         {values.priority ? values.priority : "no status"}
@@ -450,7 +450,7 @@ const TaskModal = props => {
                                     </View>
                                     <View style={styles.assignedLabel}>
                                         <View style={styles.label}>
-                                            <Icon name="account-plus" size={25} color={Colors.primaryColor} />
+                                            <Icon name="account-plus" size={wp(6)} color={Colors.primaryColor} />
                                             <Text style={styles.text}>
                                                 Assigned to
                                             </Text>
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     subtitle: {
-        fontSize: 10
+        fontSize: wp(2.4)
     },
     input: {
         backgroundColor: 'white'
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     text: {
-        fontSize: 16,
+        fontSize: wp(3.89),
         marginLeft: 5,
         opacity: 0.6
     },

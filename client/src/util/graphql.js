@@ -317,13 +317,6 @@ export const DELETE_STAFF = gql`
   }
 `;
 
-export const DELETE_STAFF_BYDEPARTMENT = gql`
-  mutation deleteStaffByDepartment($departmentId: ID!) {
-    deleteStaffByDepartment(departmentId: $departmentId)
-  }
-`;
-
-
 //DEPARTMENT
 
 export const FETCH_DEPARTMENTS_QUERY = gql`
@@ -579,6 +572,12 @@ export const UPDATE_EVENT_MUTATION = gql`
 export const DELETE_EVENT = gql`
   mutation deleteEvent($eventId: ID!) {
     deleteEvent(eventId: $eventId)
+  }
+`;
+
+export const DELETE_EVENT_BYPROJECT = gql`
+  mutation deleteEventByProject($projectId: ID!) {
+    deleteEventByProject(projectId: $projectId)
   }
 `;
 
@@ -844,15 +843,9 @@ export const DELETE_PIC = gql`
   }
 `;
 
-export const DELETE_PIC_BYCOMMITTEE = gql`
-  mutation deletePersonInChargeByStaff($committeeId: ID!) {
-    deletePersonInChargeByCommittee(committeeId: $committeeId)
-  }
-`;
-
-export const DELETE_PIC_BYSTAFF = gql`
-  mutation deletePersonInChargeByStaff($staffId: ID!) {
-    deletePersonInChargeByStaff(staffId: $staffId)
+export const DELETE_PIC_BYPROJECT = gql`
+  mutation deletePersonInChargeByProject($projectId: ID!) {
+    deletePersonInChargeByProject(projectId: $projectId)
   }
 `;
 
@@ -1004,6 +997,18 @@ export const DELETE_EXTERNAL = gql`
   }
 `;
 
+export const DELETE_EXTERNAL_BYPROJECT = gql`
+  mutation deleteExternalByProject($projectId: ID!) {
+    deleteExternalByProject(projectId: $projectId)
+  }
+`;
+
+export const DELETE_EXTERNAL_BYEVENT = gql`
+  mutation deleteExternalByEvent($eventId: ID!) {
+    deleteExternalByEvent(eventId: $eventId)
+  }
+`;
+
 
 //ROADMAP
 
@@ -1096,6 +1101,18 @@ export const UPDATE_ROADMAP_MUTATION = gql`
 export const DELETE_ROADMAP = gql`
   mutation deleteRoadmap($roadmapId: ID!) {
     deleteRoadmap(roadmapId: $roadmapId)
+  }
+`;
+
+export const DELETE_ROADMAP_BYPROJECT = gql`
+  mutation deleteRoadmapByProject($projectId: ID!) {
+    deleteRoadmapByProject(projectId: $projectId)
+  }
+`;
+
+export const DELETE_ROADMAP_BYEVENT = gql`
+  mutation deleteRoadmapByEvent($eventId: ID!) {
+    deleteRoadmapByEvent(eventId: $eventId)
   }
 `;
 
@@ -1201,6 +1218,18 @@ export const UPDATE_RUNDOWN_MUTATION = gql`
 export const DELETE_RUNDOWN = gql`
   mutation deleteRundown($rundownId: ID!) {
     deleteRundown(rundownId: $rundownId)
+  }
+`;
+
+export const DELETE_RUNDOWN_BYPROJECT = gql`
+  mutation deleteRundownByProject($projectId: ID!) {
+    deleteRundownByProject(projectId: $projectId)
+  }
+`;
+
+export const DELETE_RUNDOWN_BYEVENT = gql`
+  mutation deleteRundownByEvent($eventId: ID!) {
+    deleteRundownByEvent(eventId: $eventId)
   }
 `;
 
@@ -1349,6 +1378,24 @@ export const DELETE_TASK = gql`
   }
 `;
 
+export const DELETE_TASK_BYPROJECT = gql`
+  mutation deleteTaskByProject($projectId: ID!) {
+    deleteTaskByProject(projectId: $projectId)
+  }
+`;
+
+export const DELETE_TASK_BYEVENT = gql`
+  mutation deleteTaskByEvent($eventId: ID!) {
+    deleteTaskByEvent(eventId: $eventId)
+  }
+`;
+
+export const DELETE_TASK_BYROADMAP = gql`
+  mutation deleteTaskByRoadmap($roadmapId: ID!) {
+    deleteTaskByRoadmap(roadmapId: $roadmapId)
+  }
+`;
+
 export const COMPLETED_TASK = gql`
   mutation completedTask(
     $taskId: ID!,
@@ -1478,6 +1525,23 @@ export const DELETE_ASSIGNED_TASK_BYTASK = gql`
   }
 `;
 
+export const DELETE_ASSIGNED_TASK_BYROADMAP = gql`
+  mutation deleteAssignedTaskByRoadmap($roadmapId: ID!) {
+    deleteAssignedTaskByRoadmap(roadmapId: $roadmapId)
+  }
+`;
+
+export const DELETE_ASSIGNED_TASK_BYEVENT = gql`
+  mutation deleteAssignedTaskByEvent($eventId: ID!) {
+    deleteAssignedTaskByEvent(eventId: $eventId)
+  }
+`;
+
+export const DELETE_ASSIGNED_TASK_BYPROJECT = gql`
+  mutation deleteAssignedTaskByProject($projectId: ID!) {
+    deleteAssignedTaskByProject(projectId: $projectId)
+  }
+`;
 
 //DEPARTMENT_POSITION
 

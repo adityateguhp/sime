@@ -3,6 +3,7 @@ import { StyleSheet, ScrollView, RefreshControl, View, TouchableOpacity, Touchab
 import { useQuery } from '@apollo/react-hooks';
 import { Surface, Text, Title, Button, Snackbar, Divider, Portal } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import AssignedToMeContainer from '../../components/my_task/AssignedToMeContainer';
 import CreatedByMeContainer from '../../components/my_task/CreatedByMeContainer';
@@ -224,8 +225,8 @@ const DashboardStaffScreen = ({ navigation }) => {
 
       <Surface style={styles.container}>
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-          <Icon name="chart-donut" size={25} color={Colors.primaryColor} />
-          <Title style={{ marginLeft: 10, fontSize: 18 }}>My projects progress</Title>
+          <Icon name="chart-donut" size={wp(6)} color={Colors.primaryColor} />
+          <Title style={{ marginLeft: 10, fontSize: wp(4.4) }}>My projects progress</Title>
         </View>
         <ProjectPieChart projects={projectsStaff} />
       </Surface>
@@ -234,10 +235,10 @@ const DashboardStaffScreen = ({ navigation }) => {
         <Divider style={{ marginBottom: 5, marginHorizontal: 10 }} />
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-            <Icon name="folder-multiple" size={25} color={Colors.primaryColor} />
-            <Title style={{ marginLeft: 10, fontSize: 18 }}>My projects</Title>
+            <Icon name="folder-multiple" size={wp(6)} color={Colors.primaryColor} />
+            <Title style={{ marginLeft: 10, fontSize: wp(4.4) }}>My projects</Title>
           </View>
-          <Button labelStyle={{ fontWeight: "bold", fontSize: 12 }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllProjectHandler() }}>See All</Button>
+          <Button labelStyle={{ fontWeight: "bold", fontSize: wp(3) }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllProjectHandler() }}>See All</Button>
         </View>
         {
           projectsStaff.length !== 0 ?
@@ -255,10 +256,10 @@ const DashboardStaffScreen = ({ navigation }) => {
         <Divider style={{ marginBottom: 5, marginHorizontal: 10 }} />
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-            <Icon name="account-arrow-left" size={25} color={Colors.primaryColor} />
-            <Title style={{ marginLeft: 10, fontSize: 18 }}>Tasks assigned to me</Title>
+            <Icon name="account-arrow-left" size={wp(6)} color={Colors.primaryColor} />
+            <Title style={{ marginLeft: 10, fontSize: wp(4.4) }}>Tasks assigned to me</Title>
           </View>
-          <Button labelStyle={{ fontWeight: "bold", fontSize: 12 }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
+          <Button labelStyle={{ fontWeight: "bold", fontSize: wp(3) }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
         </View>
         {
           assignedStaff.length !== 0 ?
@@ -290,10 +291,10 @@ const DashboardStaffScreen = ({ navigation }) => {
         <Divider style={{ marginBottom: 5, marginHorizontal: 10 }} />
         <View style={{ marginLeft: 15, marginRight: 10, marginTop: 10, flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
           <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-start" }}>
-            <Icon name="shape-square-plus" size={25} color={Colors.primaryColor} />
-            <Title style={{ marginLeft: 10, fontSize: 18 }}>Tasks created by me</Title>
+            <Icon name="shape-square-plus" size={wp(6)} color={Colors.primaryColor} />
+            <Title style={{ marginLeft: 10, fontSize: wp(4.4) }}>Tasks created by me</Title>
           </View>
-          <Button labelStyle={{ fontWeight: "bold", fontSize: 12 }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
+          <Button labelStyle={{ fontWeight: "bold", fontSize: wp(3) }} color={Colors.secondaryColor} mode="text" compact={true} uppercase={false} onPress={() => { seeAllTaskHandler() }}>See All</Button>
         </View>
         {
           tasksCreatedByValue.length !== 0 ?

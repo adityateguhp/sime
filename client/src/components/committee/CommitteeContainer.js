@@ -40,7 +40,7 @@ const CommitteeContainer = props => {
     return (
         <View style={styles.container}>
             <View style={styles.date}>
-                <Subheading style={{ fontWeight: 'bold', color: Colors.primaryColor }}>{committeeName}</Subheading>
+                <Subheading style={{ fontWeight: 'bold', color: Colors.primaryColor, marginRight: 20 }} numberOfLines={1} ellipsizeMode='tail'>{committeeName}</Subheading>
             </View>
             <Divider />
         </View>

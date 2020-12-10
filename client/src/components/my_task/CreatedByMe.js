@@ -3,6 +3,8 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, 
 import { useLazyQuery } from '@apollo/react-hooks';
 import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 
 import {
     FETCH_COMMITTEE_QUERY,
@@ -131,15 +133,15 @@ const CreatedByMe = props => {
                     {
                         props.projectBreadcrumb ?
                             <View style={styles.breadcrumb}>
-                                <Button color={Colors.primaryColor} labelStyle={{ fontSize: 12 }} uppercase={false} mode="text" compact={true} onPress={() => { projectPressHandler(projectId, projectName) }} >{projectName}</Button>
+                                <Button color={Colors.primaryColor} contentStyle={{maxWidth: wp(25)}} labelStyle={{ fontSize: wp(3) }} uppercase={false} mode="text" compact={true} onPress={() => { projectPressHandler(projectId, projectName) }} >{projectName}</Button>
                                 <Icon name="chevron-right" size={16} color="grey" />
                             </View>
                             :
                             null
                     }
-                    <Button color={Colors.primaryColor} labelStyle={{ fontSize: 12 }} uppercase={false} mode="text" compact={true} onPress={() => { eventPressHandler(eventId, eventName, projectName, projectId, picId, userCommitteeId, order) }} >{eventName}</Button>
+                    <Button color={Colors.primaryColor} contentStyle={{maxWidth: wp(25)}} labelStyle={{ fontSize: wp(3) }} uppercase={false} mode="text" compact={true} onPress={() => { eventPressHandler(eventId, eventName, projectName, projectId, picId, userCommitteeId, order) }} >{eventName}</Button>
                     <Icon name="chevron-right" size={16} color="grey" />
-                    <Button color={Colors.primaryColor} labelStyle={{ fontSize: 12 }} uppercase={false} mode="text" compact={true} onPress={() => { roadmapPressHandler(roadmapId, roadmapName, committeeId, eventId, eventName, projectName, projectId, picId, userCommitteeId, order) }} >{roadmapName}</Button>
+                    <Button color={Colors.primaryColor} contentStyle={{maxWidth: wp(25)}} labelStyle={{ fontSize: wp(3) }} uppercase={false} mode="text" compact={true} onPress={() => { roadmapPressHandler(roadmapId, roadmapName, committeeId, eventId, eventName, projectName, projectId, picId, userCommitteeId, order) }} >{roadmapName}</Button>
                 </View>
             </View>
             <Task

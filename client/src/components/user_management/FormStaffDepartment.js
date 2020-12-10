@@ -190,7 +190,7 @@ const FormStaffDepartment = props => {
                                 <View style={styles.formViewStyle}>
                                     <View style={styles.imageUploadContainer}>
                                         <Avatar.Image style={{ marginBottom: 10 }} size={100} source={values.picture ? { uri: values.picture } : require('../../assets/avatar.png')} />
-                                        <Text style={{ fontSize: 16, color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
+                                        <Text style={{ fontSize: wp(3.89), color: Colors.primaryColor }} onPress={handleUpload}>{values.picture ? "Change Photo Profile" : "Choose Photo Profile"}</Text>
                                     </View>
                                     <View style={errors.staff_name_error? null: styles.inputStyle}>
                                         <TextInput
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     error: {
-        fontSize: 14,
+        fontSize: wp(3.4),
         color: theme.colors.error,
         paddingHorizontal: 4
     },

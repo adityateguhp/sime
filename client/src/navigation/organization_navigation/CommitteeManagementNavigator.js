@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Text } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import HeaderButton from '../../components/common/HeaderButton';
 import CommitteeManagementScreen from '../../screens/committee/CommitteeManagementScreen';
@@ -20,7 +21,7 @@ function TopTabCommitteesManagements() {
       tabBarOptions={{
         activeTintColor: Colors.secondaryColor,
         inactiveTintColor: 'white',
-        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        labelStyle: { fontSize: wp(3), fontWeight: 'bold' },
         indicatorStyle: { backgroundColor: Colors.secondaryColor },
         style: { backgroundColor: Colors.primaryColor }
       }}

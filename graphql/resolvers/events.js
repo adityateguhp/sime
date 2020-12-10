@@ -115,5 +115,16 @@ module.exports = {
         throw new Error(err);
       }
     },
+    async deleteEventByProject(_, { projectId }, context) {
+      try {
+        const event = await Event.find({ project_id: projectId });
+        event.map((data) => {
+          data.deleteOne()
+        })
+        return 'Deleted successfully';
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
   }
 };

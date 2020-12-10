@@ -4,6 +4,7 @@ import { VictoryPie } from "victory-native";
 import moment from 'moment';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const ProjectPieChart = props => {
 
@@ -50,10 +51,10 @@ const ProjectPieChart = props => {
                 <VictoryPie
                     colorScale={["blue", "orange", "green"]}
                     data={graphicData}
-                    width={220}
-                    height={220}
-                    innerRadius={40}
-                    padding={{ top: 30, bottom: 30 }}
+                    width={wp(53)}
+                    height={wp(53)}
+                    innerRadius={wp(9.7)}
+                    padding={{ top: wp(7.3), bottom: wp(7.3) }}
                     style={{
                         labels: {
                             fill: 'white', fontSize: 0
@@ -63,22 +64,22 @@ const ProjectPieChart = props => {
             </View>
             <View>
                 <View style={styles.legend}>
-                    <Icon name="folder" size={20} color="blue" />
-                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{preparingCounter.length}</Text>
-                    <Text style={{ marginLeft: 5, fontSize: 13 }}>Preparing</Text>
-                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>({preparing ? preparing : 0}%)</Text>
+                    <Icon name="folder" size={wp(4.8)} color="blue" />
+                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: wp(3) }}>{preparingCounter.length}</Text>
+                    <Text style={{ marginLeft: 5, fontSize: wp(3) }}>Preparing</Text>
+                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: wp(3) }}>({preparing ? preparing : 0}%)</Text>
                 </View>
                 <View style={styles.legend}>
-                    <Icon name="folder" size={20} color="orange" />
-                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{activeCounter.length}</Text>
-                    <Text style={{ marginLeft: 5, fontSize: 13 }}>Active</Text>
-                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>({active ? active : 0}%)</Text>
+                    <Icon name="folder" size={wp(4.8)} color="orange" />
+                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: wp(3) }}>{activeCounter.length}</Text>
+                    <Text style={{ marginLeft: 5, fontSize: wp(3) }}>Active</Text>
+                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: wp(3) }}>({active ? active : 0}%)</Text>
                 </View>
                 <View style={styles.legend}>
-                    <Icon name="folder" size={20} color="green" />
-                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{completedCounter.length}</Text>
-                    <Text style={{ marginLeft: 5, fontSize: 13 }}>Completed</Text>
-                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>({completed ? completed : 0}%)</Text>
+                    <Icon name="folder" size={wp(4.8)} color="green" />
+                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize : wp(3) }}>{completedCounter.length}</Text>
+                    <Text style={{ marginLeft: 5, fontSize: wp(3) }}>Completed</Text>
+                    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: wp(3) }}>({completed ? completed : 0}%)</Text>
                 </View>
             </View>
         </View>

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Text } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import HeaderButton from '../../components/common/HeaderButton';
 import StaffIndividualProfileScreen from '../../screens/user_profile/StaffIndividualProfileScreen';
@@ -26,7 +27,7 @@ export default function StaffProfileNavigator({ route, navigation }) {
       <StaffIndividualProfileStack.Screen name="Staff Profile" component={StaffIndividualProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Profile Information</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Profile Information</Text>
           </View>),
         headerLeft: () => (
           <HeaderButtons HeaderButtonComponent={HeaderButton}>

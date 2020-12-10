@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { FlatList, Alert, StyleSheet, RefreshControl, ScrollView } from 'react-native';
 import { Provider, Text, Snackbar, Portal } from 'react-native-paper';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import FABbutton from '../../components/common/FABbutton';
 import FormExternal from '../../components/external/FormExternal';

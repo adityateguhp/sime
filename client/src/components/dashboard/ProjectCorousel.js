@@ -1,11 +1,9 @@
-import React, { Component, useContext, useState } from 'react';
-import { Text, View, Dimensions, StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { View, Dimensions, StyleSheet } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel'; // Version can be specified in package.json
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import ProjectCard from '../project/ProjectCard';
-import { FETCH_PROJECTS_QUERY, FETCH_PROJECT_QUERY, DELETE_PROJECT } from '../../util/graphql';
-import { SimeContext } from '../../context/SimePovider';
 
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.45);
@@ -59,8 +57,8 @@ export default class ProjectCorousel extends Component {
                     carouselRef={(c) => this.carousel = c}
                     activeDotIndex={this.state.index}
                     dotStyle={{
-                        width: 10,
-                        height: 10,
+                        width: wp(2.4),
+                        height: wp(2.4),
                         borderRadius: 5,
                         marginHorizontal: 5,
                         backgroundColor: 'black'

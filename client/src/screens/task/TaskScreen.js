@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl, ScrollView } from 'react-native';
 import { Divider, Provider, Text, Snackbar, Portal } from 'react-native-paper';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 
 import FABbutton from '../../components/common/FABbutton';
 import FormTask from '../../components/task/FormTask';
@@ -420,12 +422,12 @@ const styles = StyleSheet.create({
     },
     incompleted: {
         backgroundColor: 'white',
-        marginLeft: 40,
+        marginLeft: wp(9.5),
         marginVertical: 10
     },
     completed: {
         backgroundColor: 'white',
-        marginRight: 40,
+        marginRight: wp(9.5),
         marginVertical: 10
     },
     taskStatusContainer: {
@@ -436,8 +438,8 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     dividerStatus: {
-        width: 25,
-        height: 1
+        width: wp(6),
+        height: wp(0.25)
     },
     textStatus: {
         color: 'grey'

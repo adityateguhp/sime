@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, RefreshControl } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import { FETCH_DEPARTMENT_QUERY, FETCH_STAFF_QUERY, FETCH_DEPARTMENT_POSITION_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
@@ -142,7 +143,7 @@ const StaffProfileScreen = ({ route, navigation }) => {
             }
             >
                 <View style={styles.profilePicture}>
-                    <Avatar.Image style={{ marginBottom: 10 }} size={150} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />
+                    <Avatar.Image style={{ marginBottom: 10 }} size={wp(36.5)} source={staff.getStaff.picture ? { uri: staff.getStaff.picture } : require('../../assets/avatar.png')} />
                     <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{staff.getStaff.name}</Headline>
                 </View>
                 <Divider />
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     titleInfo: {
-        fontSize: 16,
+        fontSize: wp(3.89),
         marginTop: 20
     }
 });

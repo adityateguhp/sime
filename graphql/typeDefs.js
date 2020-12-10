@@ -282,8 +282,6 @@ module.exports = gql`
         
         deleteStaff(staffId: ID!): String!
 
-        deleteStaffByDepartment(departmentId: ID!): String!
-
         addProject(
             name: String!,
             description: String,
@@ -326,6 +324,8 @@ module.exports = gql`
 
         deleteEvent(eventId: ID!): String!
 
+        deleteEventByProject(projectId: ID!): String!
+
         addPosition(name: String!, core: Boolean!, organizationId: ID!, order: String!): Position!
         
         updatePosition(positionId: ID!, name: String!, core: Boolean!): Position!
@@ -344,15 +344,17 @@ module.exports = gql`
         
         deletePersonInCharge(personInChargeId: ID!): String!
 
-        deletePersonInChargeByCommittee(committeeId: ID!): String!
-
-        deletePersonInChargeByStaff(staffId: ID!): String!
+        deletePersonInChargeByProject(projectId: ID!): String!
 
         addExternalType(name: String!): ExternalType!
         
         updateExternalType(externalTypeId: ID!, name: String!): ExternalType!
         
         deleteExternalType(externalTypeId: ID!): String!
+
+        deleteExternalByProject(projectId: ID!): String!
+
+        deleteExternalByEvent(eventId: ID!): String!
 
         addExternal(
             name: String!,
@@ -394,6 +396,10 @@ module.exports = gql`
 
         deleteRoadmap(roadmapId: ID!): String!
 
+        deleteRoadmapByEvent(eventId: ID!): String!
+
+        deleteRoadmapByProject(projectId: ID!): String!
+
         addRundown(
             agenda: String!
             event_id: ID!
@@ -414,6 +420,10 @@ module.exports = gql`
         ): Rundown!
 
         deleteRundown(rundownId: ID!): String!
+
+        deleteRundownByProject(projectId: ID!): String!
+
+        deleteRundownByEvent(eventId: ID!): String!
 
         addTask(
             name: String!
@@ -439,6 +449,12 @@ module.exports = gql`
         ): Task!
 
         deleteTask(taskId: ID!): String!
+
+        deleteTaskByProject(projectId: ID!): String!
+
+        deleteTaskByEvent(eventId: ID!): String!
+
+        deleteTaskByRoadmap(roadmapId: ID!): String!
 
         completedTask(taskId: ID!, completed: Boolean!, completed_date: String): Task!
 
@@ -467,6 +483,12 @@ module.exports = gql`
         deleteAssignedTaskByTask(
             taskId: ID!
         ): String!
+
+        deleteAssignedTaskByRoadmap(roadmapId: ID!): String!
+
+        deleteAssignedTaskByEvent(eventId: ID!): String!
+
+        deleteAssignedTaskByProject(projectId: ID!): String!
 
         addDepartmentPosition(
             name: String!

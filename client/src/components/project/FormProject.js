@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     textDate: {
-        fontSize: 16,
+        fontSize: wp(3.89),
         marginLeft: 5,
         color: 'black',
         opacity: 0.6
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
         borderStyle: 'dotted',
         borderWidth: 2,
         borderRadius: 5,
-        height: 200,
+        height: wp(48),
         marginBottom: 20,
         opacity: 0.6,
         justifyContent: "center",
@@ -358,14 +358,14 @@ const styles = StyleSheet.create({
     imageUploaded: {
         borderWidth: 2,
         borderRadius: 5,
-        height: 200,
+        height: wp(48),
         marginBottom: 20,
         justifyContent: "center",
         alignItems: "center"
 
     },
     error: {
-        fontSize: 14,
+        fontSize: wp(3.4),
         color: theme.colors.error,
         paddingHorizontal: 4
     }

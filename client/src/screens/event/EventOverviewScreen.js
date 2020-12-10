@@ -210,19 +210,18 @@ const EventOverviewScreen = ({ navigation }) => {
           <List.Item
             title={
               <Text>
-                <Icon name="calendar" size={16} color='black' /> {startDate} - {endDate}
+                {startDate} - {endDate}
               </Text>}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
+
           />
           <Divider style={styles.overviewDivider} />
           <Subheading style={{ fontWeight: 'bold' }}>Location</Subheading>
           <List.Item
             title={
               event.location ?
-                <Text>
-                  <Icon name="map-marker" size={16} color='black' /> {event.location}
-                </Text>
+                event.location
                 :
                 "-"}
             titleNumberOfLines={10}
@@ -242,7 +241,7 @@ const modalMargin = hp(10);
 
 const styles = StyleSheet.create({
   description: {
-    fontSize: 14,
+    fontSize: wp(3.4),
     textAlign: 'center',
     marginHorizontal: 10
   },

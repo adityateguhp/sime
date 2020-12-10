@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform }
 import { Avatar, Card, Caption } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import Status from '../../components/common/Status';
 import { Percentage, StatusProgressDays, StatusProgressBar } from '../../components/common/StatusProgressBar'

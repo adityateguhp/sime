@@ -15,7 +15,9 @@ import {
     DELETE_ROADMAP,
     FETCH_EVENT_QUERY,
     FETCH_PICS_QUERY,
-    FETCH_COMMITTEES_QUERY
+    FETCH_COMMITTEES_QUERY,
+    DELETE_ASSIGNED_TASK_BYROADMAP,
+    DELETE_TASK_BYROADMAP
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
@@ -180,12 +182,18 @@ const RoadmapScreen = ({ route, navigation }) => {
 
     const roadmapId = sime.roadmap_id;
 
+    const [deleteAssignedTaskByRoadmap] = useMutation(DELETE_ASSIGNED_TASK_BYROADMAP)
+
+    const [deleteTaskByRoadmap] = useMutation(DELETE_TASK_BYROADMAP)
+
     const [deleteRoadmap, { loading: loadingDelete }] = useMutation(DELETE_ROADMAP, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_ROADMAPS_QUERY,
                 variables: { eventId: sime.event_id }
             });
+            deleteAssignedTaskByRoadmap({variables: {roadmapId: roadmapId}})
+            deleteTaskByRoadmap({variables: {roadmapId: roadmapId}})
             roadmaps.getRoadmaps = roadmaps.getRoadmaps.filter((e) => e.id !== roadmapId);
             deleteRoadmapsStateUpdate(roadmapId)
             proxy.writeQuery({ query: FETCH_ROADMAPS_QUERY, data, variables: { eventId: sime.event_id } });
@@ -246,10 +254,22 @@ const RoadmapScreen = ({ route, navigation }) => {
             {
                 text: 'Yes',
                 style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this roadmap, it's also delete all inside this roadmap", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
+                style: 'destructive',
                 onPress: deleteRoadmap
             }
         ]);
     };
+
 
     if (errorRoadmaps) {
         console.error(errorRoadmaps);

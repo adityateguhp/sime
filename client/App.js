@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect }  from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import { onError } from 'apollo-link-error';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { setContext } from 'apollo-link-context';
 import AsyncStorage from '@react-native-community/async-storage';
+import RNBootSplash from "react-native-bootsplash";
 
 import { AuthProvider } from './src/context/auth';
 import MainNavigator from './src/navigation/MainNavigator';
@@ -67,6 +68,18 @@ const client = new ApolloClient({
 console.disableYellowBox = true
 
 export default function App() {
+
+  useEffect(() => {
+    const init = async () => {
+      // …do multiple sync or async tasks
+    };
+
+    init().finally(async () => {
+      await RNBootSplash.hide({ fade: true });
+      console.log("Bootsplash has been hidden successfully");
+    });
+  }, []);
+
   return (
     <AuthProvider>
       <ApolloProvider client={client}>

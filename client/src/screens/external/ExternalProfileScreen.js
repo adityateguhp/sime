@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text, Title, Paragraph, Avatar, Headline, Divider, Provider, Portal } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import { FETCH_EXTERNAL_QUERY } from '../../util/graphql';
 import CenterSpinner from '../../components/common/CenterSpinner';
@@ -29,7 +30,7 @@ const ExternalProfileScreen = ({ route }) => {
     return (
         <ScrollView style={styles.screen}>
             <View style={styles.profilePicture}>
-                <Avatar.Image style={{ marginBottom: 10 }} size={150} source={external.getExternal.picture ? { uri: external.getExternal.picture } : require('../../assets/avatar.png')} />
+                <Avatar.Image style={{ marginBottom: 10 }} size={wp(36.5)} source={external.getExternal.picture ? { uri: external.getExternal.picture } : require('../../assets/avatar.png')} />
                 <Headline style={{marginHorizontal: 15}} numberOfLines={1} ellipsizeMode='tail'>{external.getExternal.name}</Headline>
             </View>
             <Divider />
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     titleInfo: {
-        fontSize: 16,
+        fontSize: wp(3.89),
         marginTop: 20
     }
 });

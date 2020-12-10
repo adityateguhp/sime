@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator } from '@react-navigation/stack';
 import { Avatar } from 'react-native-paper';
 import { useLazyQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_STAFF_QUERY } from '../../util/graphql';
@@ -21,7 +22,7 @@ function TopTabMyTasksStaff() {
       tabBarOptions={{
         activeTintColor: Colors.secondaryColor,
         inactiveTintColor: 'white',
-        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        labelStyle: { fontSize: wp(3), fontWeight: 'bold' },
         indicatorStyle: { backgroundColor: Colors.secondaryColor },
         style: { backgroundColor: Colors.primaryColor }
       }}
@@ -82,7 +83,7 @@ export default function MyTasksStaffNavigator({ route, navigation }) {
                 }}
               >
                 <Avatar.Image
-                  size={40}
+                  size={wp(9.7)}
                   source={userPict ? { uri: userPict } : require('../../assets/avatar.png')}
                 />
               </TouchableOpacity>

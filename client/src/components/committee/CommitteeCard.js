@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import { Avatar, Card } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import Colors from '../../constants/Colors';
 
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
         display: "flex"
     },
     status: {
-        fontSize: 11
+        fontSize: wp(2.67)
     }
 });
 

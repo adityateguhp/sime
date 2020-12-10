@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   errorHeader: {
-    fontSize: 16,
+    fontSize: wp(3.89),
     color: theme.colors.error,
     fontWeight: 'bold',
     marginTop: 10,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   errorItem: {
-    fontSize: 14,
+    fontSize: wp(3.4),
     color: theme.colors.error
   }
 });

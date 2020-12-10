@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     error: {
-        fontSize: 14,
+        fontSize: wp(3.4),
         color: theme.colors.error,
         paddingHorizontal: 4
     },

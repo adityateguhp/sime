@@ -328,7 +328,7 @@ const ProjectOverviewScreen = ({ navigation }) => {
           <List.Item
             title={
               <Text>
-                <Icon name="calendar" size={16} color='black' /> {startDate} - {endDate}
+                {startDate} - {endDate}
               </Text>}
             titleNumberOfLines={10}
             titleStyle={{ textAlign: 'justify' }}
@@ -361,7 +361,7 @@ const overviewHeight = hp(100);
 
 const styles = StyleSheet.create({
   description: {
-    fontSize: 14,
+    fontSize: wp(3.4),
     textAlign: 'center',
     marginHorizontal: 10
   },

@@ -125,6 +125,39 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async deleteTaskByProject(_, { projectId }, context) {
+            try {
+                const task = await Task.find({ project_id: projectId });
+                task.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteTaskByEvent(_, { eventId }, context) {
+            try {
+                const task = await Task.find({ event_id: eventId });
+                task.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteTaskByRoadmap(_, { roadmapId }, context) {
+            try {
+                const task = await Task.find({ roadmap_id: roadmapId });
+                task.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
         async completedTask(_, {
             taskId,
             completed,

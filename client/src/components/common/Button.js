@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button as PaperButton } from 'react-native-paper';
 import { theme } from '../../constants/Theme';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 
 const Button = ({ mode, style, children, ...props }) => (
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: wp(3.6),
     lineHeight: 26,
   },
 });

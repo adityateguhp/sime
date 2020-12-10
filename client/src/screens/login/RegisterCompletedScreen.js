@@ -3,6 +3,8 @@ import { Text, StyleSheet, View } from 'react-native';
 import { Button } from 'react-native-paper'
 import { CommonActions } from "@react-navigation/native";
 import LottieView from 'lottie-react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 
 import Header from '../../components/common/Header';
 
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   animation: {
-    width: 300
+    width: wp(72)
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -57,11 +57,11 @@ const MyTaskContainer = props => {
 
 
     return (
-        <TouchableCmp onPress={()=>{projectPressHandler(projectId, projectName)}} useForeground>
+        <TouchableCmp onPress={() => { projectPressHandler(projectId, projectName) }} useForeground>
             <View style={styles.container}>
                 <View style={styles.date}>
-                    <Icon name="folder" size={20} color={"white"} style={{ marginRight: 10 }} />
-                    <Subheading style={{ fontWeight: 'bold', color: "white" }}>{projectName}</Subheading>
+                    <Icon name="folder" size={wp(4.86)} color={"white"} style={{ marginRight: 10 }} />
+                    <Subheading style={{ fontWeight: 'bold', color: "white", fontSize: wp(3.89), marginRight: 20}} numberOfLines={1} ellipsizeMode='tail'>{projectName}</Subheading>
                 </View>
                 <Divider />
             </View>

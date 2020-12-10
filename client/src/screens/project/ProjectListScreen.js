@@ -9,7 +9,18 @@ import FormProject from '../../components/project/FormProject';
 import FormEditProject from '../../components/project/FormEditProject';
 import { theme } from '../../constants/Theme';
 import { SimeContext } from '../../context/SimePovider';
-import { FETCH_PROJECTS_QUERY, FETCH_PROJECT_QUERY, DELETE_PROJECT } from '../../util/graphql';
+import { 
+    FETCH_PROJECTS_QUERY, 
+    FETCH_PROJECT_QUERY, 
+    DELETE_PROJECT,
+    DELETE_ASSIGNED_TASK_BYPROJECT,
+    DELETE_EVENT_BYPROJECT,
+    DELETE_EXTERNAL_BYPROJECT,
+    DELETE_PIC_BYPROJECT,
+    DELETE_ROADMAP_BYPROJECT,
+    DELETE_RUNDOWN_BYPROJECT,
+    DELETE_TASK_BYPROJECT 
+} from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
 
@@ -106,12 +117,33 @@ const ProjectListScreen = ({ navigation }) => {
 
     const projectId = sime.project_id;
 
+    const [deleteEventByProject] = useMutation(DELETE_EVENT_BYPROJECT)
+
+    const [deletePersonInChargeByProject] = useMutation(DELETE_PIC_BYPROJECT)
+
+    const [deleteRoadmapByProject] = useMutation(DELETE_ROADMAP_BYPROJECT)
+
+    const [deleteAssignedTaskByProject] = useMutation(DELETE_ASSIGNED_TASK_BYPROJECT)
+
+    const [deleteTaskByProject] = useMutation(DELETE_TASK_BYPROJECT)
+
+    const [deleteRundownByProject] = useMutation(DELETE_RUNDOWN_BYPROJECT)
+
+    const [deleteExternalByProject] = useMutation(DELETE_EXTERNAL_BYPROJECT)
+
     const [deleteProject, { loading: loadingDelete }] = useMutation(DELETE_PROJECT, {
         update(proxy) {
             const data = proxy.readQuery({
                 query: FETCH_PROJECTS_QUERY,
                 variables: { organizationId: sime.user.organization_id }
             });
+            deleteEventByProject({variables: {projectId: projectId}})
+            deletePersonInChargeByProject({variables: {projectId: projectId}})
+            deleteRoadmapByProject({variables: {projectId: projectId}})
+            deleteAssignedTaskByProject({variables: {projectId: projectId}})
+            deleteTaskByProject({variables: {projectId: projectId}})
+            deleteRundownByProject({variables: {projectId: projectId}})
+            deleteExternalByProject({variables: {projectId: projectId}})
             projects.getProjects = projects.getProjects.filter((p) => p.id !== projectId);
             deleteProjectsStateUpdate(projectId)
             proxy.writeQuery({ query: FETCH_PROJECTS_QUERY, data, variables: { organizationId: sime.user.organization_id }, });
@@ -171,10 +203,22 @@ const ProjectListScreen = ({ navigation }) => {
             {
                 text: 'Yes',
                 style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this project, it's also delete all inside this project", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
+                style: 'destructive',
                 onPress: deleteProject
             }
         ]);
     };
+
 
     const numColumns = 2;
 

@@ -129,20 +129,9 @@ module.exports = {
                 throw new Error(err);
             }
         },
-        async deletePersonInChargeByCommittee(_, { committeeId }, context) {
+        async deletePersonInChargeByProject(_, { projectId }, context) {
             try {
-                const person_in_charge = await Person_in_charge.find({ committee_id: committeeId });
-                person_in_charge.map((data) => {
-                    data.deleteOne()
-                })
-                return 'Deleted successfully';
-            } catch (err) {
-                throw new Error(err);
-            }
-        },
-        async deletePersonInChargeByStaff(_, { staffId }, context) {
-            try {
-                const person_in_charge = await Person_in_charge.find({ staff_id: staffId });
+                const person_in_charge = await Person_in_charge.find({ project_id: projectId });
                 person_in_charge.map((data) => {
                     data.deleteOne()
                 })

@@ -76,8 +76,8 @@ const ProfileModal = props => {
 }
 
 const modalWidth = wp(77);
-const modalHeightTall = hp(100) > 550 ? wp(107) : wp(115);
-const modalHeightShort = hp(100) > 550 ? wp(102) : wp(110);
+const modalHeightTall = hp(100) > 550 ? wp(110) : wp(118);
+const modalHeightShort = hp(100) > 550 ? wp(105) : wp(113);
 const modalMargin = hp(0);
 
 

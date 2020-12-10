@@ -367,12 +367,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     textDate: {
-        fontSize: 16,
+        fontSize: wp(3.89),
         marginLeft: 5,
         opacity: 0.6
     },
     error: {
-        fontSize: 14,
+        fontSize: wp(3.4),
         color: theme.colors.error,
         paddingHorizontal: 4,
     }

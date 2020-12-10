@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator } from '@react-navigation/stack';
 import { Avatar, Text } from 'react-native-paper';
 import { useLazyQuery } from '@apollo/react-hooks';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import { SimeContext } from '../../context/SimePovider';
 import { FETCH_STAFF_QUERY, FETCH_COMMITTEE_QUERY } from '../../util/graphql';
@@ -32,7 +33,7 @@ function TopTabProjectsStaff() {
       tabBarOptions={{
         activeTintColor: Colors.secondaryColor,
         inactiveTintColor: 'white',
-        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        labelStyle: { fontSize: wp(3), fontWeight: 'bold' },
         indicatorStyle: { backgroundColor: Colors.secondaryColor },
         style: { backgroundColor: Colors.primaryColor }
       }}
@@ -55,7 +56,7 @@ function TopTabEvents() {
       tabBarOptions={{
         activeTintColor: Colors.secondaryColor,
         inactiveTintColor: 'white',
-        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        labelStyle: { fontSize: wp(3), fontWeight: 'bold' },
         indicatorStyle: { backgroundColor: Colors.secondaryColor },
         style: { backgroundColor: Colors.primaryColor }
       }}
@@ -150,7 +151,7 @@ export default function DashboardStaffNavigator({ route, navigation }) {
               }}
             >
               <Avatar.Image
-                size={40}
+                size={wp(9.7)}
                 source={userPict ? { uri: userPict } : require('../../assets/avatar.png')}
               />
             </TouchableOpacity>
@@ -162,40 +163,40 @@ export default function DashboardStaffNavigator({ route, navigation }) {
       <DashboardStaffStack.Screen name="Staff Organization Profile" component={StaffOrganizationProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Organization Information</Text>
           </View>),
       }} />
       <DashboardStaffStack.Screen name="Person in Charge Profile" component={PersonInChargeProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Person in Charge Information</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Person in Charge Information</Text>
           </View>),
       }} />
       <DashboardStaffStack.Screen name="Event Detail" component={TopTabEvents} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.project_name}</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
+            <Text style={{ fontSize: wp(3.4), color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.project_name}</Text>
           </View>
       }} />
       <DashboardStaffStack.Screen name="External List" component={ExternalListScreen} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.external_type_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.external_type_name}</Text>
+            <Text style={{ fontSize: wp(3.4), color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.event_name}</Text>
           </View>
       }} />
       <DashboardStaffStack.Screen name="External Profile" component={ExternalProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Information</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>External Information</Text>
           </View>),
       }} />
       <DashboardStaffStack.Screen name="Task" component={TaskScreen} options={{
         headerTitle: () =>
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.roadmap_name}</Text>
-            <Text style={{ fontSize: 14, color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{committeeName}</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{sime.roadmap_name}</Text>
+            <Text style={{ fontSize: wp(3.4), color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>{committeeName}</Text>
           </View>
       }} />
     </DashboardStaffStack.Navigator>

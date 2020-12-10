@@ -113,5 +113,27 @@ module.exports = {
                 throw new Error(err);
             }
         },
+        async deleteRundownByProject(_, { projectId }, context) {
+            try {
+                const rundown = await Rundown.find({ project_id: projectId });
+                rundown.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
+        async deleteRundownByEvent(_, { eventId }, context) {
+            try {
+                const rundown = await Rundown.find({ event_id: eventId });
+                rundown.map((data) => {
+                    data.deleteOne()
+                })
+                return 'Deleted successfully';
+            } catch (err) {
+                throw new Error(err);
+            }
+        },
     }
 };

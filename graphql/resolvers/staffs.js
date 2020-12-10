@@ -307,16 +307,5 @@ module.exports = {
         throw new Error(err);
       }
     },
-    async deleteStaffByDepartment(_, { departmentId }, context) {
-      try {
-        const staff = await Staff.find({ department_id: departmentId });
-        staff.map((data) => {
-          data.deleteOne()
-        })
-        return 'Deleted successfully';
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
   }
 };

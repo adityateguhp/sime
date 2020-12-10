@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { TextInput as Input } from 'react-native-paper';
 import { theme } from '../../constants/Theme';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 
 const TextInput = ({ errorText, ...props }) => (
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
   },
   error: {
-    fontSize: 14,
+    fontSize: wp(3.4),
     color: theme.colors.error,
     paddingHorizontal: 4,
     paddingTop: 15,

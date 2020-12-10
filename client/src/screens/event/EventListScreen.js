@@ -13,7 +13,12 @@ import {
     FETCH_EVENTS_QUERY,
     FETCH_EVENT_QUERY,
     DELETE_EVENT,
-    FETCH_PROJECT_QUERY
+    FETCH_PROJECT_QUERY,
+    DELETE_ASSIGNED_TASK_BYEVENT,
+    DELETE_EXTERNAL_BYEVENT,
+    DELETE_ROADMAP_BYEVENT,
+    DELETE_RUNDOWN_BYEVENT,
+    DELETE_TASK_BYEVENT
 } from '../../util/graphql';
 import LoadingModal from '../../components/common/LoadingModal';
 import OptionModal from '../../components/common/OptionModal';
@@ -119,20 +124,18 @@ const EventListScreen = ({ route, navigation }) => {
         setVisibleFormEdit(true);
     }
 
-    const deleteHandler = () => {
-        closeModal();
-        closeModalFormEdit();
-        Alert.alert('Are you sure?', 'Do you really want to delete this event?', [
-            { text: 'No', style: 'default' },
-            {
-                text: 'Yes',
-                style: 'destructive',
-                onPress: deleteEvent
-            }
-        ]);
-    };
 
     const eventId = sime.event_id;
+
+    const [deleteRoadmapByEvent] = useMutation(DELETE_ROADMAP_BYEVENT)
+
+    const [deleteTaskByEvent] = useMutation(DELETE_TASK_BYEVENT)
+
+    const [deleteAssignedTaskByEvent] = useMutation(DELETE_ASSIGNED_TASK_BYEVENT)
+
+    const [deleteExternalByEvent] = useMutation(DELETE_EXTERNAL_BYEVENT)
+
+    const [deleteRundownByEvent] = useMutation(DELETE_RUNDOWN_BYEVENT)
 
     const [deleteEvent, { loading: loadingDelete }] = useMutation(DELETE_EVENT, {
         update(proxy) {
@@ -140,6 +143,11 @@ const EventListScreen = ({ route, navigation }) => {
                 query: FETCH_EVENTS_QUERY,
                 variables: { projectId: sime.project_id }
             });
+            deleteRoadmapByEvent({variables: {eventId: eventId}})
+            deleteTaskByEvent({variables: {eventId: eventId}})
+            deleteAssignedTaskByEvent({variables: {eventId: eventId}})
+            deleteExternalByEvent({variables: {eventId: eventId}})
+            deleteRundownByEvent({variables: {eventId: eventId}})
             events.getEvents = events.getEvents.filter((e) => e.id !== eventId);
             deleteEventsStateUpdate(eventId)
             proxy.writeQuery({ query: FETCH_EVENTS_QUERY, data, variables: { projectId: sime.project_id } });
@@ -191,6 +199,30 @@ const EventListScreen = ({ route, navigation }) => {
         // Return the function to unsubscribe from the event so it gets removed on unmount
         return unsubscribe;
     }, [navigation]);
+
+    const deleteHandler = () => {
+        closeModal();
+        closeModalFormEdit();
+        Alert.alert('Are you sure?', 'Do you really want to delete this event?', [
+            { text: 'No', style: 'default' },
+            {
+                text: 'Yes',
+                style: 'destructive',
+                onPress: confirmToDeleteAll
+            }
+        ]);
+    };
+
+    const confirmToDeleteAll = () => {
+        Alert.alert('Wait... are you really sure?', "By deleting this event, it's also delete all inside this event", [
+            { text: 'Cancel', style: 'default' },
+            {
+                text: 'Agree',
+                style: 'destructive',
+                onPress: deleteEvent
+            }
+        ]);
+    };
 
     if (error1) {
         console.error(error1);

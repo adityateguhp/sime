@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Text } from 'react-native-paper';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import HeaderButton from '../../components/common/HeaderButton';
 import DepartmentsScreen from '../../screens/user_management/DepartmentsScreen';
@@ -24,7 +25,7 @@ function TopTabUsersManagements() {
       tabBarOptions={{
         activeTintColor: Colors.secondaryColor,
         inactiveTintColor: 'white',
-        labelStyle: { fontSize: 12, fontWeight: 'bold' },
+        labelStyle: { fontSize: wp(3), fontWeight: 'bold' },
         indicatorStyle: { backgroundColor: Colors.secondaryColor },
         style: { backgroundColor: Colors.primaryColor }
       }}
@@ -73,7 +74,7 @@ export default function UsersManagementNavigator({ route, navigation }) {
       <UsersManagementStack.Screen name="Staff Profile" component={StaffProfileScreen} options={{
         headerTitle: () => (
           <View>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Staff Information</Text>
+            <Text style={{ fontSize: wp(4.8), fontWeight: 'bold', color: 'white' }} numberOfLines={1} ellipsizeMode='tail'>Staff Information</Text>
           </View>),
       }} />
     </UsersManagementStack.Navigator>
