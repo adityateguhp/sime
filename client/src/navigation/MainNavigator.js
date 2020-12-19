@@ -8,10 +8,10 @@ import jwtDecode from 'jwt-decode';
 
 import { SimeContext } from '../context/SimePovider';
 import { AuthContext } from '../context/auth';
-import LoginScreen from '../screens/login/LoginScreen';
-import RegisterScreen from '../screens/login/RegisterScreen';
-import RegisterOrganizationScreen from '../screens/login/RegisterOrganizationScreen';
-import RegisterCompletedScreen from '../screens/login/RegisterCompletedScreen';
+import LoginScreen from '../screens/authentication/LoginScreen';
+import RegisterScreen from '../screens/authentication/RegisterScreen';
+import RegisterOrganizationScreen from '../screens/authentication/RegisterOrganizationScreen';
+import RegisterCompletedScreen from '../screens/authentication/RegisterCompletedScreen';
 import DrawerContentOrganization from '../components/common/DrawerContentOrganization';
 import DrawerContentStaff from '../components/common/DrawerContentStaff';
 import ProjectNavigator from './organization_navigation/ProjectNavigator'
