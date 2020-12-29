@@ -116,15 +116,16 @@ const FormEditPosition = props => {
                                     <TextInput
                                         style={styles.input}
                                         label={
-                                            order === '1' ? 'Position Name for Head of Project'
-                                                : order === '2' ? 'Position Name for Vice Head of Project'
-                                                    : order === '3' ? 'Position Name for Secretary'
-                                                        : order === '4' ? 'Position Name for Treasurer'
-                                                            : order === '5' ? 'Position Name for Vice Treasurer'
-                                                                : order === '6' ? 'Position Name for Coordinator'
-                                                                    : order === '7' ? 'Position Name for Vice Coordinator'
-                                                                        : order === '8' ? 'Position Name for Member'
-                                                                            : 'Position Name'}
+                                            order === '0' ? 'Position Name for Responsible Person'
+                                                : order === '1' ? 'Position Name for Head of Project'
+                                                    : order === '2' ? 'Position Name for Vice Head of Project'
+                                                        : order === '3' ? 'Position Name for Secretary'
+                                                            : order === '4' ? 'Position Name for Treasurer'
+                                                                : order === '5' ? 'Position Name for Vice Treasurer'
+                                                                    : order === '6' ? 'Position Name for Coordinator'
+                                                                        : order === '7' ? 'Position Name for Vice Coordinator'
+                                                                            : order === '8' ? 'Position Name for Member'
+                                                                                : 'Position Name'}
                                         value={values.name}
                                         onChangeText={(val) => onChange('name', val, 'position_name_error')}
                                         error={errors.position_name_error ? true : false}

@@ -72,6 +72,12 @@ const RegisterOrganizationScreen = ({ route, navigation }) => {
 
     const [positionValues, setPositionValues] = useState([
         {
+            name: 'Penanggung Jawab',
+            core: true,
+            organizationId: '',
+            order: '0'
+        },
+        {
             name: 'Ketua',
             core: true,
             organizationId: '',
