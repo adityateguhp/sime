@@ -20,7 +20,6 @@ import AppStatusBar from './src/components/common/AppStatusBar'
 import { theme } from './src/constants/Theme';
 import { SimeProvider } from './src/context/SimePovider';
 
-
 enableScreens();
 
 const httpLink = createHttpLink({
